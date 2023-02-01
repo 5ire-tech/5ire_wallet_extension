@@ -370,7 +370,6 @@ export default function UseWallet() {
       const transferRes = await deposit.signAndSend(alice);
       console.log(transferRes.toHex());
       const tx = transferRes.toHex();
-      dispatch(toggleLoader(true));
 
       if (tx) {
 
@@ -387,6 +386,7 @@ export default function UseWallet() {
           index: index,
         };
         dispatch(setTxHistory(dataToDispatch));
+        dispatch(toggleLoader(false));
 
         return {
           error: false,

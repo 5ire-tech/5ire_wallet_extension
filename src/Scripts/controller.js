@@ -49,7 +49,7 @@ export function loadStore(sendStoreMessage = true) {
       Browser.storage.local.get("state").then(async (storage) => {
         // 1. Initializes the redux store and the message passing.
         const store = await init(storage.state || { auth: userState });
-        // store.dispatch(toggleLoader(false));
+        store.dispatch(toggleLoader(false));
 
         // 2. Sends a message to notify that the store is ready.
         sendStoreMessage &&
