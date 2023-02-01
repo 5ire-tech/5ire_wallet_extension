@@ -101,6 +101,8 @@ export default function UseWallet() {
 
   const walletSignUp = () => {
     try {
+      dispatch(toggleLoader(true));
+
       const SS58Prefix = 6;
       // Create mnemonic string for Alice using BIP39
       let temp1m = mnemonicGenerate();
@@ -137,6 +139,7 @@ export default function UseWallet() {
         dispatch(setCurrentAcc(dataToDispatch));
         dispatch(pushAccounts(dataToDispatch));
       }
+      dispatch(toggleLoader(false));
 
       return {
         error: false,
@@ -144,6 +147,8 @@ export default function UseWallet() {
       };
     } catch (error) {
       console.log("error", error);
+      dispatch(toggleLoader(false));
+
       return {
         error: true,
         data: "Error Occured!",
@@ -314,6 +319,8 @@ export default function UseWallet() {
       )
         throw new Error("Error occured!");
 
+      dispatch(toggleLoader(true));
+
       let index = getAccId(currentAccount.id);
       let dataToDispatch = {
         data: {
@@ -338,6 +345,7 @@ export default function UseWallet() {
       );
       const transferRes = await transfer.signAndSend(alice);
       const hash = transferRes.toHex();
+      dispatch(toggleLoader(false));
 
       if (hash)
         return {
@@ -347,6 +355,8 @@ export default function UseWallet() {
       else throw new Error("Error occured! ");
     } catch (error) {
       console.log("Error : ", error);
+      dispatch(toggleLoader(false));
+
       return {
         error: true,
         data: "Error occured while sending!",
@@ -364,6 +374,9 @@ export default function UseWallet() {
         throw new Error(
           "Insufficent Balance or amount doesn't specified correctly!"
         );
+
+      dispatch(toggleLoader(true));
+
 
       let index = getAccId(currentAccount.id);
       let dataToDispatch = {
@@ -395,6 +408,7 @@ export default function UseWallet() {
       const transferRes = await deposit.signAndSend(alice);
       console.log(transferRes.toHex());
       const tx = transferRes.toHex();
+      dispatch(toggleLoader(true));
 
       if (tx)
         return {
@@ -404,6 +418,8 @@ export default function UseWallet() {
       else throw new Error("Error occured! ");
     } catch (error) {
       console.log("Error : ", error);
+      dispatch(toggleLoader(false));
+
       return {
         error: true,
         data: "Error occured while swapping!",
@@ -417,6 +433,7 @@ export default function UseWallet() {
         throw new Error(
           "Insufficent Balance or amount doesn't specified correctly!"
         );
+      dispatch(toggleLoader(true));
 
       let index = getAccId(currentAccount.id);
 
@@ -457,17 +474,19 @@ export default function UseWallet() {
 
       let txHash;
 
-      const isSuccess = await evmApi.eth.sendSignedTransaction(
-        signedTx.rawTransaction,
-        async function (error, hash) {
-          if (!error) {
-            txHash = hash;
-            return 1;
-          } else {
-            return 0;
+      const isSuccess = await new Promise((resolve) => {
+        evmApi.eth.sendSignedTransaction(
+          signedTx.rawTransaction,
+          async function (error, hash) {
+            if (!error) {
+              txHash = hash;
+              resolve(1)
+            } else {
+              resolve(0);
+            }
           }
-        }
-      );
+        );
+      })
 
       if (isSuccess) {
         const withdraw = await nativeApi.tx.evm.withdraw(
@@ -477,6 +496,8 @@ export default function UseWallet() {
 
         await withdraw.signAndSend(alice);
       }
+      dispatch(toggleLoader(false));
+
       if (txHash)
         return {
           error: false,
@@ -484,7 +505,9 @@ export default function UseWallet() {
         };
       else throw new Error("Error occured! ");
     } catch (error) {
-      console.log("Error : ", error);
+      console.log("Error EVM TO NATIVE SWAP : ", error);
+      dispatch(toggleLoader(false));
+
       return {
         error: true,
         data: "Error occured while swapping!",
@@ -577,6 +600,8 @@ export default function UseWallet() {
   };
   const retriveNativeFee = async (toAddress, amount) => {
     try {
+      dispatch(toggleLoader(true));
+
       toAddress = toAddress ? toAddress : currentAccount?.evmAddress;
       let transferTx;
       const keyring = new Keyring({ type: "ed25519" });
@@ -607,9 +632,12 @@ export default function UseWallet() {
       const fee = Number(adjFee) / Math.pow(10, 18);
       console.log("adjFee : ", Number(adjFee));
       console.log("Fee : ", fee);
+      dispatch(toggleLoader(false));
 
       return fee ? fee : 0;
     } catch (error) {
+      dispatch(toggleLoader(false));
+
       console.log("Error : ", error);
       return 0;
     }

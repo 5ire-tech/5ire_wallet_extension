@@ -143,7 +143,7 @@ injectedStream.on("data", (data) => {
     }, 1000 * 30);
   }
   if (data.id) {
-    console.log("HERE HANDLERS", handlers);
+    console.log("HERE HANDLERS RES", data);
     const handler = handlers[data.id];
 
     if (conntectMethods.indexOf(handler?.method) > -1) {

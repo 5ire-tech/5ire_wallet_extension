@@ -55,7 +55,6 @@ contentStream.on("data", async (data) => {
 
 const messageFromExtensionUI = (message, sender, cb) => {
   if (message?.id) {
-    console.log("[content.js]. Message received", JSON.stringify(message));
 
     contentStream.write(message);
     cb("I Recevie and ack");

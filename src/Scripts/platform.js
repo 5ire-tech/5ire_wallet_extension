@@ -189,7 +189,7 @@ export default class NotificationManager {
   }
 
   _onWindowClosed(windowId) {
-    console.log("Yyyyyyyy", windowId)
+    console.log("Yyyyyyyy", windowId, this._popupId)
     if (windowId === this._popupId) {
       this._popupId = undefined;
       // this.emit("POPUP_CLOSED", {
@@ -208,21 +208,22 @@ export default class NotificationManager {
     const conntectMethods = ["eth_requestAccounts",
       "eth_accounts",
       "connect"];
-    if (conntectMethods.indexOf('method') > -1) {
-      // Browser.tabs.sendMessage(state?.auth?.uiData?.tabId, {
-      //   id: state?.auth.uiData?.id,
-      //   response: null,
-      //   error: "User rejected connect permission.",
+    console.log("I WAS WAITING FOR MESSAGE")
 
-      // });
-      console.log("I WAS WAITING FOR MESSAGE")
+    if (conntectMethods.indexOf('method') > -1) {
+      Browser.tabs.sendMessage(state?.auth?.uiData?.tabId, {
+        id: state?.auth.uiData?.id,
+        response: null,
+        error: "User rejected connect permission.",
+
+      });
 
     } else if (method === 'eth_sendTransaction') {
-      // Browser.tabs.sendMessage(state?.auth?.uiData?.tabId, {
-      //   id: state?.auth?.uiData?.id,
-      //   response: null,
-      //   error: "User rejected  transactoin.",
-      // });
+      Browser.tabs.sendMessage(state?.auth?.uiData?.tabId, {
+        id: state?.auth?.uiData?.id,
+        response: null,
+        error: "User rejected  transactoin.",
+      });
 
     }
     this.store.dispatch(setUIdata({}))
