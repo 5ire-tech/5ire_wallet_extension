@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import style from "./style.module.scss";
 import Walletlogo from "../../Assets/PNG/walletlogo.png";
-import DefiIcon from "../../Assets/DefiIcon.svg";
-import SettignIcon from "../../Assets/SettignIcon.svg";
+// import DefiIcon from "../../Assets/DefiIcon.svg";
+// import SettignIcon from "../../Assets/SettignIcon.svg";
 import Myaccount from "../../Assets/PNG/myaccount.png";
 import HistoryIcon from "../../Assets/PNG/histry.png";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import ButtonComp from "../ButtonComp/ButtonComp";
+// import ButtonComp from "../ButtonComp/ButtonComp";
 import { Drawer } from "antd";
 import FooterStepOne, {
   ApproveLogin,
@@ -30,8 +30,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { setCurrentAcc } from "../../Store/reducer/auth";
 import useAuth from "../../Hooks/useAuth";
 import { toast } from "react-toastify";
-
-import { shortner } from "../../Helper/TxShortner";
+import { TX_TYPE } from "../../Constants/index";
+import { shortner, formatDate } from "../../Helper/helper";
+// import { Moment } from "moment";
 
 function MenuFooter() {
   const navigate = useNavigate();
@@ -93,9 +94,8 @@ function MenuFooter() {
         <Link
           to="/wallet"
           // onClick={() => setactiveLink("wallet")}
-          className={`${style.menuItems__items} ${
-            path === "wallet" ? style.menuItems__items__active : ""
-          }`}
+          className={`${style.menuItems__items} ${path === "wallet" ? style.menuItems__items__active : ""
+            }`}
         >
           <div className={style.menuItems__items__img}>
             <img src={Walletlogo} />
@@ -107,9 +107,8 @@ function MenuFooter() {
         <Link
           to="#"
           onClick={() => setOpen1(true)}
-          className={`${style.menuItems__items} ${
-            path === "history" ? style.menuItems__items__active : ""
-          }`}
+          className={`${style.menuItems__items} ${path === "history" ? style.menuItems__items__active : ""
+            }`}
         >
           <div className={style.menuItems__items__img}>
             <img src={HistoryIcon} />
@@ -131,20 +130,21 @@ function MenuFooter() {
         {currentAccount?.txHistory ? (
           currentAccount?.txHistory?.map((data) => (
             <TransectionHistry
-              dateTime={data.dateTime}
-              type={data.type}
+              // dateTime={Moment(data.dateTime).format("dddd, MMMM Do YYYY, h:mm:ss a")}
+              dateTime={formatDate(data.dateTime)}
+              type={data?.type}
               to={
-                data.type.toLowerCase() === "send"
+                data.type.toLowerCase() === TX_TYPE?.SEND
                   ? `To: ${data?.to ? shortner(data.to) : ""}`
                   : data.to
               }
-              amount={data.amount}
-              status={data.status}
+              amount={data?.amount}
+              status={data?.status}
               img={Sendhistry}
             />
           ))
         ) : (
-          <p>No Transaction Found</p>
+          <p>No Transaction Found!</p>
         )}
       </Drawer>
 
@@ -153,9 +153,8 @@ function MenuFooter() {
           // to="/setting"
           // onClick={() => setOpen(true)}
           onClick={handleMyAccOpen}
-          className={`${style.menuItems__items} ${
-            path === "setting" ? style.menuItems__items__active : ""
-          }`}
+          className={`${style.menuItems__items} ${path === "setting" ? style.menuItems__items__active : ""
+            }`}
         >
           <div className={style.menuItems__items__img}>
             <img src={Myaccount} />
@@ -202,9 +201,8 @@ function MenuFooter() {
         <Link
           // to="/setting"
           onClick={() => setOpen2(true)}
-          className={`${style.menuItems__items} ${
-            path === "setting" ? style.menuItems__items__active : ""
-          }`}
+          className={`${style.menuItems__items} ${path === "setting" ? style.menuItems__items__active : ""
+            }`}
         >
           <div className={style.menuItems__items__img}>
             <img src={Setting} />
@@ -245,12 +243,12 @@ function MenuFooter() {
         path === "createNewWallet" ||
         path === "unlockWallet" ||
         path === "importWallet") && (
-        <div className={style.menuItems__needHelp}>
-          <p>
-            Need help? Contact <a>Support</a>
-          </p>
-        </div>
-      )}
+          <div className={style.menuItems__needHelp}>
+            <p>
+              Need help? Contact <a>Support</a>
+            </p>
+          </div>
+        )}
       {path === "beforebegin" && <FooterStepOne />}
       {path === "createwalletchain" && <FooterStepTwo />}
       {path === "setPassword" && <FooterStepThree />}
