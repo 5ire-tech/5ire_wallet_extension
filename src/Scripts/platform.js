@@ -1,4 +1,6 @@
+import Browser from "webextension-polyfill";
 import browser from "webextension-polyfill";
+import { setUIdata } from "../Store/reducer/auth";
 
 export class ExtensionPlatform {
   //
@@ -122,9 +124,10 @@ export const NOTIFICATION_MANAGER_EVENTS = {
  * A collection of methods for controlling the showing and hiding of the notification popup.
  */
 export default class NotificationManager {
-  constructor() {
+  constructor(store) {
     this.platform = new ExtensionPlatform();
     this.platform.addOnRemovedListener(this._onWindowClosed.bind(this));
+    this.store = store;
   }
 
   /**
@@ -186,15 +189,45 @@ export default class NotificationManager {
   }
 
   _onWindowClosed(windowId) {
+    console.log("Yyyyyyyy", windowId)
     if (windowId === this._popupId) {
       this._popupId = undefined;
-      //   this.emit(NOTIFICATION_MANAGER_EVENTS.POPUP_CLOSED, {
-      //     automaticallyClosed: this._popupAutomaticallyClosed,
-      //   });
+      // this.emit("POPUP_CLOSED", {
+      //   automaticallyClosed: this._popupAutomaticallyClosed,
+      // });
       this._popupAutomaticallyClosed = undefined;
+      this.handleClose()
+
+
     }
   }
 
+  handleClose() {
+    const state = this.store.getState();
+    const method = state?.auth.uiData?.message?.method;
+    const conntectMethods = ["eth_requestAccounts",
+      "eth_accounts",
+      "connect"];
+    if (conntectMethods.indexOf('method') > -1) {
+      // Browser.tabs.sendMessage(state?.auth?.uiData?.tabId, {
+      //   id: state?.auth.uiData?.id,
+      //   response: null,
+      //   error: "User rejected connect permission.",
+
+      // });
+      console.log("I WAS WAITING FOR MESSAGE")
+
+    } else if (method === 'eth_sendTransaction') {
+      // Browser.tabs.sendMessage(state?.auth?.uiData?.tabId, {
+      //   id: state?.auth?.uiData?.id,
+      //   response: null,
+      //   error: "User rejected  transactoin.",
+      // });
+
+    }
+    this.store.dispatch(setUIdata({}))
+
+  }
   /**
    * Checks all open MetaMask windows, and returns the first one it finds that is a notification window (i.e. has the
    * type 'popup')
@@ -215,9 +248,9 @@ export default class NotificationManager {
   _getPopupIn(windows) {
     return windows
       ? windows.find((win) => {
-          // Returns notification popup
-          return win && win.type === "popup" && win.id === this._popupId;
-        })
+        // Returns notification popup
+        return win && win.type === "popup" && win.id === this._popupId;
+      })
       : null;
   }
 }

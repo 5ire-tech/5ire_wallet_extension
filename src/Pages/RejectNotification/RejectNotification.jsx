@@ -65,7 +65,7 @@ function ApproveTx() {
                 </div>
                 <div className={style.rejectedSec__listReject__innerList}>
                   <h4>Value: </h4>
-                  <h4>{auth?.uiData?.message?.value}</h4>
+                  <h4>{String(auth?.uiData?.message?.value || 0)}</h4>
                 </div>
 
                 <div className={style.rejectedSec__listReject__innerList}>

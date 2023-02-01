@@ -21,6 +21,7 @@ import {
   pushAccounts,
   setBalance,
   setTxHistory,
+  toggleLoader,
 } from "../Store/reducer/auth";
 import { setAccountName } from "../Store/reducer/auth";
 import Web3 from "web3";
@@ -52,27 +53,35 @@ export default function UseWallet() {
   useEffect(() => {
     console.log("Current network : ", currentNetwork);
     setReady(false);
-    if (currentNetwork?.toLowerCase() === NETWORK?.TEST_NETWORK)
-      setUpApi(availableNetworks?.testnet);
-    else if (currentNetwork.toLowerCase() === NETWORK?.QA_NETWORK)
-      setUpApi(availableNetworks?.qa);
+    setUpApi();
   }, [currentNetwork]);
 
-  const setUpApi = async (network) => {
-    console.log("Network : ", network);
+  const setUpApi = async () => {
+    try {
 
-    let evm_api = new Web3(network);
-    setEvmApi(evm_api);
+      let network = '';
+      if (currentNetwork?.toLowerCase() === TEST_NETWORK)
+        network = availableNetworks?.testnet;
+      else if (currentNetwork.toLowerCase() === QA_NETWORK)
+        network = availableNetworks?.qa;
+      console.log("Network : ", network);
+      let evm_api = new Web3(network);
+      setEvmApi(evm_api);
 
-    let provider;
-    if (network?.startsWith("wss")) provider = new WsProvider(network);
-    else provider = new HttpProvider(network);
+      let provider;
+      if (network?.startsWith("wss")) provider = new WsProvider(network);
+      else provider = new HttpProvider(network);
 
-    await cryptoWaitReady();
-    await waitReady();
-    const apiRes = await ApiPromise.create({ provider: provider });
-    setNativeApi(apiRes);
-    if (apiRes) setReady(true);
+      await cryptoWaitReady();
+      await waitReady();
+      const apiRes = await ApiPromise.create({ provider: provider });
+      setNativeApi(apiRes);
+      if (apiRes) setReady(true);
+
+      return { evm_api, apiRes }
+    } catch (err) {
+
+    }
   };
 
   const getKey = (str, p) => {
@@ -179,18 +188,23 @@ export default function UseWallet() {
 
   const evmTransfer = async (data, isBig = false) => {
     try {
+
       if (
         balance.nativeBalance === 0 ||
         balance.nativeBalance === "" ||
         !data.amount
       )
-        throw new Error("Insufficent Balance or amount doesn't specified correctly!");
+        return {
+          error: true,
+          data: "Insufficent balance",
+        };
 
-      let to = Web3.utils.toChecksumAddress(data.to);
+      dispatch(toggleLoader(true));
+
 
       const transactions = {
         from: currentAccount?.evmAddress,
-        to: to,
+
         value: isBig
           ? data.amount
           : (Number(data.amount) * Math.pow(10, 18)).toString(),
@@ -205,8 +219,11 @@ export default function UseWallet() {
         from: transactions.from,
         value: transactions.value,
       };
-      if (transactions.to) {
+      if (data.to) {
+        transactions.to = Web3.utils.toChecksumAddress(data.to);
         gasTx.to = transactions.to;
+
+
       }
       if (transactions.data) {
         gasTx.data = transactions.data;
@@ -238,6 +255,11 @@ export default function UseWallet() {
           index: index,
         };
         dispatch(setTxHistory(dataToDispatch));
+
+        dispatch(setTxHistory(dataToDispatch));
+        console.log("Here getting EVM TRANSFER", hash)
+        dispatch(toggleLoader(false));
+
         return {
           error: false,
           data: hash,
@@ -245,7 +267,9 @@ export default function UseWallet() {
       }
       else throw new Error("Error occured! ");
     } catch (error) {
-      console.log("Error : ", error);
+      console.log("Error EVM Transfer: ", error);
+      dispatch(toggleLoader(false));
+
       return {
         error: true,
         data: "Error occured while sending!",
@@ -498,6 +522,13 @@ export default function UseWallet() {
 
   const retriveEvmFee = async (toAddress, amount, data = "") => {
     try {
+      dispatch(toggleLoader(true));
+
+      let api = evmApi
+      if (!api) {
+        const { evm_api } = await setUpApi()
+        api = evm_api
+      }
       toAddress = toAddress ? toAddress : currentAccount?.nativeAddress;
 
       if (toAddress.startsWith("5"))
@@ -506,17 +537,22 @@ export default function UseWallet() {
       const tx = {
         to: toAddress,
         from: currentAccount?.evmAddress,
-        value: "0x" + Number(amount).toString(16),
+        value: amount,
       };
       if (data) {
         tx.data = data;
       }
-      const gasAmount = await evmApi.eth.estimateGas(tx);
-      const gasPrice = await evmApi.eth.getGasPrice();
-      let fee = Number((gasPrice * gasAmount) / Math.pow(10, 18));
+      const gasAmount = await api.eth.estimateGas(tx);
+      const gasPrice = await api.eth.getGasPrice();
+      let fee = Number((gasPrice * gasAmount) / 10 ** 18);
+      console.log("HERE EVM FEEE", gasAmount, gasPrice, fee)
+      dispatch(toggleLoader(false));
+
       return fee ? fee : 0;
     } catch (error) {
-      console.log("error", error.toString());
+      dispatch(toggleLoader(false));
+
+      console.log("Error under EVM FEEE", error.toString());
       return 0;
     }
   };

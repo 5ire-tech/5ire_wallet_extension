@@ -1,7 +1,6 @@
 import { CONNECTION_NAME } from "../Constants";
 import {
-  handleConnect,
-  handleEthTransaction,
+  Controller,
   initScript,
   loadStore,
 } from "./controller";
@@ -44,6 +43,8 @@ Browser.runtime.onMessage.addListener(async function (message, sender, cb) {
     store = await loadStore(false);
     isInitialized = true;
   }
+
+  const controller = new Controller(store);
   const data = {
     ...message,
     tabId: sender?.tab?.id,
@@ -52,10 +53,10 @@ Browser.runtime.onMessage.addListener(async function (message, sender, cb) {
     case "connect":
     case "eth_requestAccounts":
     case "eth_accounts":
-      handleConnect(store, data);
+      await controller.handleConnect(data);
       break;
     case "eth_sendTransaction":
-      handleEthTransaction(store, data);
+      await controller.handleEthTransaction(data);
       break;
     default:
   }
