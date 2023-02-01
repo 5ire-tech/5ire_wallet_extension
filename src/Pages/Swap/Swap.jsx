@@ -11,7 +11,7 @@ import ComplSwap from "../../Assets/tranCompl.svg";
 import FaildSwap from "../../Assets/tranReject.svg";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { shortner } from "../../Helper/TxShortner";
+import { shortner } from "../../Helper/helper";
 import { NATIVE, EVM } from "../../Constants/index";
 import { toast } from "react-toastify";
 import useWallet from "../../Hooks/useWallet";
@@ -115,6 +115,7 @@ function Swap() {
 
   const handleApprove = async () => {
     if (!amount) setError("Enter Amount!");
+    if (isNaN(amount)) setError("Please Enter Amount Correctly!");
 
     if (
       toFrom.from.toLowerCase() === EVM.toLowerCase() &&
@@ -230,7 +231,7 @@ function Swap() {
               Balance 00.0000 5IRE
             </span> */}
           </div>
-          <div className={style.swap__activeBalnce}>
+          {/* <div className={style.swap__activeBalnce}>
             <button
               onClick={activeIst}
               className={`${style.swap__activeBalanceSelect__buttons} 
@@ -269,7 +270,7 @@ function Swap() {
             >
               100 %
             </button>
-          </div>
+          </div> */}
         </div>
         <div className={style.swap__transactionFee}>
           <p>Transaction Fee : {gassFee} 5IRE</p>

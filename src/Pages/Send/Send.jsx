@@ -7,7 +7,7 @@ import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import ComplSwap from "../../Assets/tranCompl.svg";
 import useWallet from "../../Hooks/useWallet";
 import FaildSwap from "../../Assets/tranReject.svg";
-import { shortner } from "../../Helper/TxShortner";
+import { shortner } from "../../Helper/helper";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import { toast } from "react-toastify";
 import { NATIVE, EVM } from "../../Constants/index";

@@ -6,14 +6,13 @@ import {
   ed25519PairFromSeed,
   cryptoWaitReady,
 } from "@polkadot/util-crypto";
-
 import { u8aToHex } from "@polkadot/util";
 import { waitReady } from "@polkadot/wasm-crypto";
 import { ApiPromise } from "@polkadot/api";
 import { HttpProvider, WsProvider } from "@polkadot/rpc-provider";
 import { ethers } from "ethers";
 import { useSelector, useDispatch } from "react-redux";
-import { QA_NETWORK, TEST_NETWORK } from "../Constants/index";
+import { NETWORK, TX_TYPE, STATUS } from "../Constants/index";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import { Keyring } from "@polkadot/keyring";
 import {
@@ -61,9 +60,9 @@ export default function UseWallet() {
     try {
 
       let network = '';
-      if (currentNetwork?.toLowerCase() === TEST_NETWORK)
+      if (currentNetwork?.toLowerCase() === NETWORK.TEST_NETWORK)
         network = availableNetworks?.testnet;
-      else if (currentNetwork.toLowerCase() === QA_NETWORK)
+      else if (currentNetwork.toLowerCase() === NETWORK.QA_NETWORK)
         network = availableNetworks?.qa;
       console.log("Network : ", network);
       let evm_api = new Web3(network);
@@ -163,11 +162,11 @@ export default function UseWallet() {
       );
       let payload = {
         of: "evm",
-        balance: Math.round(Number(w3balance) / Math.pow(10, 18)),
+        balance: (Number(w3balance) / Math.pow(10, 18)),
       };
       console.log(
         "evm balance : ",
-        Math.round(Number(w3balance) / Math.pow(10, 18))
+        payload.balance
       );
       dispatch(setBalance(payload));
     } catch (error) {
@@ -181,47 +180,16 @@ export default function UseWallet() {
     );
     let payload = {
       of: "native",
-      balance: Math.round(Number(nbalance.availableBalance) / Math.pow(10, 18)),
+      balance: (Number(nbalance.availableBalance) / Math.pow(10, 18)),
     };
     console.log(
       "nativeBalance : ",
-      Math.round(Number(nbalance.availableBalance) / Math.pow(10, 18))
+      payload.balance
     );
 
     dispatch(setBalance(payload));
   };
 
-  const getDateTime = () => {
-    try {
-      let currentdate = new Date();
-
-      let date =
-        currentdate.getDate() +
-        "/" +
-        (currentdate.getMonth() + 1) +
-        "/" +
-        currentdate.getFullYear() +
-        " | ";
-
-      let time =
-        currentdate.getHours() +
-        ":" +
-        currentdate.getMinutes() +
-        ":" +
-        currentdate.getSeconds();
-
-      time = time.split(":");
-      time[3] = time[0] < 12 ? "AM" : "PM";
-      time[0] = time[0] > 12 ? time[0] % 12 : time[0];
-
-      let dateTime = date + `${time[0]}:${time[1]}:${time[2]}${time[3]}`;
-
-      return dateTime;
-    } catch (error) {
-      console.log("Error : ", error);
-      return "";
-    }
-  };
 
   const evmTransfer = async (data, isBig = false) => {
     try {
@@ -278,26 +246,30 @@ export default function UseWallet() {
       );
       const hash = txInfo.transactionHash;
 
-      let index = getAccId(currentAccount.id);
-      let dataToDispatch = {
-        data: {
-          dateTime: getDateTime(),
-          to: data.to,
-          type: "Send",
-          amount: data.amount,
-          status: "Panding",
-        },
-        index: index,
-      };
-      dispatch(setTxHistory(dataToDispatch));
-      console.log("Here getting EVM TRANSFER", hash)
-      dispatch(toggleLoader(false));
+      if (hash) {
+        let index = getAccId(currentAccount.id);
+        let dataToDispatch = {
+          data: {
+            dateTime: new Date(),
+            to: data.to,
+            type: TX_TYPE?.SEND,
+            amount: data.amount,
+            txHash: hash,
+            status: STATUS.PENDING,
+          },
+          index: index,
+        };
+        dispatch(setTxHistory(dataToDispatch));
 
-      if (hash)
+        dispatch(setTxHistory(dataToDispatch));
+        console.log("Here getting EVM TRANSFER", hash)
+        dispatch(toggleLoader(false));
+
         return {
           error: false,
           data: hash,
         };
+      }
       else throw new Error("Error occured! ");
     } catch (error) {
       console.log("Error EVM Transfer: ", error);
@@ -317,41 +289,46 @@ export default function UseWallet() {
         balance.nativeBalance === "" ||
         !data.amount
       )
-        throw new Error("Error occured!");
-
+        throw new Error(
+          "Insufficent Balance or amount doesn't specified correctly!"
+        );
       dispatch(toggleLoader(true));
-
-      let index = getAccId(currentAccount.id);
-      let dataToDispatch = {
-        data: {
-          dateTime: getDateTime(),
-          to: data.to,
-          type: "Send",
-          amount: data.amount,
-          status: "Panding",
-        },
-        index: index,
-      };
-      dispatch(setTxHistory(dataToDispatch));
 
       const seedAlice = mnemonicToMiniSecret(
         decryptor(currentAccount?.temp1m, pass)
       );
+      let _amount = (Number(data.amount) * Math.pow(10, 18)).toString();
       const keyring = new Keyring({ type: "ed25519" });
       const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
       const transfer = nativeApi.tx.balances.transferKeepAlive(
         data.toAddress,
-        (Number(data.amount) * Math.pow(10, 18)).toString()
+        _amount
       );
       const transferRes = await transfer.signAndSend(alice);
       const hash = transferRes.toHex();
-      dispatch(toggleLoader(false));
 
-      if (hash)
+      if (hash) {
+        let index = getAccId(currentAccount.id);
+        let dataToDispatch = {
+          data: {
+            dateTime: new Date(),
+            to: data.to,
+            type: TX_TYPE?.SEND,
+            amount: data.amount,
+            status: STATUS.PENDING,
+            txHash: hash,
+          },
+          index: index,
+        };
+        dispatch(setTxHistory(dataToDispatch));
+        dispatch(toggleLoader(false));
+
         return {
           error: false,
           data: hash,
         };
+      }
+
       else throw new Error("Error occured! ");
     } catch (error) {
       console.log("Error : ", error);
@@ -374,24 +351,9 @@ export default function UseWallet() {
         throw new Error(
           "Insufficent Balance or amount doesn't specified correctly!"
         );
-
       dispatch(toggleLoader(true));
 
-
-      let index = getAccId(currentAccount.id);
-      let dataToDispatch = {
-        data: {
-          dateTime: getDateTime(),
-          to: "Native to Evm",
-          type: "Swap",
-          amount: amount,
-          status: "Panding",
-        },
-        index: index,
-      };
-      dispatch(setTxHistory(dataToDispatch));
-
-      amount = Number(
+      const _amount = Number(
         Math.round(Number(amount) * Math.pow(10, 18) * 100) / 100
       ).toString();
 
@@ -403,18 +365,34 @@ export default function UseWallet() {
 
       let deposit = await nativeApi.tx.evm.deposit(
         currentAccount?.evmAddress,
-        amount
+        _amount
       );
       const transferRes = await deposit.signAndSend(alice);
       console.log(transferRes.toHex());
       const tx = transferRes.toHex();
       dispatch(toggleLoader(true));
 
-      if (tx)
+      if (tx) {
+
+        let index = getAccId(currentAccount.id);
+        let dataToDispatch = {
+          data: {
+            dateTime: new Date(),
+            to: "Native to Evm",
+            type: TX_TYPE?.SWAP,
+            amount: amount,
+            status: STATUS.PENDING,
+            hash: tx
+          },
+          index: index,
+        };
+        dispatch(setTxHistory(dataToDispatch));
+
         return {
           error: false,
           data: tx,
         };
+      }
       else throw new Error("Error occured! ");
     } catch (error) {
       console.log("Error : ", error);
@@ -435,41 +413,26 @@ export default function UseWallet() {
         );
       dispatch(toggleLoader(true));
 
-      let index = getAccId(currentAccount.id);
-
-      let dataToDispatch = {
-        data: {
-          dateTime: getDateTime(),
-          to: "Evm to Native",
-          type: "Swap",
-          amount: amount,
-          status: "Panding",
-        },
-        index: index,
-      };
-
-      dispatch(setTxHistory(dataToDispatch));
-
       const seedAlice = mnemonicToMiniSecret(
         decryptor(currentAccount?.temp1m, pass)
       );
       const keyring = new Keyring({ type: "ed25519" });
       const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
-
-      amount = Number(
+      const _amount = Number(
         Math.round(Number(amount) * Math.pow(10, 18) * 100) / 100
       ).toString();
+
       const publicKey = u8aToHex(alice.publicKey);
       const transaction = {
         to: publicKey.slice(0, 42),
-        value: amount.toString(),
+        value: _amount.toString(),
         gas: 21000,
         nonce: await evmApi.eth.getTransactionCount(currentAccount?.evmAddress),
       };
       let temp2p = getKey(currentAccount.temp1m, pass);
       const signedTx = await evmApi.eth.accounts.signTransaction(
         transaction,
-        temp2p //todo
+        temp2p
       );
 
       let txHash;
@@ -491,19 +454,33 @@ export default function UseWallet() {
       if (isSuccess) {
         const withdraw = await nativeApi.tx.evm.withdraw(
           publicKey.slice(0, 42),
-          amount.toString()
+          _amount.toString()
         );
-
         await withdraw.signAndSend(alice);
-      }
-      dispatch(toggleLoader(false));
+        let index = getAccId(currentAccount.id);
 
-      if (txHash)
+        let dataToDispatch = {
+          data: {
+            dateTime: new Date(),
+            to: "Evm to Native",
+            type: TX_TYPE?.SWAP,
+            amount: amount,
+            status: STATUS.PENDING,
+            txHash: txHash
+          },
+          index: index,
+        };
+
+        dispatch(setTxHistory(dataToDispatch));
+        dispatch(toggleLoader(false));
+
         return {
           error: false,
           data: txHash,
         };
+      }
       else throw new Error("Error occured! ");
+
     } catch (error) {
       console.log("Error EVM TO NATIVE SWAP : ", error);
       dispatch(toggleLoader(false));
@@ -563,6 +540,7 @@ export default function UseWallet() {
       };
     }
   };
+
   const retriveEvmFee = async (toAddress, amount, data = "") => {
     try {
       dispatch(toggleLoader(true));
@@ -576,6 +554,7 @@ export default function UseWallet() {
 
       if (toAddress.startsWith("5"))
         toAddress = u8aToHex(toAddress).slice(0, 42);
+
       const tx = {
         to: toAddress,
         from: currentAccount?.evmAddress,
@@ -598,6 +577,7 @@ export default function UseWallet() {
       return 0;
     }
   };
+
   const retriveNativeFee = async (toAddress, amount) => {
     try {
       dispatch(toggleLoader(true));
@@ -610,18 +590,14 @@ export default function UseWallet() {
       );
       const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
 
-      amount = Number(amount)
-        ? !(Number(amount) > 0 && Number(amount) < 1)
-          ? Number(Math.round(Number(amount) * Math.pow(10, 18) * 100) / 100)
-            // .noExponents()
-            .toString()
-          : 0
+      amount = amount
+        ? Number(Math.round(Number(amount) * Math.pow(10, 18) * 100) / 100).toString()
         : 0;
+
       if (toAddress.startsWith("0x")) {
         transferTx = await nativeApi.tx.evm.deposit(toAddress, amount);
       }
-
-      console.log("amount : ", amount);
+      console.log("nativeApi :: ", nativeApi);
 
       if (toAddress.startsWith("5")) {
         transferTx = nativeApi.tx.balances.transferKeepAlive(toAddress, amount);
