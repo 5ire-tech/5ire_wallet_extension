@@ -1,0 +1,36 @@
+@import "../../styles/__vars.scss";
+.ButtonStyle {
+  background: linear-gradient(114.15deg, #0DA6C2 20.67%, #0E39C6 89.64%, #0E39C6 89.64%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  color: $white;
+  font-size: 14px;
+  font-weight: 700;
+  // max-width: 165px;
+  width: 100%;
+  height: 50px;
+  transition: 0.3s all;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &:hover {
+    border: 1px solid $border-1098FC;
+  }
+  &__bordered {
+    border: 1px solid $border-1098FC;
+    background: transparent;
+    color: $border-1098FC;
+    &:hover {
+       opacity: 0.6;
+      }
+  }
+  img{
+    height: 17px;
+    width: 18px;
+    margin-right: 13px;
+
+  }
+}
+
+

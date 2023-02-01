@@ -1,0 +1,66 @@
+@import "../../styles/__vars.scss";
+.enterPassword {
+    .commonHeadeing {
+        margin-bottom: 30px;
+        h1 {
+            background: linear-gradient(91.26deg, #0071ff 0%, #54f0d1 100%);
+            background-clip: border-box;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            font-weight: 600;
+            font-size: 24px;
+            line-height: 28px;
+            margin: 0;
+          }
+          p{
+            color: #ffffff;
+        font-size: 16px;
+        line-height: 24px;
+        padding-top: 32px;
+          }
+    }
+    button{
+        margin-top: 100px;
+    }
+
+}
+// manage Wallet
+.wallet {
+  //   padding: 0 18px;
+  margin-bottom: 16px;
+ 
+  &__addressInput {
+    label {
+        color: #ffffff;
+        opacity: 0.6;
+        font-size: 12px;
+        width: 100%;
+        text-align: left;
+        display: inline-flex;
+        margin-bottom: 8px;
+      }
+    &__copyText {
+      background: $baseColor-Text2;
+      border-radius: 8px;
+      padding: 16px 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      align-items: center;
+      span {
+        color: #6a84a0;
+        font-size: 14px;
+        word-break: break-all;
+        text-align: left;
+      }
+      img{
+        cursor: pointer;
+      }
+    }
+  }
+}
+.btn_icon{
+  margin-top: 100px;
+}

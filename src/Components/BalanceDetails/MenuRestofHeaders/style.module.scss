@@ -1,0 +1,21 @@
+@import "../../../styles/__vars.scss";
+.restOfHeaders {
+  padding: 10px 24px 10px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  h4 {
+    font-size: 20px;
+    // font-weight: m;
+    margin-bottom: 0;
+    white-space: nowrap;
+    background: -webkit-linear-gradient(#0071ff ,  #54f0d1 );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    // Fill Color Style: gradient;
+  }
+}
+.backarow{
+  transform: rotate(180deg);
+}

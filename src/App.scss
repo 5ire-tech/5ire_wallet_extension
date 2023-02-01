@@ -1,0 +1,384 @@
+@import "./styles/__vars.scss";
+.App {
+  text-align: center;
+  // min-height: 100vh;
+}
+.WelcomeLayout {
+  // min-height: 100vh;
+  &__container {
+    // padding: 30px 15px 40px;
+    max-width: 400px;
+    height: 600px;
+    margin: 0 auto;
+    // height: 678px;
+    display: flex;
+    flex-direction: column;
+    .welcomeFooter {
+      background-color: $blue-08132C;
+      padding: 0;
+    }
+  }
+  &__content {
+    // overflow-y: scroll;
+    flex: 1 1;
+    background-color: #08132c;
+    overflow: auto;
+  }
+  &__logo {
+    margin-bottom: 24px;
+    img {
+      width: 130px;
+      height: 84px;
+    }
+  }
+}
+//stickyheader//
+.scrollableCont {
+  height: 100%;
+  overflow: hidden;
+  .stickyHeader {
+    position: sticky;
+    top: 0;
+    background: #08132c;
+    z-index: 9;
+  }
+  .flexedContent {
+    padding: 24px 28px 0;
+    overflow-y: auto;
+    height: 100%;
+    background-color: #08132c;
+  }
+}
+// CommonText//
+.textBold {
+  font-weight: bold !important;
+}
+.positiveText {
+  color: $green !important;
+}
+.negitiveText {
+  color: $red !important;
+}
+// Input Field css//
+.inputFieldOnly
+  .placeholderBaseColor.ant-input.css-dev-only-do-not-override-acm2ia {
+  &::placeholder {
+    color: $white !important;
+  }
+}
+.inputField
+  .placeholderBaseColor
+  .ant-input.css-dev-only-do-not-override-acm2ia {
+  &::placeholder {
+    color: $white !important;
+  }
+}
+.inputField {
+  .ant-input.css-dev-only-do-not-override-acm2ia {
+    background-color: transparent;
+    font-size: 14px;
+    font-weight: normal;
+    color: $white;
+    border: 0 !important;
+    padding: 0 10px 0 0;
+    &:focus {
+      box-shadow: none;
+      outline: none;
+    }
+    &::placeholder {
+      color: $white !important;
+    }
+  }
+  .ant-input-group-addon {
+    border: 0 !important;
+    background-color: transparent !important;
+    padding: 0 !important;
+  }
+}
+
+.inputFieldOnly {
+  input {
+    background-color: $white;
+    border-radius: 12px;
+    padding: 14px 16px;
+    border: 1px solid #404058 !important;
+    color: $white;
+    font-size: 14px;
+    &::placeholder {
+      color: $gray !important;
+    }
+  }
+}
+.ant-input-group-wrapper {
+  &:focus {
+    border-color: #4096ff;
+    box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
+    border-inline-end-width: 1px;
+    outline: 0;
+  }
+}
+
+//Modal Css Full width //
+:where(.css-dev-only-do-not-override-acm2ia).ant-modal-root .ant-modal-mask {
+  // backdrop-filter: blur(13px);
+  // -webkit-backdrop-filter: blur(13px);
+  backdrop-filter: blur(12px);
+  background-color: unset;
+}
+
+.ant-modal.css-dev-only-do-not-override-acm2ia {
+  height: 100%;
+  .ant-modal-content {
+    height: 100%;
+    width: 100%;
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
+.modalCustom {
+  background: #08132c;
+  width: 327px !important;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  border-radius: 8px;
+  height: auto !important;
+  .ant-modal-content {
+    background-color: #08132c !important;
+    padding: 8px 24px !important;
+  }
+}
+.modalCustom.ant-modal .ant-modal-content {
+  .ant-modal-header {
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #d7e0eb;
+    color: $baseColor-Text;
+    font-size: 16px;
+    font-weight: bold;
+  }
+}
+.customClassModal.modalCustom {
+  &.ant-modal {
+    &.css-dev-only-do-not-override-acm2ia {
+      height: auto;
+      background-color: $white;
+      border-radius: 30px;
+    }
+    .ant-modal-content {
+      padding-top: 20px !important;
+    }
+  }
+}
+
+// ---------modal css send swap----------------
+.swapsendModel {
+  padding: 20px 0;
+  .innerContact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    .title {
+      background: linear-gradient(91.26deg, #0071ff 0%, #54f0d1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
+      font-size: 24px;
+    }
+    .transId {
+      color: #8fa2b7;
+      font-size: 14px;
+    }
+    .address {
+      color: $white;
+      font-size: 16px;
+      word-break: break-all;
+      text-align: center;
+    }
+    .footerbuttons {
+      width: 100%;
+    }
+  }
+}
+//Drawer Style//
+.ant-drawer-mask {
+  backdrop-filter: blur(13px);
+  -webkit-backdrop-filter: blur(13px);
+  background-color: unset;
+}
+.ant-drawer {
+  &-body {
+    padding: 20px 0 !important;
+  }
+  &-wrapper-body {
+    padding: 23px 28px !important;
+  }
+  &-content {
+    border-radius: 30px 30px 0px 0px;
+  }
+  &-header {
+    padding: 0 0 21px 0 !important;
+    border-bottom: 1px solid #707070 !important;
+    &-title {
+      display: flex;
+      flex-direction: row-reverse;
+    }
+  }
+  &-title {
+    color: $baseColor-Text !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+  }
+}
+
+//select Css//
+.ant-select {
+  .ant-select-selector {
+    background-color: transparent !important;
+    border-radius: 20px !important;
+    height: 40px !important;
+    padding: 0 5px !important;
+    color: $white;
+    border-color: $white !important;
+  }
+  &:focus,
+  &:hover {
+    .ant-select-selector {
+      outline: none !important;
+      box-shadow: unset !important;
+    }
+  }
+}
+.ant-select-dropdown {
+  background-color: $blue-08132C !important;
+  border: 1px solid $white;
+}
+:where(.css-dev-only-do-not-override-acm2ia).ant-select-dropdown
+  .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  background-color: #616161;
+}
+// .inputField {
+//   .ant-input {
+//     height: 40px;
+//   }
+// }
+:where(.css-acm2ia).ant-select-dropdown
+  .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  color: rgba(0, 0, 0, 0.88);
+  font-weight: 600;
+  background-color: #616161 !important;
+}
+:where(.css-acm2ia).ant-input {
+  background-color: $blue-08132C !important;
+  border-color: #404058 !important;
+  border: 0 !important;
+  color: $white !important ;
+  padding: 0;
+  &::placeholder{
+    color: $gray !important;
+  }
+}
+:where(.css-acm2ia).ant-input:hover {
+  border-color: #404058 !important;
+}
+:where(.css-acm2ia).ant-input:focus,
+:where(.css-acm2ia).ant-input-focused {
+  box-shadow: unset !important;
+}
+.flexedItemSelect {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+  font-size: 12px;
+  font-weight: bold;
+  color: $white;
+}
+:where(.css-dev-only-do-not-override-acm2ia).ant-select-dropdown
+  .ant-select-item {
+  border-radius: 0;
+  border-bottom: 1px solid $white;
+  padding: 5px 8px;
+}
+.addonAfter {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+//checkbox css//
+
+.checkboxOuter {
+  margin-top: 28px;
+  :where(.css-dev-only-do-not-override-acm2ia).ant-checkbox-wrapper {
+    color: $gray;
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 15px;
+    text-align: left;
+  }
+  :where(.css-dev-only-do-not-override-acm2ia).ant-checkbox-checked
+    .ant-checkbox-inner {
+    border-color: $baseText-00AEEF;
+    background-color: $baseText-00AEEF;
+  }
+}
+
+//Dropdown Css//
+:where(.css-dev-only-do-not-override-acm2ia).ant-dropdown .ant-dropdown-menu {
+  border-radius: 15px;
+}
+.ant-dropdown-menu-title-content {
+  color: $baseColor-Text;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #00000050;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ant-drawer-content {
+  background-color: #08132c !important;
+}
+.ant-drawer-title {
+  span {
+    height: 40px;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 40px;
+    text-align: center;
+    background: linear-gradient(91.26deg, #0071ff 0%, #54f0d1 50%);
+    background-clip: border-box;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+  }
+}
+
+::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+  background: #000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #fafafaf7;
+  -webkit-border-radius: 1ex;
+  -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75);
+}
+
+::-webkit-scrollbar-corner {
+  background: #000;
+}

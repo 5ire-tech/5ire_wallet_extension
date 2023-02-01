@@ -1,0 +1,54 @@
+@import "../../styles/__vars.scss";
+.wallet {
+  &__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    gap: 10px;
+    &__text {
+      font-size: 16px;
+      font-weight: 800;
+      color: $baseColor-Text;
+    }
+    &__filter {
+      cursor: pointer;
+    }
+  }
+  &__tableOuter {
+    max-height: 232px;
+    height: 100%;
+    padding: 17px 24px;
+    border-radius: 16px;
+    background-color: $inputBg;
+    overflow: auto;
+  }
+
+  &__multiSwapBtn {
+    padding: 30px 37px;
+    padding-bottom: 0;
+  }
+  &__sendSwapbtn {
+    display: flex;
+    border-radius: 12px;
+    background: #0e1e41;
+    border: 1px solid #102658;
+    &__buttons {
+      background: #0e1e41;
+      // border-radius: 12px 0 0px 12px;
+      width: 100%;
+      border-radius: 12px;
+      cursor: pointer;
+      color: $white;
+      border: 0;
+      font-size: 15px;
+      padding: 14px;
+      &__active {
+        background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
+        // border: 1px solid rgba(255, 255, 255, 0.5);
+        border: 1px solid #13d3e1;
+        // border-radius: 0px 12px 12px 0px;
+      }
+    }
+  }
+}

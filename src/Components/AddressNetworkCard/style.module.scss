@@ -1,0 +1,41 @@
+@import "../../styles/__vars.scss";
+.adressCard{
+    background-color: #fff;
+    padding: 24px 16px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+
+
+    &__address{
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        
+        p{
+            text-align: left;
+            font-size: 14px;
+            &:first-child{
+                color: $gray;
+            }
+            &:last-child{
+                color: $baseColor-Text;
+                font-weight: bold;
+            }
+        }
+        &:last-child{
+            margin-top: 25px;
+        }
+    }
+    &__Header{
+        border-bottom: 1px solid $gray-D7E0EB-light;
+        padding-bottom: 12px;
+        h2{
+            font-size: 16px;
+            text-align: left;color: $baseColor-Text
+        }
+
+    }
+    
+   
+    
+}

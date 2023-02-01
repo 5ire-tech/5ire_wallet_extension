@@ -1,0 +1,375 @@
+@import "../../styles/__vars.scss";
+.cardWhite {
+  background-color: $blue-08132C;
+  // padding: 36px 24px 26px;
+
+  // Welcome Screen Css Starts here//
+  &__title {
+    color: $baseColor-Text;
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 16px;
+    letter-spacing: 0px;
+    line-height: 36px;
+    @media (max-width: 767px) {
+      font-size: 18px;
+    }
+  }
+  &__numberingSec {
+    padding: 24px;
+    padding-bottom: 10px;
+    text-align: end;
+    background-color: #08132c;
+    p {
+      color: $white;
+      font-size: 16px;
+      line-height: 20px;
+    }
+  }
+  &__beginText {
+    padding: 30px;
+    h1 {
+      background: linear-gradient(91.26deg, #0071ff 0%, #54f0d1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
+      font-weight: 600;
+      font-size: 24px;
+      line-height: 28px;
+      margin: 0;
+    }
+    p {
+      color: $white;
+      font-size: 16px;
+      line-height: 24px;
+      padding-top: 32px;
+    }
+    &__passInputSec {
+      padding-top: 32px;
+    }
+  }
+  &__noteSec {
+    padding: 0 40px;
+    h4 {
+      color: #0071ff;
+      text-align: left;
+      font-size: 14px;
+    }
+    li {
+      color: #8fa2b7;
+      line-height: 20px;
+      font-size: 14px;
+      text-align: left;
+      padding-bottom: 8px;
+    }
+  }
+  &__addressInput {
+    padding: 0 18px;
+    margin-bottom: 16px;
+
+    label {
+      color: $white;
+      opacity: 0.6;
+      font-size: 12px;
+      width: 100%;
+      text-align: left;
+      display: inline-flex;
+      margin-bottom: 8px;
+    }
+    &__copyText {
+      background: $baseColor-Text2;
+      border-radius: 8px;
+      padding: 12px 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      align-items: center;
+      span {
+        color: #6a84a0;
+        font-size: 14px;
+        word-break: break-all;
+        text-align: left;
+      }
+      img {
+        cursor: pointer;
+      }
+    }
+  }
+  &__cardInner {
+    padding: 35px;
+    &__innerLogocontact {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+    }
+
+    &__innercontact {
+      h1 {
+        background: linear-gradient(91.26deg, #0071ff 0%, #54f0d1 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-fill-color: transparent;
+        font-size: 24px;
+        margin: 0;
+        transform: rotate(0.01deg);
+        font-weight: 700;
+      }
+      p {
+        color: $white;
+        font-size: 24px;
+        padding-top: 10px;
+      }
+      span {
+        color: #8fa2b7;
+        font-size: 18px;
+        padding-top: 10px;
+        display: flex;
+      }
+    }
+    &__siteUrl {
+      background: #0e1e41;
+      border-radius: 12px;
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 18px 0;
+      h4{
+        color: $white;
+        font-size: 16px;
+      }
+      a{
+        color: #1098FC;
+        font-size: 18px;
+      }
+    }
+  }
+
+  &__linkOuter {
+    padding-top: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    display: flex;
+  }
+  // Welcome Screen Css ends here //
+
+  // Set Password Css Starts here //
+  .setPassword {
+    &__tabs {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 24px;
+      &__itself {
+        border-radius: 30px;
+        background-color: $inputBg;
+        height: 4px;
+        width: 33.33%;
+        &_active {
+          background-color: $baseText-00AEEF;
+        }
+      }
+    }
+    &__title {
+      color: $baseColor-Text;
+      font-size: 20px;
+      font-weight: 900;
+      margin-bottom: 24px;
+      letter-spacing: 0px;
+      @media (max-width: 767px) {
+        font-size: 16px;
+      }
+    }
+    &__validations {
+      text-align: left;
+      margin-top: 16px;
+      margin-bottom: 16px;
+      p {
+        margin-bottom: 13px;
+
+        display: flex;
+        align-items: center;
+        color: $baseColor-Text;
+        font-size: 12px;
+        font-weight: normal;
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+      img {
+        margin-right: 7px;
+      }
+    }
+    &__footerbuttons {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin: 36px 0 10px;
+    }
+    &__secretPharse {
+      &__grayText {
+        font-size: 16px;
+        color: $gray-80838E-Dark;
+        font-weight: normal;
+        text-align: center;
+        max-width: 341px;
+        margin: 0 auto;
+      }
+      &__fieldSBg {
+        // background-color: $inputBg;
+        // border-radius: 28px;
+        // padding: 20px 16px 16px 20px;
+        margin: 24px 0 36px;
+      }
+      &__fieldSBgInner {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        justify-content: flex-start;
+        margin-bottom: 6px;
+        flex-wrap: wrap;
+        span {
+          font-size: 14px;
+          text-transform: capitalize;
+          font-weight: 500;
+          line-height: 16px;
+          color: $baseColor-Text;
+          width: calc(33% - 40px);
+          background-color: $inputBg;
+          border-radius: 14px;
+          padding: 6px 15px;
+        }
+      }
+      &__copyField {
+        max-width: 119px;
+        height: 36px;
+        border-radius: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent
+          linear-gradient(180deg, #00aeef1a 0%, #367cc71a 100%) 0% 0% no-repeat
+          padding-box;
+        border: 1px solid #00aeef;
+        margin: 0 auto;
+        cursor: pointer;
+        transition: 0.3s all;
+        span {
+          font-size: 12px;
+          font-weight: bold;
+          line-height: 24px;
+          color: $baseText-00AEEF;
+          margin-left: 10px;
+        }
+        &:hover {
+          border: 1px solid $baseText-00AEEF;
+        }
+      }
+      &__confirmFieldSBg {
+        background-color: $inputBg;
+        border-radius: 28px;
+        padding: 20px 16px 16px 20px;
+        margin: 20px 0px;
+      }
+      &__confirmFieldSBgInner {
+        display: flex;
+        align-items: center;
+        gap: 16px 12px;
+        margin-bottom: 6px;
+        flex-wrap: wrap;
+        span {
+          font-size: 16px;
+          font-weight: 500;
+          color: $baseColor-Text;
+          padding: 5px 18px;
+          background-color: $white;
+          display: flex;
+          align-items: center;
+          border-radius: 17px;
+          cursor: pointer;
+          text-transform: capitalize;
+          img {
+            margin-left: 5px;
+          }
+        }
+        &__bordered {
+          justify-content: space-between;
+          cursor: pointer;
+          span {
+            border: 1px dashed #999ca5;
+            border-radius: 17px;
+            color: #999ca5;
+            width: calc(33% - 60px);
+            justify-content: center;
+          }
+        }
+      }
+    }
+  }
+}
+.forgotLink {
+  padding-top: 40px;
+  a {
+    color: #1098fc;
+    font-size: 14px;
+  }
+}
+.congratScreen {
+  background: #08132c;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  border-radius: 8px;
+}
+.currentItem {
+  background-color: $inputBg !important;
+}
+
+.token {
+  // &__symbol_dec{
+  //     display: flex;
+  //     gap: 20px;
+  // }
+  &__pasteText {
+    color: $baseText-00AEEF;
+    font-size: 13px;
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+    transition: 0.3s;
+    padding-left: 10px;
+    border-left: 1px solid #80838e;
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+  &__selectStyle {
+    display: flex;
+    align-items: center;
+    &__img {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-right: 10px;
+      cursor: pointer;
+    }
+  }
+  &__fields {
+    input {
+      background-color: #eef3f9;
+    }
+  }
+}
+
+.textInfoBaseColor {
+  text-align: right;
+  color: $baseText-00AEEF;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 16px;
+}

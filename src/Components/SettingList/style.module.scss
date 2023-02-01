@@ -1,0 +1,28 @@
+@import "../../styles/__vars.scss";
+.listItems{
+  a{
+    text-decoration: none;
+  }
+.settingList {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 0px;
+  border-bottom: 1px solid $border-C4D7F8;
+  &__imgValue {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    p {
+      white-space: nowrap;
+      color: $baseColor-Text;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 0;
+    }
+    img{
+      height: 30px;
+      width: 30px;
+    }
+  }
+}
+}

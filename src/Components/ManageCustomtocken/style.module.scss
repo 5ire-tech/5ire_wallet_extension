@@ -1,0 +1,36 @@
+@import "../../styles/__vars.scss";
+.manageList {
+  border-bottom: 1px solid #202a41;
+  padding: 20px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  &__imgcurrency {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    // margin-top: 20px;
+    
+    p {
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+      text-align: left;
+    }
+    span {
+      font-size: 12px;
+      color: $gray-6E737E;
+    }
+    img {
+      height: 30px;
+      width: 30px;
+    }
+  }
+  button{
+    margin: 0px !important;
+  }
+}
+.checkbox{
+  margin-right: 50px;
+  
+}

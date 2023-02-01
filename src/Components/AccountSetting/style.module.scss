@@ -1,0 +1,18 @@
+.create {
+  &__account {
+    border: none;
+    cursor: pointer;
+    display: flex;
+    gap: 23px;
+    background-color: #0f2046;
+    padding: 18px;
+    align-items: center;
+    border-bottom: 2px solid #08132c;
+    p {
+      font-size: 15px;
+      font-weight: 500;
+      color: #fff;
+      margin-bottom: 0;
+    }
+  }
+}

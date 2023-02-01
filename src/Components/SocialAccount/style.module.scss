@@ -1,0 +1,18 @@
+@import "../../styles/__vars.scss";
+h1{
+font-size: 18px;
+font-weight: 400;
+margin-bottom: 11px;
+color:#fff;
+margin-top: 26px;
+}
+.social{
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-around;
+    background-color: $baseColor-Text2;
+    padding:14px 16px;
+    img{
+     cursor: pointer;
+    }
+}

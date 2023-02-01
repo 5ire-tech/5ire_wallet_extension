@@ -1,0 +1,106 @@
+@import "../../styles/__vars.scss";
+.swap {
+  padding: 20px 37px;
+  &__swapSec {
+    background: #0e1e41;
+    border-radius: 12px;
+    padding: 14px 8px;
+    width: 100%;
+    max-width: 130px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    h3 {
+      color: #6a84a0;
+      font-size: 12px;
+    }
+    p {
+      color: #0071ff;
+      font-size: 14px;
+    }
+    span {
+      color: $white;
+      font-size: 14px;
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      img{
+        cursor: pointer;
+      }
+    }
+  }
+  &__spanbalanceText {
+    color: $white;
+    font-size: 12px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 6px;
+  }
+  &__pasteText {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: $white;
+    font-size: 12px;
+    img {
+      border-left: 1px solid #404058;
+      padding-left: 10px;
+    }
+  }
+  &__swapCopy {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+  &__icon {
+    img {
+      background: #132c64;
+      padding: 9px;
+      border-radius: 25px;
+    }
+  }
+  &__multiSwapBtn {
+    padding: 30px 37px;
+    padding-bottom: 0;
+  }
+  &__activeBalnce{
+    display: flex;
+    gap: 10px;
+  }
+  &__swapAccount{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 10px;
+  }
+  &__transactionFee{
+    color: $white;
+    font-size: 12px;
+    width: 100%;
+    padding-top: 18px;
+  }
+  &__activeBalanceSelect {
+    display: flex;
+    border-radius: 12px;
+    background: #0e1e41;
+    border: 1px solid #102658;
+    &__buttons {
+      background: #0e1e41;
+      // border-radius: 12px 0 0px 12px;
+      width: 100%;
+      border-radius: 12px;
+      cursor: pointer;
+      color: $white;
+      border: 0;
+      font-size: 14px;
+      padding: 14px;
+      &__active {
+        background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
+        // border: 1px solid rgba(255, 255, 255, 0.5);
+        border: 1px solid #13d3e1;
+        // border-radius: 0px 12px 12px 0px;
+      }
+    }
+  }
+}

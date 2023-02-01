@@ -1,0 +1,64 @@
+@import "../../styles/__vars.scss";
+.inputSimple {
+  background-color: $blue-08132C;
+  border-radius: 28px;
+  padding: 14px 16px;
+  border: 0;
+
+  input {
+    background-color: transparent;
+    font-weight: normal;
+    border-radius: 12px;
+    padding: 14px 16px;
+    border: 1px solid #404058;
+    color: $white;
+    font-size: 14px;
+    &::placeholder {
+      color: $white;
+    }
+  }
+}
+
+.inputField {
+  &__coloredBg {
+    background-color: $blue-08132C !important;
+  }
+
+  &__inputSelect {
+    padding: 5px 5px 5px 16px !important;
+  }
+  &__input {
+    background-color: $blue-08132C;
+    border-radius: 12px;
+    padding: 14px 16px;
+    border: 1px solid #404058;
+    color: $white;
+    font-size: 14px;
+
+    .ant-input-wrapper {
+      padding: 0;
+      border: 0;
+    }
+  }
+}
+
+.boxStyle {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-bottom: 15px;
+  &__label {
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 400;
+    margin-bottom: 8px;
+    opacity: 0.6;
+  }
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+.mb0 {
+  margin-bottom: 0;
+}

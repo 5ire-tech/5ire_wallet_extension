@@ -1,0 +1,44 @@
+.transectionHistry {
+  &__dateTime {
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 10.88px;
+    margin: 5px 0px 5px 25px;
+  }
+  &__histry {
+    background-color: #0f2046;
+    display: flex;
+    justify-content: space-between;
+    padding: 11px 10px 16px 25px;
+    &__status {
+      display: flex;
+      gap: 13px;
+
+      p {
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 500;
+        &:last-child {
+          font-size: 12px;
+          font-weight: 300;
+          line-height: 13px;
+        }
+      }
+    }
+    &__success {
+      p {
+        text-align: right;
+        color: #fff;
+        &:last-child {
+          font-size: 12px;
+          font-weight: 300;
+          line-height: 13px;
+        }
+        span {
+          color: #3cc8c8;
+        }
+      }
+    }
+  }
+}

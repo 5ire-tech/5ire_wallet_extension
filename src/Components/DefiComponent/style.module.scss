@@ -1,0 +1,37 @@
+@import "../../styles/__vars.scss";
+
+.defiList {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    align-items: center;
+    h1 {
+      font-size: 18px;
+      color: $baseColor-Text;
+    }
+    a {
+      font-size: 12px;
+      color: $baseText-00AEEF;
+    }
+  }
+  &__stakingList {
+    display: flex;
+    gap: 10px;
+    text-align: left;
+    margin-top: 20px;
+    
+    img {
+      height: 30px;
+      width: 30px;
+      border-radius: 30px;
+    }
+    h2 {
+      font-size: 16px;
+      color: $baseColor-Text;
+    }
+    p {
+      font-size: 12px;
+    }
+  }
+}

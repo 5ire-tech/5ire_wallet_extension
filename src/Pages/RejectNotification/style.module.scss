@@ -1,0 +1,45 @@
+@import "../../styles/__vars.scss";
+
+.rejectedSec {
+  &__detailDataSec {
+    padding: 30px 37px;
+    padding-bottom: 0;
+  }
+  &__listReject {
+    padding: 25px 0;
+    &__innerList {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding-top: 16px;
+      h4{
+        color: $white;
+        font-size: 12px;
+      }
+    }
+  }
+  &__sendSwapbtn {
+    display: flex;
+    border-radius: 12px;
+    background: #0e1e41;
+    border: 1px solid #102658;
+    &__buttons {
+      background: #0e1e41;
+      // border-radius: 12px 0 0px 12px;
+      width: 100%;
+      border-radius: 12px;
+      cursor: pointer;
+      color: $white;
+      border: 0;
+      font-size: 15px;
+      padding: 14px;
+      &__active {
+        background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
+        // border: 1px solid rgba(255, 255, 255, 0.5);
+        border: 1px solid #13d3e1;
+        // border-radius: 0px 12px 12px 0px;
+      }
+    }
+  }
+}
