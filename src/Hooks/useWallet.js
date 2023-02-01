@@ -60,9 +60,9 @@ export default function UseWallet() {
     try {
 
       let network = '';
-      if (currentNetwork?.toLowerCase() === TEST_NETWORK)
+      if (currentNetwork?.toLowerCase() === NETWORK.TEST_NETWORK)
         network = availableNetworks?.testnet;
-      else if (currentNetwork.toLowerCase() === QA_NETWORK)
+      else if (currentNetwork.toLowerCase() === NETWORK.QA_NETWORK)
         network = availableNetworks?.qa;
       console.log("Network : ", network);
       let evm_api = new Web3(network);
