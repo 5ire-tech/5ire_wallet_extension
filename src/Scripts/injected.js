@@ -8,12 +8,15 @@ const injectedStream = new WindowPostMessageStream({
 
 const handlers = {};
 
+let isOpend = false;
+
 injectedStream.write({ method: "keepAlive" });
+const conntectMethods = ["eth_requestAccounts",
+  "eth_accounts",
+  "connect"];
 const restricted = [
   "eth_sendTransaction",
-  "eth_requestAccounts",
-  "eth_accounts",
-  "connect",
+  ...conntectMethods
 ];
 function sendMessage(
   method,
@@ -24,8 +27,14 @@ function sendMessage(
 ) {
   return new Promise(async (resolve, reject) => {
     try {
+
+
       const origin = window?.location?.origin;
-      console.log("HERE MESSSFE AND METHOD", method, message);
+
+
+      if (method === 'eth_sendTransaction') {
+        console.log("HERE MESSSFE AND METHOD", method, message);
+      }
       if (method === "net_version") {
         return resolve({ result: 0x3e5, method });
       }
@@ -51,6 +60,16 @@ function sendMessage(
 
       const id = getId();
 
+      if (method === "eth_requestAccounts" || method === "eth_accounts" || method === 'connect') {
+        if (isOpend) {
+          return resolve([])
+        } else {
+          message = { origin, method };
+          isOpend = true;
+        }
+
+      }
+
       handlers[id] = {
         reject,
         resolve,
@@ -62,9 +81,6 @@ function sendMessage(
         origin,
       };
 
-      if (method === "eth_requestAccounts" || method === "eth_accounts") {
-        message.origin = origin;
-      }
       const transportRequestMessage = {
         id,
         message,
@@ -116,7 +132,7 @@ window.fire = {
     return this.send(payload, cb);
   },
 
-  connect: () => sendMessage("connect", { origin: window.location.origin }),
+  connect: () => sendMessage("connect"),
   request: (params) => sendMessage(params.method, params),
 };
 
@@ -129,10 +145,17 @@ injectedStream.on("data", (data) => {
   if (data.id) {
     console.log("HERE HANDLERS", handlers);
     const handler = handlers[data.id];
+
+    if (conntectMethods.indexOf(handler?.method) > -1) {
+      setTimeout(() => {
+        isOpend = false;
+      }, 2000)
+    }
     if (data.error) {
       handler?.isCb && handler.cb(data.error);
       handler?.reject(data.error);
     } else {
+
       if (handler?.isFull) {
         const res = {
           jsonrpc: "2.0",

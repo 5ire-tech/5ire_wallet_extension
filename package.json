@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@lottiefiles/react-lottie-player": "^3.5.0",
+    "@metamask/safe-event-emitter": "^2.0.0",
     "@polkadot/api": "^9.11.3",
     "@polkadot/keyring": "^10.2.6",
     "@polkadot/util": "^10.2.6",

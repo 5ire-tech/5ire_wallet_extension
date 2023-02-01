@@ -29,6 +29,7 @@ export const userState = {
   currentNetwork: "testnet",
 
   accountName: "",
+  "eth_accounts": '',
 
   isLogin: false,
 

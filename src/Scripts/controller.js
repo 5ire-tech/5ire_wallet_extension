@@ -11,7 +11,6 @@ import authReducer, {
 } from "../Store/reducer/auth";
 import NotificationManager from "./platform";
 
-const notificationManager = new NotificationManager();
 // Initializes the Redux store
 function init(preloadedState) {
   return new Promise((resolve, reject) => {
@@ -50,7 +49,7 @@ export function loadStore(sendStoreMessage = true) {
       Browser.storage.local.get("state").then(async (storage) => {
         // 1. Initializes the redux store and the message passing.
         const store = await init(storage.state || { auth: userState });
-        store.dispatch(toggleLoader(false));
+        // store.dispatch(toggleLoader(false));
 
         // 2. Sends a message to notify that the store is ready.
         sendStoreMessage &&
@@ -86,73 +85,75 @@ export async function initScript() {
   }
 }
 
-export async function createFireWindow(route = "") {
-  notificationManager.showPopup(route);
-  // const extensionURL = Browser.runtime.getURL("index.html");
+export class Controller {
+  constructor(store) {
+    this.store = store;
+    this.notificationManager = new NotificationManager(store);
 
-  // if (_popupId) {
-  //   await Browser.windows.update(_popupId, { focused: true });
-  // }
-  // const wind = await Browser.windows.create({
-  //   url: extensionURL + `?route=${route}`,
-  //   type: "popup",
-  //   focused: true,
-  //   width: 400,
-  //   height: 620,
-  //   top: 0,
-  //   left: 200,
-  // });
-  // _popupId = wind.id;
-}
+  }
+  showNotification(
+    message = "",
+    title = "Fire Notification",
+    type = "basic"
+  ) {
+    Browser.notifications.create("", {
+      iconUrl: Browser.runtime.getURL("logo192.png"),
+      message,
+      title,
+      type,
+    });
+  }
 
-export function showNotification(
-  message = "",
-  title = "Fire Notification",
-  type = "basic"
-) {
-  Browser.notifications.create("", {
-    iconUrl: Browser.runtime.getURL("logo192.png"),
-    message,
-    title,
-    type,
-  });
-}
 
-export function handleConnect(store, data) {
-  const state = store.getState();
+  async handleConnect(data) {
+    const state = this.store.getState();
 
-  const isEthReq =
-    data?.message?.method === "eth_requestAccounts" ||
-    data?.message?.method === "eth_accounts";
-  const isExist = state.auth.connectedSites.find(
-    (st) => st.origin === data.message?.origin
-  );
-
-  if (isExist?.isConnected) {
-    const res = isEthReq
-      ? [state.auth.currentAccount.evmAddress]
-      : {
+    const isEthReq =
+      data?.message?.method === "eth_requestAccounts" ||
+      data?.message?.method === "eth_accounts";
+    const isExist = state.auth.connectedSites.find(
+      (st) => st.origin === data.message?.origin
+    );
+    // console.log("HERE ALLL", state.auth.uiData.message?.origin, data.message?.origin)
+    // if (state.auth.uiData.message?.origin === data.message?.origin) {
+    //   return;
+    // }
+    if (isExist?.isConnected) {
+      const res = isEthReq
+        ? [state.auth.currentAccount.evmAddress]
+        : {
           evmAddress: state.auth.currentAccount.evmAddress,
           nativeAddress: state.auth.currentAccount.nativeAddress,
         };
-    Browser.tabs.sendMessage(data.tabId, {
-      id: data.id,
-      response: res,
-      error: null,
-    });
-  } else {
-    store.dispatch(setUIdata(data));
-    createFireWindow("loginApprove");
-    // showNotification("Your request for connect is approved");
+      Browser.tabs.sendMessage(data.tabId, {
+        id: data.id,
+        response: res,
+        error: null,
+      });
+    } else {
+
+      this.store.dispatch(setUIdata(data));
+      await this.notificationManager.showPopup("loginApprove");
+
+    }
   }
+
+  async handleEthTransaction(data) {
+    this.store.dispatch(
+      setUIdata({
+        ...data,
+        message: data?.message?.params[0],
+      })
+    );
+    await this.notificationManager.showPopup("approveTx");
+  }
+
 }
 
-export function handleEthTransaction(store, data) {
-  store.dispatch(
-    setUIdata({
-      ...data,
-      message: data?.message?.params[0],
-    })
-  );
-  createFireWindow("approveTx");
-}
+
+
+
+
+
+
+
