@@ -121,13 +121,14 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                 <div className={style.balanceDetails__selectStyle}>
                   <Select
                     onChange={handleNetworkChange}
+                    disabled={ path === "approveTx"}
                     suffixIcon={<img src={DownArrowSuffix} />}
                     defaultValue={[
                       {
                         value: currentNetwork,
                         label: (
                           <span className="flexedItemSelect">
-                            {currentNetwork || "Testnet"}
+                            {"Testnet"}
                           </span>
                         ),
                       },
