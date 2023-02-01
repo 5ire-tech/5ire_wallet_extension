@@ -1,10 +1,7 @@
-export
-    const formatDate = (_date) => {
+export const formatDate = (_date) => {
         try {
 
             let currentDate = new Date(_date);
-            console.log("CurrentDate : ", currentDate);
-
             let date =
                 currentDate.getDate() +
                 "/" +
@@ -12,7 +9,6 @@ export
                 "/" +
                 currentDate.getFullYear() +
                 " | ";
-            console.log("date : ", date);
 
             let time =
                 currentDate.getHours() +
@@ -34,11 +30,10 @@ export
         }
     };
 
-// formatDate("2023-02-01T09:21:50.320Z");
 
 
-export
-    const format = (num, numOfDecimals = 4) => {
+
+export const format = (num, numOfDecimals = 4) => {
         if (num === '') return '';
         const reDot = /[.]/;
         let index = num.search(reDot);
@@ -51,8 +46,7 @@ export
     };
 
 
-export
-    const shortner = (str) => {
+export const shortner = (str) => {
         const start = str.slice(0, 5);
 
         const len = str.length;
