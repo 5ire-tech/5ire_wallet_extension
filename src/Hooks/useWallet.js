@@ -382,6 +382,7 @@ export default function UseWallet() {
         };
         dispatch(toggleLoader(false));
         dispatch(setTxHistory(dataToDispatch));
+        dispatch(toggleLoader(false));
 
         return {
           error: false,
