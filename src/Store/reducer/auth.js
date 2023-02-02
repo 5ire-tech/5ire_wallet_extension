@@ -26,7 +26,7 @@ export const userState = {
     nativeBalance: 0,
   },
 
-  currentNetwork: "testnet",
+  currentNetwork: "Testnet",
 
   accountName: "",
   "eth_accounts": '',

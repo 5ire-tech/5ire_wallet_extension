@@ -10,8 +10,8 @@ export const TX_TYPE = {
     SWAP: "swap"
 }
 export const NETWORK = {
-    QA_NETWORK: "qa",
-    TEST_NETWORK: "testnet"
+    QA_NETWORK: "QA",
+    TEST_NETWORK: "Testnet"
 }
 export const STATUS = {
     PENDING:"Pending",

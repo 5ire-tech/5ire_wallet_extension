@@ -15,6 +15,7 @@ import {
   InputField,
   InputFieldOnly,
 } from "../../Components/InputField/InputFieldSimple";
+import { useDispatch, useSelector } from "react-redux"
 
 function Send() {
   const {
@@ -25,20 +26,23 @@ function Send() {
     retriveEvmFee,
     retriveNativeFee,
   } = useWallet();
+  // const dispatch = useDispatch();
+  const { balance } = useSelector(state => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("native");
   const [txHash, setTxHash] = useState("");
   const [data, setData] = useState({ to: "", amount: "", memo: "" });
   const [err, setErr] = useState({ to: "", amount: "" });
-  const [gassFee, setGassFee] = useState("");
+  const [gassFee, setGassFee] = useState(0);
 
   useEffect(() => {
-    if (data.to && data.amount) {
+    if (data.to && Number(data.amount) > 0) {
       getFee();
-    } else {
-      setGassFee("0");
-    }
+    } 
+    // else {
+    //   setGassFee("0");
+    // }
   }, [data, activeTab]);
 
   const getFee = async () => {
@@ -70,12 +74,16 @@ function Send() {
 
   const handleApprove = async () => {
     try {
-      if (!data.amount || isNaN(data.amount))
+      if (!data.amount || isNaN(data.amount) || data.amount <= 0)
         setErr((p) => ({ ...p, amount: "Please enter amount correctly!" }));
 
       if (activeTab.toLowerCase() === EVM.toLowerCase()) {
+
         if (!data.to || !data.to.startsWith("0x"))
           setErr((p) => ({ ...p, to: "Please enter to address correctly!" }));
+        else if (data.amount >= balance.evmBalance) {
+          toast.error("Insufficient Balance!");
+        }
         else {
           const res = await evmTransfer(data);
 
@@ -95,6 +103,9 @@ function Send() {
       if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
         if (!data.to || !data.to.startsWith("5"))
           setErr((p) => ({ ...p, to: "Please enter to address correctly!" }));
+        else if (data.amount >= balance.nativeBalance) {
+          toast.error("Insufficient Balance!");
+        }
         else {
           const res = await nativeTransfer(data);
 
@@ -112,10 +123,7 @@ function Send() {
       }
     } catch (error) {
       console.error("Error : ", error);
-      setErr((p) => ({
-        ...p,
-        err: "Error occured!",
-      }));
+      toast.error("Error occured!");
     }
   };
 
@@ -130,7 +138,6 @@ function Send() {
   };
 
   const handleCopy = () => {
-    console.log("TX Hash : ", txHash);
     navigator.clipboard.writeText(txHash);
     toast.success("Copied!");
   };
@@ -158,10 +165,9 @@ function Send() {
               name="native"
               onClick={activeSend}
               className={`${style.sendSec__sendSwapbtn__buttons} 
-              ${
-                activeTab === "native" &&
+              ${activeTab === "native" &&
                 style.sendSec__sendSwapbtn__buttons__active
-              }
+                }
             `}
             >
               Native
@@ -169,10 +175,9 @@ function Send() {
             <button
               onClick={activeSend}
               name="evm"
-              className={`${style.sendSec__sendSwapbtn__buttons}  ${
-                activeTab === "evm" &&
+              className={`${style.sendSec__sendSwapbtn__buttons}  ${activeTab === "evm" &&
                 style.sendSec__sendSwapbtn__buttons__active
-              }`}
+                }`}
             >
               EVM
             </button>
@@ -240,7 +245,7 @@ function Send() {
             />
 
             <div className="footerbuttons">
-              <ButtonComp text={"Swap Again"} />
+              <ButtonComp text={"Send Again"} onClick={handleSwapAgain} />
             </div>
           </div>
         </div>

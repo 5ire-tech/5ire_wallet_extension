@@ -130,7 +130,6 @@ function MenuFooter() {
         {currentAccount?.txHistory ? (
           currentAccount?.txHistory?.map((data) => (
             <TransectionHistry
-              // dateTime={Moment(data.dateTime).format("dddd, MMMM Do YYYY, h:mm:ss a")}
               dateTime={formatDate(data.dateTime)}
               type={data?.type}
               to={

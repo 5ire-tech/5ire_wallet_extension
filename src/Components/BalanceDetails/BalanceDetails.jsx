@@ -19,7 +19,8 @@ import { NATIVE, EVM } from "../../Constants/index";
 import { toast } from "react-toastify";
 import { shortner } from "../../Helper/helper";
 import { getCurrentTabUrl } from "../../Scripts/utils";
-import { format } from "../../Helper/helper";
+import { formatNum } from "../../Helper/helper";
+import {NETWORK} from "../../Constants/index";
 // import ButtonComp from "../ButtonComp/ButtonComp";
 // import ScannerImg from "../../Assets/qrimg.svg";
 
@@ -61,9 +62,12 @@ function BalanceDetails({ className, textLeft, mt0 }) {
   }, [currentAccount]);
 
   useEffect(() => {
-    setEvmBalance(format((balance?.evmBalance).toString()));
-    setNativeBalance(format((balance?.nativeBalance).toString()));
+    setEvmBalance(formatNum(balance?.evmBalance));
+    setNativeBalance(formatNum(balance?.nativeBalance));
   }, [balance?.evmBalance, balance?.nativeBalance]);
+
+  console.log("Evm : ",evm_balance,"Native : " ,native_balance);
+  console.log("Total Balance : ",Number(evm_balance)+Number(native_balance));
 
   const path = getLocation.pathname.replace("/", "");
   const showModal = () => {
@@ -137,11 +141,11 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                     }}
                     options={[
                       {
-                        value: "testnet",
+                        value: NETWORK.TEST_NETWORK,
                         label: <span className="flexedItemSelect">Testnet</span>,
                       },
                       {
-                        value: "qa",
+                        value: NETWORK.QA_NETWORK,
                         label: <span className="flexedItemSelect">QA</span>,
                       },
                     ]}
@@ -165,7 +169,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
               <div className={style.balanceDetails__innerBalance}>
                 <div className={style.balanceDetails__innerBalance__totalBalnce}>
                   <p>
-                    Total Balance : <span>{Number(native_balance) + Number(evm_balance)} </span>
+                    Total Balance : <span>{formatNum(Number(native_balance) + Number(evm_balance))} </span>
                   </p>
                 </div>
                 <div className={style.balanceDetails__innerBalance__chainBalance}>

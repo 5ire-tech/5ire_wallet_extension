@@ -34,7 +34,7 @@ function Swap() {
   const [gassFee, setGassFee] = useState("");
   const [error, setError] = useState("");
   const [address, setAddress] = useState({ fromAddress: "", toAddress: "" });
-  const { currentAccount } = useSelector((state) => state.auth);
+  const { currentAccount, balance } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (toFrom.from.toLowerCase() === NATIVE.toLowerCase())
@@ -114,43 +114,57 @@ function Swap() {
   };
 
   const handleApprove = async () => {
-    if (!amount) setError("Enter Amount!");
-    if (isNaN(amount)) setError("Please Enter Amount Correctly!");
+    try {
 
-    if (
-      toFrom.from.toLowerCase() === EVM.toLowerCase() &&
-      toFrom.to.toLowerCase() === NATIVE.toLowerCase() &&
-      amount
-    ) {
-      let res = await evmToNativeSwap(amount);
-      if (res.error) {
-        setIsFaildOpen(true);
-      } else {
-        setIsModalOpen(true);
-        setTxHash(res.data);
-        setTimeout(() => {
-          getEvmBalance();
-          getNativeBalance();
-        }, 70000);
-      }
-    }
+      if (!amount) setError("Enter Amount!");
+      else if (isNaN(amount) || amount <= 0) setError("Please Enter Amount Correctly!");
 
-    if (
-      toFrom.from.toLowerCase() === NATIVE.toLowerCase() &&
-      toFrom.to.toLowerCase() === EVM.toLowerCase() &&
-      amount
-    ) {
-      let res = await nativeToEvmSwap(amount);
-      if (res.error) {
-        setIsFaildOpen(true);
-      } else {
-        setIsModalOpen(true);
-        setTxHash(res.data);
-        setTimeout(() => {
-          getEvmBalance();
-          getNativeBalance();
-        }, 40000);
+      else if (
+        toFrom.from.toLowerCase() === EVM.toLowerCase() &&
+        toFrom.to.toLowerCase() === NATIVE.toLowerCase() &&
+        amount
+      ) {
+        if (Number(amount) >= Number(balance.evmBalance)) {
+          toast.error("Insufficent Balance!")
+        } else {
+          let res = await evmToNativeSwap(amount);
+          if (res.error) {
+            setIsFaildOpen(true);
+          } else {
+            setIsModalOpen(true);
+            setTxHash(res.data);
+            setTimeout(() => {
+              getEvmBalance();
+              getNativeBalance();
+            }, 50000);
+          }
+        }
       }
+
+      else if (
+        toFrom.from.toLowerCase() === NATIVE.toLowerCase() &&
+        toFrom.to.toLowerCase() === EVM.toLowerCase() &&
+        amount
+      ) {
+        if (Number(amount) >= Number(balance.nativeBalance)) {
+          toast.error("Insufficent Balance!")
+        } else {
+          let res = await nativeToEvmSwap(amount);
+          if (res.error) {
+            setIsFaildOpen(true);
+          } else {
+            setIsModalOpen(true);
+            setTxHash(res.data);
+            setTimeout(() => {
+              getEvmBalance();
+              getNativeBalance();
+            }, 50000);
+          }
+        }
+      }
+    } catch (error) {
+      console.log("Error : ", error);
+      toast.error("Error occured!")
     }
   };
 

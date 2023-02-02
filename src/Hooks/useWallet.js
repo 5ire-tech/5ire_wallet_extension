@@ -12,7 +12,7 @@ import { ApiPromise } from "@polkadot/api";
 import { HttpProvider, WsProvider } from "@polkadot/rpc-provider";
 import { ethers } from "ethers";
 import { useSelector, useDispatch } from "react-redux";
-import { NETWORK, TX_TYPE, STATUS } from "../Constants/index";
+import { NETWORK, TX_TYPE, STATUS, NATIVE, EVM } from "../Constants/index";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import { Keyring } from "@polkadot/keyring";
 import {
@@ -26,6 +26,7 @@ import {
 import { setAccountName } from "../Store/reducer/auth";
 import Web3 from "web3";
 import { decryptor, encryptor } from "../Helper/CryptoHelper";
+
 
 export default function UseWallet() {
   const dispatch = useDispatch();
@@ -60,9 +61,9 @@ export default function UseWallet() {
     try {
 
       let network = '';
-      if (currentNetwork?.toLowerCase() === NETWORK.TEST_NETWORK)
+      if (currentNetwork?.toLowerCase() === (NETWORK.TEST_NETWORK).toLowerCase())
         network = availableNetworks?.testnet;
-      else if (currentNetwork.toLowerCase() === NETWORK.QA_NETWORK)
+      else if (currentNetwork.toLowerCase() === (NETWORK.QA_NETWORK).toLowerCase())
         network = availableNetworks?.qa;
       console.log("Network : ", network);
       let evm_api = new Web3(network);
@@ -145,7 +146,7 @@ export default function UseWallet() {
         data: "success!",
       };
     } catch (error) {
-      console.log("error", error);
+      console.log("error occured while creating new account ", error);
       dispatch(toggleLoader(false));
 
       return {
@@ -161,7 +162,7 @@ export default function UseWallet() {
         currentAccount?.evmAddress
       );
       let payload = {
-        of: "evm",
+        of: EVM,
         balance: (Number(w3balance) / Math.pow(10, 18)),
       };
       console.log(
@@ -170,43 +171,44 @@ export default function UseWallet() {
       );
       dispatch(setBalance(payload));
     } catch (error) {
-      console.log("error : ", error);
+      console.log("Error while geting balance of evm : ", error);
     }
   };
 
   const getNativeBalance = async () => {
-    const nbalance = await nativeApi?.derive.balances.all(
-      currentAccount?.nativeAddress
-    );
-    let payload = {
-      of: "native",
-      balance: (Number(nbalance.availableBalance) / Math.pow(10, 18)),
-    };
-    console.log(
-      "nativeBalance : ",
-      payload.balance
-    );
+    try {
+      const nbalance = await nativeApi?.derive.balances.all(
+        currentAccount?.nativeAddress
+      );
+      let payload = {
+        of: NATIVE,
+        balance: (Number(nbalance.availableBalance) / Math.pow(10, 18)),
+      };
+      console.log(
+        "nativeBalance : ",
+        payload.balance
+      );
 
-    dispatch(setBalance(payload));
+      dispatch(setBalance(payload));
+    } catch (error) {
+      console.log("Error while getting balance of native : ", error);
+    }
   };
-
 
   const evmTransfer = async (data, isBig = false) => {
     try {
 
-      if (
-        balance.nativeBalance === 0 ||
-        balance.nativeBalance === "" ||
-        !data.amount
-      )
-        return {
-          error: true,
-          data: "Insufficent balance",
-        };
+      // if (
+      //   balance.nativeBalance === 0 ||
+      //   balance.nativeBalance === "" ||
+      //   !data.amount
+      // )
+      //   return {
+      //     error: true,
+      //     data: "Insufficent balance",
+      //   };
 
       dispatch(toggleLoader(true));
-
-
       const transactions = {
         from: currentAccount?.evmAddress,
 
@@ -227,8 +229,6 @@ export default function UseWallet() {
       if (data.to) {
         transactions.to = Web3.utils.toChecksumAddress(data.to);
         gasTx.to = transactions.to;
-
-
       }
       if (transactions.data) {
         gasTx.data = transactions.data;
@@ -255,14 +255,13 @@ export default function UseWallet() {
             type: TX_TYPE?.SEND,
             amount: data.amount,
             txHash: hash,
-            status: STATUS.PENDING,
+            status: STATUS.SUCCESS,
           },
           index: index,
         };
-        dispatch(setTxHistory(dataToDispatch));
-
-        dispatch(setTxHistory(dataToDispatch));
         console.log("Here getting EVM TRANSFER", hash)
+        dispatch(setTxHistory(dataToDispatch));
+        dispatch(setTxHistory(dataToDispatch));
         dispatch(toggleLoader(false));
 
         return {
@@ -272,7 +271,7 @@ export default function UseWallet() {
       }
       else throw new Error("Error occured! ");
     } catch (error) {
-      console.log("Error EVM Transfer: ", error);
+      console.log("Error occured while evm transfer: ", error);
       dispatch(toggleLoader(false));
 
       return {
@@ -284,14 +283,12 @@ export default function UseWallet() {
 
   const nativeTransfer = async (data) => {
     try {
-      if (
-        balance.nativeBalance === 0 ||
-        balance.nativeBalance === "" ||
-        !data.amount
-      )
-        throw new Error(
-          "Insufficent Balance or amount doesn't specified correctly!"
-        );
+      // if (
+      //   balance.nativeBalance === 0 ||
+      //   balance.nativeBalance === "" ||
+      //   !data.amount
+      // )
+      //   throw new Error({ msg: "Insufficent Balance or amount doesn't specified correctly!" });
       dispatch(toggleLoader(true));
 
       const seedAlice = mnemonicToMiniSecret(
@@ -315,7 +312,7 @@ export default function UseWallet() {
             to: data.to,
             type: TX_TYPE?.SEND,
             amount: data.amount,
-            status: STATUS.PENDING,
+            status: STATUS.SUCCESS,
             txHash: hash,
           },
           index: index,
@@ -327,13 +324,11 @@ export default function UseWallet() {
           error: false,
           data: hash,
         };
-      }
+      } else throw new Error({ msg: "Error occured! " });
 
-      else throw new Error("Error occured! ");
     } catch (error) {
-      console.log("Error : ", error);
+      console.log("Error while native transfer : ", error);
       dispatch(toggleLoader(false));
-
       return {
         error: true,
         data: "Error occured while sending!",
@@ -343,14 +338,14 @@ export default function UseWallet() {
 
   const nativeToEvmSwap = async (amount) => {
     try {
-      if (
-        balance.nativeBalance === 0 ||
-        balance.nativeBalance === "" ||
-        !amount
-      )
-        throw new Error(
-          "Insufficent Balance or amount doesn't specified correctly!"
-        );
+      // if (
+      //   balance.nativeBalance === 0 ||
+      //   balance.nativeBalance === "" ||
+      //   !amount
+      // )
+      //   throw new Error(
+      //     "Insufficent Balance or amount doesn't specified correctly!"
+      //   );
       dispatch(toggleLoader(true));
 
       const _amount = Number(
@@ -370,7 +365,6 @@ export default function UseWallet() {
       const transferRes = await deposit.signAndSend(alice);
       console.log(transferRes.toHex());
       const tx = transferRes.toHex();
-      dispatch(toggleLoader(true));
 
       if (tx) {
 
@@ -381,11 +375,12 @@ export default function UseWallet() {
             to: "Native to Evm",
             type: TX_TYPE?.SWAP,
             amount: amount,
-            status: STATUS.PENDING,
+            status: STATUS.SUCCESS,
             hash: tx
           },
           index: index,
         };
+        dispatch(toggleLoader(false));
         dispatch(setTxHistory(dataToDispatch));
 
         return {
@@ -395,7 +390,7 @@ export default function UseWallet() {
       }
       else throw new Error("Error occured! ");
     } catch (error) {
-      console.log("Error : ", error);
+      console.log("Error occured while swapping native to evm! : ", error);
       dispatch(toggleLoader(false));
 
       return {
@@ -407,10 +402,10 @@ export default function UseWallet() {
 
   const evmToNativeSwap = async (amount) => {
     try {
-      if (balance.evmBalance === 0 || balance.evmBalance === "" || !amount)
-        throw new Error(
-          "Insufficent Balance or amount doesn't specified correctly!"
-        );
+      // if (balance.evmBalance === 0 || balance.evmBalance === "" || !amount)
+      //   throw new Error(
+      //     "Insufficent Balance or amount doesn't specified correctly!"
+      //   );
       dispatch(toggleLoader(true));
 
       const seedAlice = mnemonicToMiniSecret(
@@ -465,7 +460,7 @@ export default function UseWallet() {
             to: "Evm to Native",
             type: TX_TYPE?.SWAP,
             amount: amount,
-            status: STATUS.PENDING,
+            status: STATUS.SUCCESS,
             txHash: txHash
           },
           index: index,
@@ -482,7 +477,7 @@ export default function UseWallet() {
       else throw new Error("Error occured! ");
 
     } catch (error) {
-      console.log("Error EVM TO NATIVE SWAP : ", error);
+      console.log("Error occured while swapping evm to native : ", error);
       dispatch(toggleLoader(false));
 
       return {

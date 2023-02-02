@@ -33,7 +33,8 @@ export const formatDate = (_date) => {
 
 
 
-export const format = (num, numOfDecimals = 4) => {
+export const formatNum = (num, numOfDecimals = 4) => {
+        num = num.toString();
         if (num === '') return '';
         const reDot = /[.]/;
         let index = num.search(reDot);
