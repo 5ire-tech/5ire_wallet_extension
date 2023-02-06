@@ -82,9 +82,9 @@ function MenuFooter() {
   const onSelectAcc = (e) => {
     let accId = e.target.value;
     let acc = accounts[accId];
-    console.log(acc);
     dispatch(setCurrentAcc(acc));
   };
+
 
   const edited = false;
 
@@ -127,7 +127,7 @@ function MenuFooter() {
         open={open1}
         closeIcon={<img src={ModalCloseIcon} />}
       >
-        {currentAccount?.txHistory ? (
+        {currentAccount?.txHistory.length > 0 ? (
           currentAccount?.txHistory?.map((data) => (
             <TransectionHistry
               dateTime={formatDate(data.dateTime)}
@@ -143,7 +143,7 @@ function MenuFooter() {
             />
           ))
         ) : (
-          <p>No Transaction Found!</p>
+          <h4 className={style.noTxn}>No Transaction Found!</h4>
         )}
       </Drawer>
 

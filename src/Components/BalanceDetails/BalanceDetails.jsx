@@ -12,7 +12,7 @@ import ModelLogo from "../../Assets/modalLogo.svg";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import { Select } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentNetwork } from "../../Store/reducer/auth";
+import { resetBalance, setCurrentNetwork, toggleLoader } from "../../Store/reducer/auth";
 import useWallet from "../../Hooks/useWallet";
 import QRCode from "react-qr-code";
 import { NATIVE, EVM } from "../../Constants/index";
@@ -20,7 +20,7 @@ import { toast } from "react-toastify";
 import { shortner } from "../../Helper/helper";
 import { getCurrentTabUrl } from "../../Scripts/utils";
 import { formatNum } from "../../Helper/helper";
-import {NETWORK} from "../../Constants/index";
+import { NETWORK } from "../../Constants/index";
 // import ButtonComp from "../ButtonComp/ButtonComp";
 // import ScannerImg from "../../Assets/qrimg.svg";
 
@@ -31,8 +31,9 @@ function BalanceDetails({ className, textLeft, mt0 }) {
     evmAddress: "",
     nativeAddress: "",
   });
-  const [evm_balance, setEvmBalance] = useState(0);
-  const [native_balance, setNativeBalance] = useState(0);
+  const [evm_balance, setEvmBalance] = useState("");
+  const [native_balance, setNativeBalance] = useState("");
+  const [total_balance, setTotalBalance] = useState("");
   const [isConnected, setIsConnected] = useState(false);
   // const [accountName, setAccName] = useState("");
   const { getEvmBalance, getNativeBalance, isApiReady } = useWallet();
@@ -40,6 +41,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
   const { currentAccount, currentNetwork, balance, connectedSites } =
     useSelector((state) => state.auth);
   const getLocation = useLocation();
+
 
   useEffect(() => {
     getCurrentTabUrl((cv) => {
@@ -62,12 +64,16 @@ function BalanceDetails({ className, textLeft, mt0 }) {
   }, [currentAccount]);
 
   useEffect(() => {
-    setEvmBalance(formatNum(balance?.evmBalance));
-    setNativeBalance(formatNum(balance?.nativeBalance));
+    if (balance?.evmBalance === "") {
+      dispatch(toggleLoader(true));
+    } else {
+      setEvmBalance(formatNum(balance?.evmBalance));
+      setNativeBalance(formatNum(balance?.nativeBalance));
+      setTotalBalance(formatNum(balance?.evmBalance) + formatNum(balance?.nativeBalance));
+      dispatch(toggleLoader(false));
+    }
   }, [balance?.evmBalance, balance?.nativeBalance]);
 
-  console.log("Evm : ",evm_balance,"Native : " ,native_balance);
-  console.log("Total Balance : ",Number(evm_balance)+Number(native_balance));
 
   const path = getLocation.pathname.replace("/", "");
   const showModal = () => {
@@ -90,6 +96,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
   };
 
   const handleNetworkChange = (network) => {
+    dispatch(resetBalance());
     dispatch(setCurrentNetwork(network));
   };
 
@@ -116,7 +123,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                   <div className={style.balanceDetails__accountName}>
                     <p>
                       <img src={isConnected ? GreenCircle : GrayCircle} />
-                      {currentAccount.accountName}
+                      {currentAccount?.accountName}
                     </p>
                     <span>{addresses.evmAddress}</span>
                     {/* <span>{currentAccount.evmAddress}</span> */}
@@ -169,7 +176,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
               <div className={style.balanceDetails__innerBalance}>
                 <div className={style.balanceDetails__innerBalance__totalBalnce}>
                   <p>
-                    Total Balance : <span>{formatNum(Number(native_balance) + Number(evm_balance))} </span>
+                    Total Balance : <span>{total_balance}</span>
                   </p>
                 </div>
                 <div className={style.balanceDetails__innerBalance__chainBalance}>

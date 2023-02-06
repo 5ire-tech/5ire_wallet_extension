@@ -50,11 +50,12 @@ function Swap() {
   }, [currentAccount?.evmAddress, currentAccount?.nativeAddress, toFrom]);
 
   useEffect(() => {
-    if (amount) {
+    if (!(isNaN(amount))) {
       getFee();
-    } else {
-      setGassFee("0");
     }
+    //  else {
+    //   setGassFee("0");
+    // }
   }, [amount, toFrom]);
 
   const getFee = async () => {
@@ -111,13 +112,14 @@ function Swap() {
   const handleSwapAgain = () => {
     setIsFaildOpen(false);
     setIsModalOpen(false);
+    setAmount("");
   };
 
   const handleApprove = async () => {
     try {
 
       if (!amount) setError("Enter Amount!");
-      else if (isNaN(amount) || amount <= 0) setError("Please Enter Amount Correctly!");
+      else if (isNaN(amount) || Number(amount) <= 0) setError("Please Enter Amount Correctly!");
 
       else if (
         toFrom.from.toLowerCase() === EVM.toLowerCase() &&
@@ -150,6 +152,7 @@ function Swap() {
           toast.error("Insufficent Balance!")
         } else {
           let res = await nativeToEvmSwap(amount);
+          console.log("Res : ",res);
           if (res.error) {
             setIsFaildOpen(true);
           } else {
@@ -163,7 +166,7 @@ function Swap() {
         }
       }
     } catch (error) {
-      console.log("Error : ", error);
+      console.log("Error while swapping : ", error);
       toast.error("Error occured!")
     }
   };

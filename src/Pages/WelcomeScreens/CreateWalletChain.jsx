@@ -24,7 +24,7 @@ function CreateWalletChain() {
       res = walletSignUp();
     if (isLogin) res = walletSignUp();
 
-    console.log("res: ", res);
+    // console.log("res: ", res);
 
     if (res?.error) toast.error(res.data);
   }, []);

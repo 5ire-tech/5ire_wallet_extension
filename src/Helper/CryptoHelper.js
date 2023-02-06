@@ -46,6 +46,6 @@ export function decryptor(text, key) {
     decrypted = Buffer.concat([decrypted, decipher.final()]);
     return decrypted.toString();
   } catch (error) {
-    console.error(error);
+    console.error("error : ",error);
   }
 }
