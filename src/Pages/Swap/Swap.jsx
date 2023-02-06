@@ -136,7 +136,7 @@ function Swap() {
             setTimeout(() => {
               getEvmBalance();
               getNativeBalance();
-            }, 50000);
+            }, 60000);
           }
         }
       }
@@ -158,7 +158,7 @@ function Swap() {
             setTimeout(() => {
               getEvmBalance();
               getNativeBalance();
-            }, 50000);
+            }, 60000);
           }
         }
       }

@@ -3,12 +3,16 @@ import {
   Controller,
   initScript,
   loadStore,
+  checkTransactions
 } from "./controller";
 import Browser from "webextension-polyfill";
 
 try {
+
+  //background globals
   let isInitialized = false,
-    store;
+    store,
+    intervalId = null;
 
   Browser.runtime.onConnect.addListener(async (port) => {
     if (port.name === CONNECTION_NAME) {
@@ -74,9 +78,18 @@ try {
   Browser.runtime.onSuspend.addListener(() => {
     console.log("[background.js] onSuspend");
     isInitialized = false;
+    //clear the transactions checker interval
+    if(intervalId) clearInterval(intervalId);
   });
 
+
+  //init the scripts (inject the script into current webpage)
   initScript();
+
+  //check the transaction status and update status
+  (async () => {
+    intervalId = await checkTransactions();
+  })();
 
 } catch (err) {
   console.log("BACKGROUND FILE TRY CATCH:", err)

@@ -11,6 +11,7 @@ import authReducer, {
 } from "../Store/reducer/auth";
 import NotificationManager from "./platform";
 
+
 // Initializes the Redux store
 function init(preloadedState) {
   return new Promise((resolve, reject) => {
@@ -40,8 +41,6 @@ function init(preloadedState) {
       .catch(reject);
   });
 }
-
-// let ports = {};
 
 export function loadStore(sendStoreMessage = true) {
   return new Promise(async (resolve) => {
@@ -150,6 +149,20 @@ export class Controller {
 
 }
 
+export async function checkTransactions() {
+    const id = setInterval(() => {
+      Browser.storage.local.get("state")
+      .then((value) => {
+        console.log("value here: ", value);
+      })
+      .catch((err) => {
+        console.log("Error while checking transaction status: ", err.message);
+      })
+      console.log("Checking the pending transactions");
+    }, 2000)
+
+    return id;
+}
 
 
 

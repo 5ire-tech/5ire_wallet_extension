@@ -95,7 +95,7 @@ function Send() {
             setTimeout(() => {
               getNativeBalance();
               getEvmBalance();
-            }, 50000);
+            }, 60000);
           }
         }
       }
@@ -117,7 +117,7 @@ function Send() {
             setTimeout(() => {
               getNativeBalance();
               getEvmBalance();
-            }, 50000);
+            }, 60000);
           }
         }
       }

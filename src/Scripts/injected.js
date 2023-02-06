@@ -25,19 +25,18 @@ function sendMessage(
   cb = null,
   isFull = false
 ) {
+
   return new Promise(async (resolve, reject) => {
     try {
 
 
       const origin = window?.location?.origin;
-
-
-      if (method === 'eth_sendTransaction') {
-        console.log("HERE MESSSFE AND METHOD", method, message);
-      }
+      
       if (method === "net_version") {
-        return resolve({ result: 0x3e5, method });
+        console.log("request is here to resolve");
+        return resolve({ result: 997, method });
       }
+
       if (restricted.indexOf(method) < 0) {
         const rawResponse = await fetch("https://chain-node.5ire.network", {
           method: "POST",
@@ -45,15 +44,17 @@ function sendMessage(
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ ...message, jsonrpc: "2.0", id: 1 }),
+          body: JSON.stringify({ params: message, jsonrpc: "2.0", id: 1, method }),
         });
         const content = await rawResponse.json();
         if (content.error) {
+          // console.log("issue in this method: ", method, message, content);
+
           isCb && cb(content);
           return reject(content);
         } else {
           isCb && cb(isFull ? content : content.result);
-
+          // console.log("Result of method: ", method, message, content);
           return resolve(isFull ? content : content.result);
         }
       }
@@ -99,14 +100,16 @@ function sendMessage(
 window.fire = {
   version: "1.0.0",
   isInstalled: true,
-  connected: true,
+  isConnected:  () => true,
+  is5ire: true,
   send(methodOrPayload, callbackOrArgs) {
+
     if (
       typeof methodOrPayload === "string" &&
       (!callbackOrArgs || Array.isArray(callbackOrArgs))
     ) {
-      const payload = { method: methodOrPayload, params: callbackOrArgs };
-      return sendMessage(payload.method, payload, false, null, true);
+      // const payload = { method: methodOrPayload, params: callbackOrArgs };
+      return sendMessage(methodOrPayload, callbackOrArgs, false, null, true);
     } else if (
       methodOrPayload &&
       typeof methodOrPayload === "object" &&
@@ -114,7 +117,7 @@ window.fire = {
     ) {
       return sendMessage(
         methodOrPayload.method,
-        methodOrPayload,
+        methodOrPayload.params,
         true,
         callbackOrArgs,
         true
@@ -129,11 +132,14 @@ window.fire = {
     );
   },
   sendAsync: (payload, cb = null) => {
-    return this.send(payload, cb);
+    return window.fire.send(payload, cb);
   },
 
   connect: () => sendMessage("connect"),
-  request: (params) => sendMessage(params.method, params),
+  request: (method, params = []) => {
+    const isObject = typeof(method) === "object" && method !== undefined;
+    return sendMessage(isObject ? method.method : method, isObject ? method.params : params)
+  },
 };
 
 injectedStream.on("data", (data) => {
