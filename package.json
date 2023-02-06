@@ -17,6 +17,7 @@
     "antd": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "big-number": "^2.0.0",
+    "bignumber.js": "^9.1.1",
     "buffer": "^6.0.3",
     "craco": "^0.0.3",
     "crypto-browserify": "^3.12.0",
