@@ -27,7 +27,7 @@ function Send() {
     retriveNativeFee,
   } = useWallet();
   // const dispatch = useDispatch();
-  const { balance } = useSelector(state => state.auth);
+  const { balance, currentAccount } = useSelector(state => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("native");
@@ -39,7 +39,7 @@ function Send() {
   useEffect(() => {
     if (data.to && Number(data.amount) > 0) {
       getFee();
-    } 
+    }
     // else {
     //   setGassFee("0");
     // }
@@ -48,10 +48,10 @@ function Send() {
   const getFee = async () => {
     let fee = 0;
 
-    if (activeTab.toLocaleLowerCase() === NATIVE.toLowerCase()) {
+    if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
       fee = await retriveNativeFee(data.to, data.amount);
     }
-    if (activeTab.toLocaleLowerCase() === EVM.toLowerCase()) {
+    if (activeTab.toLowerCase() === EVM.toLowerCase()) {
       fee = await retriveEvmFee(data.to, data.amount);
     }
     setGassFee(fee);
@@ -74,20 +74,23 @@ function Send() {
 
   const handleApprove = async () => {
     try {
-      if (!data.amount || isNaN(data.amount) || data.amount <= 0)
+      if (!data.amount || isNaN(data.amount) || Number(data.amount) <= 0)
         setErr((p) => ({ ...p, amount: "Please enter amount correctly!" }));
 
       if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
         if (!data.to || !data.to.startsWith("0x"))
           setErr((p) => ({ ...p, to: "Please enter to address correctly!" }));
-        else if (data.amount >= balance.evmBalance) {
+        else if (data.to === currentAccount.evmAddress)
+        setErr((p) => ({ ...p, to: "To can't be same as your current address!" }));
+        else if (Number(data.amount) >= Number(balance.evmBalance))
           toast.error("Insufficient Balance!");
-        }
+
         else {
           const res = await evmTransfer(data);
 
-          if (res.error) setIsFaildOpen(true);
+          if (res.error)
+            setIsFaildOpen(true);
           else {
             setTxHash(res.data);
             setIsModalOpen(true);
@@ -103,12 +106,14 @@ function Send() {
       if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
         if (!data.to || !data.to.startsWith("5"))
           setErr((p) => ({ ...p, to: "Please enter to address correctly!" }));
-        else if (data.amount >= balance.nativeBalance) {
+        else if (data.to === currentAccount.nativeAddress)
+          setErr((p) => ({ ...p, to: "To can't be same as your current address!" }));
+        else if (data.amount >= balance.nativeBalance)
           toast.error("Insufficient Balance!");
-        }
+
         else {
           const res = await nativeTransfer(data);
-
+          // console.log("res : ", res);
           if (res.error) setIsFaildOpen(true);
           else {
             setTxHash(res.data);
@@ -145,6 +150,7 @@ function Send() {
   const handleSwapAgain = () => {
     setIsFaildOpen(false);
     setIsModalOpen(false);
+    setData({ to: "", amount: "", memo: "" });
   };
 
   const faildOk = () => {

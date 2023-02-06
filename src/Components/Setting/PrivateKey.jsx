@@ -6,21 +6,40 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import useWallet from "../../Hooks/useWallet";
 import { useEffect } from "react";
+import ButtonComp from "../ButtonComp/ButtonComp";
+import { decryptor } from "../../Helper/CryptoHelper"
+
 
 function PrivateKey() {
   const { currentAccount, pass } = useSelector((state) => state.auth);
   const [key, setKey] = useState("");
+  const [seed, setSeed] = useState("");
+  const [show, handleShow] = useState(false);
   const { getKey } = useWallet();
+  const name = ["seed", "key"];
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(key);
+  useEffect(() => {
+    setKey(getKey(currentAccount?.temp1m, pass));
+  }, [currentAccount, getKey]);
+
+  const handleCopy = (e) => {
+    if (e.target.name === name[0])
+      navigator.clipboard.writeText(seed);
+    else if (e.target.name === name[1])
+      navigator.clipboard.writeText(key);
     toast.success("Copied!");
   };
 
   useEffect(() => {
-    console.log("Here current account", currentAccount);
-    setKey(getKey(currentAccount?.temp1m, pass));
-  }, [currentAccount, getKey]);
+    if (show && !seed) {
+      let seed = (decryptor(currentAccount.temp1m, pass));
+      setSeed(seed)
+    }
+  }, [show]);
+
+  const handleClick = () => {
+    handleShow(!show);
+  };
 
   return (
     <>
@@ -38,7 +57,26 @@ function PrivateKey() {
                   <img
                     src={CopyIcon}
                     alt="copyIcon"
-                    name="name"
+                    name="key"
+                    onClick={handleCopy}
+                  />
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <ButtonComp
+                onClick={handleClick}
+                text={show ? "Hide Mnemonic" : "Reveal Mnemonic"} />
+            </div>
+            <div className={style.wallet} hidden={!show ? true : false}>
+              <div className={style.wallet__addressInput}>
+                <p className={style.wallet__addressInput__copyText}>
+                  <span>{seed}</span>
+                  <img
+                    src={CopyIcon}
+                    alt="copyIcon"
+                    name="seed"
                     onClick={handleCopy}
                   />
                 </p>

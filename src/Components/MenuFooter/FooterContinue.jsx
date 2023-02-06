@@ -18,12 +18,17 @@ import browser from "webextension-polyfill";
 import useWallet from "../../Hooks/useWallet";
 
 function FooterStepOne() {
+  const { isLogin } = useSelector(state => state.auth);
   const navigate = useNavigate();
+  const handleCancle = () => {
+    if (isLogin) navigate("/wallet");
+    else navigate("/");
+  }
   return (
     <>
       <div className={style.menuItems__cancleContinue}>
         <ButtonComp
-          onClick={() => navigate("/")}
+          onClick={handleCancle}
           bordered={true}
           text={"Cancel"}
           maxWidth={"100%"}
@@ -46,7 +51,6 @@ export const FooterStepTwo = () => {
 
   const handleCancle = () => {
     dispatch(setNewAccount(null));
-
     navigate("/beforebegin");
   };
 
@@ -163,9 +167,9 @@ export const ApproveLogin = () => {
       const res = isEthReq
         ? [auth.currentAccount.evmAddress]
         : {
-            evmAddress: auth.currentAccount.evmAddress,
-            nativeAddress: auth.currentAccount.nativeAddress,
-          };
+          evmAddress: auth.currentAccount.evmAddress,
+          nativeAddress: auth.currentAccount.nativeAddress,
+        };
       browser.tabs.sendMessage(auth.uiData.tabId, {
         id: auth.uiData.id,
 

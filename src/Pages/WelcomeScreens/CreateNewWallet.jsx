@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 function CreateNewWallet() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isLogin } = useSelector((state) => state.auth);
+  const { isLogin,accounts } = useSelector((state) => state.auth);
   const [data, setData] = useState("");
   const [warrning, setWarrning] = useState("");
 
@@ -22,8 +22,18 @@ function CreateNewWallet() {
   const handleClick = () => {
     if (data.length === 0) setWarrning("Please enter account name!");
     else {
-      dispatch(setAccountName(data));
-      navigate("/beforebegin");
+      const match = accounts.find(e => {
+        if (e.accountName === data) {
+          setWarrning("Account with this name is allready exists!");
+          return true;
+        }
+        else
+          return false;
+      });
+      if (!match) {
+        dispatch(setAccountName(data));
+        navigate("/beforebegin");
+      }
     }
   };
 

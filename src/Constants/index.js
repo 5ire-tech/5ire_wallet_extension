@@ -15,6 +15,6 @@ export const NETWORK = {
 }
 export const STATUS = {
     PENDING:"Pending",
-    FAILD:"Faild",
+    FAILED:"Failed",
     SUCCESS:"Success",
 }

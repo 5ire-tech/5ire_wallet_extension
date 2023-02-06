@@ -6,9 +6,12 @@ import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import style from "./style.module.scss";
 import { useSelector } from "react-redux";
 import useWallet from "../../Hooks/useWallet";
+import { decryptor } from "../../Helper/CryptoHelper";
+import { toast } from "react-toastify";
 
 function ImportWallet() {
   const navigate = useNavigate();
+  const { accounts, pass } = useSelector(state => state.auth);
   const { importAccount } = useWallet();
   const [data, setData] = useState({ accName: "", key: "" });
   const [warrning, setWarrning] = useState("");
@@ -20,18 +23,35 @@ function ImportWallet() {
   };
 
   const handleClick = async () => {
-    if (data.accName.length === 0)
+    if (data.accName.length === 0) {
       setWarrning("Please enter your account name!");
+    }
     else if (data.key.length === 0)
       setWarrning("Please enter your secret mnemonic!");
     else {
-      let res = await importAccount(data);
-      if (res.error) setWarrning(res.data);
-      else {
-        setWarrning("");
-        if (isLogin) navigate("/wallet");
-        else navigate("/setPassword");
+      const match = accounts.find(e => {
+        if (e.accountName === data.accName) {
+          setWarrning("Account with this name allready exists!");
+          return true;
+        }
+        else if (decryptor(e.temp1m, pass) === data.key) {
+          setWarrning("Account with this mnemonic allready exists!");
+          return true
+        }
+        else
+          return false;
+      });
+
+      if (!match) {
+        let res = await importAccount(data);
+        if (res.error) setWarrning(res.data);
+        else {
+          setWarrning("");
+          if (isLogin) navigate("/wallet");
+          else navigate("/setPassword");
+        }
       }
+
     }
   };
 

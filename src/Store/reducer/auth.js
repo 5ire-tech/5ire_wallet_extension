@@ -22,8 +22,8 @@ export const userState = {
   },
 
   balance: {
-    evmBalance: 0,
-    nativeBalance: 0,
+    evmBalance: "",
+    nativeBalance: "",
   },
 
   currentNetwork: "Testnet",
@@ -88,6 +88,12 @@ export const userSlice = createSlice({
       else if (action.payload.of === "native")
         state.balance.nativeBalance = action.payload.balance;
     },
+    resetBalance: (state) => {
+      state.balance = {
+        evmBalance: "",
+        nativeBalance: "",
+      }
+    },
 
     setTxHistory: (state, action) => {
       state.accounts[action.payload.index].txHistory.push(action.payload.data);
@@ -130,6 +136,7 @@ export const {
   toggleLoader,
   pushAccounts,
   setNewAccount,
+  resetBalance
 } = userSlice.actions;
 
 export default userSlice.reducer;

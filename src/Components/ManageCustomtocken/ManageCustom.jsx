@@ -11,11 +11,12 @@ function ManageCustom({
   checkValue,
   edited,
   onSelectAcc,
+  // onSelectByDiv
 }) {
   return (
     <>
-      <div className={style.manageList}>
-        <div className={style.manageList__imgcurrency}>
+      <div className={style.manageList} >
+        <div className={style.manageList__imgcurrency} >
           <img src={img} />
           <div className={style.manageList__imgcurrency_Name}>
             <p>
@@ -25,21 +26,22 @@ function ManageCustom({
             {/* <span>{balance}</span> */}
           </div>
         </div>
-        {edited ? (
+        {/* {edited ? (
           <Switch
             defaultChecked
             //  onChange={onChange}
           />
-        ) : (
-          <input
-            type="radio"
-            name="accounts"
-            checked={active}
-            value={checkValue}
-            onChange={onSelectAcc}
-            className={style.checkbox}
-          />
-        )}
+        ) : ( */}
+        <input
+          type="radio"
+          name="accounts"
+          checked={active}
+          value={checkValue}
+          onChange={onSelectAcc}
+          className={style.checkbox}
+        />
+        {/* ) */}
+        {/* } */}
       </div>
     </>
   );
