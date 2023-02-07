@@ -227,17 +227,6 @@ export default function UseWallet() {
     return (new Promise(async (resolve, reject) => {
       try {
         dispatch(toggleLoader(true));
-        let index = getAccId(currentAccount.id);
-        let dataToDispatch = {
-          data: {
-            isEvm: true,
-            dateTime: new Date(),
-            to: data.to,
-            type: TX_TYPE?.SEND,
-            amount: data.amount,
-          },
-          index: index,
-        };
         const transactions = {
           from: currentAccount?.evmAddress,
           value: isBig
@@ -264,7 +253,6 @@ export default function UseWallet() {
         const gasAmount = await evmApi.eth.estimateGas(gasTx);
         transactions.gas = gasAmount;
 
-        console.log("transactions : ", transactions);
         let temp2p = getKey(currentAccount.temp1m, pass);
         const signedTx = await evmApi.eth.accounts.signTransaction(
           transactions,
@@ -274,19 +262,33 @@ export default function UseWallet() {
         const hash = txInfo.transactionHash;
 
         if (hash) {
-          dataToDispatch.data.txHash = hash;
-          evmApi.eth.getTransactionReceipt(hash, (err, res) => {
-            if (res) {
-              console.log("Response : ", res);
-              if (res.status)
-                dataToDispatch.data.status = STATUS.SUCCESS;
-              else
-                dataToDispatch.data.status = STATUS.FAILED;
-            } else
-              dataToDispatch.data.status = STATUS.PENDING;
+          let index = getAccId(currentAccount.id);
+          let dataToDispatch = {
+            data: {
+              isEvm: true,
+              dateTime: new Date(),
+              to: data.to,
+              type: TX_TYPE?.SEND,
+              amount: data.amount,
+              status: STATUS.PENDING,
+              txHash: hash
+            },
+            index: index,
+          };
+          dispatch(setTxHistory(dataToDispatch));
+          // dataToDispatch.data.txHash = hash;/
+          // evmApi.eth.getTransactionReceipt(hash, (err, res) => {
+          //   if (res) {
 
-            dispatch(setTxHistory(dataToDispatch));
-          });
+          //     if (res.status)
+          //       dataToDispatch.data.status = STATUS.SUCCESS;
+          //     else
+          //       dataToDispatch.data.status = STATUS.FAILED;
+          //   } else
+          //     dataToDispatch.data.status = STATUS.PENDING;
+
+          //   dispatch(setTxHistory(dataToDispatch));
+          // });
           dispatch(toggleLoader(false));
           resolve({
             error: false,
@@ -528,17 +530,7 @@ export default function UseWallet() {
     return (new Promise(async (resolve, reject) => {
       try {
         dispatch(toggleLoader(true));
-        let index = getAccId(currentAccount.id);
-        let dataToDispatch = {
-          data: {
-            isEvm: true,
-            dateTime: new Date(),
-            to: "Evm to Native",
-            type: TX_TYPE?.SWAP,
-            amount: amount
-          },
-          index: index,
-        };
+
 
         const seedAlice = mnemonicToMiniSecret(
           decryptor(currentAccount?.temp1m, pass)
@@ -563,24 +555,39 @@ export default function UseWallet() {
         const hash = txInfo.transactionHash;
 
         if (hash) {
-          dataToDispatch.data.txHash = hash;
+
           const withdraw = await nativeApi.tx.evm.withdraw(
             publicKey.slice(0, 42),
             Math.round(Number(amount) * Math.pow(10, 18)).toString()
           );
           await withdraw.signAndSend(alice);
-          evmApi.eth.getTransactionReceipt(hash, (err, res) => {
-            if (res) {
-              console.log("Response : ", res);
-              if (res.status)
-                dataToDispatch.data.status = STATUS.SUCCESS;
-              else
-                dataToDispatch.data.status = STATUS.FAILED;
-            } else
-              dataToDispatch.data.status = STATUS.PENDING;
 
+          let index = getAccId(currentAccount.id);
+          let dataToDispatch = {
+            data: {
+              isEvm: true,
+              dateTime: new Date(),
+              to: "Evm to Native",
+              type: TX_TYPE?.SWAP,
+              amount: amount,
+              txHash: hash,
+              status: STATUS.PENDING
+            },
+            index: index,
+          };
             dispatch(setTxHistory(dataToDispatch));
-          });
+          // evmApi.eth.getTransactionReceipt(hash, (err, res) => {
+          //   if (res) {
+          //     console.log("Response : ", res);
+          //     if (res.status)
+          //       dataToDispatch.data.status = STATUS.SUCCESS;
+          //     else
+          //       dataToDispatch.data.status = STATUS.FAILED;
+          //   } else
+          //     dataToDispatch.data.status = STATUS.PENDING;
+
+          //   dispatch(setTxHistory(dataToDispatch));
+          // });
           dispatch(toggleLoader(false));
 
           resolve({

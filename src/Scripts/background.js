@@ -86,10 +86,8 @@ try {
   //init the scripts (inject the script into current webpage)
   initScript();
 
-  //check the transaction status and update status
-  (async () => {
-    intervalId = await checkTransactions();
-  })();
+  //check the pending transaction status and update status and send notification
+  intervalId = checkTransactions();
 
 } catch (err) {
   console.log("BACKGROUND FILE TRY CATCH:", err)

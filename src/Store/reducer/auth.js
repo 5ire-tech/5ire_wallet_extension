@@ -99,6 +99,16 @@ export const userSlice = createSlice({
       state.accounts[action.payload.index].txHistory.push(action.payload.data);
       state.currentAccount.txHistory.push(action.payload.data);
     },
+
+    updateTxHistory: (state, action) => {
+     const currentTx =  state.currentAccount.txHistory.find((item) => item.txHash === action.payload.txHash);
+     const otherAccTx = state.accounts.find((item) => item.accountName === action.payload.accountName)?.txHistory.find(item => item.txHash === action.payload.txHash);
+
+     if(currentTx) currentTx.status = action.payload.status ? "Success": "Failed";
+     if(otherAccTx) otherAccTx.status = action.payload.status ? "Success": "Failed";
+
+    },
+
     setSite: (state, action) => {
       state?.connectedSites.push(action.payload);
     },
@@ -136,7 +146,8 @@ export const {
   toggleLoader,
   pushAccounts,
   setNewAccount,
-  resetBalance
+  resetBalance,
+  updateTxHistory
 } = userSlice.actions;
 
 export default userSlice.reducer;

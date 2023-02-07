@@ -142,6 +142,7 @@ window.fire = {
   },
 };
 
+
 injectedStream.on("data", (data) => {
   if (data?.method === "keepAlive") {
     setTimeout(() => {

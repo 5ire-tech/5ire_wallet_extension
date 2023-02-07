@@ -8,9 +8,9 @@ import authReducer, {
   setUIdata,
   setLogin,
   toggleLoader,
+  updateTxHistory
 } from "../Store/reducer/auth";
 import NotificationManager from "./platform";
-
 
 // Initializes the Redux store
 function init(preloadedState) {
@@ -92,7 +92,7 @@ export class Controller {
   }
   showNotification(
     message = "",
-    title = "Fire Notification",
+    title = "5ire",
     type = "basic"
   ) {
     Browser.notifications.create("", {
@@ -149,22 +149,68 @@ export class Controller {
 
 }
 
-export async function checkTransactions() {
+export async function httpRequest(url, payload) {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: payload
+    });
+    const data = await res.json();
+    return data;
+}
+
+
+//set interval for 15 to check pending transaction status
+export function checkTransactions() {
     const id = setInterval(() => {
       Browser.storage.local.get("state")
       .then((value) => {
-        console.log("value here: ", value);
+        checkAndUpdateTx(value);
       })
       .catch((err) => {
         console.log("Error while checking transaction status: ", err.message);
       })
-      console.log("Checking the pending transactions");
-    }, 2000)
-
+    }, 10000)
+    
     return id;
 }
 
+// check if transaction is success or failed and update it into storage
+async function checkAndUpdateTx(txState) {
+  try {
+    const store = await loadStore(false);
+    const noti = new Controller(store)
+    const rpcUrl = "https://chain-node.5ire.network";
+    const transactions = txState.state.auth.currentAccount.txHistory.filter(item => item.status === "Pending" && item.isEvm);
+    const accountName = txState.state.auth.accountName;
 
+    console.log("Here is the Transaction state: ", transactions);
+    if(transactions.length < 0) return;
+
+
+    /*
+    check for every pending transactions and if they success or fail update it into storage
+    and send the success notification
+    */ 
+    for(const item of transactions) {
+      const txHash = item.txHash;
+      const txRecipt = await httpRequest(rpcUrl, JSON.stringify({jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [item.txHash], id: 1}));
+
+      if(txRecipt) {
+        store.dispatch(updateTxHistory({txHash, accountName, status: Boolean(parseInt(txRecipt.status))}));
+        noti.showNotification('Transaction Success ' + txHash.slice(0, 8) + "...")
+      }
+
+    }
+
+
+
+  } catch (err) {
+    console.log("Error while updating the transaction: ", err);
+  }
+}
 
 
 
