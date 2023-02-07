@@ -8,6 +8,9 @@ const contentStream = new WindowPostMessageStream({
 });
 
 contentStream.on("data", async (data) => {
+
+  console.log("here is data in content: ", data);
+
   try {
     switch (data.method) {
       case "request":
@@ -22,10 +25,11 @@ contentStream.on("data", async (data) => {
       case "eth_accounts":
         Browser.runtime.sendMessage(data);
         break;
+
       case "eth_sendTransaction":
         if (
-          data.message.method !== "eth_sendTransaction" ||
-          data.message?.params.length < 0
+          data.method !== "eth_sendTransaction" ||
+          data.message?.length < 0
         ) {
           contentStream.write({
             id: data.id,
@@ -35,6 +39,7 @@ contentStream.on("data", async (data) => {
           Browser.runtime.sendMessage(data);
         }
         break;
+
       case "keepAlive":
         setTimeout(() => {
           contentStream.write({

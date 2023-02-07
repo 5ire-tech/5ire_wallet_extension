@@ -13,12 +13,6 @@
     "128": "logo192.png"
   },
 
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "5ire@gmail.com"
-    }
-  },
-
   "permissions": [
     "activeTab",
     "alarms",

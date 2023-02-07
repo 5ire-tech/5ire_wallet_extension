@@ -15,6 +15,8 @@ import NotificationManager from "./platform";
 // Initializes the Redux store
 function init(preloadedState) {
   return new Promise((resolve, reject) => {
+
+
     const store = configureStore({
       reducer: { auth: authReducer },
       preloadedState,
@@ -138,12 +140,16 @@ export class Controller {
   }
 
   async handleEthTransaction(data) {
+
+    console.log("here is the data: ", data);
+
     this.store.dispatch(
       setUIdata({
         ...data,
-        message: data?.message?.params[0],
-      })
-    );
+        message: data?.message[0],
+      }));
+      
+
     await this.notificationManager.showPopup("approveTx");
   }
 
@@ -172,7 +178,7 @@ export function checkTransactions() {
       .catch((err) => {
         console.log("Error while checking transaction status: ", err.message);
       })
-    }, 10000)
+    }, 20000)
     
     return id;
 }

@@ -146,6 +146,7 @@ export default class NotificationManager {
    *
    */
   async showPopup(route = "") {
+
     const popup = await this._getPopup();
 
     // Bring focus to chrome popup

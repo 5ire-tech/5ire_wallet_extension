@@ -27,6 +27,8 @@ function sendMessage(
   isFull = false
 ) {
 
+  console.log("method id here: ", method, message);
+
   return new Promise(async (resolve, reject) => {
     try {
 
@@ -34,7 +36,6 @@ function sendMessage(
       const origin = window?.location?.origin;
       
       if (method === "net_version") {
-        console.log("request is here to resolve");
         return resolve({ result: 997, method });
       }
 
@@ -132,12 +133,14 @@ window.fire = {
       true
     );
   },
+
   sendAsync: (payload, cb = null) => {
     return window.fire.send(payload, cb);
   },
 
   connect: () => sendMessage("connect"),
   request: (method, params = []) => {
+
     const isObject = typeof(method) === "object" && method !== undefined;
     return sendMessage(isObject ? method.method : method, isObject ? method.params : params)
   },
