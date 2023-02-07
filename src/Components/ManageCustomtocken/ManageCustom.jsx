@@ -5,22 +5,22 @@ import { Switch, Checkbox, Radio } from "antd";
 
 function ManageCustom({
   active,
-  name,
   balance,
   img,
   checkValue,
   edited,
   onSelectAcc,
+  data
   // onSelectByDiv
 }) {
   return (
     <>
-      <div className={style.manageList} >
+      <div className={style.manageList} onClick={()=>onSelectAcc(data?.id)} >
         <div className={style.manageList__imgcurrency} >
           <img src={img} />
           <div className={style.manageList__imgcurrency_Name}>
             <p>
-              {name}
+              {data?.accountName}
               {/* <span>{valuecurrency}</span> */}
             </p>
             {/* <span>{balance}</span> */}
@@ -37,7 +37,7 @@ function ManageCustom({
           name="accounts"
           checked={active}
           value={checkValue}
-          onChange={onSelectAcc}
+          // onChange={onSelectAcc}
           className={style.checkbox}
         />
         {/* ) */}
