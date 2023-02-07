@@ -25,7 +25,7 @@ export const formatDate = (_date) => {
         return dateTime;
 
     } catch (error) {
-        console.log("Error : ", error);
+        console.log("Error while formating date : ", error);
         return "";
     }
 };
@@ -69,7 +69,7 @@ export
         try {
             var data = String(num).split(/[eE]/);
             if (data.length === 1) return data[0];
-            console.log(data);
+            // console.log(data);
             let z = "";
             let sign = num < 0 ? "-" : "";
             let str = data[0].replace(".", "");

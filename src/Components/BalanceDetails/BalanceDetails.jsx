@@ -45,12 +45,13 @@ function BalanceDetails({ className, textLeft, mt0 }) {
 
   useEffect(() => {
     getCurrentTabUrl((cv) => {
-      console.log(cv);
+      // console.log(cv);
       const isExist = connectedSites.find((ct) => ct?.origin === cv);
       if (isExist) {
         setIsConnected(isExist.isConnected);
       }
     });
+    // dispatch(resetBalance());
     if (isApiReady) {
       getEvmBalance();
       getNativeBalance();
@@ -64,7 +65,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
   }, [currentAccount]);
 
   useEffect(() => {
-    if (balance?.evmBalance === "") {
+    if (balance?.evmBalance === "" || balance.nativeAddress === "") {
       dispatch(toggleLoader(true));
     } else {
       setEvmBalance(formatNum(balance?.evmBalance));
@@ -96,7 +97,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
   };
 
   const handleNetworkChange = (network) => {
-    dispatch(resetBalance());
+    // dispatch(resetBalance());
     dispatch(setCurrentNetwork(network));
   };
 
@@ -106,7 +107,6 @@ function BalanceDetails({ className, textLeft, mt0 }) {
 
     if (e.target.name === EVM)
       navigator.clipboard.writeText(currentAccount.evmAddress);
-
     toast.success("Copied!");
   };
 
@@ -176,7 +176,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
               <div className={style.balanceDetails__innerBalance}>
                 <div className={style.balanceDetails__innerBalance__totalBalnce}>
                   <p>
-                    Total Balance : <span>{total_balance}</span>
+                    Total Balance : <span>{formatNum(total_balance)}</span>
                   </p>
                 </div>
                 <div className={style.balanceDetails__innerBalance__chainBalance}>

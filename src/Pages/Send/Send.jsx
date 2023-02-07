@@ -88,13 +88,11 @@ function Send() {
 
         else {
           const res = await evmTransfer(data);
-
           if (res.error)
             setIsFaildOpen(true);
           else {
             setTxHash(res.data);
             setIsModalOpen(true);
-
             setTimeout(() => {
               getNativeBalance();
               getEvmBalance();

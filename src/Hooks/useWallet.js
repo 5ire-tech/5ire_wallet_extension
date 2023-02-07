@@ -7,7 +7,7 @@ import {
   cryptoWaitReady,
 } from "@polkadot/util-crypto";
 import { u8aToHex } from "@polkadot/util";
-import { waitReady } from "@polkadot/wasm-crypto";
+// import { waitReady } from "@polkadot/wasm-crypto";
 import { ApiPromise } from "@polkadot/api";
 import { HttpProvider, WsProvider } from "@polkadot/rpc-provider";
 import { ethers } from "ethers";
@@ -21,96 +21,143 @@ import {
   pushAccounts,
   setBalance,
   setTxHistory,
+  resetBalance,
   toggleLoader,
 } from "../Store/reducer/auth";
 import { setAccountName } from "../Store/reducer/auth";
 import Web3 from "web3";
 import { decryptor, encryptor } from "../Helper/CryptoHelper";
-import { resolve } from "path-browserify";
-// import { toast } from "react-toastify";
 
+let evmApi = null;
+let nativeApi = null;
+let web3Provider = null;
+let tempNet = null;
 
 export default function UseWallet() {
-  const dispatch = useDispatch();
-  const {
-    currentAccount,
-    availableNetworks,
-    currentNetwork,
-    balance,
-    pass,
-    accountName,
-    accounts,
-    isLogin,
-  } = useSelector((state) => state?.auth);
-  const [evmApi, setEvmApi] = useState(null);
-  const [nativeApi, setNativeApi] = useState(null);
-  const [isApiReady, setReady] = useState(false);
-  const [network, setNetwork] = useState(null);
-  const [web3Provider, setWebProvider] = useState(null);
-
   const [authData, setAuthData] = useState({
     temp1m: "",
     temp2p: "",
     evmAddress: "",
     nativeAddress: "",
   });
+  const {
+    currentAccount,
+    availableNetworks,
+    currentNetwork,
+    // balance,
+    pass,
+    accountName,
+    accounts,
+    isLogin,
+  } = useSelector((state) => state?.auth);
+  const dispatch = useDispatch();
+  const [isApiReady, setReady] = useState(false);
+  // const [tempNet, setTempNet] = useState(currentNetwork?.toLowerCase() === (NETWORK.TEST_NETWORK).toLowerCase() ? availableNetworks?.testnet : availableNetworks?.qa);
+  // const [tempNet, setTempNet] = useState(null);
+
+  const resetApi = () => {
+    evmApi = null;
+    nativeApi = null;
+  }
 
   useEffect(() => {
+    if (currentNetwork.toLowerCase() === "testnet") {
+      if (tempNet !== availableNetworks.testnet) {
+        tempNet = (availableNetworks.testnet);
+        setReady(false);
+        dispatch(resetBalance());
+        resetApi();
+        Promise.all([initializeNativeApi(availableNetworks.testnet), initializeEvmApi(availableNetworks.testnet)])
+          .then(() => {
+            console.log("its running low");
+            setReady(true);
+          })
+          .catch((err) => {
+            console.log("Error while connecting the evm and native chain: ", err);
+            setReady(false)
+          })
+      } else {
+        setReady(true);
+      }
+    } else if (currentNetwork.toLowerCase() === "qa") {
+      if (tempNet !== availableNetworks.qa) {
+        tempNet = (availableNetworks.qa);
+        setReady(false);
+        dispatch(resetBalance());
+        resetApi();
+        Promise.all([initializeNativeApi(availableNetworks.qa), initializeEvmApi(availableNetworks.qa)])
+          .then(() => {
+            console.log("its running low");
+            setReady(true);
+          })
+          .catch((err) => {
+            console.log("Error while connecting the evm and native chain: ", err);
+            setReady(false)
+          })
+      } else {
+        setReady(true);
+      }
+    } else {
 
-    if (currentNetwork?.toLowerCase() === (NETWORK.TEST_NETWORK).toLowerCase())
-      setNetwork(availableNetworks?.testnet);
-    else if (currentNetwork.toLowerCase() === (NETWORK.QA_NETWORK).toLowerCase())
-      setNetwork(availableNetworks?.qa);
-    setReady(false);
-
+      let wsNetwork = currentNetwork?.toLowerCase() === (NETWORK.TEST_NETWORK).toLowerCase() ? availableNetworks?.testnet : availableNetworks?.qa;
+      tempNet = wsNetwork;
+      Promise.all([initializeNativeApi(wsNetwork), initializeEvmApi(wsNetwork)])
+        .then(() => {
+          console.log("its running low");
+          setReady(true);
+        })
+        .catch((err) => {
+          console.log("Error while connecting the evm and native chain: ", err);
+          setReady(false);
+        })
+    }
   }, [currentNetwork]);
 
-  useEffect(() => {
-    if (network) {
-      initializeNativeApi();
-      initializeEvmApi();
-    }
-  }, [network]);
-
-  useEffect(() => {
-    try {
-      if (nativeApi && evmApi && web3Provider) {
-        setReady(true);
-        nativeApi.on("disconnected", async () => {
-          console.log("Trying to reconnect with native api!");
-          nativeApi.connect();
-        });
-        web3Provider.on('end', async () => {
-          console.log("Trying to reconnect with Evm api");
-          initializeEvmApi();
-        });
-      }
-    } catch (error) {
-      console.log("Error : ", error);
-    }
-  }, [nativeApi, evmApi, web3Provider]);
+  console.log("is api readddyyy : ", isApiReady);
+  console.log("currentNetwork ", currentNetwork, "temp net : ", tempNet);
 
 
-  const initializeNativeApi = async () => {
+  const initializeNativeApi = async (network) => {
     try {
       let provider = new WsProvider(network);
-      const apiRes = await ApiPromise.create({ provider: provider });
-      setNativeApi(apiRes);
+      nativeApi = await ApiPromise.create({ provider: provider });
+      nativeApi.on("disconnected", async () => {
+        nativeApi.connect();
+      });
+      console.log("native Api : ", nativeApi);
     } catch (error) {
       console.log("Error while making connection with Native Api");
     }
   };
 
-  const initializeEvmApi = async () => {
+  const initializeEvmApi = async (network) => {
     try {
-      let provider = new Web3.providers.WebsocketProvider(network);
-      let evm_api = new Web3(provider);
-      setWebProvider(provider);
-      setEvmApi(evm_api);
+      let options = {
+        reconnect: {
+          auto: true,
+          delay: 5000, // ms
+          maxAttempts: 10,
+          onTimeout: false
+        }
+      };
+      web3Provider = new Web3.providers.WebsocketProvider(network, options);
+      evmApi = new Web3(web3Provider);
+
+      web3Provider.on('end', async () => {
+        console.log("Trying to reconnect with Evm api");
+        initializeEvmApi();
+      });
+      web3Provider.on('error', async (e) => {
+        console.log("error occued while making connection with web3 : ", e);
+        initializeEvmApi();
+      });
+
+      console.log("evmApi : ", evmApi);
     } catch (error) {
       console.log("Error while making connection with Native Api");
     }
   };
+
 
   const getKey = (str, p) => {
     const seed = decryptor(str, p);
@@ -185,7 +232,8 @@ export default function UseWallet() {
 
   const getEvmBalance = async () => {
     try {
-      // console.log("evm Api : ", evmApi);
+      console.log("EVM BALANCE CALLLEEEEDDDDDDDDDDDDDDDDDDDDD");
+
       const w3balance = await evmApi?.eth.getBalance(
         currentAccount?.evmAddress
       );
@@ -205,6 +253,7 @@ export default function UseWallet() {
 
   const getNativeBalance = async () => {
     try {
+      console.log("Native BALANCE CALLLEEEEDDDDDDDDDDDDDDDDDDDDD");
       const nbalance = await nativeApi?.derive.balances.all(
         currentAccount?.nativeAddress
       );
@@ -571,7 +620,6 @@ export default function UseWallet() {
           await withdraw.signAndSend(alice);
           evmApi.eth.getTransactionReceipt(hash, (err, res) => {
             if (res) {
-              console.log("Response : ", res);
               if (res.status)
                 dataToDispatch.data.status = STATUS.SUCCESS;
               else
@@ -602,7 +650,6 @@ export default function UseWallet() {
   };
 
   const importAccount = async (data) => {
-    console.log("Data :: ", data);
     try {
       const SS58Prefix = 6;
       const isValidMnemonic = mnemonicValidate(data.key);
@@ -682,7 +729,6 @@ export default function UseWallet() {
       const gasAmount = await evmApi.eth.estimateGas(tx);
       const gasPrice = await evmApi.eth.getGasPrice();
       let fee = Number((gasPrice * gasAmount) / 10 ** 18);
-      console.log("HERE EVM FEEE", gasAmount, gasPrice, fee);
       dispatch(toggleLoader(false));
 
       return fee ? fee : 0;
@@ -697,6 +743,10 @@ export default function UseWallet() {
   const retriveNativeFee = async (toAddress, amount) => {
     try {
       dispatch(toggleLoader(true));
+      console.log("isApiReady : ", isApiReady);
+      if (isApiReady) {
+
+      }
 
       toAddress = toAddress ? toAddress : currentAccount?.evmAddress;
       let transferTx;

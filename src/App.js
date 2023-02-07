@@ -57,8 +57,6 @@ function App() {
     // fetchLogin();
   }, [auth?.login]);
 
-  console.log("IS Login : ", auth?.isLogin);
-
   return (
     <div className="App">
       <Routes>
