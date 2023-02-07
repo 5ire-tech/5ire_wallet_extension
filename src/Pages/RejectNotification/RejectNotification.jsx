@@ -75,7 +75,7 @@ function ApproveTx() {
               </>
             ) : (
               <div className={style.rejectedSec__listReject__innerList}>
-                <h4>{auth?.uiData?.message?.data || ""}</h4>
+                <h4 style={{wordBreak:"break-all"}}>{auth?.uiData?.message?.data || ""}</h4>
               </div>
             )}
           </div>
