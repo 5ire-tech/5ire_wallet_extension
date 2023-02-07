@@ -198,9 +198,11 @@ async function checkAndUpdateTx(txState) {
       const txHash = item.txHash;
       const txRecipt = await httpRequest(rpcUrl, JSON.stringify({jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [item.txHash], id: 1}));
 
+      console.log("tx status: ", txRecipt.result.status, txRecipt);
+
       if(txRecipt) {
-        store.dispatch(updateTxHistory({txHash, accountName, status: Boolean(parseInt(txRecipt.status))}));
-        noti.showNotification('Transaction Success ' + txHash.slice(0, 8) + "...")
+        store.dispatch(updateTxHistory({txHash, accountName, status: Boolean(parseInt(txRecipt.result.status))}));
+        noti.showNotification(`Transaction ${Boolean(parseInt(txRecipt.result.status)) ? "Success" : "Failed"} ${txHash.slice(0, 8)} ...`)
       }
 
     }

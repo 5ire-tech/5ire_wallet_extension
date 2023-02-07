@@ -1,5 +1,6 @@
 import { WindowPostMessageStream } from "./stream";
 import { CONTENT_SCRIPT, INPAGE, getId } from "./constants";
+import { FireProvider } from "./5ire-Provider";
 
 const injectedStream = new WindowPostMessageStream({
   name: INPAGE,
