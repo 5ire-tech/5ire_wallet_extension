@@ -27,6 +27,8 @@ import {
 import { setAccountName } from "../Store/reducer/auth";
 import Web3 from "web3";
 import { decryptor, encryptor } from "../Helper/CryptoHelper";
+import { BigNumber } from "bignumber.js";
+// import { toast } from "react-toastify";
 
 let evmApi = null;
 let nativeApi = null;
@@ -756,22 +758,23 @@ export default function UseWallet() {
       );
       const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
 
-      amount = amount
-        ? Number(Math.round(Number(amount) * Math.pow(10, 18) * 100) / 100).toString()
-        : 0;
-
+      const amt = new BigNumber(amount).multipliedBy(10 ** 18).toString();
       if (toAddress.startsWith("0x")) {
-        transferTx = await nativeApi.tx.evm.deposit(toAddress, amount);
+        transferTx = await nativeApi.tx.evm.deposit(toAddress, amt);
       }
 
       if (toAddress.startsWith("5")) {
-        transferTx = nativeApi.tx.balances.transferKeepAlive(toAddress, amount);
+        transferTx = nativeApi.tx.balances.transferKeepAlive(toAddress, amt);
       }
+      console.log("FEE AMOUNT : ", amt);
 
       const info = await transferTx?.paymentInfo(alice);
-      const adjFee = info?.partialFee;
-      const fee = Number(adjFee) / Math.pow(10, 18);
-      console.log("adjFee : ", Number(adjFee));
+      console.log(`
+      class=${info.class.toString()},
+      weight=${info.weight.toString()},
+      partialFee=${info.partialFee.toString()}
+    `);
+      const fee = new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)
       console.log("Fee : ", fee);
       dispatch(toggleLoader(false));
 

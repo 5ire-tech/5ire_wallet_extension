@@ -58,7 +58,7 @@ function MenuFooter() {
 
   const handleMyAccOpen = () => {
     setOpen(true);
-    setAccData(accounts);
+    // setAccData(accounts);
   };
 
   const hanldeCreateNewAcc = () => {
@@ -79,10 +79,11 @@ function MenuFooter() {
     }
   };
 
-  const onSelectAcc = (e) => {
-    let accId = e.target.value;
-    let acc = accounts[accId];
+  const onSelectAcc = (accId) => {
+    // let accId = e.target.value;
+    let acc = accounts.find(acc=>acc.id===accId);
     dispatch(setCurrentAcc(acc));
+    onClose()
   };
 
 
@@ -172,10 +173,10 @@ function MenuFooter() {
         open={open}
         closeIcon={<img src={ModalCloseIcon} />}
       >
-        {accData.map((data, index) => (
+        {accounts?.map((data, index) => (
           <ManageCustom
             img={Sendhistry}
-            name={data.accountName}
+            data={data}
             active={data?.id === currentAccount?.id ? true : false}
             // balance={Number(balance.evmBalance) + Number(balance.nativeBalance)}
             edited={false}
