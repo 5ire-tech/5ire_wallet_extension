@@ -62,6 +62,9 @@ try {
       case "eth_sendTransaction":
         await controller.handleEthTransaction(data);
         break;
+      case "get_endPoint":
+        await controller.sendEndPoint(data);
+      break;
       default:
     }
   });

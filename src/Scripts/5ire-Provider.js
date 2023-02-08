@@ -26,13 +26,18 @@ export class FireProvider {
         this.isOpen = false;
 
         this.conntectMethods = ["eth_requestAccounts",
-  "eth_accounts",
-  "connect"];
+       "eth_accounts",
+       "connect"];
   
         this.restricted = [
+          "get_endPoint",
      "eth_sendTransaction",
   ...this.conntectMethods
-];
+     ];
+
+
+     //inject the endpoint
+     this.injectHttpProvider()
     }
 
     connect() {
@@ -82,6 +87,11 @@ export class FireProvider {
     }
 
 
+    //inject the http endpoint for specfic network
+    async injectHttpProvider() {
+        const res = await this.passReq("get_endPoint", null)
+        this.httpHost = res.result;
+    }
 
     // //internal function used to pass request to extension
     // sendMessage(method, payload={}) {

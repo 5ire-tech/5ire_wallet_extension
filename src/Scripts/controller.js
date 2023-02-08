@@ -56,6 +56,8 @@ function init(preloadedState) {
     }
   });
 }
+
+
 //Load the redux store
 export function loadStore(sendStoreMessage = true) {
   return new Promise(async (resolve) => {
@@ -106,8 +108,9 @@ export class Controller {
   constructor(store) {
     this.store = store;
     this.notificationManager = new NotificationManager(store);
-
   }
+
+  //show extension notifications
   showNotification(
     message = "",
     title = "5ire",
@@ -121,7 +124,20 @@ export class Controller {
     });
   }
 
+ async sendEndPoint(data) {
+    try {
+      const storage = this.store.getState();
 
+      //pass the current network http endpoint
+      Browser.tabs.sendMessage(data.tabId, {
+        id: data.id,
+        response: {result: storage.auth.httpEndPoints[storage.auth.currentNetwork.toLowerCase()]},
+        error: null,
+      });
+    } catch (err) {
+     console.log("error while sending the endpoint for injection"); 
+    }
+  }
 
   //for connecting the accounts to a specfic webpage
   async handleConnect(data) {

@@ -39,7 +39,9 @@ contentStream.on("data", async (data) => {
           Browser.runtime.sendMessage(data);
         }
         break;
-
+      case "get_endPoint": 
+      Browser.runtime.sendMessage(data);
+      break;
       case "keepAlive":
         setTimeout(() => {
           contentStream.write({
