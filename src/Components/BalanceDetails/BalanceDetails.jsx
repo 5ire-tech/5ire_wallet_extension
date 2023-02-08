@@ -69,9 +69,10 @@ function BalanceDetails({ className, textLeft, mt0 }) {
     if (balance?.evmBalance === "" || balance.nativeAddress === "") {
       dispatch(toggleLoader(true));
     } else {
-      setEvmBalance(new BigNumber(balance?.evmBalance).toFixed(6,8).toString());
-      setNativeBalance(new BigNumber(balance?.nativeBalance).toFixed(6,8).toString());
-      setTotalBalance(new BigNumber(balance?.evmBalance).plus(balance?.nativeBalance).toFixed(4).toString());
+      setEvmBalance(balance?.evmBalance);
+      setNativeBalance(balance?.nativeBalance);
+      let tBalance = Number(balance?.evmBalance) + Number(balance?.nativeBalance);
+      setTotalBalance(new BigNumber(tBalance).toFixed(6, 8).toString());
       dispatch(toggleLoader(false));
     }
   }, [balance?.evmBalance, balance?.nativeBalance]);

@@ -16,9 +16,16 @@ export const userState = {
 
   uiData: {},
 
-  availableNetworks: {
+  httpEndPoints: {
+    qa: "https://qa-http-nodes.5ire.network",
+    testnet: "https://chain-node.5ire.network"
+  },
+
+  wsEndPoints: {
     qa: "wss://qa-wss-nodes.5ire.network",
-    testnet: "wss://wss-testnet.5ire.network/", //"https://chain-node.5ire.network"
+    testnet: "wss://wss-testnet.5ire.network/",
+
+    //"https://chain-node.5ire.network"
   },
 
   balance: {
@@ -29,7 +36,7 @@ export const userState = {
   currentNetwork: "Testnet",
 
   accountName: "",
-  
+
   "eth_accounts": '',
 
   isLogin: false,

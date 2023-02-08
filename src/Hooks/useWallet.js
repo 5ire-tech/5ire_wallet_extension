@@ -44,7 +44,7 @@ export default function UseWallet() {
   });
   const {
     currentAccount,
-    availableNetworks,
+    wsEndPoints,
     currentNetwork,
     balance,
     pass,
@@ -62,12 +62,12 @@ export default function UseWallet() {
 
   useEffect(() => {
     if (currentNetwork.toLowerCase() === "testnet") {
-      if (tempNet !== availableNetworks.testnet) {
-        tempNet = (availableNetworks.testnet);
+      if (tempNet !== wsEndPoints.testnet) {
+        tempNet = (wsEndPoints.testnet);
         setReady(false);
         dispatch(resetBalance());
         resetApi();
-        Promise.all([initializeNativeApi(availableNetworks.testnet), initializeEvmApi(availableNetworks.testnet)])
+        Promise.all([initializeNativeApi(wsEndPoints.testnet), initializeEvmApi(wsEndPoints.testnet)])
           .then(() => {
             console.log("its running low");
             setReady(true);
@@ -80,12 +80,12 @@ export default function UseWallet() {
         setReady(true);
       }
     } else if (currentNetwork.toLowerCase() === "qa") {
-      if (tempNet !== availableNetworks.qa) {
-        tempNet = (availableNetworks.qa);
+      if (tempNet !== wsEndPoints.qa) {
+        tempNet = (wsEndPoints.qa);
         setReady(false);
         dispatch(resetBalance());
         resetApi();
-        Promise.all([initializeNativeApi(availableNetworks.qa), initializeEvmApi(availableNetworks.qa)])
+        Promise.all([initializeNativeApi(wsEndPoints.qa), initializeEvmApi(wsEndPoints.qa)])
           .then(() => {
             console.log("its running low");
             setReady(true);
@@ -99,7 +99,7 @@ export default function UseWallet() {
       }
     } else {
 
-      let wsNetwork = currentNetwork?.toLowerCase() === (NETWORK.TEST_NETWORK).toLowerCase() ? availableNetworks?.testnet : availableNetworks?.qa;
+      let wsNetwork = currentNetwork?.toLowerCase() === (NETWORK.TEST_NETWORK).toLowerCase() ? wsEndPoints?.testnet : wsEndPoints?.qa;
       tempNet = wsNetwork;
       Promise.all([initializeNativeApi(wsNetwork), initializeEvmApi(wsNetwork)])
         .then(() => {
@@ -113,8 +113,8 @@ export default function UseWallet() {
     }
   }, [currentNetwork]);
 
-  // console.log("is api readddyyy : ", isApiReady);
-  // console.log("currentNetwork ", currentNetwork, "temp net : ", tempNet);
+  console.log("is api readddyyy : ", isApiReady);
+  console.log("currentNetwork ", currentNetwork, "temp net : ", tempNet);
 
 
   const initializeNativeApi = async (network) => {
@@ -237,7 +237,6 @@ export default function UseWallet() {
       );
       let payload = {
         of: EVM,
-        // balance: (Number(w3balance) / Math.pow(10, 18)),
         balance: new BigNumber(w3balance).dividedBy(10 ** 18).toFixed(6, 8),
       };
       console.log(
@@ -257,7 +256,7 @@ export default function UseWallet() {
       );
       let payload = {
         of: NATIVE,
-        balance: new BigNumber(nbalance.availableBalance).dividedBy(10 ** 18).toString(),
+        balance: new BigNumber(nbalance.availableBalance).dividedBy(10 ** 18).toFixed(6, 8).toString(),
       };
       console.log(
         "nativeBalance : ",
@@ -273,7 +272,7 @@ export default function UseWallet() {
   const evmTransfer = async (data, isBig = false) => {
     return (new Promise(async (resolve, reject) => {
       try {
-        if (Number(data.amount) > Number(balance.evmBalance)) {
+        if (Number(data.amount) > Number(balance.evmBalance) || Number(data.amount) <= 0) {
           resolve({
             error: true,
             data: "Insufficent Balance!"
@@ -353,7 +352,7 @@ export default function UseWallet() {
   const nativeTransfer = async (data) => {
     return new Promise(async (resolve, reject) => {
       try {
-        if (Number(data.amount) >= Number(balance.nativeBalance)) {
+        if (Number(data.amount) >= Number(balance.nativeBalance) || Number(data.amount) <= 0) {
           resolve({
             error: true,
             data: "Insufficent Balance!"
@@ -440,7 +439,7 @@ export default function UseWallet() {
   const nativeToEvmSwap = async (amount) => {
     return new Promise(async (resolve, reject) => {
       try {
-        if (Number(amount) >= Number(balance.nativeBalance)) {
+        if (Number(amount) >= Number(balance.nativeBalance) || Number(amount) <= 0) {
           resolve({
             error: true,
             data: "Insufficent Balance!"
@@ -530,7 +529,7 @@ export default function UseWallet() {
   const evmToNativeSwap = async (amount) => {
     return (new Promise(async (resolve, reject) => {
       try {
-        if (Number(amount) >= Number(balance.nativeBalance)) {
+        if (Number(amount) >= Number(balance.nativeBalance)|| Number(amount) <= 0) {
           resolve({
             error: true,
             data: "Insufficent Balance!"

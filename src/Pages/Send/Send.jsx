@@ -82,7 +82,7 @@ function Send() {
         if (!data.to || !data.to.startsWith("0x"))
           setErr((p) => ({ ...p, to: "Please enter to address correctly!" }));
         else if (data.to === currentAccount.evmAddress)
-        setErr((p) => ({ ...p, to: "To can't be same as your current address!" }));
+          setErr((p) => ({ ...p, to: "To can't be same as your current address!" }));
         // else if (Number(data.amount) >= Number(balance.evmBalance))
         //   toast.error("Insufficient Balance!");
 
@@ -201,6 +201,7 @@ function Send() {
           <div>
             <span style={{ color: "red" }}>{err.amount}</span>
             <InputField
+              coloredBg={true}
               name="amount"
               value={data.amount}
               placeholder={"Enter Amount"}
