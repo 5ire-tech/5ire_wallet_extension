@@ -1,5 +1,6 @@
 const webpack = require("webpack");
-
+const CopyPlugin = require("copy-webpack-plugin");
+const isChrome = process.env.BUILD_TYPE === 'CHROME' ? true : false;
 module.exports = {
   webpack: {
     configure: (webpackConfig, { env, paths }) => {
@@ -8,12 +9,13 @@ module.exports = {
         entry: {
           main: [
             env === "development" &&
-              require.resolve("react-dev-utils/webpackHotDevClient"),
+            require.resolve("react-dev-utils/webpackHotDevClient"),
             paths.appIndexJs,
           ].filter(Boolean),
           content: "./src/Scripts/content.js",
           background: "./src/Scripts/background.js",
           injected: "./src/Scripts/injected.js",
+
         },
         output: {
           ...webpackConfig.output,
@@ -38,7 +40,13 @@ module.exports = {
           new webpack.ProvidePlugin({
             Buffer: ["buffer", "Buffer"],
           }),
+          new CopyPlugin({
+            patterns: [
+              { from: isChrome ? "./src/manifest/chrome.json" : "./src/manifest/firefox.json", to: "manifest.json" },
+            ],
+          }),
         ],
+
       };
     },
   },

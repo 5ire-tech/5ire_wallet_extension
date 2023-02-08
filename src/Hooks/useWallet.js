@@ -237,7 +237,8 @@ export default function UseWallet() {
       );
       let payload = {
         of: EVM,
-        balance: new BigNumber(w3balance).dividedBy(10 ** 18).toString(),
+        // balance: (Number(w3balance) / Math.pow(10, 18)),
+        balance: new BigNumber(w3balance).dividedBy(10 ** 18).toFixed(6, 8),
       };
       console.log(
         "evm balance : ",

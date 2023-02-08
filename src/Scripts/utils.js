@@ -21,3 +21,7 @@ export const getCurrentTabUId = (callback) => {
     callback(tabs[0].id);
   });
 };
+
+
+export const isManifestV3 =
+  Browser.runtime.getManifest().manifest_version === 3;
