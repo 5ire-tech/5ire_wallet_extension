@@ -50,7 +50,9 @@
   "scripts": {
     "watch": "node ./scripts/watch",
     "start": "react-scripts start",
-    "build": "INLINE_RUNTIME_CHUNK=false craco build",
+    "build": "INLINE_RUNTIME_CHUNK=false BUILD_TYPE=CHROME craco build",
+    "build:chrome": "INLINE_RUNTIME_CHUNK=false BUILD_TYPE=CHROME craco build",
+    "build:firefox": "INLINE_RUNTIME_CHUNK=false BUILD_TYPE=FIREFOX craco build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -73,6 +75,8 @@
     ]
   },
   "devDependencies": {
+    "copy-webpack-plugin": "^11.0.0",
+    "json-loader": "^0.5.7",
     "webpack": "^5.75.0"
   }
 }

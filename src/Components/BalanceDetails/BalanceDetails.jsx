@@ -19,8 +19,9 @@ import { NATIVE, EVM } from "../../Constants/index";
 import { toast } from "react-toastify";
 import { shortner } from "../../Helper/helper";
 import { getCurrentTabUrl } from "../../Scripts/utils";
-import { formatNum } from "../../Helper/helper";
+// import { formatNum } from "../../Helper/helper";
 import { NETWORK } from "../../Constants/index";
+import { BigNumber } from "bignumber.js";
 // import ButtonComp from "../ButtonComp/ButtonComp";
 // import ScannerImg from "../../Assets/qrimg.svg";
 
@@ -68,9 +69,10 @@ function BalanceDetails({ className, textLeft, mt0 }) {
     if (balance?.evmBalance === "" || balance.nativeAddress === "") {
       dispatch(toggleLoader(true));
     } else {
-      setEvmBalance(formatNum(balance?.evmBalance));
-      setNativeBalance(formatNum(balance?.nativeBalance));
-      setTotalBalance(formatNum(balance?.evmBalance) + formatNum(balance?.nativeBalance));
+      setEvmBalance(balance?.evmBalance);
+      setNativeBalance(balance?.nativeBalance);
+      let tBalance = Number(balance?.evmBalance) + Number(balance?.nativeBalance);
+      setTotalBalance(new BigNumber(tBalance).toFixed(6, 8).toString());
       dispatch(toggleLoader(false));
     }
   }, [balance?.evmBalance, balance?.nativeBalance]);
@@ -176,7 +178,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
               <div className={style.balanceDetails__innerBalance}>
                 <div className={style.balanceDetails__innerBalance__totalBalnce}>
                   <p>
-                    Total Balance : <span>{formatNum(total_balance)}</span>
+                    Total Balance : <span>{total_balance}</span>
                   </p>
                 </div>
                 <div className={style.balanceDetails__innerBalance__chainBalance}>

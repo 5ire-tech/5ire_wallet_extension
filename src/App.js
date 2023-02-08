@@ -39,7 +39,7 @@ function App() {
   useEffect(() => {
     const route = getParameterByName("route");
 
-    if (!auth?.isLogin && auth.accounts.length > 0) {
+    if (!auth?.isLogin && auth.accounts.length > 0 && auth.pass) {
       navigate("/unlockWallet", {
         state: {
           redirectRoute: route ? "/" + route : "",

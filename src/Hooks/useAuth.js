@@ -9,6 +9,7 @@ import {
 } from "../Store/reducer/auth";
 import { encryptor } from "../Helper/CryptoHelper";
 import Browser from "webextension-polyfill";
+import { isManifestV3 } from "../Scripts/utils";
 
 export default function useAuth() {
   const { pass, newAccount } = useSelector((state) => state.auth);
@@ -34,7 +35,12 @@ export default function useAuth() {
             dispatch(setNewAccount(null));
             dispatch(setCurrentAcc(dataToDispatch));
             dispatch(pushAccounts(dataToDispatch));
-            await Browser.storage.session.set({ login: true });
+            if (isManifestV3) {
+              await Browser.storage.session.set({ login: true });
+            } else {
+              await Browser.storage.local.set({ login: true });
+
+            }
 
             resolve({
               error: false,
@@ -57,7 +63,12 @@ export default function useAuth() {
       let res = bcrypt.compareSync(p, pass);
 
       if (res) {
-        await Browser.storage.session.set({ login: true });
+        if (isManifestV3) {
+          await Browser.storage.session.set({ login: true });
+        } else {
+          await Browser.storage.local.set({ login: true });
+
+        }
         return {
           error: false,
           data: "Login successfully!",
@@ -79,8 +90,12 @@ export default function useAuth() {
 
   const logout = async () => {
     try {
-      await Browser.storage.session.remove(["login"]);
+      if (isManifestV3) {
+        await Browser.storage.session.remove(["login"]);
+      } else {
+        await Browser.storage.local.remove(["login"]);
 
+      }
       dispatch(setLogin(false));
 
       return {
