@@ -238,7 +238,7 @@ export default function UseWallet() {
       let payload = {
         of: EVM,
         // balance: (Number(w3balance) / Math.pow(10, 18)),
-        balance: new BigNumber(w3balance).dividedBy(10 ** 18),
+        balance: new BigNumber(w3balance).dividedBy(10 ** 18).toFixed(6, 8),
       };
       console.log(
         "evm balance : ",
@@ -258,7 +258,7 @@ export default function UseWallet() {
       let payload = {
         of: NATIVE,
         // balance: (Number(nbalance.availableBalance) / Math.pow(10, 18)),
-        balance: new BigNumber(nbalance.availableBalance).dividedBy(10 ** 18),
+        balance: new BigNumber(nbalance.availableBalance).dividedBy(10 ** 18).toFixed(6, 8),
       };
       console.log(
         "nativeBalance : ",
@@ -372,7 +372,7 @@ export default function UseWallet() {
         const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
 
         const transfer = nativeApi.tx.balances.transferKeepAlive(
-          data.toAddress,
+          data.to,
           (new BigNumber(data.amount).multipliedBy(10 ** 18)).toString()
         );
 

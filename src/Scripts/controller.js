@@ -10,6 +10,7 @@ import authReducer, {
   toggleLoader,
 } from "../Store/reducer/auth";
 import NotificationManager from "./platform";
+import { isManifestV3 } from "./utils";
 
 // Initializes the Redux store
 function init(preloadedState) {
@@ -31,13 +32,24 @@ function init(preloadedState) {
       // Here we update the badge text with the counter value.
       //    Browser.action.setBadgeText({ text: `${store.getState().counter?.value}` });
     });
-    Browser.storage.session
-      .get(["login"])
-      .then((res) => {
-        store.dispatch(setLogin(res?.login ? res.login : false));
-        resolve(store);
-      })
-      .catch(reject);
+    if (isManifestV3) {
+      Browser.storage.session
+        .get(["login"])
+        .then((res) => {
+          store.dispatch(setLogin(res?.login ? res.login : false));
+          resolve(store);
+        })
+        .catch(reject);
+    } else {
+      Browser.storage.local
+        .get(["login"])
+        .then((res) => {
+
+          store.dispatch(setLogin(res?.login ? res.login : false));
+          resolve(store);
+        })
+        .catch(reject);
+    }
   });
 }
 
