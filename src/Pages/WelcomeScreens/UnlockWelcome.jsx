@@ -64,9 +64,9 @@ function UnlockWelcome() {
         <div className={style.setPassword__footerbuttons}>
           <ButtonComp onClick={handleClick} text={"Unlock"} />
         </div>
-        <div className={style.forgotLink}>
+        {/* <div className={style.forgotLink}>
           <Link to="">Forgot password?</Link>
-        </div>
+        </div> */}
       </div>
     </div>
   );

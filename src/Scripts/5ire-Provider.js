@@ -25,6 +25,10 @@ export class FireProvider {
         this.handlers  = {};
     }
 
+    connect() {
+      return this.passReq("connect", null);
+  }
+
     //for sending some payload with json rpc request
     async send(method, payload) {
         return this.passReq(method, payload);
@@ -50,9 +54,8 @@ export class FireProvider {
     async passReq(method, payload) {
         if (method === undefined && method.trim() === "") return Error("invalid method");
 
-
         //pass the request to extension
-        const isObject = typeof(method) === "object";
+        const isObject = typeof(method) === "object" && method !== undefined;
 
         //check if request for network version and eth_accounts
         const networkIdRes = {
@@ -64,7 +67,11 @@ export class FireProvider {
         if(isObject && !payload && method.method === "eth_accounts") return networkIdRes.result = []
         else if(method === "eth_accounts") return networkIdRes.result = []
 
-        const res  = await this.sendJsonRpc(isObject ? method.method : method, !payload && isObject ? method.params:payload);
+
+        console.log("just before json rpc request: ", method, payload);
+
+        
+        const res  = await this.sendJsonRpc(isObject ? method.method : method, !payload && isObject ? method.params : payload);
         if(res.method !== undefined && res.method === "eth_requestAccounts") this.injectSelectedAccount(res);
 
         return res;
@@ -74,6 +81,7 @@ export class FireProvider {
 
     //internal function used to pass request to extension
     sendMessage(method, payload={}) {
+
         return new Promise((resolve, reject) => {
           try {
             //check for if payload is passed us null
@@ -113,7 +121,7 @@ export class FireProvider {
 
       sendJsonRpc(
         method,
-        message = "",
+        message = {},
         isCb = false,
         cb = null,
         isFull = false
@@ -140,7 +148,7 @@ export class FireProvider {
                   Accept: "application/json",
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ ...message, jsonrpc: "2.0", id: 1 }),
+                body: JSON.stringify({jsonrpc: "2.0", id: 1, method, params: [message]}),
               });
               const content = await rawResponse.json();
               if (content.error) {

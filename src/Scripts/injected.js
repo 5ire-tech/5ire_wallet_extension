@@ -146,6 +146,7 @@ window.fire = {
   },
 };
 
+window.fire = new FireProvider();
 
 injectedStream.on("data", (data) => {
   if (data?.method === "keepAlive") {

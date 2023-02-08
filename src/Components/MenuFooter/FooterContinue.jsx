@@ -77,15 +77,16 @@ export const FooterStepTwo = () => {
 };
 
 export const FooterStepThree = () => {
-  const { pass, passError } = useSelector((state) => state.auth);
+  const { pass, passError} = useSelector((state) => state.auth);
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
   const { setUserPass } = useAuth();
   const dispatch = useDispatch();
 
-  const handleCancle = () => {
-    navigate("/createwalletchain");
-  };
+  // const handleCancle = () => {
+  //   if(isLogin) 
+  //   navigate("/createwalletchain");
+  // };
 
   const handleSubmit = async () => {
     if (!passError) {
@@ -116,12 +117,12 @@ export const FooterStepThree = () => {
   return (
     <>
       <div className={style.menuItems__cancleContinue}>
-        <ButtonComp
+        {/* <ButtonComp
           bordered={true}
           text={"Cancel"}
           maxWidth={"100%"}
           onClick={handleCancle}
-        />
+        /> */}
 
         {show && (
           <div className="loader">
@@ -138,6 +139,7 @@ export const FooterStepThree = () => {
     </>
   );
 };
+
 export const ApproveLogin = () => {
   const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();

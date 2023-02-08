@@ -20,7 +20,7 @@ function init(preloadedState) {
     const store = configureStore({
       reducer: { auth: authReducer },
       preloadedState,
-      // middleware: [logger],
+      middleware: [logger],
     });
 
     wrapStore(store, { portName: PORT_NAME });
@@ -171,26 +171,21 @@ export async function httpRequest(url, payload) {
 //set interval for 15 to check pending transaction status
 export function checkTransactions() {
     const id = setInterval(() => {
-      Browser.storage.local.get("state")
-      .then((value) => {
-        checkAndUpdateTx(value);
-      })
-      .catch((err) => {
-        console.log("Error while checking transaction status: ", err.message);
-      })
-    }, 20000)
-    
+        checkAndUpdateTx();
+    }, 20000);
     return id;
 }
 
 // check if transaction is success or failed and update it into storage
-async function checkAndUpdateTx(txState) {
+async function checkAndUpdateTx() {
   try {
     const store = await loadStore(false);
+    const state = await store.getState();
+
     const noti = new Controller(store)
     const rpcUrl = "https://chain-node.5ire.network";
-    const transactions = txState.state.auth.currentAccount.txHistory.filter(item => item.status === "Pending" && item.isEvm);
-    const accountName = txState.state.auth.accountName;
+    const transactions = state.auth.currentAccount.txHistory.filter(item => item.status === "Pending" && item.isEvm);
+    const accountName = state.auth.accountName;
 
     console.log("Here is the Transaction state: ", transactions);
     if(transactions.length < 0) return;

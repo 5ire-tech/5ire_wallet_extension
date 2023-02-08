@@ -53,9 +53,6 @@ function Swap() {
     if (!(isNaN(amount))) {
       getFee();
     }
-    //  else {
-    //   setGassFee("0");
-    // }
   }, [amount, toFrom]);
 
   const getFee = async () => {
