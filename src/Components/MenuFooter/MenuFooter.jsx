@@ -37,7 +37,7 @@ import { shortner, formatDate } from "../../Helper/helper";
 function MenuFooter() {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const { accounts, currentAccount } = useSelector((state) => state.auth);
+  const { accounts, currentAccount, currentNetwork } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const getLocation = useLocation();
   const path = getLocation.pathname.replace("/", "");
@@ -45,6 +45,7 @@ function MenuFooter() {
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
   const [open2, setOpen2] = useState(false);
+  const [history,setHistory] = useState([]);
 
   const onClose1 = () => {
     setOpen1(false);
@@ -86,6 +87,20 @@ function MenuFooter() {
     onClose()
   };
 
+  const handleHistoryOpen =  () => {
+    setOpen1(true);
+    let filterData = currentAccount.txHistory.filter((his)=>{
+      return his.chain === currentNetwork.toLowerCase();
+    });
+    console.log("filtered Acc : ",filterData);
+    let newArr = [];
+    for (let i = filterData.length -1; i >= 0; i--) {
+        newArr.push(filterData[i]);
+    }
+    console.log("New Arr : ",newArr);
+    setHistory(newArr);
+  }
+
 
   const edited = false;
 
@@ -107,7 +122,8 @@ function MenuFooter() {
       {path === "wallet" && (
         <Link
           to="#"
-          onClick={() => setOpen1(true)}
+          // onClick={() => setOpen1(true)}
+          onClick={handleHistoryOpen}
           className={`${style.menuItems__items} ${path === "history" ? style.menuItems__items__active : ""
             }`}
         >
@@ -126,10 +142,10 @@ function MenuFooter() {
         placement="bottom"
         onClose={onClose1}
         open={open1}
-        closeIcon={<img src={ModalCloseIcon} />}
+        closeIcon={<img src={ModalCloseIcon} alt = "close"/>}
       >
-        {currentAccount?.txHistory.length > 0 ? (
-          currentAccount?.txHistory?.map((data) => (
+        {history?.length > 0 ? (
+          history?.map((data) => (
             <TransectionHistry
               dateTime={formatDate(data.dateTime)}
               type={data?.type}

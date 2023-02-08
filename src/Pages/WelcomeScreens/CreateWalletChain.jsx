@@ -17,14 +17,14 @@ function CreateWalletChain() {
     evmAddress: "",
     nativeAddress: "",
   });
-
+  console.log("data");
   useEffect(() => {
     let res;
     if ((newAccount === null || newAccount === undefined) && !isLogin)
       res = walletSignUp();
     if (isLogin) res = walletSignUp();
 
-    // console.log("res: ", res);
+    console.log("res: ", res);
 
     if (res?.error) toast.error(res.data);
   }, []);

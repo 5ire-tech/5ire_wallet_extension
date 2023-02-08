@@ -102,11 +102,12 @@ function Send() {
       }
 
       if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
+        // console.log("balance.nativeBalance : ",balance.nativeBalance);
         if (!data.to || !data.to.startsWith("5"))
           setErr((p) => ({ ...p, to: "Please enter to address correctly!" }));
         else if (data.to === currentAccount.nativeAddress)
           setErr((p) => ({ ...p, to: "To can't be same as your current address!" }));
-        else if (data.amount >= balance.nativeBalance)
+        else if (Number(data.amount) >= Number(balance.nativeBalance))
           toast.error("Insufficient Balance!");
 
         else {
