@@ -311,49 +311,22 @@ export default function UseWallet() {
         const hash = txInfo.transactionHash;
 
         if (hash) {
-<<<<<<< HEAD
-          let index = getAccId(currentAccount.id);
-          let dataToDispatch = {
-            data: {
-=======
 
           let index = getAccId(currentAccount.id);
           let dataToDispatch = {
             data: {
               chain: currentNetwork.toLowerCase(),
->>>>>>> 87f7c3d9fe7fc9e895784a90448a902d71478822
               isEvm: true,
               dateTime: new Date(),
               to: data.to,
               type: TX_TYPE?.SEND,
               amount: data.amount,
-<<<<<<< HEAD
-              status: STATUS.PENDING,
-              txHash: hash
-=======
               txHash: hash,
               status: STATUS.PENDING
->>>>>>> 87f7c3d9fe7fc9e895784a90448a902d71478822
             },
             index: index,
           };
           dispatch(setTxHistory(dataToDispatch));
-<<<<<<< HEAD
-          // dataToDispatch.data.txHash = hash;/
-          // evmApi.eth.getTransactionReceipt(hash, (err, res) => {
-          //   if (res) {
-
-          //     if (res.status)
-          //       dataToDispatch.data.status = STATUS.SUCCESS;
-          //     else
-          //       dataToDispatch.data.status = STATUS.FAILED;
-          //   } else
-          //     dataToDispatch.data.status = STATUS.PENDING;
-
-          //   dispatch(setTxHistory(dataToDispatch));
-          // });
-=======
->>>>>>> 87f7c3d9fe7fc9e895784a90448a902d71478822
           dispatch(toggleLoader(false));
           resolve({
             error: false,
@@ -543,10 +516,6 @@ export default function UseWallet() {
     return (new Promise(async (resolve, reject) => {
       try {
         dispatch(toggleLoader(true));
-<<<<<<< HEAD
-
-=======
->>>>>>> 87f7c3d9fe7fc9e895784a90448a902d71478822
 
         const seedAlice = mnemonicToMiniSecret(
           decryptor(currentAccount?.temp1m, pass)
@@ -571,23 +540,11 @@ export default function UseWallet() {
         const txInfo = await evmApi.eth.sendSignedTransaction(signedTx.rawTransaction);
         const signHash = txInfo.transactionHash;
 
-<<<<<<< HEAD
-        if (hash) {
-
-=======
         if (signHash) {
->>>>>>> 87f7c3d9fe7fc9e895784a90448a902d71478822
           const withdraw = await nativeApi.tx.evm.withdraw(
             publicKey.slice(0, 42),
             (new BigNumber(amount).multipliedBy(10 ** 18)).toString()
           );
-<<<<<<< HEAD
-          await withdraw.signAndSend(alice);
-
-          let index = getAccId(currentAccount.id);
-          let dataToDispatch = {
-            data: {
-=======
           let signRes = await withdraw.signAndSend(alice);
 
           console.log("Sign Res : ", signRes.toHex());
@@ -595,32 +552,11 @@ export default function UseWallet() {
           let dataToDispatch = {
             data: {
               chain: currentNetwork.toLowerCase(),
->>>>>>> 87f7c3d9fe7fc9e895784a90448a902d71478822
               isEvm: true,
               dateTime: new Date(),
               to: "Evm to Native",
               type: TX_TYPE?.SWAP,
               amount: amount,
-<<<<<<< HEAD
-              txHash: hash,
-              status: STATUS.PENDING
-            },
-            index: index,
-          };
-            dispatch(setTxHistory(dataToDispatch));
-          // evmApi.eth.getTransactionReceipt(hash, (err, res) => {
-          //   if (res) {
-          //     console.log("Response : ", res);
-          //     if (res.status)
-          //       dataToDispatch.data.status = STATUS.SUCCESS;
-          //     else
-          //       dataToDispatch.data.status = STATUS.FAILED;
-          //   } else
-          //     dataToDispatch.data.status = STATUS.PENDING;
-
-          //   dispatch(setTxHistory(dataToDispatch));
-          // });
-=======
               txHash: { hash: signRes.toHex(), mainHash: signHash },
               status: STATUS.PENDING
             },
@@ -628,7 +564,6 @@ export default function UseWallet() {
           };
 
           dispatch(setTxHistory(dataToDispatch));
->>>>>>> 87f7c3d9fe7fc9e895784a90448a902d71478822
           dispatch(toggleLoader(false));
 
           resolve({
