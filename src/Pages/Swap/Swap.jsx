@@ -123,21 +123,21 @@ function Swap() {
         toFrom.to.toLowerCase() === NATIVE.toLowerCase() &&
         amount
       ) {
-        if (Number(amount) >= Number(balance.evmBalance)) {
-          toast.error("Insufficent Balance!")
+        // if (Number(amount) >= Number(balance.evmBalance)) {
+        //   toast.error("Insufficent Balance!")
+        // } else {
+        let res = await evmToNativeSwap(amount);
+        if (res.error) {
+          setIsFaildOpen(true);
         } else {
-          let res = await evmToNativeSwap(amount);
-          if (res.error) {
-            setIsFaildOpen(true);
-          } else {
-            setIsModalOpen(true);
-            setTxHash(res.data);
-            setTimeout(() => {
-              getEvmBalance();
-              getNativeBalance();
-            }, 60000);
-          }
+          setIsModalOpen(true);
+          setTxHash(res.data);
+          setTimeout(() => {
+            getEvmBalance();
+            getNativeBalance();
+          }, 60000);
         }
+        // }
       }
 
       else if (
@@ -149,7 +149,7 @@ function Swap() {
           toast.error("Insufficent Balance!")
         } else {
           let res = await nativeToEvmSwap(amount);
-          console.log("Res : ",res);
+          console.log("Res : ", res);
           if (res.error) {
             setIsFaildOpen(true);
           } else {

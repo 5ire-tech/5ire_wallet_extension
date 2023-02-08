@@ -29,6 +29,7 @@ export const userState = {
   currentNetwork: "Testnet",
 
   accountName: "",
+  
   "eth_accounts": '',
 
   isLogin: false,
@@ -88,7 +89,7 @@ export const userSlice = createSlice({
       else if (action.payload.of === "native")
         state.balance.nativeBalance = action.payload.balance;
     },
-    
+
     resetBalance: (state) => {
       state.balance = {
         evmBalance: "",

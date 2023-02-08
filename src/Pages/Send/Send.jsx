@@ -83,8 +83,8 @@ function Send() {
           setErr((p) => ({ ...p, to: "Please enter to address correctly!" }));
         else if (data.to === currentAccount.evmAddress)
         setErr((p) => ({ ...p, to: "To can't be same as your current address!" }));
-        else if (Number(data.amount) >= Number(balance.evmBalance))
-          toast.error("Insufficient Balance!");
+        // else if (Number(data.amount) >= Number(balance.evmBalance))
+        //   toast.error("Insufficient Balance!");
 
         else {
           const res = await evmTransfer(data);
@@ -107,8 +107,8 @@ function Send() {
           setErr((p) => ({ ...p, to: "Please enter to address correctly!" }));
         else if (data.to === currentAccount.nativeAddress)
           setErr((p) => ({ ...p, to: "To can't be same as your current address!" }));
-        else if (Number(data.amount) >= Number(balance.nativeBalance))
-          toast.error("Insufficient Balance!");
+        // else if (Number(data.amount) >= Number(balance.nativeBalance))
+        //   toast.error("Insufficient Balance!");
 
         else {
           const res = await nativeTransfer(data);
