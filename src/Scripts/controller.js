@@ -12,6 +12,7 @@ import authReducer, {
 } from "../Store/reducer/auth";
 import NotificationManager from "./platform";
 
+
 // Initializes the Redux store
 function init(preloadedState) {
   return new Promise((resolve, reject) => {
@@ -20,7 +21,7 @@ function init(preloadedState) {
     const store = configureStore({
       reducer: { auth: authReducer },
       preloadedState,
-      middleware: [logger],
+      // middleware: [logger],
     });
 
     wrapStore(store, { portName: PORT_NAME });
@@ -43,7 +44,7 @@ function init(preloadedState) {
       .catch(reject);
   });
 }
-
+//Load the redux store
 export function loadStore(sendStoreMessage = true) {
   return new Promise(async (resolve) => {
     try {
@@ -63,6 +64,7 @@ export function loadStore(sendStoreMessage = true) {
   });
 }
 
+//inject the script on current webpage
 export async function initScript() {
   try {
     await Browser.scripting.registerContentScripts([
@@ -86,6 +88,8 @@ export async function initScript() {
   }
 }
 
+
+//controller class for permission related methods
 export class Controller {
   constructor(store) {
     this.store = store;
@@ -106,19 +110,18 @@ export class Controller {
   }
 
 
+
+  //for connecting the accounts to a specfic webpage
   async handleConnect(data) {
     const state = this.store.getState();
 
     const isEthReq =
-      data?.message?.method === "eth_requestAccounts" ||
-      data?.message?.method === "eth_accounts";
+      data?.method === "eth_requestAccounts" ||
+      data?.method === "eth_accounts";
     const isExist = state.auth.connectedSites.find(
       (st) => st.origin === data.message?.origin
     );
-    // console.log("HERE ALLL", state.auth.uiData.message?.origin, data.message?.origin)
-    // if (state.auth.uiData.message?.origin === data.message?.origin) {
-    //   return;
-    // }
+
     if (isExist?.isConnected) {
       const res = isEthReq
         ? [state.auth.currentAccount.evmAddress]
@@ -139,9 +142,10 @@ export class Controller {
     }
   }
 
-  async handleEthTransaction(data) {
 
-    console.log("here is the data: ", data);
+
+  //for transaction from connected website
+  async handleEthTransaction(data) {
 
     this.store.dispatch(
       setUIdata({
@@ -155,6 +159,8 @@ export class Controller {
 
 }
 
+
+//for http-requests
 export async function httpRequest(url, payload) {
     const res = await fetch(url, {
       method: "POST",
@@ -168,7 +174,7 @@ export async function httpRequest(url, payload) {
 }
 
 
-//set interval for 15 to check pending transaction status
+//set interval for 20sec to check pending transaction status
 export function checkTransactions() {
     const id = setInterval(() => {
         checkAndUpdateTx();
@@ -185,7 +191,7 @@ async function checkAndUpdateTx() {
     const noti = new Controller(store)
     const rpcUrl = "https://chain-node.5ire.network";
     const transactions = state.auth.currentAccount.txHistory.filter(item => item.status === "Pending" && item.isEvm);
-    const accountName = state.auth.accountName;
+    const accountName = state.auth.currentAccount.accountName;
 
     console.log("Here is the Transaction state: ", transactions);
     if(transactions.length < 0) return;
@@ -203,7 +209,7 @@ async function checkAndUpdateTx() {
 
       if(txRecipt) {
         store.dispatch(updateTxHistory({txHash, accountName, status: Boolean(parseInt(txRecipt.result.status))}));
-        noti.showNotification(`Transaction ${Boolean(parseInt(txRecipt.result.status)) ? "Success" : "Failed"} ${txHash.slice(0, 8)} ...`)
+        noti.showNotification(`Transaction ${Boolean(parseInt(txRecipt.result.status)) ? "Success" : "Failed"} ${txHash.slice(0, 30)} ...`)
       }
 
     }

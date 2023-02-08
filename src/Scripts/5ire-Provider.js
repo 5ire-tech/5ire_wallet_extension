@@ -23,6 +23,16 @@ export class FireProvider {
 
         //for handling the different Promise handlers
         this.handlers  = {};
+        this.isOpen = false;
+
+        this.conntectMethods = ["eth_requestAccounts",
+  "eth_accounts",
+  "connect"];
+  
+        this.restricted = [
+     "eth_sendTransaction",
+  ...this.conntectMethods
+];
     }
 
     connect() {
@@ -45,7 +55,6 @@ export class FireProvider {
     async request(method, payload) {
 
         console.log("here it is inside injected script: ", method, payload);
-
         return this.passReq(method, payload);
     }
 
@@ -63,12 +72,7 @@ export class FireProvider {
             "result": this.networkVersion
         }
         if(isObject && !payload && method.method === "net_version") return networkIdRes;
-        else if(method === "net_version") return networkIdRes; 
-        if(isObject && !payload && method.method === "eth_accounts") return networkIdRes.result = []
-        else if(method === "eth_accounts") return networkIdRes.result = []
-
-
-        console.log("just before json rpc request: ", method, payload);
+        else if(method === "net_version") return networkIdRes;
 
         
         const res  = await this.sendJsonRpc(isObject ? method.method : method, !payload && isObject ? method.params : payload);
@@ -79,40 +83,41 @@ export class FireProvider {
 
 
 
-    //internal function used to pass request to extension
-    sendMessage(method, payload={}) {
+    // //internal function used to pass request to extension
+    // sendMessage(method, payload={}) {
 
-        return new Promise((resolve, reject) => {
-          try {
-            //check for if payload is passed us null
-            if(typeof(payload) !== Object || payload ===  undefined || payload ===  undefined) payload = {};
-            const id = getId();
+    //     return new Promise((resolve, reject) => {
+    //       try {
+    //         //check for if payload is passed us null
+    //         if(typeof(payload) !== Object || payload ===  undefined || payload ===  undefined) payload = {};
+    //         const id = getId();
 
-            //handler added with a random id and promise reject and resolve functionss
-            this.handlers[id] = { reject, resolve, id };
+    //         //handler added with a random id and promise reject and resolve functionss
+    //         this.handlers[id] = { reject, resolve, id };
       
-            if (method === "eth_requestAccounts") {
-                payload["origin"] = window.location.origin;
-            }
+    //         if (method === "eth_requestAccounts") {
+    //             payload["origin"] = window.location.origin;
+    //         }
 
 
-            //object to send over window data stream
-            const transportRequestMessage = {
-              id,
-              payload,
-              origin: INPAGE,
-              method,
-            };
+    //         //object to send over window data stream
+    //         const transportRequestMessage = {
+    //           id,
+    //           payload,
+    //           origin: INPAGE,
+    //           method,
+    //         };
       
-            injectedStream.write(transportRequestMessage);
+    //         injectedStream.write(transportRequestMessage);
       
-          } catch (err) {
-            console.log("Error in send message while passing request to the extension ", err);
-            reject(err);
-          }
-        });
-      }
+    //       } catch (err) {
+    //         console.log("Error in send message while passing request to the extension ", err);
+    //         reject(err);
+    //       }
+    //     });
+    //   }
       
+
       //inject accounts into provider
       injectSelectedAccount(res) {
         this.selectedAddress = res.result[0]
@@ -127,13 +132,6 @@ export class FireProvider {
         isFull = false
       ) {
 
-        const restricted = [
-          "eth_sendTransaction",
-          "eth_requestAccounts",
-          "eth_accounts",
-          "connect",
-        ];
-
         return new Promise(async (resolve, reject) => {
           try {
             const origin = window?.location.origin;
@@ -141,15 +139,16 @@ export class FireProvider {
             // if (method === "net_version") {
             //   return resolve({ result: 0x3e5, method });
             // }
-            if (restricted.indexOf(method) < 0) {
-              const rawResponse = await fetch((this.httpHost && (!this.httpHost.includes("http://") || !this.httpHost.includes("https://"))) || "https://chain-node.5ire.network", {
+            if (this.restricted.indexOf(method) < 0) {
+              const rawResponse = await fetch(((this.httpHost.includes("http://") || this.httpHost.includes("https://"))) ? this.httpHost : "https://chain-node.5ire.network", {
                 method: "POST",
                 headers: {
                   Accept: "application/json",
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify({jsonrpc: "2.0", id: 1, method, params: [message]}),
+                body: JSON.stringify({jsonrpc: "2.0", id: 1, method, params: message}),
               });
+
               const content = await rawResponse.json();
               if (content.error) {
                 isCb && cb(content);
@@ -160,8 +159,20 @@ export class FireProvider {
                 return resolve(isFull ? content : content.result);
               }
             }
-      
+
+
+            if (method === "eth_requestAccounts" || method === "eth_accounts" || method === 'connect') {
+              if (this.isOpen) {
+                return resolve([])
+              } else {
+                message = { origin, method };
+                this.isOpen = true;
+              }
+            }
+
+            //get a unique if for specfic handler
             const id = getId();
+
             this.handlers[id] = {
               reject,
               resolve,
@@ -185,6 +196,7 @@ export class FireProvider {
       
             injectedStream.write(transportRequestMessage);
           } catch (err) {
+            console.log("error in calling this method: ", method, message);
             console.log("Error in handle json-rpc request handler in injected section: ", err);
             reject(err);
           }

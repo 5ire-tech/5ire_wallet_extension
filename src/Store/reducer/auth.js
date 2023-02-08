@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 
 export const userState = {
   pass: null,
@@ -102,11 +102,13 @@ export const userSlice = createSlice({
     },
 
     updateTxHistory: (state, action) => {
+
      const currentTx =  state.currentAccount.txHistory.find((item) => item.txHash === action.payload.txHash);
-     const otherAccTx = state.accounts.find((item) => item.accountName === action.payload.accountName)?.txHistory.find(item => item.txHash === action.payload.txHash);
+     const otherAcc = state.accounts.find(item => item.accountName === action.payload.accountName)
+     const otherTx = otherAcc.txHistory.find(item => item.txHash === action.payload.txHash && item.isEvm)
 
      if(currentTx) currentTx.status = action.payload.status ? "Success": "Failed";
-     if(otherAccTx) otherAccTx.status = action.payload.status ? "Success": "Failed";
+     if(otherTx) otherTx.status = action.payload.status ? "Success": "Failed";
 
     },
 
