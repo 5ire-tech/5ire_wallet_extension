@@ -111,9 +111,15 @@ export const userSlice = createSlice({
 
     updateTxHistory: (state, action) => {
 
-     const currentTx =  state.currentAccount.txHistory.find((item) => item.txHash === action.payload.txHash);
+     const currentTx =  state.currentAccount.txHistory.find((item) => {
+      if(action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash && item.isEvm;
+      return item.txHash === action.payload.txHash && item.isEvm
+     });
      const otherAcc = state.accounts.find(item => item.accountName === action.payload.accountName)
-     const otherTx = otherAcc.txHistory.find(item => item.txHash === action.payload.txHash && item.isEvm)
+     const otherTx = otherAcc.txHistory.find((item) => {
+      if(action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash && item.isEvm;
+      return item.txHash === action.payload.txHash && item.isEvm
+     })
 
      if(currentTx) currentTx.status = action.payload.status ? "Success": "Failed";
      if(otherTx) otherTx.status = action.payload.status ? "Success": "Failed";

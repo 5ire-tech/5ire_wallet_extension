@@ -59,7 +59,7 @@ export class FireProvider {
     //requesting some data from chain
     async request(method, payload) {
 
-        console.log("here it is inside injected script: ", method, payload);
+        // console.log("here it is inside injected script: ", method, payload);
         return this.passReq(method, payload);
     }
 
@@ -145,7 +145,7 @@ export class FireProvider {
         return new Promise(async (resolve, reject) => {
           try {
             const origin = window?.location.origin;
-            console.log("Method and Message: ", method, message);
+            // console.log("Method and Message: ", method, message);
             // if (method === "net_version") {
             //   return resolve({ result: 0x3e5, method });
             // }

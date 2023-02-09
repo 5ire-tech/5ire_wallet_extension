@@ -9,7 +9,7 @@ const contentStream = new WindowPostMessageStream({
 
 contentStream.on("data", async (data) => {
 
-  console.log("here is data in content: ", data);
+  // console.log("here is data in content: ", data);
 
   try {
     switch (data.method) {

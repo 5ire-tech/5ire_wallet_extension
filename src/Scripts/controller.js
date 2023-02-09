@@ -150,6 +150,8 @@ export class Controller {
       (st) => st.origin === data.message?.origin
     );
 
+    console.log("is Connected Website: ", isExist?.isConnected);
+
     if (isExist?.isConnected) {
       const res = isEthReq
         ? [state.auth.currentAccount.evmAddress]
@@ -230,13 +232,16 @@ async function checkAndUpdateTx() {
     and send the success notification
     */ 
     for(const item of transactions) {
-      const txHash = item.txHash;
-      const txRecipt = await httpRequest(rpcUrl, JSON.stringify({jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [item.txHash], id: 1}));
+      const txHash = typeof(item.txHash) === "object" ? item.txHash.mainHash : item.txHash;
+      //check if transaction is swap or not
+      const isSwap = item.type === "swap";
 
-      console.log("tx status: ", txRecipt.result.status, txRecipt);
+      const txRecipt = await httpRequest(rpcUrl, JSON.stringify({jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [txHash], id: 1}));
 
-      if(txRecipt) {
-        store.dispatch(updateTxHistory({txHash, accountName, status: Boolean(parseInt(txRecipt.result.status))}));
+      // console.log("result: ", txRecipt);
+
+      if(txRecipt.result) {
+        store.dispatch(updateTxHistory({txHash, accountName, status: Boolean(parseInt(txRecipt.result.status)), isSwap}));
         noti.showNotification(`Transaction ${Boolean(parseInt(txRecipt.result.status)) ? "Success" : "Failed"} ${txHash.slice(0, 30)} ...`)
       }
 

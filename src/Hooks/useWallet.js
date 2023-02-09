@@ -270,9 +270,13 @@ export default function UseWallet() {
   };
 
   const evmTransfer = async (data, isBig = false) => {
+
+    console.log("Amount balance: ", (Number(data.amount), Number(balance.evmBalance)));
+
     return (new Promise(async (resolve, reject) => {
+
       try {
-        if (Number(data.amount) > Number(balance.evmBalance) || Number(data.amount) <= 0) {
+        if ((Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0')  || Number(balance.evmBalance) <= 0) {
           resolve({
             error: true,
             data: "Insufficent Balance!"
@@ -529,7 +533,7 @@ export default function UseWallet() {
   const evmToNativeSwap = async (amount) => {
     return (new Promise(async (resolve, reject) => {
       try {
-        if (Number(amount) >= Number(balance.nativeBalance)|| Number(amount) <= 0) {
+        if (Number(amount) >= Number(balance.evmBalance)|| Number(amount) <= 0) {
           resolve({
             error: true,
             data: "Insufficent Balance!"
