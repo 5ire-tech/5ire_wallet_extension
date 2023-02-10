@@ -23,14 +23,13 @@ export const userState = {
 
   wsEndPoints: {
     qa: "wss://qa-wss-nodes.5ire.network",
-    testnet: "wss://wss-testnet.5ire.network/",
-
-    //"https://chain-node.5ire.network"
+    testnet: "wss://testnet.5ire.network"
   },
 
   balance: {
     evmBalance: "",
     nativeBalance: "",
+    totalBalance: ""
   },
 
   currentNetwork: "Testnet",
@@ -45,6 +44,8 @@ export const userState = {
 
   connectedSites: [],
   isLoading: false,
+  
+  isApiReady:false
 };
 
 export const userSlice = createSlice({
@@ -90,11 +91,17 @@ export const userSlice = createSlice({
       state.currentNetwork = action.payload;
     },
 
+    // setBalance: (state, action) => {
+    //   if (action.payload.of === "evm")
+    //     state.balance.evmBalance = action.payload.balance;
+    //   else if (action.payload.of === "native")
+    //     state.balance.nativeBalance = action.payload.balance;
+    // },
+    
     setBalance: (state, action) => {
-      if (action.payload.of === "evm")
-        state.balance.evmBalance = action.payload.balance;
-      else if (action.payload.of === "native")
-        state.balance.nativeBalance = action.payload.balance;
+      state.balance.evmBalance = action.payload.evmBalance;
+      state.balance.nativeBalance = action.payload.nativeBalance;
+      state.balance.totalBalance = action.payload.totalBalance;
     },
 
     resetBalance: (state) => {
@@ -143,6 +150,10 @@ export const userSlice = createSlice({
     toggleLoader: (state, action) => {
       state.isLoading = action.payload;
     },
+
+    setApiReady : (state, action) => {
+      state.isApiReady = action.payload;
+    }
   },
 });
 
@@ -164,7 +175,8 @@ export const {
   pushAccounts,
   setNewAccount,
   resetBalance,
-  updateTxHistory
+  updateTxHistory,
+  setApiReady
 } = userSlice.actions;
 
 export default userSlice.reducer;

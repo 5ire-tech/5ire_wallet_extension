@@ -5,6 +5,7 @@ import {
   loadStore,
   checkTransactions
 } from "./controller";
+import { setApiReady } from "../Store/reducer/auth";
 import Browser from "webextension-polyfill";
 
 try {
@@ -18,6 +19,11 @@ try {
     if (port.name === CONNECTION_NAME) {
       store = await loadStore();
       isInitialized = true;
+
+      port.onDisconnect.addListener(function () {
+        console.log("popup has been closed !!!!!!!!!!!1");
+        store.dispatch(setApiReady(false));
+      });
     }
   });
 
@@ -38,6 +44,7 @@ try {
   });
 
   Browser.runtime.onStartup.addListener(() => {
+    store.dispatch(setApiReady(false));
     console.log("[background.js] onStartup");
   });
 
@@ -64,7 +71,7 @@ try {
         break;
       case "get_endPoint":
         await controller.sendEndPoint(data);
-      break;
+        break;
       default:
     }
   });
@@ -82,7 +89,7 @@ try {
     console.log("[background.js] onSuspend");
     isInitialized = false;
     //clear the transactions checker interval
-    if(intervalId) clearInterval(intervalId);
+    if (intervalId) clearInterval(intervalId);
   });
 
 

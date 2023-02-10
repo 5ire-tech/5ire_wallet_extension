@@ -39,9 +39,7 @@ export default function useAuth() {
               await Browser.storage.session.set({ login: true });
             } else {
               await Browser.storage.local.set({ login: true });
-
             }
-
             resolve({
               error: false,
               data: "Successfully created password for user!",
@@ -67,8 +65,8 @@ export default function useAuth() {
           await Browser.storage.session.set({ login: true });
         } else {
           await Browser.storage.local.set({ login: true });
+        } 
 
-        }
         return {
           error: false,
           data: "Login successfully!",
@@ -91,10 +89,10 @@ export default function useAuth() {
   const logout = async () => {
     try {
       if (isManifestV3) {
+        console.log("REMOVING LOGOUT FOR MANIFESTV3");
         await Browser.storage.session.remove(["login"]);
       } else {
         await Browser.storage.local.remove(["login"]);
-
       }
       dispatch(setLogin(false));
 

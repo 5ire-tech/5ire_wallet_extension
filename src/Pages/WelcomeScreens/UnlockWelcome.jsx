@@ -8,12 +8,13 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import useAuth from "../../Hooks/useAuth";
 import { toast } from "react-toastify";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setLogin, toggleLoader } from "../../Store/reducer/auth";
 
 function UnlockWelcome() {
   const navigate = useNavigate();
   const { verifyPass } = useAuth();
+  const { isLogin } = useSelector(state => state.auth)
   const dispatch = useDispatch();
   const [data, setData] = useState("");
 
@@ -30,8 +31,9 @@ function UnlockWelcome() {
     dispatch(toggleLoader(false));
 
     if (!res.error) {
-      dispatch(setLogin(true));
-
+      console.log("SeTTING LOGIN true!!!");
+      if (isLogin !== true)
+        dispatch(setLogin(true));
       navigate(location.state?.redirectRoute || "/wallet");
     } else {
       toast.error(res.data);
