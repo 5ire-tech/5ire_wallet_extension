@@ -90,7 +90,7 @@ export class FireProvider {
     async injectHttpProvider() {
       
       const res = await this.passReq("get_endPoint", null)
-        if(res) this.httpHost = res;
+        if(res) this.httpHost = res.result;
     }
       
 
@@ -116,6 +116,8 @@ export class FireProvider {
           this.isOpen = false;
         }
 
+        console.log("method and params: ", method, message);
+
         return new Promise(async (resolve, reject) => {
           try {
             const origin = window?.location.origin;
@@ -124,7 +126,6 @@ export class FireProvider {
             //   return resolve({ result: 0x3e5, method });
             // }
 
-            console.log("http method: ", this.httpHost);
 
             if (this.restricted.indexOf(method) < 0) {
               const rawResponse = await fetch(((this.httpHost?.includes("http://") || this.httpHost?.includes("https://"))) ? this.httpHost : "https://chain-node.5ire.network", {

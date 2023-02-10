@@ -18,7 +18,7 @@ export const userState = {
 
   httpEndPoints: {
     qa: "https://qa-http-nodes.5ire.network",
-    testnet: "https://chain-node.5ire.network"
+    testnet: "https://rpc.5ire.network"
   },
 
   wsEndPoints: {
