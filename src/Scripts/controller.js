@@ -22,7 +22,7 @@ function init(preloadedState) {
     const store = configureStore({
       reducer: { auth: authReducer },
       preloadedState,
-      // middleware: [logger],
+      middleware: [logger],
     });
 
     wrapStore(store, { portName: PORT_NAME });
@@ -128,12 +128,14 @@ export class Controller {
     try {
       const storage = this.store.getState();
 
-      //pass the current network http endpoint
-      Browser.tabs.sendMessage(data.tabId, {
+     if(data.tabId) {
+       //pass the current network http endpoint
+       Browser.tabs.sendMessage(data.tabId, {
         id: data.id,
         response: {result: storage.auth.httpEndPoints[storage.auth.currentNetwork.toLowerCase()]},
         error: null,
       });
+     }
     } catch (err) {
      console.log("error while sending the endpoint for injection"); 
     }
@@ -154,7 +156,7 @@ export class Controller {
 
     if (isExist?.isConnected) {
       const res = isEthReq
-        ? [state.auth.currentAccount.evmAddress]
+        ? {method: data?.method, result: [state.auth.currentAccount.evmAddress]}
         : {
           evmAddress: state.auth.currentAccount.evmAddress,
           nativeAddress: state.auth.currentAccount.nativeAddress,
@@ -204,48 +206,33 @@ export async function httpRequest(url, payload) {
 }
 
 
-//set interval for 20sec to check pending transaction status
-export function checkTransactions() {
-    const id = setInterval(() => {
-        checkAndUpdateTx();
-    }, 20000);
-    return id;
-}
-
 // check if transaction is success or failed and update it into storage
-async function checkAndUpdateTx() {
+export async function checkTransactions(txData) {
   try {
     const store = await loadStore(false);
     const state = await store.getState();
 
     const noti = new Controller(store)
-    const rpcUrl = "https://chain-node.5ire.network";
-    const transactions = state.auth.currentAccount.txHistory.filter(item => item.status === "Pending" && item.isEvm);
     const accountName = state.auth.currentAccount.accountName;
 
-    console.log("Here is the Transaction state: ", transactions);
-    if(transactions.length < 0) return;
-
-
+    console.log("Here is the Transaction state: ", txData);
+  
     /*
     check for every pending transactions and if they success or fail update it into storage
     and send the success notification
     */ 
-    for(const item of transactions) {
-      const txHash = typeof(item.txHash) === "object" ? item.txHash.mainHash : item.txHash;
+      const txHash = typeof(txData.txHash) === "object" ? txData.txHash.mainHash : txData.txHash;
       //check if transaction is swap or not
-      const isSwap = item.type === "swap";
-
+      const isSwap = txData.type === "swap";
+      const rpcUrl = state.auth.httpEndPoints[txData.chain] || "https://chain-node.5ire.network";
       const txRecipt = await httpRequest(rpcUrl, JSON.stringify({jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [txHash], id: 1}));
 
-      // console.log("result: ", txRecipt);
+      console.log("Here is the Transaction Result: ", txRecipt);
 
-      if(txRecipt.result) {
+      if(txRecipt && txRecipt?.result) {
         store.dispatch(updateTxHistory({txHash, accountName, status: Boolean(parseInt(txRecipt.result.status)), isSwap}));
         noti.showNotification(`Transaction ${Boolean(parseInt(txRecipt.result.status)) ? "Success" : "Failed"} ${txHash.slice(0, 30)} ...`)
-      }
-
-    }
+    } else checkTransactions(txData)
 
 
 

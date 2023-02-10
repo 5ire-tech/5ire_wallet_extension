@@ -11,8 +11,7 @@ try {
 
   //background globals
   let isInitialized = false,
-    store,
-    intervalId = null;
+    store;
 
   Browser.runtime.onConnect.addListener(async (port) => {
     if (port.name === CONNECTION_NAME) {
@@ -41,7 +40,13 @@ try {
     console.log("[background.js] onStartup");
   });
 
+
   Browser.runtime.onMessage.addListener(async function (message, sender, cb) {
+
+
+    //check if the current event is transactions
+    if(message?.type === "tx") txNotification(message);
+
 
     if (!isInitialized) {
       store = await loadStore(false);
@@ -81,17 +86,17 @@ try {
   Browser.runtime.onSuspend.addListener(() => {
     console.log("[background.js] onSuspend");
     isInitialized = false;
-    //clear the transactions checker interval
-    if(intervalId) clearInterval(intervalId);
   });
 
 
   //init the scripts (inject the script into current webpage)
   initScript();
 
-  //check the pending transaction status and update status and send notification
-  intervalId = checkTransactions();
-
+  //send the Notification if transaction is confirmed
+  function txNotification(txData) {
+    checkTransactions(txData.data);
+  }
+ 
 } catch (err) {
   console.log("BACKGROUND FILE TRY CATCH:", err)
 }

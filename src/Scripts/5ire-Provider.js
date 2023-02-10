@@ -81,7 +81,6 @@ export class FireProvider {
 
         
         const res  = await this.sendJsonRpc(isObject ? method.method : method, !payload && isObject ? method.params : payload);
-        if(res.method !== undefined && res.method === "eth_requestAccounts") this.injectSelectedAccount(res);
 
         return res;
     }
@@ -89,58 +88,33 @@ export class FireProvider {
 
     //inject the http endpoint for specfic network
     async injectHttpProvider() {
-        const res = await this.passReq("get_endPoint", null)
-        this.httpHost = res.result;
+      
+      const res = await this.passReq("get_endPoint", null)
+        if(res) this.httpHost = res;
     }
-
-    // //internal function used to pass request to extension
-    // sendMessage(method, payload={}) {
-
-    //     return new Promise((resolve, reject) => {
-    //       try {
-    //         //check for if payload is passed us null
-    //         if(typeof(payload) !== Object || payload ===  undefined || payload ===  undefined) payload = {};
-    //         const id = getId();
-
-    //         //handler added with a random id and promise reject and resolve functionss
-    //         this.handlers[id] = { reject, resolve, id };
-      
-    //         if (method === "eth_requestAccounts") {
-    //             payload["origin"] = window.location.origin;
-    //         }
-
-
-    //         //object to send over window data stream
-    //         const transportRequestMessage = {
-    //           id,
-    //           payload,
-    //           origin: INPAGE,
-    //           method,
-    //         };
-      
-    //         injectedStream.write(transportRequestMessage);
-      
-    //       } catch (err) {
-    //         console.log("Error in send message while passing request to the extension ", err);
-    //         reject(err);
-    //       }
-    //     });
-    //   }
       
 
       //inject accounts into provider
       injectSelectedAccount(res) {
-        this.selectedAddress = res.result[0]
+
+        console.log("here is comes: ", res);
+
+        if(res?.result && res?.result?.length) this.selectedAddress = res.result[0]
+        else if(!res?.result) this.selectedAddress = null;
       }
 
 
       sendJsonRpc(
         method,
-        message = {},
+        message = [],
         isCb = false,
         cb = null,
         isFull = false
       ) {
+        //false the isOpen so we can proceded with requested connection
+        if(message?.length && message[0]?.isRequested) {
+          this.isOpen = false;
+        }
 
         return new Promise(async (resolve, reject) => {
           try {
@@ -149,8 +123,11 @@ export class FireProvider {
             // if (method === "net_version") {
             //   return resolve({ result: 0x3e5, method });
             // }
+
+            console.log("http method: ", this.httpHost);
+
             if (this.restricted.indexOf(method) < 0) {
-              const rawResponse = await fetch(((this.httpHost.includes("http://") || this.httpHost.includes("https://"))) ? this.httpHost : "https://chain-node.5ire.network", {
+              const rawResponse = await fetch(((this.httpHost?.includes("http://") || this.httpHost?.includes("https://"))) ? this.httpHost : "https://chain-node.5ire.network", {
                 method: "POST",
                 headers: {
                   Accept: "application/json",

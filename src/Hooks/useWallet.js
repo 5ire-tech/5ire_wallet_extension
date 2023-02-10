@@ -28,6 +28,7 @@ import { setAccountName } from "../Store/reducer/auth";
 import Web3 from "web3";
 import { decryptor, encryptor } from "../Helper/CryptoHelper";
 import { BigNumber } from "bignumber.js";
+import Browser from "webextension-polyfill";
 // import { toast } from "react-toastify";
 
 let evmApi = null;
@@ -59,8 +60,9 @@ export default function UseWallet() {
     evmApi = null;
     nativeApi = null;
   }
-
+  
   useEffect(() => {
+
     if (currentNetwork.toLowerCase() === "testnet") {
       if (tempNet !== wsEndPoints.testnet) {
         tempNet = (wsEndPoints.testnet);
@@ -97,23 +99,10 @@ export default function UseWallet() {
       } else {
         setReady(true);
       }
-    } else {
-
-      let wsNetwork = currentNetwork?.toLowerCase() === (NETWORK.TEST_NETWORK).toLowerCase() ? wsEndPoints?.testnet : wsEndPoints?.qa;
-      tempNet = wsNetwork;
-      Promise.all([initializeNativeApi(wsNetwork), initializeEvmApi(wsNetwork)])
-        .then(() => {
-          console.log("its running low");
-          setReady(true);
-        })
-        .catch((err) => {
-          console.log("Error while connecting the evm and native chain: ", err);
-          setReady(false);
-        })
-    }
+    } 
   }, [currentNetwork]);
 
-  console.log("is api readddyyy : ", isApiReady);
+  console.log("is api ready=============> : ", isApiReady);
   console.log("currentNetwork ", currentNetwork, "temp net : ", tempNet);
 
 
@@ -135,7 +124,7 @@ export default function UseWallet() {
       let options = {
         reconnect: {
           auto: true,
-          delay: 5000, // ms
+          delay: 5000, //ms
           maxAttempts: 10,
           onTimeout: false
         }
@@ -269,11 +258,14 @@ export default function UseWallet() {
     }
   };
 
+
   const evmTransfer = async (data, isBig = false) => {
 
-    console.log("Amount balance: ", (Number(data.amount), Number(balance.evmBalance)));
-
     return (new Promise(async (resolve, reject) => {
+
+      console.log("Condition Here: ", (Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0')  || Number(balance.evmBalance) <= 0);
+      console.log("Here are individual conditions: ", data.amount !== '0x0', (Number(data.amount) > Number(balance.evmBalance), Number(balance.evmBalance) <= 0));
+      console.log("individual balance: ", Number(data.amount), Number(balance.evmBalance), data.amount);
 
       try {
         if ((Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0')  || Number(balance.evmBalance) <= 0) {
@@ -332,6 +324,10 @@ export default function UseWallet() {
               },
               index: index,
             };
+
+            //send the tx notification
+            Browser.runtime.sendMessage({type: "tx", ...dataToDispatch});
+
             dispatch(setTxHistory(dataToDispatch));
             dispatch(toggleLoader(false));
             resolve({
@@ -346,7 +342,7 @@ export default function UseWallet() {
         dispatch(toggleLoader(false));
         resolve({
           error: true,
-          data: "Error occured while sending!",
+          data: error.message,
         });
       }
     }))
@@ -585,6 +581,10 @@ export default function UseWallet() {
               },
               index: getAccId(currentAccount.id),
             };
+
+
+            //send the transaction notification
+            Browser.runtime.sendMessage({type: "tx", ...dataToDispatch});
 
             dispatch(setTxHistory(dataToDispatch));
             dispatch(toggleLoader(false));
