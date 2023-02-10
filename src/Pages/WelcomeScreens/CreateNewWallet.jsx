@@ -20,10 +20,11 @@ function CreateNewWallet() {
   };
 
   const handleClick = () => {
-    if (data.length === 0) setWarrning("Please enter account name!");
+    let data_ = data.trim();
+    if (data_.length === 0) setWarrning("Please enter account name!");
     else {
       const match = accounts.find(e => {
-        if (e.accountName === data) {
+        if (e.accountName === data_) {
           setWarrning("Account with this name is allready exists!");
           return true;
         }
