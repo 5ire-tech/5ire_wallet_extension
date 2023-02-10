@@ -12,18 +12,15 @@ import ModelLogo from "../../Assets/modalLogo.svg";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import { Select } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { resetBalance, setCurrentNetwork, toggleLoader } from "../../Store/reducer/auth";
+import { setCurrentNetwork, toggleLoader } from "../../Store/reducer/auth";
 import useWallet from "../../Hooks/useWallet";
 import QRCode from "react-qr-code";
 import { NATIVE, EVM } from "../../Constants/index";
 import { toast } from "react-toastify";
 import { shortner } from "../../Helper/helper";
 import { getCurrentTabUrl } from "../../Scripts/utils";
-// import { formatNum } from "../../Helper/helper";
 import { NETWORK } from "../../Constants/index";
-import { BigNumber } from "bignumber.js";
-// import ButtonComp from "../ButtonComp/ButtonComp";
-// import ScannerImg from "../../Assets/qrimg.svg";
+
 
 function BalanceDetails({ className, textLeft, mt0 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,9 +34,9 @@ function BalanceDetails({ className, textLeft, mt0 }) {
   const [total_balance, setTotalBalance] = useState("");
   const [isConnected, setIsConnected] = useState(false);
   // const [accountName, setAccName] = useState("");
-  const { getEvmBalance, getNativeBalance, isApiReady } = useWallet();
+  const { getBalance } = useWallet();
   const dispatch = useDispatch();
-  const { currentAccount, currentNetwork, balance, connectedSites } =
+  const { currentAccount, currentNetwork, balance, connectedSites, isApiReady } =
     useSelector((state) => state.auth);
   const getLocation = useLocation();
 
@@ -52,10 +49,9 @@ function BalanceDetails({ className, textLeft, mt0 }) {
         setIsConnected(isExist.isConnected);
       }
     });
-    // dispatch(resetBalance());
+
     if (isApiReady) {
-      getEvmBalance();
-      getNativeBalance();
+      getBalance();
     }
   }, [isApiReady, currentNetwork, currentAccount]);
 
@@ -71,11 +67,10 @@ function BalanceDetails({ className, textLeft, mt0 }) {
     } else {
       setEvmBalance(balance?.evmBalance);
       setNativeBalance(balance?.nativeBalance);
-      let tBalance = Number(balance?.evmBalance) + Number(balance?.nativeBalance);
-      setTotalBalance(new BigNumber(tBalance).toFixed(6, 8).toString());
+      setTotalBalance(balance?.totalBalance);
       dispatch(toggleLoader(false));
     }
-  }, [balance?.evmBalance, balance?.nativeBalance]);
+  }, [balance?.evmBalance, balance?.nativeBalance, balance?.totalBalance]);
 
 
   const path = getLocation.pathname.replace("/", "");
@@ -120,15 +115,36 @@ function BalanceDetails({ className, textLeft, mt0 }) {
           <div className={`${style.balanceDetails} ${mt0 ? mt0 : ""}`}>
             <div className={style.balanceDetails__decoratedSec}>
               <>
-                <img src={DarkLogo} />
+                <img src={DarkLogo} alt="logo"/>
+
                 {path === "wallet" && (
+
                   <div className={style.balanceDetails__accountName}>
-                    <p>
-                      <img src={isConnected ? GreenCircle : GrayCircle} />
-                      {currentAccount?.accountName}
-                    </p>
-                    <span>{addresses.evmAddress}</span>
-                    {/* <span>{currentAccount.evmAddress}</span> */}
+                    {
+                      isConnected ?
+                        <>
+                          <p>
+                            <img src={GreenCircle} alt="connectionLogo" />
+                            {currentAccount?.accountName}
+                          </p>
+                          <span>{addresses.evmAddress}
+                          {" "}
+                            <img
+                              src={CopyIcon}
+                              alt="copyIcon"
+                              name={EVM}
+                              onClick={handleCopy}
+                            />
+                          </span>
+                        </>
+                        :
+                        <p>
+                          <img src={GrayCircle} alt="connectionLogo" />
+                          {currentAccount?.accountName}
+
+                        </p>
+
+                    }
                   </div>
                 )}
                 <div className={style.balanceDetails__selectStyle}>
@@ -235,8 +251,6 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                       viewBox={`0 0 256 256`}
                       value={currentAccount.nativeAddress}
                     />
-                    {/* <img src={ScannerImg} />
-                   */}
                   </div>
                   <div className={style.balanceDetails__nativemodal__modalOr}>
                     <p>or</p>
@@ -258,7 +272,6 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                   <div
                     className={style.balanceDetails__nativemodal__footerbuttons}
                   >
-                    {/* <ButtonComp text={"Share Address"} /> */}
                   </div>
                 </div>
               </div>
@@ -275,7 +288,6 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                     5ire EVM Chain
                   </p>
                   <div className={style.balanceDetails__nativemodal__scanner}>
-                    {/* <img src={ScannerImg} /> */}
                     <QRCode
                       size={200}
                       style={{ height: "auto", maxWidth: "100%", width: "100%" }}

@@ -255,7 +255,7 @@ function MenuFooter() {
         </Link>
         <SocialAccount />
       </Drawer>
-      {(path === "" ||
+      {/* {(path === "" ||
         path === "createNewWallet" ||
         path === "unlockWallet" ||
         path === "importWallet") && (
@@ -264,7 +264,7 @@ function MenuFooter() {
               Need help? Contact <a>Support</a>
             </p>
           </div>
-        )}
+        )} */}
       {path === "beforebegin" && <FooterStepOne />}
       {path === "createwalletchain" && <FooterStepTwo />}
       {path === "setPassword" && <FooterStepThree />}

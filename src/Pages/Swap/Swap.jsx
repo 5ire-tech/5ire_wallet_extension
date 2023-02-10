@@ -20,8 +20,9 @@ function Swap() {
   const {
     evmToNativeSwap,
     nativeToEvmSwap,
-    getEvmBalance,
-    getNativeBalance,
+    // getEvmBalance,
+    // getNativeBalance,
+    getBalance,
     retriveNativeFee,
     retriveEvmFee,
   } = useWallet();
@@ -133,8 +134,9 @@ function Swap() {
           setIsModalOpen(true);
           setTxHash(res.data);
           setTimeout(() => {
-            getEvmBalance();
-            getNativeBalance();
+            getBalance();
+            // getEvmBalance();
+            // getNativeBalance();
           }, 60000);
         }
         // }
@@ -156,8 +158,9 @@ function Swap() {
             setIsModalOpen(true);
             setTxHash(res.data);
             setTimeout(() => {
-              getEvmBalance();
-              getNativeBalance();
+              // getEvmBalance();
+              // getNativeBalance();
+              getBalance();
             }, 60000);
           }
         }

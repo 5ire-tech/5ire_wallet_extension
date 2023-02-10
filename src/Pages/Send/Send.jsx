@@ -21,8 +21,9 @@ function Send() {
   const {
     evmTransfer,
     nativeTransfer,
-    getEvmBalance,
-    getNativeBalance,
+    // getEvmBalance,
+    // getNativeBalance,
+    getBalance,
     retriveEvmFee,
     retriveNativeFee,
   } = useWallet();
@@ -32,7 +33,7 @@ function Send() {
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("native");
   const [txHash, setTxHash] = useState("");
-  const [data, setData] = useState({ to: "", amount: "", memo: "" });
+  const [data, setData] = useState({ to: "", amount: ""});
   const [err, setErr] = useState({ to: "", amount: "" });
   const [gassFee, setGassFee] = useState(0);
 
@@ -59,7 +60,7 @@ function Send() {
 
   const activeSend = (e) => {
     setActiveTab(e.target.name);
-    setData({ to: "", amount: "", memo: "" });
+    setData({ to: "", amount: ""});
     setGassFee(0);
     setErr({ to: "", amount: "" });
   };
@@ -94,8 +95,9 @@ function Send() {
             setTxHash(res.data);
             setIsModalOpen(true);
             setTimeout(() => {
-              getNativeBalance();
-              getEvmBalance();
+              getBalance();
+              // getNativeBalance();
+              // getEvmBalance();
             }, 60000);
           }
         }
@@ -119,8 +121,9 @@ function Send() {
             setIsModalOpen(true);
 
             setTimeout(() => {
-              getNativeBalance();
-              getEvmBalance();
+              getBalance()
+              // getNativeBalance();
+              // getEvmBalance();
             }, 60000);
           }
         }
@@ -133,12 +136,12 @@ function Send() {
 
   const handleOk = () => {
     setIsModalOpen(false);
-    setData({ to: "", amount: "", memo: "" });
+    setData({ to: "", amount: ""});
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
-    setData({ to: "", amount: "", memo: "" });
+    setData({ to: "", amount: ""});
   };
 
   const handleCopy = () => {
@@ -149,7 +152,7 @@ function Send() {
   const handleSwapAgain = () => {
     setIsFaildOpen(false);
     setIsModalOpen(false);
-    setData({ to: "", amount: "", memo: "" });
+    setData({ to: "", amount: ""});
   };
 
   const faildOk = () => {
@@ -218,13 +221,13 @@ function Send() {
               Balance 00.0000 5IRE
             </span> */}
           </div>
-          <InputFieldOnly
+          {/* <InputFieldOnly
             name="memo"
             placeholder={"Memo (Optional)"}
             onChange={handleChange}
             placeholderBaseColor={true}
             coloredBg={true}
-          />
+          /> */}
         </div>
         <div className={style.sendSec__transactionFee}>
           <p>Transaction Fee : {gassFee} 5IRE</p>

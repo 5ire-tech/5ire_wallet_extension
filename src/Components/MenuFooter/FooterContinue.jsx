@@ -77,7 +77,7 @@ export const FooterStepTwo = () => {
 };
 
 export const FooterStepThree = () => {
-  const { pass, passError} = useSelector((state) => state.auth);
+  const { pass, passError, isLogin} = useSelector((state) => state.auth);
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
   const { setUserPass } = useAuth();
@@ -93,23 +93,22 @@ export const FooterStepThree = () => {
       dispatch(toggleLoader(true));
       let res = await setUserPass(pass);
 
-      if (!res.error) {
+      if (res.error) {
+        dispatch(toggleLoader(false));
+        toast.error(res.data);
+      } else {
         dispatch(toggleLoader(false));
 
         setShow(true);
         setTimeout(() => {
-          dispatch(setLogin(true));
-
+          console.log("IS LOGIN ::: ",isLogin);
+          if (isLogin !== true)
+            dispatch(setLogin(true));
           setShow(false);
           setTimeout(() => {
             navigate("/wallet");
           }, 500);
         }, 2000);
-      }
-
-      if (res.error) {
-        dispatch(toggleLoader(false));
-        toast.error(res.data);
       }
     }
   };
@@ -143,6 +142,7 @@ export const FooterStepThree = () => {
 export const ApproveLogin = () => {
   const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+
   function handleClick(isApproved) {
     dispatch(toggleLoader(true));
 
