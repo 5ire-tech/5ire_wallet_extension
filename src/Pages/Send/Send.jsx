@@ -21,8 +21,6 @@ function Send() {
   const {
     evmTransfer,
     nativeTransfer,
-    // getEvmBalance,
-    // getNativeBalance,
     getBalance,
     retriveEvmFee,
     retriveNativeFee,
@@ -33,115 +31,160 @@ function Send() {
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("native");
   const [txHash, setTxHash] = useState("");
-  const [data, setData] = useState({ to: "", amount: ""});
+  const [data, setData] = useState({ to: "", amount: "" });
   const [err, setErr] = useState({ to: "", amount: "" });
-  const [gassFee, setGassFee] = useState(0);
+  const [sendError, setSendError] = useState("");
+  const [gassFee, setGassFee] = useState("");
 
   useEffect(() => {
-    if (data.to && Number(data.amount) > 0) {
+    if ((data.to) && (data.amount)) {
       getFee();
+    } else {
+      setGassFee("");
     }
-    // else {
-    //   setGassFee("0");
-    // }
-  }, [data, activeTab]);
+  }, [data.to, data.amount]);
+
+  const validateAmount = () => {
+    // console.log("");
+    if (!data.amount || isNaN(data.amount) || Number(data.amount) <= 0) {
+      setErr((p) => ({ ...p, amount: "Please enter amount correctly!" }));
+      return { error: true }
+    } else {
+      setErr((p) => ({ ...p, amount: "" }));
+      return { error: false }
+    }
+  }
+
+  const validateToAddress = () => {
+    if (activeTab.toLowerCase() === EVM.toLowerCase()) {
+
+      if (!data.to || !data.to.startsWith("0x")) {
+        setErr((p) => ({ ...p, to: "Please enter to address correctly!" }));
+        return { error: true }
+      } else if (data.to === currentAccount.evmAddress) {
+        setErr((p) => ({ ...p, to: "To can't be same as your current address!" }));
+        return { error: true }
+      } else {
+        setErr((p) => ({ ...p, to: "" }));
+        return { error: false }
+      }
+    }
+    else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
+
+      if (!data.to || !data.to.startsWith("5")) {
+        setErr((p) => ({ ...p, to: "Please enter to address correctly!" }));
+        return { error: true }
+      } else if (data.to === currentAccount.nativeAddress) {
+        setErr((p) => ({ ...p, to: "To can't be same as your current address!" }));
+        return { error: true }
+      } else {
+        setErr((p) => ({ ...p, to: "" }));
+        return { error: false }
+
+      }
+    }
+  }
 
   const getFee = async () => {
-    let fee = 0;
-
-    if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
-      fee = await retriveNativeFee(data.to, data.amount);
+    let amtRes = validateAmount();
+    let addressRes = validateToAddress();
+    if (!(amtRes.error) && !(addressRes.error)) {
+      if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
+        let feeRes = await retriveNativeFee(data.to, data.amount);
+        console.log("Fee Res : ", feeRes);
+        if (feeRes.error) {
+          if (feeRes.data) {
+            setErr(p => ({ ...p, to: feeRes.data }));
+          } else {
+            toast.error("Error while getting fee!");
+          }
+        } else {
+          setGassFee(feeRes.data);
+        }
+      }
+      if (activeTab.toLowerCase() === EVM.toLowerCase()) {
+        let feeRes = await retriveEvmFee(data.to, data.amount);
+        console.log("Fee Res : ", feeRes);
+        if (feeRes.error) {
+          if (feeRes.data) {
+            setErr(p => ({ ...p, to: feeRes.data }));
+          } else {
+            toast.error("Error while getting fee!");
+          }
+        } else {
+          setGassFee(feeRes.data);
+        }
+      }
     }
-    if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-      fee = await retriveEvmFee(data.to, data.amount);
-    }
-    setGassFee(fee);
-  };
-
-  const activeSend = (e) => {
-    setActiveTab(e.target.name);
-    setData({ to: "", amount: ""});
-    setGassFee(0);
-    setErr({ to: "", amount: "" });
   };
 
   const handleChange = (e) => {
     setData((p) => ({
       ...p,
-      [e.target.name]: e.target.value,
+      [e.target.name]: (e.target.value).trim(),
     }));
-    setErr((p) => ({ ...p, [e.target.name]: "" }));
+    setGassFee("");
   };
 
   const handleApprove = async () => {
     try {
-      if (!data.amount || isNaN(data.amount) || Number(data.amount) <= 0)
-        setErr((p) => ({ ...p, amount: "Please enter amount correctly!" }));
+      let amtRes = validateAmount();
+      let addressRes = validateToAddress();
+      if (!(amtRes.error) && !(addressRes.error)) {
 
-      if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-
-        if (!data.to || !data.to.startsWith("0x"))
-          setErr((p) => ({ ...p, to: "Please enter to address correctly!" }));
-        else if (data.to === currentAccount.evmAddress)
-          setErr((p) => ({ ...p, to: "To can't be same as your current address!" }));
-        // else if (Number(data.amount) >= Number(balance.evmBalance))
-        //   toast.error("Insufficient Balance!");
-
-        else {
+        if (activeTab.toLowerCase() === EVM.toLowerCase()) {
           const res = await evmTransfer(data);
-          if (res.error)
+          if (res.error) {
+            setSendError(res.data);
             setIsFaildOpen(true);
+          }
           else {
             setTxHash(res.data);
             setIsModalOpen(true);
             setTimeout(() => {
+              console.log("Getting Balance after Send");
               getBalance();
-              // getNativeBalance();
-              // getEvmBalance();
             }, 60000);
           }
-        }
-      }
-
-      if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
-        // console.log("balance.nativeBalance : ",balance.nativeBalance);
-        if (!data.to || !data.to.startsWith("5"))
-          setErr((p) => ({ ...p, to: "Please enter to address correctly!" }));
-        else if (data.to === currentAccount.nativeAddress)
-          setErr((p) => ({ ...p, to: "To can't be same as your current address!" }));
-        // else if (Number(data.amount) >= Number(balance.nativeBalance))
-        //   toast.error("Insufficient Balance!");
-
-        else {
+        } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
           const res = await nativeTransfer(data);
-          // console.log("res : ", res);
-          if (res.error) setIsFaildOpen(true);
+          if (res.error) {
+            setSendError(res.data);
+            setIsFaildOpen(true);
+          }
           else {
             setTxHash(res.data);
             setIsModalOpen(true);
-
             setTimeout(() => {
+              console.log("Getting Balance after Send");
               getBalance()
-              // getNativeBalance();
-              // getEvmBalance();
             }, 60000);
           }
         }
+        setGassFee("");
       }
+
     } catch (error) {
       console.error("Error : ", error);
       toast.error("Error occured!");
     }
   };
 
+  const activeSend = (e) => {
+    setActiveTab(e.target.name);
+    setData({ to: "", amount: "" });
+    setGassFee(0);
+    setErr({ to: "", amount: "" });
+  };
+
   const handleOk = () => {
     setIsModalOpen(false);
-    setData({ to: "", amount: ""});
+    setData({ to: "", amount: "" });
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
-    setData({ to: "", amount: ""});
+    setData({ to: "", amount: "" });
   };
 
   const handleCopy = () => {
@@ -152,7 +195,7 @@ function Send() {
   const handleSwapAgain = () => {
     setIsFaildOpen(false);
     setIsModalOpen(false);
-    setData({ to: "", amount: ""});
+    setData({ to: "", amount: "" });
   };
 
   const faildOk = () => {
@@ -200,15 +243,18 @@ function Send() {
             placeholderBaseColor={true}
             coloredBg={true}
             onChange={handleChange}
+          // keyUp={validateToAddress}
           />
           <div>
             <span style={{ color: "red" }}>{err.amount}</span>
             <InputField
               coloredBg={true}
+              placeholderBaseColor={true}
               name="amount"
               value={data.amount}
               placeholder={"Enter Amount"}
               onChange={handleChange}
+              // keyUp={validateAmount}
               addonAfter={
                 <span className={style.sendSec__pasteText}>
                   <img src={WalletCardLogo} alt="logo" />
@@ -230,7 +276,7 @@ function Send() {
           /> */}
         </div>
         <div className={style.sendSec__transactionFee}>
-          <p>Transaction Fee : {gassFee} 5IRE</p>
+          <p>Transaction Fee : {gassFee ? gassFee + " 5IRE" : gassFee}</p>
         </div>
       </div>
       <Approve onClick={handleApprove} text="Send" />
@@ -269,7 +315,7 @@ function Send() {
           <div className="innerContact">
             <img src={FaildSwap} alt="swapFaild" />
             <h2 className="title">Send Failed!</h2>
-            <p className="transId">Your Send Request Failed!</p>
+            <p className="transId">{sendError}</p>
 
             <div className="footerbuttons">
               <ButtonComp text={"Swap Again"} onClick={handleSwapAgain} />

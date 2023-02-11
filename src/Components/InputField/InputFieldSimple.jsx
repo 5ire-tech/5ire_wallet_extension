@@ -4,6 +4,7 @@ import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
 import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
 import style from "./style.module.scss";
 import { Link } from "react-router-dom";
+
 function InputFieldSimple({ placeholder }) {
   return (
     <Input.Password
@@ -34,7 +35,8 @@ export const InputField = ({
   onChange,
   name,
   value,
-  type
+  type,
+  keyUp
 }) => {
   return (
     <div className={`${style.boxStyle} inputField ${mb0 ? style.mb0 : ""}`}>
@@ -44,6 +46,7 @@ export const InputField = ({
         type={type ? type : "text"}
         value={value}
         onChange={onChange}
+        onKeyUp={keyUp}
         className={`${style.inputField__input} ${inputSelect ? style.inputField__inputSelect : ""
           }  ${placeholderBaseColor ? "placeholderBaseColor" : ""} ${coloredBg ? style.inputField__coloredBg : ""
           }`}
@@ -64,7 +67,8 @@ export const InputFieldOnly = ({
   onChange,
   name,
   value,
-  type
+  type,
+  keyUp 
 }) => {
   return (
     <div className={`${style.boxStyle} inputFieldOnly `}>
@@ -78,6 +82,7 @@ export const InputFieldOnly = ({
         style={{ minHeight: minHeight }}
         onChange={onChange}
         name={name}
+        onKeyUp={keyUp}
       />
     </div>
   );

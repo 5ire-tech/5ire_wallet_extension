@@ -6,7 +6,7 @@ import {
   ed25519PairFromSeed,
   cryptoWaitReady,
 } from "@polkadot/util-crypto";
-import { u8aToHex } from "@polkadot/util";
+import { u8aToHex, hexToU8a, isHex } from "@polkadot/util";
 // import { waitReady } from "@polkadot/wasm-crypto";
 import { ApiPromise } from "@polkadot/api";
 import { HttpProvider, WsProvider } from "@polkadot/rpc-provider";
@@ -61,7 +61,7 @@ export default function UseWallet() {
     evmApi = null;
     nativeApi = null;
   }
-  
+
   useEffect(() => {
 
     if (currentNetwork.toLowerCase() === "testnet") {
@@ -122,7 +122,7 @@ export default function UseWallet() {
     }
   }, [currentNetwork]);
 
-  console.log("is api ready=============> : ", isApiReady);
+  console.log("is api ready : ", isApiReady);
   console.log("currentNetwork ", currentNetwork, "temp net : ", tempNet);
 
   const initializeApi = async (network) => {
@@ -265,8 +265,8 @@ export default function UseWallet() {
         totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toFixed(6, 8).toString()
       }
 
-      console.log("balance.nativeBalance :: ",balance.nativeBalance,"nativeBalance : ",nativeBalance);
-      console.log("balance.evm :: ",balance.evmBalance,"nativeBalance : ",evmBalance);
+      console.log("balance.nativeBalance :: ", balance.nativeBalance, "nativeBalance : ", nativeBalance);
+      console.log("balance.evm :: ", balance.evmBalance, "nativeBalance : ", evmBalance);
 
       if ((balance.nativeBalance !== nativeBalance && balance.evmBalance !== evmBalance) && (!isNaN(evmBalance) && !(isNaN(nativeBalance)))) {
         const payload = {
@@ -283,12 +283,11 @@ export default function UseWallet() {
     }
   }
 
-
   const evmTransfer = async (data, isBig = false) => {
 
     return (new Promise(async (resolve, reject) => {
 
-      console.log("Condition Here: ", (Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0')  || Number(balance.evmBalance) <= 0);
+      console.log("Condition Here: ", (Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0);
       console.log("Here are individual conditions: ", data.amount !== '0x0', (Number(data.amount) > Number(balance.evmBalance), Number(balance.evmBalance) <= 0));
       console.log("individual balance: ", Number(data.amount), Number(balance.evmBalance), data.amount);
 
@@ -351,7 +350,7 @@ export default function UseWallet() {
             };
 
             //send the tx notification
-            Browser.runtime.sendMessage({type: "tx", ...dataToDispatch});
+            Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch });
 
             dispatch(setTxHistory(dataToDispatch));
             dispatch(toggleLoader(false));
@@ -377,7 +376,7 @@ export default function UseWallet() {
   const nativeTransfer = async (data) => {
     return new Promise(async (resolve, reject) => {
       try {
-        if (Number(data.amount) >= Number(balance.nativeBalance) || Number(data.amount) <= 0) {
+        if (Number(data.amount) >= Number(balance.nativeBalance)){
           resolve({
             error: true,
             data: "Insufficent Balance!"
@@ -609,7 +608,7 @@ export default function UseWallet() {
 
 
             //send the transaction notification
-            Browser.runtime.sendMessage({type: "tx", ...dataToDispatch});
+            Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch });
 
             dispatch(setTxHistory(dataToDispatch));
             dispatch(toggleLoader(false));
@@ -692,6 +691,19 @@ export default function UseWallet() {
       if (toAddress.startsWith("5"))
         toAddress = u8aToHex(toAddress).slice(0, 42);
 
+
+      if (toAddress.startsWith("0x")) {
+        try {
+          amount = Math.round(Number(amount));
+          Web3.utils.toChecksumAddress(toAddress);
+        } catch (error) {
+          dispatch(toggleLoader(false));
+          return ({
+            error: true,
+            data: "Invalid 'to' address!"
+          });
+        }
+      }
       const tx = {
         to: toAddress,
         from: currentAccount?.evmAddress,
@@ -704,21 +716,25 @@ export default function UseWallet() {
       const gasAmount = await evmApi.eth.estimateGas(tx);
       const gasPrice = await evmApi.eth.getGasPrice();
       let fee = (new BigNumber(gasPrice * gasAmount)).dividedBy(10 ** 18).toString();
-      console.log("Fee : ", fee);
+
       dispatch(toggleLoader(false));
-      return fee ? fee : 0;
+      return {
+        error: false,
+        data: fee,
+      }
 
     } catch (error) {
       dispatch(toggleLoader(false));
-      console.log("Error under EVM FEEE", error);
-      return 0;
+      console.log("Error while getting evm fee: ", error);
+      return {
+        error: false,
+      }
     }
   };
 
   const retriveNativeFee = async (toAddress, amount) => {
     try {
       dispatch(toggleLoader(true));
-
       toAddress = toAddress ? toAddress : currentAccount?.evmAddress;
       let transferTx;
       const keyring = new Keyring({ type: "ed25519" });
@@ -727,29 +743,56 @@ export default function UseWallet() {
       );
       const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
 
-      const amt = new BigNumber(amount).multipliedBy(10 ** 18).toString();
-
       if (toAddress.startsWith("0x")) {
+        const amt = new BigNumber(amount).multipliedBy(10 ** 18).toFixed().toString();
+        try {
+          console.log("Amount after ", amt);
+          Web3.utils.toChecksumAddress(toAddress);
+        } catch (error) {
+          dispatch(toggleLoader(false));
+          return ({
+            error: true,
+            data: "Invalid 'to' address!"
+          });
+        }
         transferTx = await nativeApi.tx.evm.deposit(toAddress, amt);
       }
 
       if (toAddress.startsWith("5")) {
-        transferTx = nativeApi.tx.balances.transferKeepAlive(toAddress, amt);
-      }
+        const amt = new BigNumber(amount).multipliedBy(10 ** 18).toString();
+        try {
+          encodeAddress(
+            isHex(toAddress)
+              ? hexToU8a(toAddress)
+              : decodeAddress(toAddress)
+          );
+        } catch (error) {
+          dispatch(toggleLoader(false));
 
+          return ({
+            error: true,
+            data: "Invalid 'to' address!"
+          });
+        }
+        transferTx = nativeApi.tx.balances.transferKeepAlive(toAddress, amt);
+
+      }
       const info = await transferTx?.paymentInfo(alice);
-      console.log(` partialFee=${info.partialFee.toString()}
-    `);
       const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
-      console.log("Fee : ", fee);
+
       dispatch(toggleLoader(false));
 
-      return fee ? fee : 0;
+      return {
+        error: false,
+        data: fee,
+      };
     } catch (error) {
       dispatch(toggleLoader(false));
-
-      console.log("Error : ", error);
-      return 0;
+      console.log("Error while getting native fee: ", error);
+      return {
+        error: true,
+        // data: ""
+      }
     }
   };
 

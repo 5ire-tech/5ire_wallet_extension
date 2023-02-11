@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
+// import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
 import ButtonComp from "../ButtonComp/ButtonComp";
 import style from "./style.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
-import useAuth from "../../Hooks/useAuth";
+// import { toast } from "react-toastify";
+// import useAuth from "../../Hooks/useAuth";
 import {
-  setLogin,
+  // setLogin,
   setSite,
   setUIdata,
   toggleLoader,
@@ -76,68 +76,68 @@ export const FooterStepTwo = () => {
   );
 };
 
-export const FooterStepThree = () => {
-  const { pass, passError, isLogin} = useSelector((state) => state.auth);
-  const [show, setShow] = useState(false);
-  const navigate = useNavigate();
-  const { setUserPass } = useAuth();
-  const dispatch = useDispatch();
+// export const FooterStepThree = () => {
+//   const { pass, passError, isLogin} = useSelector((state) => state.auth);
+//   const [show, setShow] = useState(false);
+//   const navigate = useNavigate();
+//   const { setUserPass } = useAuth();
+//   const dispatch = useDispatch();
 
-  // const handleCancle = () => {
-  //   if(isLogin) 
-  //   navigate("/createwalletchain");
-  // };
+//   // const handleCancle = () => {
+//   //   if(isLogin) 
+//   //   navigate("/createwalletchain");
+//   // };
 
-  const handleSubmit = async () => {
-    if (!passError) {
-      dispatch(toggleLoader(true));
-      let res = await setUserPass(pass);
+//   const handleSubmit = async () => {
+//     if (!passError) {
+//       dispatch(toggleLoader(true));
+//       let res = await setUserPass(pass);
 
-      if (res.error) {
-        dispatch(toggleLoader(false));
-        toast.error(res.data);
-      } else {
-        dispatch(toggleLoader(false));
+//       if (res.error) {
+//         dispatch(toggleLoader(false));
+//         toast.error(res.data);
+//       } else {
+//         dispatch(toggleLoader(false));
 
-        setShow(true);
-        setTimeout(() => {
-          console.log("IS LOGIN ::: ",isLogin);
-          if (isLogin !== true)
-            dispatch(setLogin(true));
-          setShow(false);
-          setTimeout(() => {
-            navigate("/wallet");
-          }, 500);
-        }, 2000);
-      }
-    }
-  };
+//         setShow(true);
+//         setTimeout(() => {
+//           console.log("IS LOGIN ::: ",isLogin);
+//           if (isLogin !== true)
+//             dispatch(setLogin(true));
+//           setShow(false);
+//           setTimeout(() => {
+//             navigate("/wallet");
+//           }, 500);
+//         }, 2000);
+//       }
+//     }
+//   };
 
-  return (
-    <>
-      <div className={style.menuItems__cancleContinue}>
-        {/* <ButtonComp
-          bordered={true}
-          text={"Cancel"}
-          maxWidth={"100%"}
-          onClick={handleCancle}
-        /> */}
+//   return (
+//     <>
+//       <div className={style.menuItems__cancleContinue}>
+//         {/* <ButtonComp
+//           bordered={true}
+//           text={"Cancel"}
+//           maxWidth={"100%"}
+//           onClick={handleCancle}
+//         /> */}
 
-        {show && (
-          <div className="loader">
-            <CongratulationsScreen />
-          </div>
-        )}
+//         {show && (
+//           <div className="loader">
+//             <CongratulationsScreen />
+//           </div>
+//         )}
 
-        <ButtonComp
-          onClick={handleSubmit}
-          text={"Continue"}
-          maxWidth={"100%"}
-        />
-      </div>
-    </>
-  );
-};
+//         <ButtonComp
+//           onClick={handleSubmit}
+//           text={"Continue"}
+//           maxWidth={"100%"}
+//         />
+//       </div>
+//     </>
+//   );
+// };
 
 export const ApproveLogin = () => {
   const auth = useSelector((state) => state.auth);

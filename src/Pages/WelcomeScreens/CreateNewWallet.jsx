@@ -54,7 +54,7 @@ function CreateNewWallet() {
         <div className={style.cardWhite__linkOuter}>
           <p style={{ color: "red" }}>{warrning}</p>
           <InputFieldOnly
-            placeholder={"Type Wallet Name"}
+            placeholder={"Enter Wallet Name"}
             placeholderBaseColor={true}
             coloredBg={true}
             name="accountName"

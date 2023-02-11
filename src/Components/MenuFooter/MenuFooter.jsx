@@ -92,12 +92,10 @@ function MenuFooter() {
     let filterData = currentAccount.txHistory.filter((his)=>{
       return his.chain === currentNetwork.toLowerCase();
     });
-    console.log("filtered Acc : ",filterData);
     let newArr = [];
     for (let i = filterData.length -1; i >= 0; i--) {
         newArr.push(filterData[i]);
     }
-    console.log("New Arr : ",newArr);
     setHistory(newArr);
   }
 
@@ -267,7 +265,7 @@ function MenuFooter() {
         )} */}
       {path === "beforebegin" && <FooterStepOne />}
       {path === "createwalletchain" && <FooterStepTwo />}
-      {path === "setPassword" && <FooterStepThree />}
+      {/* {path === "setPassword" && <FooterStepThree />} */}
       {path === "loginApprove" && <ApproveLogin />}
       {path === "approveTx" && <ApproveTx />}
     </div>
