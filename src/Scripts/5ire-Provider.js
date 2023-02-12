@@ -13,7 +13,7 @@ Custom Web3 provider for interacting with the 5ire browser extension and pass to
 */
 export class FireProvider {
 
-    constructor(httpHost = "https://rpc.5ire.network") {
+    constructor(httpHost = "https://rpc-testnet.5ire.network") {
         this.httpHost = httpHost;
         this.selectedAddress = null;
         this.chainId = "0x3e5";
@@ -128,7 +128,7 @@ export class FireProvider {
 
 
             if (this.restricted.indexOf(method) < 0) {
-              const rawResponse = await fetch(((this.httpHost?.includes("http://") || this.httpHost?.includes("https://"))) ? this.httpHost : "https://rpc.5ire.network", {
+              const rawResponse = await fetch(((this.httpHost?.includes("http://") || this.httpHost?.includes("https://"))) ? this.httpHost : "https://rpc-testnet.5ire.network", {
                 method: "POST",
                 headers: {
                   Accept: "application/json",

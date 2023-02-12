@@ -18,12 +18,12 @@ export const userState = {
 
   httpEndPoints: {
     qa: "https://qa-http-nodes.5ire.network",
-    testnet: "https://rpc.5ire.network"
+    testnet: "https://rpc-testnet.5ire.network"
   },
 
   wsEndPoints: {
     qa: "wss://qa-wss-nodes.5ire.network",
-    testnet: "wss://testnet.5ire.network"
+    testnet: "wss://wss-testnet.5ire.network"
   },
 
   balance: {
