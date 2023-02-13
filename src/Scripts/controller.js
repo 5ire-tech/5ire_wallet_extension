@@ -224,7 +224,7 @@ export async function checkTransactions(txData) {
       const txHash = typeof(txData.txHash) === "object" ? txData.txHash.mainHash : txData.txHash;
       //check if transaction is swap or not
       const isSwap = txData.type === "swap";
-      const rpcUrl = state.auth.httpEndPoints[txData.chain] || "https://chain-node.5ire.network";
+      const rpcUrl = state.auth.httpEndPoints[txData.chain] || "https://rpc-testnet.5ire.network";
       const txRecipt = await httpRequest(rpcUrl, JSON.stringify({jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [txHash], id: 1}));
 
       console.log("Here is the Transaction Result: ", txRecipt);
