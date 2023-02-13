@@ -17,7 +17,7 @@ function CreateWalletChain() {
     evmAddress: "",
     nativeAddress: "",
   });
-  console.log("data");
+
   useEffect(() => {
     let res;
     if ((newAccount === null || newAccount === undefined) && !isLogin)

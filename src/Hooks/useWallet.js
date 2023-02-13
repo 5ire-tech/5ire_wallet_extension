@@ -265,16 +265,13 @@ export default function UseWallet() {
         totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toFixed(6, 8).toString()
       }
 
-      console.log("balance.nativeBalance :: ", balance.nativeBalance, "nativeBalance : ", nativeBalance);
-      console.log("balance.evm :: ", balance.evmBalance, "nativeBalance : ", evmBalance);
-
       if ((balance.nativeBalance !== nativeBalance && balance.evmBalance !== evmBalance) && (!isNaN(evmBalance) && !(isNaN(nativeBalance)))) {
         const payload = {
           evmBalance,
           nativeBalance,
           totalBalance
         }
-        console.log("Payload for set balance", payload);
+        // console.log("Payload for set balance", payload);
         dispatch(setBalance(payload));
       }
 

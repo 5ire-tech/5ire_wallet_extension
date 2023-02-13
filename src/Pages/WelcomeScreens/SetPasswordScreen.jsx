@@ -48,8 +48,6 @@ export default function SetPasswordScreen() {
 
   const validateConfirmPass = () => {
 
-    console.log("pass.confirmPass & pass.pass", pass.confirmPass, pass.pass);
-
     if (pass.confirmPass !== pass.pass) {
       setError("Password and confirm password don't match!");
       return { error: true }
