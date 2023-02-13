@@ -110,7 +110,6 @@ export default function SetPasswordScreen() {
             your device. We recommend 12 characters, with uppercase and lowercase
             letters, symbols and numbers.
           </p>
-          <p style={{ color: "red" }}>{error ? error : ""}</p>
           <div className={style.cardWhite__beginText__passInputSec}>
             <InputFieldOnly
               type="password"
@@ -122,6 +121,7 @@ export default function SetPasswordScreen() {
               keyUp={validatePass}
             />
           </div>
+          <p style={{ color: "red" }}>{error ? error : ""}</p>
           <div className={style.cardWhite__beginText__passInputSec}>
             <InputFieldOnly
               type="password"
