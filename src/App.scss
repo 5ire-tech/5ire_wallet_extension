@@ -276,7 +276,7 @@
   border: 0 !important;
   color: $white !important ;
   padding: 0;
-  &::placeholder{
+  &::placeholder {
     color: $gray !important;
   }
 }
@@ -381,4 +381,13 @@
 
 ::-webkit-scrollbar-corner {
   background: #000;
+}
+
+//Select css//
+.ant-select-item.ant-select-item-option.ant-select-item-option-active.ant-select-item-option-selected
+  span.flexedItemSelect {
+  color: #000 !important;
+}
+.ant-select-item.ant-select-item-option.ant-select-item-option-selected span {
+  color: #000;
 }

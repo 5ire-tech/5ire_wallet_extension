@@ -1,4 +1,7 @@
 @import "../../styles/__vars.scss";
+input::placeholder {
+  color: $white !important;
+}
 .inputSimple {
   background-color: $blue-08132C;
   border-radius: 28px;
@@ -22,6 +25,20 @@
 .inputField {
   &__coloredBg {
     background-color: $blue-08132C !important;
+    input {
+    background-color: $blue-08132C !important;
+    border: 0;
+    padding: 0;
+    color: $white;
+    &:focus , &:focus-visible, &:focus-within{
+      border: 0;
+      box-shadow: none;
+      outline: none;
+    }
+    &::placeholder {
+      color: $white;
+    }
+    }
   }
 
   &__inputSelect {
