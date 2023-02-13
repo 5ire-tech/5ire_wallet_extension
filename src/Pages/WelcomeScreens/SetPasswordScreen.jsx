@@ -13,6 +13,7 @@ import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScr
 export default function SetPasswordScreen() {
   const [pass, setPass] = useState({ pass: "", confirmPass: "" });
   const [error, setError] = useState("");
+  const [confirmError, setconfirmError] = useState("");
   // const [isError, setIsError] = useState(false);
   const dispatch = useDispatch();
   const { isLogin } = useSelector((state) => state.auth);
@@ -49,11 +50,12 @@ export default function SetPasswordScreen() {
   const validateConfirmPass = () => {
 
     if (pass.confirmPass !== pass.pass) {
-      setError("Password and confirm password don't match!");
+      // setconfirmError("Password and confirm password don't match!");
+      toast.error("Password and confirm password don't match!")
       return { error: true }
     }
     else {
-      setError("");
+      setconfirmError("");
       return { error: false }
     }
   }
@@ -63,8 +65,9 @@ export default function SetPasswordScreen() {
       setError("Please fill password or confirm password correctly!");
     } else {
       let confirmRes = validateConfirmPass();
-      console.log("Confirm Res : ",confirmRes);
-      if (!error && !(confirmRes.error)) {
+      // console.log("Confirm Res : ",confirmRes);
+      // console.log("error : ",error);
+      if ((error === "" || error === null) && !(confirmRes.error)) {
         dispatch(toggleLoader(true));
         let res = await setUserPass(pass.pass);
         if (res.error) {
@@ -89,7 +92,6 @@ export default function SetPasswordScreen() {
 
 
   const handleChange = (e) => {
-    setError("");
     setPass((prev) => {
       return {
         ...prev,
