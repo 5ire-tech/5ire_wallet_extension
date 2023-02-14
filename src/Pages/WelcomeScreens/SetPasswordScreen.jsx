@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
+import InputFieldSimple, { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import style from "./style.module.scss";
 import { useNavigate } from "react-router-dom";
 // import { setPassword, setPassError } from "../../Store/reducer/auth";
@@ -107,8 +107,8 @@ export default function SetPasswordScreen() {
             lowercase letters, symbols and numbers.
           </p>
           <div className={style.cardWhite__beginText__passInputSec}>
-            <InputFieldOnly
-              type="password"
+            <InputFieldSimple
+              // type="password"
               name="pass"
               onChange={handleChange}
               placeholder={"Enter Password"}
@@ -119,8 +119,8 @@ export default function SetPasswordScreen() {
           </div>
           <p className={style.errorText}>{error ? error : ""}</p>
           <div className={style.cardWhite__beginText__passInputSec}>
-            <InputFieldOnly
-              type="password"
+            <InputFieldSimple
+              // type="password"
               name="confirmPass"
               onChange={handleChange}
               placeholder={"Confirm Password"}

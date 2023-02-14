@@ -1,7 +1,7 @@
 import React from "react";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
+import InputFieldSimple, { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import style from "./style.module.scss";
 import PlaceLogo from "../../Assets/PlaceLog.svg";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -54,8 +54,8 @@ function UnlockWelcome() {
           </div>
         </div>
         <div className={style.cardWhite__linkOuter}>
-          <InputFieldOnly
-            type="password"
+          <InputFieldSimple
+            // type="password"
             name={"key"}
             onChange={handleChange}
             placeholder={"Enter Password"}

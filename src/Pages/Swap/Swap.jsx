@@ -63,12 +63,12 @@ function Swap() {
       setError("");
       return { error: false };
     }
-  }
+  };
 
   const handleApprove = async () => {
     try {
       let amtRes = validateAmount();
-      if (!(amtRes.error)) {
+      if (!amtRes.error) {
         if (
           toFrom.from.toLowerCase() === EVM.toLowerCase() &&
           toFrom.to.toLowerCase() === NATIVE.toLowerCase()
@@ -117,10 +117,9 @@ function Swap() {
     }
   };
 
-
   const getFee = async () => {
     let amtRes = validateAmount();
-    if (!(amtRes.error)) {
+    if (!amtRes.error) {
       if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase() && amount) {
         let feeRes = await retriveNativeFee("", amount);
         console.log("Fee Res : ", feeRes);
@@ -133,7 +132,10 @@ function Swap() {
         } else {
           setGassFee(feeRes.data);
         }
-      } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase() && amount) {
+      } else if (
+        toFrom.from.toLocaleLowerCase() === EVM.toLowerCase() &&
+        amount
+      ) {
         let feeRes = await retriveEvmFee("", amount);
         console.log("Fee Res : ", feeRes);
         if (feeRes.error) {
@@ -150,7 +152,7 @@ function Swap() {
   };
 
   const handleChange = (e) => {
-    setAmount((e.target.value).trim());
+    setAmount(e.target.value.trim());
     setGassFee("");
     // setError("");
   };
@@ -172,7 +174,6 @@ function Swap() {
   const faildCancel = () => {
     setIsFaildOpen(false);
     setAmount("");
-
   };
 
   const handleSwapAgain = () => {
@@ -244,6 +245,8 @@ function Swap() {
           <div>
             <p style={{ color: "red" }}>{error}</p>
             <InputField
+              coloredBg={true}
+              placeholderBaseColor={true}
               placeholder={"Enter Swap Amount "}
               onChange={handleChange}
               value={amount}
