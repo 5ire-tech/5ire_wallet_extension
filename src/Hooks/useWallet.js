@@ -1,4 +1,19 @@
+import Web3 from "web3";
+import { ethers } from "ethers";
+import { BigNumber } from "bignumber.js";
+import { Keyring } from "@polkadot/keyring";
 import { useState, useEffect } from "react";
+import Browser from "webextension-polyfill";
+// import { ApiPromise } from "@polkadot/api";
+// import { waitReady } from "@polkadot/wasm-crypto";
+import { setAccountName } from "../Store/reducer/auth";
+import { useSelector, useDispatch } from "react-redux";
+import { u8aToHex, hexToU8a, isHex } from "@polkadot/util";
+import { decryptor, encryptor } from "../Helper/CryptoHelper";
+import { decodeAddress, encodeAddress } from "@polkadot/keyring";
+// import { HttpProvider, WsProvider } from "@polkadot/rpc-provider";
+import { NETWORK, TX_TYPE, STATUS, NATIVE, EVM } from "../Constants/index";
+import { connectionObj } from "../Helper/connection.helper";
 import {
   mnemonicGenerate,
   mnemonicToMiniSecret,
@@ -6,15 +21,6 @@ import {
   ed25519PairFromSeed,
   cryptoWaitReady,
 } from "@polkadot/util-crypto";
-import { u8aToHex, hexToU8a, isHex } from "@polkadot/util";
-// import { waitReady } from "@polkadot/wasm-crypto";
-import { ApiPromise } from "@polkadot/api";
-import { HttpProvider, WsProvider } from "@polkadot/rpc-provider";
-import { ethers } from "ethers";
-import { useSelector, useDispatch } from "react-redux";
-import { NETWORK, TX_TYPE, STATUS, NATIVE, EVM } from "../Constants/index";
-import { decodeAddress, encodeAddress } from "@polkadot/keyring";
-import { Keyring } from "@polkadot/keyring";
 import {
   setCurrentAcc,
   setNewAccount,
@@ -23,21 +29,15 @@ import {
   setTxHistory,
   resetBalance,
   toggleLoader,
-  setApiReady
+  // setApiReady
 } from "../Store/reducer/auth";
-import { setAccountName } from "../Store/reducer/auth";
-import Web3 from "web3";
-import { decryptor, encryptor } from "../Helper/CryptoHelper";
-import { BigNumber } from "bignumber.js";
-import Browser from "webextension-polyfill";
-// import { toast } from "react-toastify";
 
-let evmApi = null;
-let nativeApi = null;
-let web3Provider = null;
-let tempNet = null;
+
 
 export default function UseWallet() {
+
+  const [nativeApi, setNativeApi] = useState("");
+  const [evmApi, setEvmApi] = useState("");
   const [authData, setAuthData] = useState({
     temp1m: "",
     temp2p: "",
@@ -53,118 +53,12 @@ export default function UseWallet() {
     accountName,
     accounts,
     isLogin,
-    isApiReady
+    // isApiReady
   } = useSelector((state) => state?.auth);
   const dispatch = useDispatch();
 
-  const resetApi = () => {
-    evmApi = null;
-    nativeApi = null;
-  }
 
-  useEffect(() => {
-
-    if (currentNetwork.toLowerCase() === "testnet") {
-
-      if (tempNet !== wsEndPoints.testnet) {
-        tempNet = wsEndPoints.testnet;
-        if (isApiReady === true)
-          dispatch(setApiReady(false));
-        resetApi();
-        dispatch(resetBalance());
-
-        initializeApi(wsEndPoints.testnet).then(() => {
-          console.log("native and evm api is readyyyy for testnet!");
-          dispatch(setApiReady(true));
-        }).catch((err) => {
-          console.log("Error while connecting the evm and native chain: ", err);
-          if (isApiReady === true)
-            dispatch(setApiReady(false));
-        })
-
-        // Promise.all([initializeNativeApi(wsEndPoints.testnet), initializeEvmApi(wsEndPoints.testnet)])
-        //   .then(() => {
-        //     console.log("native and evm api is readyyyy for testnet");
-        //     dispatch(setApiReady(true));
-        //   })
-        //   .catch((err) => {
-        //     console.log("Error while connecting the evm and native chain: ", err);
-        //     if (isApiReady === true)
-        //       dispatch(setApiReady(false));
-        //   })
-      }
-    } else if (currentNetwork.toLowerCase() === "qa") {
-      if (tempNet !== wsEndPoints.qa) {
-        tempNet = wsEndPoints.qa;
-        if (isApiReady === true)
-          dispatch(setApiReady(false));
-        dispatch(resetBalance());
-        resetApi();
-        initializeApi(wsEndPoints.qa).then(() => {
-          console.log("native and evm api is readyyyy for qa!");
-          dispatch(setApiReady(true));
-        }).catch((err) => {
-          console.log("Error while connecting the evm and native chain: ", err);
-          if (isApiReady === true)
-            dispatch(setApiReady(false));
-        })
-        // Promise.all([initializeNativeApi(wsEndPoints.qa), initializeEvmApi(wsEndPoints.qa)])
-        //   .then(() => {
-        //     console.log("native and evm api is readyyyy for qa");
-        //     dispatch(setApiReady(true));
-        //   })
-        //   .catch((err) => {
-        //     console.log("Error while connecting the evm and native chain: ", err);
-        //     if (isApiReady === true)
-        //       dispatch(setApiReady(false));
-        //   })
-      }
-    }
-  }, [currentNetwork]);
-
-  console.log("is api ready : ", isApiReady);
-  console.log("currentNetwork ", currentNetwork, "temp net : ", tempNet);
-
-  const initializeApi = async (network) => {
-    try {
-      let provider = new WsProvider(network);
-      nativeApi = await ApiPromise.create({ provider: provider });
-      console.log("native Api : ", nativeApi);
-
-      let w3options = {
-        reconnect: {
-          auto: true,
-          delay: 5000, //ms
-          maxAttempts: 10,
-          onTimeout: false
-        }
-      };
-      web3Provider = new Web3.providers.WebsocketProvider(network, w3options);
-      evmApi = new Web3(web3Provider);
-
-      web3Provider.on('end', async () => {
-        console.log("Trying to reconnect with Evm api");
-        web3Provider.connect();
-      });
-      web3Provider.on('error', async (e) => {
-        console.log("error occued while making connection with web3 : ", e);
-        web3Provider.connect();
-      });
-
-      nativeApi.on("disconnected", async () => {
-        nativeApi.connect();
-      });
-      nativeApi.on("error", async (e) => {
-        console.log("rror occued while making connection with native : ", e);
-        nativeApi.connect();
-      })
-
-      console.log("evmApi : ", evmApi);
-    } catch (error) {
-      console.log("Error while making connection with Native Api");
-    }
-  }
-
+  
   const getKey = (str, p) => {
     const seed = decryptor(str, p);
     if (seed) {
@@ -236,37 +130,38 @@ export default function UseWallet() {
     }
   };
 
-  const getBalance = async () => {
+  const getBalance = async (evm_api, native_api) => {
     try {
 
+      console.log("evm_api : ",evm_api, "native_api : ",native_api);
       // Evm Balance
-      const w3balance = await evmApi?.eth.getBalance(
+      const w3balance = await evm_api?.eth?.getBalance(
         currentAccount?.evmAddress
       );
 
       //Native Balance
-      const nbalance = await nativeApi?.derive.balances.all(
+      const nbalance = await native_api?.derive.balances.all(
         currentAccount?.nativeAddress
       );
 
       let evmBalance = new BigNumber(w3balance).dividedBy(10 ** 18).toString();
       let nativeBalance = new BigNumber(nbalance.availableBalance).dividedBy(10 ** 18).toString();
 
-      if (Number(nativeBalance) % 1 !== 0) {
+
+      if (Number(nativeBalance) % 1 !== 0)
         nativeBalance = new BigNumber(nbalance.availableBalance).dividedBy(10 ** 18).toFixed(6, 8).toString();
-      }
-      if (Number(evmBalance) % 1 !== 0) {
+
+
+      if (Number(evmBalance) % 1 !== 0)
         evmBalance = new BigNumber(w3balance).dividedBy(10 ** 18).toFixed(6, 8).toString();
-      }
+
 
       let totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toString();
-
-      if (Number(totalBalance) % 1 !== 0) {
+      if (Number(totalBalance) % 1 !== 0)
         totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toFixed(6, 8).toString()
-      }
 
-      console.log("balance.nativeBalance :: ", balance.nativeBalance, "nativeBalance : ", nativeBalance);
-      console.log("balance.evm :: ", balance.evmBalance, "nativeBalance : ", evmBalance);
+
+      console.log("evmBalance : ", evmBalance, "nativeBalance : ", nativeBalance);
 
       if ((balance.nativeBalance !== nativeBalance && balance.evmBalance !== evmBalance) && (!isNaN(evmBalance) && !(isNaN(nativeBalance)))) {
         const payload = {
@@ -274,12 +169,11 @@ export default function UseWallet() {
           nativeBalance,
           totalBalance
         }
-        console.log("Payload for set balance", payload);
         dispatch(setBalance(payload));
       }
 
     } catch (error) {
-      console.log("Error while geting balance of evm : ", error);
+      console.log("Error while geting balance : ", error);
     }
   }
 
@@ -376,7 +270,7 @@ export default function UseWallet() {
   const nativeTransfer = async (data) => {
     return new Promise(async (resolve, reject) => {
       try {
-        if (Number(data.amount) >= Number(balance.nativeBalance)){
+        if (Number(data.amount) >= Number(balance.nativeBalance)) {
           resolve({
             error: true,
             data: "Insufficent Balance!"
@@ -691,7 +585,6 @@ export default function UseWallet() {
       if (toAddress.startsWith("5"))
         toAddress = u8aToHex(toAddress).slice(0, 42);
 
-
       if (toAddress.startsWith("0x")) {
         try {
           amount = Math.round(Number(amount));
@@ -704,6 +597,7 @@ export default function UseWallet() {
           });
         }
       }
+
       const tx = {
         to: toAddress,
         from: currentAccount?.evmAddress,
@@ -713,6 +607,7 @@ export default function UseWallet() {
       if (data) {
         tx.data = data;
       }
+
       const gasAmount = await evmApi.eth.estimateGas(tx);
       const gasPrice = await evmApi.eth.getGasPrice();
       let fee = (new BigNumber(gasPrice * gasAmount)).dividedBy(10 ** 18).toString();
@@ -795,90 +690,6 @@ export default function UseWallet() {
       }
     }
   };
-
-  // const initializeNativeApi = async (network) => {
-  //   try {
-  //     let provider = new WsProvider(network);
-  //     nativeApi = await ApiPromise.create({ provider: provider });
-  //     nativeApi.on("disconnected", async () => {
-  //       nativeApi.connect();
-  //     });
-  //     console.log("native Api : ", nativeApi);
-  //   } catch (error) {
-  //     console.log("Error while making connection with Native Api");
-  //   }
-  // };
-
-  // const initializeEvmApi = async (network) => {
-  //   try {
-  //     let options = {
-  //       reconnect: {
-  //         auto: true,
-  //         delay: 5000, // ms
-  //         maxAttempts: 10,
-  //         onTimeout: false
-  //       }
-  //     };
-  //     web3Provider = new Web3.providers.WebsocketProvider(network, options);
-  //     evmApi = new Web3(web3Provider);
-
-  //     web3Provider.on('end', async () => {
-  //       console.log("Trying to reconnect with Evm api");
-  //       initializeEvmApi();
-  //     });
-  //     web3Provider.on('error', async (e) => {
-  //       console.log("error occued while making connection with web3 : ", e);
-  //       initializeEvmApi();
-  //     });
-
-  //     console.log("evmApi : ", evmApi);
-  //   } catch (error) {
-  //     console.log("Error while making connection with Native Api");
-  //   }
-  // };
-
-
-  // const getEvmBalance = async () => {
-  //   try {
-
-  //     const w3balance = await evmApi?.eth.getBalance(
-  //       currentAccount?.evmAddress
-  //     );
-  //     let payload = {
-  //       of: EVM,
-  //       balance: new BigNumber(w3balance).dividedBy(10 ** 18).toFixed(6, 8),
-  //     };
-
-  //     console.log("balance.evmBalance : " + balance.evmBalance, "payload.balance : ", payload.balance);
-
-  //     if ((balance.evmBalance !== payload.balance) && !isNaN(payload.balance)) {
-  //       dispatch(setBalance(payload));
-  //     }
-
-  //   } catch (error) {
-  //     console.log("Error while geting balance of evm : ", error);
-  //   }
-  // };
-
-  // const getNativeBalance = async () => {
-  //   try {
-  //     const nbalance = await nativeApi?.derive.balances.all(
-  //       currentAccount?.nativeAddress
-  //     );
-  //     let payload = {
-  //       of: NATIVE,
-  //       balance: new BigNumber(nbalance.availableBalance).dividedBy(10 ** 18).toFixed(6, 8).toString(),
-  //     };
-  //     console.log("balance.nativeBalance : " + balance.nativeBalance, "payload.balance : ", payload.balance);
-
-  //     if ((balance.nativeBalance !== payload.balance) && !isNaN(payload.balance)) {
-  //       dispatch(setBalance(payload));
-  //     }
-
-  //   } catch (error) {
-  //     console.log("Error while getting balance of native : ", error);
-  //   }
-  // };
 
   return {
     walletSignUp,

@@ -5,7 +5,7 @@ import {
   loadStore,
   checkTransactions
 } from "./controller";
-import { setApiReady } from "../Store/reducer/auth";
+// import { setApiReady } from "../Store/reducer/auth";
 import Browser from "webextension-polyfill";
 
 try {
@@ -20,8 +20,8 @@ try {
       isInitialized = true;
 
       port.onDisconnect.addListener(function () {
-        console.log("popup has been closed !!!!!!!!!!!1");
-        store.dispatch(setApiReady(false));
+        console.log("popup has been closed !!!!!!!!!!!");
+        // store.dispatch(setApiReady(false));
       });
     }
   });
@@ -31,7 +31,7 @@ try {
    *  and when Chrome is updated to a new version. */
   Browser.runtime.onInstalled.addListener(async (details) => {
     console.log("[background.js] onInstalled", details);
-
+    // store.dispatch(setApiReady(false));
     for (const cs of Browser.runtime.getManifest().content_scripts) {
       for (const tab of await Browser.tabs.query({ url: cs.matches })) {
         Browser.scripting.executeScript({
@@ -43,7 +43,7 @@ try {
   });
 
   Browser.runtime.onStartup.addListener(() => {
-    store.dispatch(setApiReady(false));
+    // store.dispatch(setApiReady(false));
     console.log("[background.js] onStartup");
   });
 
