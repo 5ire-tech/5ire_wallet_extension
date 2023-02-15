@@ -20,6 +20,7 @@ export class FireProvider {
         this.networkVersion = 997;
         this.version = "1.0.0";
         this.is5ire = true
+        this.connected = true;
 
         //for handling the different Promise handlers
         this.handlers  = {};
@@ -56,11 +57,11 @@ export class FireProvider {
             .catch((err) => cb(null, err))
     }
 
+
     //requesting some data from chain
     async request(method, payload) {
-
         // console.log("here it is inside injected script: ", method, payload);
-        return this.passReq(method, payload);
+        return await this.passReq(method, payload);
     }
 
 
@@ -70,18 +71,8 @@ export class FireProvider {
 
         //pass the request to extension
         const isObject = typeof(method) === "object" && method !== undefined;
-
-        //check if request for network version and eth_accounts
-        const networkIdRes = {
-            "jsonrpc": "2.0",
-            "result": this.networkVersion
-        }
-        if(isObject && !payload && method.method === "net_version") return networkIdRes;
-        else if(method === "net_version") return networkIdRes;
-
-        
+      
         const res  = await this.sendJsonRpc(isObject ? method.method : method, !payload && isObject ? method.params : payload);
-
         return res;
     }
 
@@ -96,14 +87,14 @@ export class FireProvider {
 
       //inject accounts into provider
       injectSelectedAccount(res) {
-
-        console.log("here is comes: ", res);
-
         if(res?.result && res?.result?.length) this.selectedAddress = res.result[0]
         else if(!res?.result) this.selectedAddress = null;
       }
 
 
+      //pass request to extension for processing the jsonrpc request
+      //if request is not related to connection and transaction processing
+      //then it is processed in inject content script in current webpage
       sendJsonRpc(
         method,
         message = [],
@@ -115,8 +106,6 @@ export class FireProvider {
         if(message?.length && message[0]?.isRequested) {
           this.isOpen = false;
         }
-
-        console.log("method and params: ", method, message);
 
         return new Promise(async (resolve, reject) => {
           try {
