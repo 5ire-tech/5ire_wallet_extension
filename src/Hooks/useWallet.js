@@ -373,7 +373,7 @@ export default function UseWallet() {
   const nativeTransfer = async (data) => {
     return new Promise(async (resolve, reject) => {
       try {
-        if (Number(data.amount) >= Number(balance.nativeBalance)){
+        if (Number(data.amount) >= Number(balance.nativeBalance)) {
           resolve({
             error: true,
             data: "Insufficent Balance!"
@@ -876,6 +876,144 @@ export default function UseWallet() {
   //     console.log("Error while getting balance of native : ", error);
   //   }
   // };
+
+
+  const getKeyring = () => {
+    const seedAccount = mnemonicToMiniSecret(
+      decryptor(currentAccount?.temp1m, pass)
+    );
+    const keyring = new Keyring({ type: "ed25519" });
+    const signer = keyring.addFromPair(ed25519PairFromSeed(seedAccount));
+    return signer;
+  }
+
+  //Nominator methods
+
+  const addNominator = async ({ stakeAmount, validatorsAccounts }) => {
+
+    try {
+      const bondedAmount = (new BigNumber(stakeAmount).multipliedBy(10 ** 18)).toString()
+
+      const stashId = encodeAddress(currentAccount?.nativeAddress);
+      const nominateTx = nativeApi.tx.staking.nominate(validatorsAccounts);
+      const points = await nativeApi.derive.staking?.currentPoints(); //find points
+      const bondOwnTx = await nativeApi.tx.staking.bond(stashId, bondedAmount, "Staked");
+      const batchAll = await nativeApi.tx.utility.batchAll([bondOwnTx, nominateTx]);
+      const txHash = batchAll.signAndSend(getKeyring())
+
+      const data = {
+        txHash,
+        stakeAmount,
+        points,
+      };
+      return {
+        error: false,
+        data
+      }
+    } catch (err) {
+      return {
+        error: true,
+        data: err?.message
+      }
+    }
+  }
+
+  const reNominate = async (validatorAccounts) => {
+    return new Promise(async (resolve) => {
+      try {
+        const nominateTx = nativeApi.tx.staking.nominate(validatorAccounts);
+        const points = await nativeApi.derive.staking?.currentPoints(); //find points
+        const batchAll = await nativeApi.tx.utility.batchAll([nominateTx]);
+        const txHash = batchAll.signAndSend(getKeyring())
+        resolve({
+          error: false,
+          data: { txHash, points },
+        });
+      } catch (err) {
+        resolve({ error: true, message: err?.message });
+      }
+    });
+  };
+
+  const nominatorPayout = async (validatorIdList) => {
+    try {
+      const validators = [validatorIdList];
+      const allEras = await nativeApi?.derive?.staking?.erasHistoric();
+      const era = await nativeApi?.derive?.staking?.stakerRewardsMultiEras(validators, allEras);
+      if (era[0]?.length === 0) {
+        return {
+          error: true,
+          data: "You have no era to payout"
+        };
+      }
+      const payout = await nativeApi?.tx?.staking?.payoutStakers(validators[0], era[0][0]?.era);
+      const txHash = payout.signAndSend(getKeyring())
+      return {
+        error: false,
+        data: txHash
+      }
+
+    } catch (err) {
+      return { error: true, message: err?.message };
+    }
+  };
+
+  const stopNominator = async () => {
+    try {
+      const stopValidator = await nativeApi.tx.staking.chill();
+      const txHash = stopValidator.signAndSend(getKeyring())
+      return {
+        error: false,
+        data: txHash
+      }
+    } catch (err) {
+      return { error: true, message: err?.message };
+    }
+  };
+
+  const unbondNominator = async (value) => {
+    try {
+      const amount = (new BigNumber(value).multipliedBy(10 ** 18)).toString()
+      const unbound = await nativeApi.tx.staking.unbond(amount);
+      const txHash = unbound.signAndSend(getKeyring())
+      return {
+        error: false,
+        data: txHash
+      }
+    } catch (err) {
+      return { error: true, message: err?.message };
+    }
+  };
+
+
+  const withdrawNominatorData = async (amount, address) => {
+    try {
+
+      const sendAmounts = (new BigNumber(amount).multipliedBy(10 ** 18)).toString()
+      const sendAmt = nativeApi.tx.balances.transferKeepAlive(address, sendAmounts);
+      const txHash = sendAmt.signAndSend(getKeyring())
+      return {
+        error: false,
+        data: txHash
+      }
+    } catch (err) {
+      return { error: true, message: err?.message };
+    }
+  };
+
+  const withdrawNominatorUnbonded = async (value) => {
+    try {
+      const unbond = await api.tx.staking.withdrawUnbonded(value);
+      const txHash = unbond.signAndSend(getKeyring())
+      return {
+        error: false,
+        data: txHash
+      }
+    } catch (err) {
+      return { error: true, message: err?.message };
+    }
+  };
+
 
   return {
     walletSignUp,
