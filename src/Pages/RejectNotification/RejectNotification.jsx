@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import style from "./style.module.scss";
 import { useSelector } from "react-redux";
 import useWallet from "../../Hooks/useWallet";
+import { connectionObj, Connection } from "../../Helper/connection.helper";
 
 function ApproveTx() {
   const [activeTab, setActiveTab] = useState("detail");
@@ -10,14 +11,24 @@ function ApproveTx() {
   const { retriveEvmFee } = useWallet();
 
   useEffect(() => {
-    retriveEvmFee(
-      auth?.uiData?.message?.to,
-      auth?.uiData?.message?.value,
-      auth?.uiData?.message?.data
-    )
-      .then(setFee)
-      .catch(setFee);
+    connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.currentNetwork, false).then((apiRes) => {
+
+      console.log("Api Response : ", apiRes);
+      if (!apiRes?.value) {
+        Connection.isExecuting.value = false;
+        retriveEvmFee(
+          apiRes.evmApi,
+          auth?.uiData?.message?.to,
+          auth?.uiData?.message?.value,
+          auth?.uiData?.message?.data
+        )
+          .then(setFee)
+          .catch(setFee);
+      }
+    });
+
   }, []);
+
   const activeDetail = () => {
     setActiveTab("detail");
   };
@@ -33,20 +44,18 @@ function ApproveTx() {
             <button
               onClick={activeDetail}
               className={`${style.rejectedSec__sendSwapbtn__buttons} 
-              ${
-                activeTab === "detail" &&
+              ${activeTab === "detail" &&
                 style.rejectedSec__sendSwapbtn__buttons__active
-              }
+                }
             `}
             >
               Details
             </button>
             <button
               onClick={activeData}
-              className={`${style.rejectedSec__sendSwapbtn__buttons}  ${
-                activeTab === "data" &&
+              className={`${style.rejectedSec__sendSwapbtn__buttons}  ${activeTab === "data" &&
                 style.rejectedSec__sendSwapbtn__buttons__active
-              }`}
+                }`}
             >
               Data
             </button>
@@ -75,7 +84,7 @@ function ApproveTx() {
               </>
             ) : (
               <div className={style.rejectedSec__listReject__innerList}>
-                <h4 style={{wordBreak:"break-all"}}>{auth?.uiData?.message?.data || ""}</h4>
+                <h4 style={{ wordBreak: "break-all" }}>{auth?.uiData?.message?.data || ""}</h4>
               </div>
             )}
           </div>
