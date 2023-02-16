@@ -33,6 +33,7 @@ export const userState = {
   },
 
   currentNetwork: "Testnet",
+  // currentNetwork: "QA",
 
   accountName: "",
 
@@ -45,7 +46,8 @@ export const userState = {
   connectedSites: [],
   isLoading: false,
   
-  isApiReady:false
+  // isApiReady:false,
+  
 };
 
 export const userSlice = createSlice({
@@ -148,9 +150,9 @@ export const userSlice = createSlice({
       state.isLoading = action.payload;
     },
 
-    setApiReady : (state, action) => {
-      state.isApiReady = action.payload;
-    }
+    // setApiReady : (state, action) => {
+    //   state.isApiReady = action.payload;
+    // }
   },
 });
 
@@ -173,7 +175,7 @@ export const {
   setNewAccount,
   resetBalance,
   updateTxHistory,
-  setApiReady
+  // setApiReady
 } = userSlice.actions;
 
 export default userSlice.reducer;

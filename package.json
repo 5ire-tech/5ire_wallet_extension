@@ -2,6 +2,7 @@
   "name": "atlas-wallet",
   "version": "0.1.0",
   "private": true,
+
   "dependencies": {
     "@lottiefiles/react-lottie-player": "^3.5.0",
     "@metamask/safe-event-emitter": "^2.0.0",
@@ -79,4 +80,5 @@
     "json-loader": "^0.5.7",
     "webpack": "^5.75.0"
   }
+
 }

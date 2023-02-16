@@ -31,7 +31,7 @@ function UnlockWelcome() {
     dispatch(toggleLoader(false));
 
     if (!res.error) {
-      console.log("SeTTING LOGIN true!!!");
+
       if (isLogin !== true)
         dispatch(setLogin(true));
       navigate(location.state?.redirectRoute || "/wallet");
