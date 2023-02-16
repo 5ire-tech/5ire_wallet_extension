@@ -51,7 +51,9 @@ function BalanceDetails({ className, textLeft, mt0 }) {
     });
 
     if (isApiReady) {
-      getBalance();
+      setInterval(() => {
+        getBalance();
+      }, 5000);
     }
   }, [isApiReady, currentNetwork, currentAccount]);
 
