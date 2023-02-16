@@ -40,18 +40,18 @@ function App() {
   const { currentNetwork, wsEndPoints } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if (currentNetwork.toLowerCase() === NETWORK.TEST_NETWORK.toLowerCase()) {
-      connectionObj.initializeApi(wsEndPoints.testnet).then((res)=>{
-        console.log("Api initialize for ist time for testnet");
-      });
-    }else if(currentNetwork.toLowerCase() === NETWORK.QA_NETWORK.toLowerCase()){
-      connectionObj.initializeApi(wsEndPoints.qa).then((res)=>{
-        console.log("Api initialize for ist time for qa");
-      });
-    }
-  }, []);
+  //   if (currentNetwork.toLowerCase() === NETWORK.TEST_NETWORK.toLowerCase()) {
+  //     connectionObj.initializeApi(wsEndPoints.testnet).then((res)=>{
+  //       console.log("Api initialize for ist time for testnet");
+  //     });
+  //   }else if(currentNetwork.toLowerCase() === NETWORK.QA_NETWORK.toLowerCase()){
+  //     connectionObj.initializeApi(wsEndPoints.qa).then((res)=>{
+  //       console.log("Api initialize for ist time for qa");
+  //     });
+  //   }
+  // }, []);
 
   useEffect(() => {
     const route = getParameterByName("route");

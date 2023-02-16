@@ -13,7 +13,6 @@ import { decryptor, encryptor } from "../Helper/CryptoHelper";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 // import { HttpProvider, WsProvider } from "@polkadot/rpc-provider";
 import { NETWORK, TX_TYPE, STATUS, NATIVE, EVM } from "../Constants/index";
-import { connectionObj } from "../Helper/connection.helper";
 import {
   mnemonicGenerate,
   mnemonicToMiniSecret,
@@ -133,7 +132,6 @@ export default function UseWallet() {
   const getBalance = async (evm_api, native_api) => {
     try {
 
-      console.log("evm_api : ",evm_api, "native_api : ",native_api);
       // Evm Balance
       const w3balance = await evm_api?.eth?.getBalance(
         currentAccount?.evmAddress
@@ -160,8 +158,7 @@ export default function UseWallet() {
       if (Number(totalBalance) % 1 !== 0)
         totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toFixed(6, 8).toString()
 
-
-      console.log("evmBalance : ", evmBalance, "nativeBalance : ", nativeBalance);
+        console.log("here is all balance get by shwetu: ", evmBalance, nativeBalance);
 
       if ((balance.nativeBalance !== nativeBalance && balance.evmBalance !== evmBalance) && (!isNaN(evmBalance) && !(isNaN(nativeBalance)))) {
         const payload = {

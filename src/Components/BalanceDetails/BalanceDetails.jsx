@@ -18,7 +18,7 @@ import { getCurrentTabUrl } from "../../Scripts/utils";
 import { NATIVE, EVM, NETWORK } from "../../Constants/index";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import DownArrowSuffix from "../../Assets/DownArrowSuffix.svg";
-import { connectionObj } from "../../Helper/connection.helper";
+import { connectionObj, Connection } from "../../Helper/connection.helper";
 import { resetBalance, setCurrentNetwork, toggleLoader } from "../../Store/reducer/auth";
 
 
@@ -56,21 +56,18 @@ function BalanceDetails({ className, textLeft, mt0 }) {
     }
 
     // setTimeout(() => {
-      if (currentNetwork.toLowerCase() === NETWORK.TEST_NETWORK.toLowerCase()) {
-
-        connectionObj.initializeApi(wsEndPoints.testnet).then((res) => {
-          if (res.evmApi && res.nativeApi) {
+        connectionObj.initializeApi(wsEndPoints.testnet, wsEndPoints.qa, currentNetwork, true).then((res) => {
+          
+          console.log("here is the response: ", res)
+          if(!res?.value) {
+            Connection.isExecuting.value = false;
             getBalance(res.evmApi, res.nativeApi);
           }
+        })
+        .catch((err) => {
+          console.log("Error while getting the balance of Testnet network: ", err.message)
         });
 
-      } else if (currentNetwork.toLowerCase() === NETWORK.QA_NETWORK.toLowerCase()) {
-        connectionObj.initializeApi(wsEndPoints.qa).then((res) => {
-          if (res.evmApi && res.nativeApi) {
-            getBalance(res.evmApi, res.nativeApi);
-          }
-        });
-      }
     // }, 3000);
 
   }, [currentNetwork, currentAccount]);
