@@ -15,16 +15,16 @@ function CreateNewWallet() {
   const [warrning, setWarrning] = useState("");
 
   const handleChange = (e) => {
-    setData(e.target.value);
+    setData(e.target.value.trim());
     setWarrning("");
   };
 
   const handleClick = () => {
-    let data_ = data.trim();
-    if (data_.length === 0) setWarrning("Please enter account name!");
+    
+    if (data.length === 0) setWarrning("Please enter account name!");
     else {
       const match = accounts.find(e => {
-        if (e.accountName === data_) {
+        if (e.accountName === data) {
           setWarrning("Account with this name is allready exists!");
           return true;
         }
@@ -54,7 +54,7 @@ function CreateNewWallet() {
         <div className={style.cardWhite__linkOuter}>
           <p style={{ color: "red" }}>{warrning}</p>
           <InputFieldOnly
-            placeholder={"Type Wallet Name"}
+            placeholder={"Enter Wallet Name"}
             placeholderBaseColor={true}
             coloredBg={true}
             name="accountName"

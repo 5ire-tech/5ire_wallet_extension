@@ -17,7 +17,7 @@ function CreateWalletChain() {
     evmAddress: "",
     nativeAddress: "",
   });
-  console.log("data");
+
   useEffect(() => {
     let res;
     if ((newAccount === null || newAccount === undefined) && !isLogin)
@@ -95,7 +95,7 @@ function CreateWalletChain() {
         </p>
       </div>
       <div className={style.cardWhite__addressInput}>
-        <label>Ethereum Private Key:</label>
+        <label>EVM Private Key:</label>
         <p className={style.cardWhite__addressInput__copyText}>
           <span>{data.temp2p}</span>
           <img

@@ -58,7 +58,7 @@ function ManageWallet() {
           </div>
           <div className={style.wallet}>
             <div className={style.wallet__addressInput}>
-              <label>Native Chain Address:</label>
+              <label>Evm Chain Address:</label>
               <p className={style.wallet__addressInput__copyText}>
                 <span>{currentAccount.evmAddress}</span>
                 <img src={CopyIcon} alt="copyIcon" name={EVM} onClick={handleCopy} />{" "}

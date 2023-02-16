@@ -31,7 +31,7 @@ function EnterPassword() {
 
     } else {
       toast.error(res.data);
-      console.log("Error", res.data);
+      console.log("Error : ", res.data);
     } 
 
   }

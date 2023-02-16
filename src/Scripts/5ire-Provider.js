@@ -13,13 +13,14 @@ Custom Web3 provider for interacting with the 5ire browser extension and pass to
 */
 export class FireProvider {
 
-    constructor(httpHost = "https://chain-node.5ire.network") {
+    constructor(httpHost = "https://rpc-testnet.5ire.network") {
         this.httpHost = httpHost;
         this.selectedAddress = null;
         this.chainId = "0x3e5";
         this.networkVersion = 997;
         this.version = "1.0.0";
         this.is5ire = true
+        this.connected = true;
 
         //for handling the different Promise handlers
         this.handlers  = {};
@@ -56,11 +57,11 @@ export class FireProvider {
             .catch((err) => cb(null, err))
     }
 
+
     //requesting some data from chain
     async request(method, payload) {
-
         // console.log("here it is inside injected script: ", method, payload);
-        return this.passReq(method, payload);
+        return await this.passReq(method, payload);
     }
 
 
@@ -70,18 +71,8 @@ export class FireProvider {
 
         //pass the request to extension
         const isObject = typeof(method) === "object" && method !== undefined;
-
-        //check if request for network version and eth_accounts
-        const networkIdRes = {
-            "jsonrpc": "2.0",
-            "result": this.networkVersion
-        }
-        if(isObject && !payload && method.method === "net_version") return networkIdRes;
-        else if(method === "net_version") return networkIdRes;
-
-        
+      
         const res  = await this.sendJsonRpc(isObject ? method.method : method, !payload && isObject ? method.params : payload);
-
         return res;
     }
 
@@ -90,20 +81,20 @@ export class FireProvider {
     async injectHttpProvider() {
       
       const res = await this.passReq("get_endPoint", null)
-        if(res) this.httpHost = res;
+        if(res) this.httpHost = res.result;
     }
       
 
       //inject accounts into provider
       injectSelectedAccount(res) {
-
-        console.log("here is comes: ", res);
-
         if(res?.result && res?.result?.length) this.selectedAddress = res.result[0]
         else if(!res?.result) this.selectedAddress = null;
       }
 
 
+      //pass request to extension for processing the jsonrpc request
+      //if request is not related to connection and transaction processing
+      //then it is processed in inject content script in current webpage
       sendJsonRpc(
         method,
         message = [],
@@ -124,10 +115,9 @@ export class FireProvider {
             //   return resolve({ result: 0x3e5, method });
             // }
 
-            console.log("http method: ", this.httpHost);
 
             if (this.restricted.indexOf(method) < 0) {
-              const rawResponse = await fetch(((this.httpHost?.includes("http://") || this.httpHost?.includes("https://"))) ? this.httpHost : "https://chain-node.5ire.network", {
+              const rawResponse = await fetch(((this.httpHost?.includes("http://") || this.httpHost?.includes("https://"))) ? this.httpHost : "https://rpc-testnet.5ire.network", {
                 method: "POST",
                 headers: {
                   Accept: "application/json",

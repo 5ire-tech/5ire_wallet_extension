@@ -165,10 +165,10 @@ injectedStream.on("data", (data) => {
     }, 1000 * 30);
   }
 
+  console.log("Here is response from extension: ", data);
 
   //get specfic handler using id and resolve or reject it
   if (data.id) {
-    console.log("Here is response from extension: ", data);
     const handler = fireProvider.handlers[data.id];
 
 
@@ -192,9 +192,9 @@ injectedStream.on("data", (data) => {
         };
         handler?.isCb && handler.cb(res);
         handler?.resolve(res);
-      } else if(fireProvider.conntectMethods.findIndex(item => item === data.response?.method)) {
-        fireProvider.injectSelectedAccount(data?.response)
-        handler?.resolve(data?.response?.result);
+      } else if(fireProvider.conntectMethods.find(item => item === data?.response?.method)) {
+        fireProvider.injectSelectedAccount(data.response)
+        handler?.resolve(data.response.result);
       } else {
         handler?.isCb && handler.cb(data.response);
         handler?.resolve(data.response);

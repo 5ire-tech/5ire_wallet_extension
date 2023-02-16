@@ -1,4 +1,4 @@
-import { createSlice, current } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 export const userState = {
   pass: null,
@@ -18,12 +18,12 @@ export const userState = {
 
   httpEndPoints: {
     qa: "https://qa-http-nodes.5ire.network",
-    testnet: "https://chain-node.5ire.network"
+    testnet: "https://rpc-testnet.5ire.network"
   },
 
   wsEndPoints: {
     qa: "wss://qa-wss-nodes.5ire.network",
-    testnet: "wss://testnet.5ire.network"
+    testnet: "wss://wss-testnet.5ire.network"
   },
 
   balance: {
@@ -40,7 +40,7 @@ export const userState = {
 
   isLogin: false,
 
-  passError: false,
+  // passError: false,
 
   connectedSites: [],
   isLoading: false,
@@ -83,14 +83,11 @@ export const userSlice = createSlice({
     setNewAccount: (state, action) => {
       state.newAccount = action.payload;
     },
-    setPassError: (state, action) => {
-      state.passError = action.payload;
-    },
-
+    
     setCurrentNetwork: (state, action) => {
       state.currentNetwork = action.payload;
     },
-
+  
     // setBalance: (state, action) => {
     //   if (action.payload.of === "evm")
     //     state.balance.evmBalance = action.payload.balance;
@@ -165,7 +162,7 @@ export const {
   setAccountName,
   setAccounts,
   setCurrentNetwork,
-  setPassError,
+  // setPassError,
   setUIdata,
   setBalance,
   setTxHistory,
