@@ -235,7 +235,7 @@ function Send() {
           </div>
         </div>
         <div className={style.sendSec__inputInnerSec}>
-          <span style={{ color: "red" }}>{err.to}</span>
+          <span className={style.errorText}>{err.to}</span>
           <InputFieldOnly
             name="to"
             value={data.to}
@@ -246,7 +246,7 @@ function Send() {
           // keyUp={validateToAddress}
           />
           <div>
-            <span style={{ color: "red" }}>{err.amount}</span>
+            <span className={style.errorText}>{err.amount}</span>
             <InputField
               coloredBg={true}
               placeholderBaseColor={true}

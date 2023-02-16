@@ -1,5 +1,5 @@
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
-import { InputFieldOnly } from "../InputField/InputFieldSimple.jsx";
+import InputFieldSimple, { InputFieldOnly } from "../InputField/InputFieldSimple.jsx";
 import ButtonComp from "../ButtonComp/ButtonComp";
 import style from "./style.module.scss";
 import { useNavigate } from "react-router-dom";
@@ -49,7 +49,7 @@ function EnterPassword() {
                 wallet to export your Private Key
               </p>
             </div>
-            <InputFieldOnly
+            <InputFieldSimple
               placeholder={"Enter Password"}
               placeholderBaseColor={true}
               coloredBg={true}

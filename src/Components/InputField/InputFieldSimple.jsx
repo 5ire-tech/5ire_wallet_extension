@@ -5,11 +5,27 @@ import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
 import style from "./style.module.scss";
 import { Link } from "react-router-dom";
 
-function InputFieldSimple({ placeholder }) {
+function InputFieldSimple({
+  placeholder,
+  onChange,
+  name,
+  placeholderBaseColor,
+  coloredBg,
+  minHeight,
+  keyUp,
+}) {
   return (
     <Input.Password
-      className={style.inputSimple}
+      className={`${style.inputSimple} ${style.inputPassword} ${
+        placeholderBaseColor ? "placeholderBaseColor" : ""
+      } ${coloredBg ? style.inputField__coloredBg : ""}`}
       placeholder={placeholder}
+      style={{ minHeight: minHeight }}
+      onChange={onChange}
+      name={name}
+      onKeyUp={keyUp}
+      // className={style.inputSimple}
+      // placeholder={placeholder}
       iconRender={(visible) =>
         visible ? (
           <img src={EyeOpenIcon} width={19} height={12} />
@@ -36,20 +52,24 @@ export const InputField = ({
   name,
   value,
   type,
-  keyUp
+  keyUp,
 }) => {
   return (
     <div className={`${style.boxStyle} inputField ${mb0 ? style.mb0 : ""}`}>
-      <label htmlFor={name} className={`${style.boxStyle__label}`}>{label}</label>
+      <label htmlFor={name} className={`${style.boxStyle__label}`}>
+        {label}
+      </label>
       <Input
         name={name}
         type={type ? type : "text"}
         value={value}
         onChange={onChange}
         onKeyUp={keyUp}
-        className={`${style.inputField__input} ${inputSelect ? style.inputField__inputSelect : ""
-          }  ${placeholderBaseColor ? "placeholderBaseColor" : ""} ${coloredBg ? style.inputField__coloredBg : ""
-          }`}
+        className={`${style.inputField__input} ${
+          inputSelect ? style.inputField__inputSelect : ""
+        }  ${placeholderBaseColor ? "placeholderBaseColor" : ""} ${
+          coloredBg ? style.inputField__coloredBg : ""
+        }`}
         addonAfter={addonAfter}
         defaultValue={defaultValue}
         placeholder={placeholder}
@@ -68,7 +88,7 @@ export const InputFieldOnly = ({
   name,
   value,
   type,
-  keyUp 
+  keyUp,
 }) => {
   return (
     <div className={`${style.boxStyle} inputFieldOnly `}>
@@ -76,8 +96,9 @@ export const InputFieldOnly = ({
       <Input
         value={value}
         type={type ? type : "text"}
-        className={`${style.inputSimple} ${placeholderBaseColor ? "placeholderBaseColor" : ""
-          } ${coloredBg ? style.inputField__coloredBg : ""}`}
+        className={`${style.inputSimple} ${
+          placeholderBaseColor ? "placeholderBaseColor" : ""
+        } ${coloredBg ? style.inputField__coloredBg : ""}`}
         placeholder={placeholder}
         style={{ minHeight: minHeight }}
         onChange={onChange}
