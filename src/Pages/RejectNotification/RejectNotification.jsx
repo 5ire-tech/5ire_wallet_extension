@@ -35,7 +35,6 @@ function ApproveTx() {
 
       if (!apiRes?.value) {
         setReady(true);
-        console.log("GETTTT FEEEEEEEEE. ");
         Connection.isExecuting.value = false;
         retriveEvmFee(
           apiRes.evmApi,

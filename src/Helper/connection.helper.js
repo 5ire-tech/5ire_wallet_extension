@@ -45,8 +45,8 @@ export class Connection {
             Connection.isExecuting.value = true;
             //create the Testnet Connection
             if (networkMode === "Testnet" || bothInit) {
-                if (!Connection.evmApiTestnet) Connection.evmApiTestnet = this.createEvmConnection(networkTest)
                 if (!Connection.nativeApiTestnet) Connection.nativeApiTestnet = await this.createNativeConnection(networkTest)
+                if (!Connection.evmApiTestnet) Connection.evmApiTestnet = this.createEvmConnection(networkTest)
 
                 //set the execution true
                 // Connection.isExecuting.value = true;
@@ -56,8 +56,8 @@ export class Connection {
 
             //create qa connection
             if (networkMode === "QA" || bothInit) {
-                if (!Connection.evmApiQA) Connection.evmApiQA = this.createEvmConnection(networkQA)
                 if (!Connection.nativeApiQA) Connection.nativeApiQA = await this.createNativeConnection(networkQA)
+                if (!Connection.evmApiQA) Connection.evmApiQA = this.createEvmConnection(networkQA)
 
                 //set the execution true
                 // Connection.isExecuting.value = true;

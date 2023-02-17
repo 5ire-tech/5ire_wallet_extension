@@ -152,7 +152,7 @@ export class Controller {
       (st) => st.origin === data.message?.origin
     );
 
-    console.log("is Connected Website: ", isExist?.isConnected);
+    // console.log("is Connected Website: ", isExist?.isConnected);
 
     if (isExist?.isConnected) {
       const res = isEthReq
