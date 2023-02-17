@@ -4,21 +4,17 @@ import { BigNumber } from "bignumber.js";
 import { Keyring } from "@polkadot/keyring";
 import { useState, useEffect } from "react";
 import Browser from "webextension-polyfill";
-// import { ApiPromise } from "@polkadot/api";
-// import { waitReady } from "@polkadot/wasm-crypto";
+import { TX_TYPE, STATUS } from "../Constants/index";
 import { setAccountName } from "../Store/reducer/auth";
 import { useSelector, useDispatch } from "react-redux";
 import { u8aToHex, hexToU8a, isHex } from "@polkadot/util";
 import { decryptor, encryptor } from "../Helper/CryptoHelper";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
-// import { HttpProvider, WsProvider } from "@polkadot/rpc-provider";
-import { NETWORK, TX_TYPE, STATUS, NATIVE, EVM } from "../Constants/index";
 import {
   mnemonicGenerate,
   mnemonicToMiniSecret,
   mnemonicValidate,
-  ed25519PairFromSeed,
-  cryptoWaitReady,
+  ed25519PairFromSeed
 } from "@polkadot/util-crypto";
 import {
   setCurrentAcc,
@@ -26,17 +22,13 @@ import {
   pushAccounts,
   setBalance,
   setTxHistory,
-  resetBalance,
   toggleLoader,
-  // setApiReady
 } from "../Store/reducer/auth";
-
 
 
 export default function UseWallet() {
 
-  const [nativeApi, setNativeApi] = useState("");
-  const [evmApi, setEvmApi] = useState("");
+  const dispatch = useDispatch();
   const [authData, setAuthData] = useState({
     temp1m: "",
     temp2p: "",
@@ -45,24 +37,19 @@ export default function UseWallet() {
   });
   const {
     currentAccount,
-    wsEndPoints,
     currentNetwork,
     balance,
     pass,
     accountName,
     accounts,
     isLogin,
-    // isApiReady
   } = useSelector((state) => state?.auth);
-  const dispatch = useDispatch();
 
 
-  
   const getKey = (str, p) => {
     const seed = decryptor(str, p);
     if (seed) {
       const { privateKey } = ethers.Wallet.fromMnemonic(seed);
-
       return privateKey;
     }
   };
@@ -158,29 +145,30 @@ export default function UseWallet() {
       if (Number(totalBalance) % 1 !== 0)
         totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toFixed(6, 8).toString()
 
-        console.log("here is all balance get by shwetu: ", evmBalance, nativeBalance);
+      console.log("balance.nativeBalance : ", balance.nativeBalance, " && now ", nativeBalance);
+      console.log("balance.nativeBalance : ", balance.evmBalance, " && now ", evmBalance);
 
-      if ((balance.nativeBalance !== nativeBalance && balance.evmBalance !== evmBalance) && (!isNaN(evmBalance) && !(isNaN(nativeBalance)))) {
-        const payload = {
-          evmBalance,
-          nativeBalance,
-          totalBalance
-        }
-        dispatch(setBalance(payload));
+      // if ((balance.nativeBalance !== nativeBalance && balance.evmBalance !== evmBalance) && (!isNaN(evmBalance) && !(isNaN(nativeBalance)))) {
+      const payload = {
+        evmBalance,
+        nativeBalance,
+        totalBalance
       }
+      dispatch(setBalance(payload));
+      // }
 
     } catch (error) {
       console.log("Error while geting balance : ", error);
     }
   }
 
-  const evmTransfer = async (data, isBig = false) => {
-
+  const evmTransfer = async (evmApi, data, isBig = false) => {
+    console.log("EVM APIIII : ", evmApi);
     return (new Promise(async (resolve, reject) => {
 
-      console.log("Condition Here: ", (Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0);
-      console.log("Here are individual conditions: ", data.amount !== '0x0', (Number(data.amount) > Number(balance.evmBalance), Number(balance.evmBalance) <= 0));
-      console.log("individual balance: ", Number(data.amount), Number(balance.evmBalance), data.amount);
+      // console.log("Condition Here: ", (Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0);
+      // console.log("Here are individual conditions: ", data.amount !== '0x0', (Number(data.amount) > Number(balance.evmBalance), Number(balance.evmBalance) <= 0));
+      // console.log("individual balance: ", Number(data.amount), Number(balance.evmBalance), data.amount);
 
       try {
         if ((Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0) {
@@ -221,11 +209,13 @@ export default function UseWallet() {
             transactions,
             temp2p
           );
+
+          //Sign And Send Transaction
           const txInfo = await evmApi.eth.sendSignedTransaction(signedTx.rawTransaction);
           const hash = txInfo.transactionHash;
 
           if (hash) {
-            let index = getAccId(currentAccount.id);
+
             let dataToDispatch = {
               data: {
                 chain: currentNetwork.toLowerCase(),
@@ -237,7 +227,7 @@ export default function UseWallet() {
                 txHash: hash,
                 status: STATUS.PENDING
               },
-              index: index,
+              index: getAccId(currentAccount.id),
             };
 
             //send the tx notification
@@ -264,7 +254,7 @@ export default function UseWallet() {
 
   };
 
-  const nativeTransfer = async (data) => {
+  const nativeTransfer = async (nativeApi, data) => {
     return new Promise(async (resolve, reject) => {
       try {
         if (Number(data.amount) >= Number(balance.nativeBalance)) {
@@ -351,8 +341,8 @@ export default function UseWallet() {
     })
   };
 
-  const nativeToEvmSwap = async (amount) => {
-    return new Promise(async (resolve, reject) => {
+  const nativeToEvmSwap = async (evmApi, nativeApi, amount) => {
+    return new Promise(async (resolve) => {
       try {
         if (Number(amount) >= Number(balance.nativeBalance) || Number(amount) <= 0) {
           resolve({
@@ -360,7 +350,7 @@ export default function UseWallet() {
             data: "Insufficent Balance!"
           })
         } else {
-          let count = 1, err, evmDepositeHash, signedHash;
+          let err, evmDepositeHash, signedHash;
           dispatch(toggleLoader(true));
           let dataToDispatch = {
             data: {
@@ -380,18 +370,17 @@ export default function UseWallet() {
           const keyring = new Keyring({ type: "ed25519" });
           const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
 
+          //Deposite amount
           let deposit = await nativeApi.tx.evm.deposit(
             currentAccount?.evmAddress,
             (new BigNumber(amount).multipliedBy(10 ** 18)).toString()
           );
-
           evmDepositeHash = deposit.hash.toHex();
 
+          //Sign and Send txn
           deposit.signAndSend(alice, ({ status, events, txHash }) => {
-
             if (status.isInBlock) {
-              console.log("Calling Count::: ", count);
-              count++;
+
               if (signedHash !== txHash) {
                 signedHash = txHash.toHex();
                 console.log("Hash : ", signedHash);
@@ -412,7 +401,7 @@ export default function UseWallet() {
                   dispatch(toggleLoader(false));
                 });
 
-                dataToDispatch.data.txHash = { hash: evmDepositeHash, mainHash: signedHash };
+                dataToDispatch.data.txHash = { mainHash: evmDepositeHash, hash: signedHash };
                 console.log("Data to dispatch : ", dataToDispatch);
                 dispatch(setTxHistory(dataToDispatch));
                 if (err) {
@@ -441,7 +430,7 @@ export default function UseWallet() {
     })
   };
 
-  const evmToNativeSwap = async (amount) => {
+  const evmToNativeSwap = async (evmApi, nativeApi, amount) => {
     return (new Promise(async (resolve, reject) => {
       try {
         if (Number(amount) >= Number(balance.evmBalance) || Number(amount) <= 0) {
@@ -460,7 +449,6 @@ export default function UseWallet() {
 
           const transaction = {
             to: publicKey.slice(0, 42),
-            // value: Math.round(Number(amount) * Math.pow(10, 18)).toString(),
             value: (new BigNumber(amount).multipliedBy(10 ** 18)).toString(),
             gas: 21000,
             nonce: await evmApi.eth.getTransactionCount(currentAccount?.evmAddress),
@@ -471,10 +459,13 @@ export default function UseWallet() {
             transaction,
             temp2p
           );
+
+          //sign and send
           const txInfo = await evmApi.eth.sendSignedTransaction(signedTx.rawTransaction);
           const signHash = txInfo.transactionHash;
 
           if (signHash) {
+            //withdraw amount
             const withdraw = await nativeApi.tx.evm.withdraw(
               publicKey.slice(0, 42),
               (new BigNumber(amount).multipliedBy(10 ** 18)).toString()
@@ -491,18 +482,18 @@ export default function UseWallet() {
                 to: "Evm to Native",
                 type: TX_TYPE?.SWAP,
                 amount: amount,
-                txHash: { hash: signRes.toHex(), mainHash: signHash },
+                txHash: { mainHash: signRes.toHex(), hash: signHash },
                 status: STATUS.PENDING
               },
               index: getAccId(currentAccount.id),
             };
 
-
             //send the transaction notification
-            Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch });
-
+            
+            console.log("data to dispatch : ",dataToDispatch);
             dispatch(setTxHistory(dataToDispatch));
             dispatch(toggleLoader(false));
+            Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch });
 
             resolve({
               error: false,
@@ -574,7 +565,7 @@ export default function UseWallet() {
     }
   };
 
-  const retriveEvmFee = async (toAddress, amount, data = "") => {
+  const retriveEvmFee = async (evmApi, toAddress, amount, data = "") => {
     try {
       dispatch(toggleLoader(true));
       toAddress = toAddress ? toAddress : currentAccount?.nativeAddress;
@@ -624,7 +615,7 @@ export default function UseWallet() {
     }
   };
 
-  const retriveNativeFee = async (toAddress, amount) => {
+  const retriveNativeFee = async (nativeApi, toAddress, amount) => {
     try {
       dispatch(toggleLoader(true));
       toAddress = toAddress ? toAddress : currentAccount?.evmAddress;
@@ -683,7 +674,6 @@ export default function UseWallet() {
       console.log("Error while getting native fee: ", error);
       return {
         error: true,
-        // data: ""
       }
     }
   };
@@ -700,8 +690,5 @@ export default function UseWallet() {
     retriveNativeFee,
     getKey,
     getBalance
-    // setAuthData,
-    // getEvmBalance,
-    // getNativeBalance,
   };
 }

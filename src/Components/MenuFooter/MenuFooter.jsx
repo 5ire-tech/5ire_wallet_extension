@@ -1,51 +1,54 @@
+import { Drawer } from "antd";
+import { toast } from "react-toastify";
 import React, { useState } from "react";
 import style from "./style.module.scss";
+import useAuth from "../../Hooks/useAuth";
+import { TX_TYPE } from "../../Constants/index";
+import Logout from "../../Assets/PNG/logout.png";
+import Import from "../../Assets/PNG/import.png";
+import Wallet from "../../Assets/PNG/wallet.png";
+import Setting from "../../Assets/PNG/setting.png";
+import Sendhistry from "../../Assets/sendhistry.svg";
+import HistoryIcon from "../../Assets/PNG/histry.png";
+import Myaccount from "../../Assets/PNG/myaccount.png";
+import { useSelector, useDispatch } from "react-redux";
+import BackArrow from "../../Assets/PNG/arrowright.png";
 import Walletlogo from "../../Assets/PNG/walletlogo.png";
+import { shortner, formatDate } from "../../Helper/helper";
+import SocialAccount from "../SocialAccount/SocialAccount";
+import ModalCloseIcon from "../../Assets/ModalCloseIcon.svg";
+import ManageCustom from "../ManageCustomtocken/ManageCustom";
+import Createaccount from "../../Assets/PNG/createaccount.png";
+import AccountSetting from "../AccountSetting/AccountSetting.jsx";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { resetBalance, setCurrentAcc } from "../../Store/reducer/auth";
+import TransectionHistry from "../TransectionHistry/TransectionHistry";
+// import { Moment } from "moment";
 // import DefiIcon from "../../Assets/DefiIcon.svg";
 // import SettignIcon from "../../Assets/SettignIcon.svg";
-import Myaccount from "../../Assets/PNG/myaccount.png";
-import HistoryIcon from "../../Assets/PNG/histry.png";
-import { Link, useNavigate, useLocation } from "react-router-dom";
 // import ButtonComp from "../ButtonComp/ButtonComp";
-import { Drawer } from "antd";
 import FooterStepOne, {
   ApproveLogin,
-  FooterStepThree,
   FooterStepTwo,
   ApproveTx,
 } from "./FooterContinue";
-import Sendhistry from "../../Assets/sendhistry.svg";
-import TransectionHistry from "../TransectionHistry/TransectionHistry";
-import ModalCloseIcon from "../../Assets/ModalCloseIcon.svg";
-import ManageCustom from "../ManageCustomtocken/ManageCustom";
-import AccountSetting from "../AccountSetting/AccountSetting.jsx";
-import Createaccount from "../../Assets/PNG/createaccount.png";
-import Logout from "../../Assets/PNG/logout.png";
-import Import from "../../Assets/PNG/import.png";
-import BackArrow from "../../Assets/PNG/arrowright.png";
-import Wallet from "../../Assets/PNG/wallet.png";
-import SocialAccount from "../SocialAccount/SocialAccount";
-import Setting from "../../Assets/PNG/setting.png";
-import { useSelector, useDispatch } from "react-redux";
-import { setCurrentAcc } from "../../Store/reducer/auth";
-import useAuth from "../../Hooks/useAuth";
-import { toast } from "react-toastify";
-import { TX_TYPE } from "../../Constants/index";
-import { shortner, formatDate } from "../../Helper/helper";
-// import { Moment } from "moment";
 
 function MenuFooter() {
-  const navigate = useNavigate();
   const { logout } = useAuth();
-  const { accounts, currentAccount, currentNetwork } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const getLocation = useLocation();
-  const path = getLocation.pathname.replace("/", "");
-  const [accData, setAccData] = useState([]);
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
   const [open2, setOpen2] = useState(false);
-  const [history,setHistory] = useState([]);
+  const [history, setHistory] = useState([]);
+  // const [accData, setAccData] = useState([]);
+  const path = getLocation.pathname.replace("/", "");
+  const { accounts, 
+    currentAccount, 
+    currentNetwork 
+  } = useSelector((state) => state.auth);
+
 
   const onClose1 = () => {
     setOpen1(false);
@@ -81,20 +84,20 @@ function MenuFooter() {
   };
 
   const onSelectAcc = (accId) => {
-    // let accId = e.target.value;
-    let acc = accounts.find(acc=>acc.id===accId);
+    // dispatch(resetBalance());
+    let acc = accounts.find(acc => acc.id === accId);
     dispatch(setCurrentAcc(acc));
-    onClose()
+    onClose();
   };
 
-  const handleHistoryOpen =  () => {
+  const handleHistoryOpen = () => {
     setOpen1(true);
-    let filterData = currentAccount.txHistory.filter((his)=>{
+    let filterData = currentAccount.txHistory.filter((his) => {
       return his.chain === currentNetwork.toLowerCase();
     });
     let newArr = [];
-    for (let i = filterData.length -1; i >= 0; i--) {
-        newArr.push(filterData[i]);
+    for (let i = filterData.length - 1; i >= 0; i--) {
+      newArr.push(filterData[i]);
     }
     setHistory(newArr);
   }
@@ -112,7 +115,7 @@ function MenuFooter() {
             }`}
         >
           <div className={style.menuItems__items__img}>
-            <img src={Walletlogo} />
+            <img src={Walletlogo} alt="Walletlogo"/>
           </div>
           <span className={style.menuItems__items__title}>Wallet</span>
         </Link>
@@ -126,7 +129,7 @@ function MenuFooter() {
             }`}
         >
           <div className={style.menuItems__items__img}>
-            <img src={HistoryIcon} />
+            <img src={HistoryIcon} alt="HistoryIcon"/>
           </div>
           <span className={style.menuItems__items__title}>History</span>
         </Link>
@@ -140,7 +143,7 @@ function MenuFooter() {
         placement="bottom"
         onClose={onClose1}
         open={open1}
-        closeIcon={<img src={ModalCloseIcon} alt = "close"/>}
+        closeIcon={<img src={ModalCloseIcon} alt="close" />}
       >
         {history?.length > 0 ? (
           history?.map((data) => (
@@ -171,7 +174,7 @@ function MenuFooter() {
             }`}
         >
           <div className={style.menuItems__items__img}>
-            <img src={Myaccount} />
+            <img src={Myaccount} alt="Myaccount" />
           </div>
           <span className={style.menuItems__items__title}>My Accounts</span>
         </Link>
@@ -185,14 +188,13 @@ function MenuFooter() {
         placement="bottom"
         onClose={onClose}
         open={open}
-        closeIcon={<img src={ModalCloseIcon} />}
+        closeIcon={<img src={ModalCloseIcon} alt="ModalCloseIcon"/>}
       >
         {accounts?.map((data, index) => (
           <ManageCustom
             img={Sendhistry}
             data={data}
             active={data?.id === currentAccount?.id ? true : false}
-            // balance={Number(balance.evmBalance) + Number(balance.nativeBalance)}
             edited={false}
             checkValue={index}
             onSelectAcc={onSelectAcc}
@@ -219,7 +221,7 @@ function MenuFooter() {
             }`}
         >
           <div className={style.menuItems__items__img}>
-            <img src={Setting} />
+            <img src={Setting} alt="Setting"/>
           </div>
           <span className={style.menuItems__items__title}>Settings</span>
         </Link>
@@ -233,12 +235,12 @@ function MenuFooter() {
         placement="bottom"
         onClose={onClose2}
         open={open2}
-        closeIcon={<img src={ModalCloseIcon} />}
+        closeIcon={<img src={ModalCloseIcon} alt="ModalCloseIcon"/>}
       >
         <Link to="/manageWallet">
           <div className={style.sttings}>
             <div className={style.sttings__left}>
-              <img src={Wallet} width={30} height={30} />
+              <img src={Wallet} width={30} height={30} alt="walletIcon"/>
               <div className={style.sttings__left__texts}>
                 <div className={style.sttings__left__textsTop}>
                   Manage Wallet
@@ -247,7 +249,7 @@ function MenuFooter() {
             </div>
 
             <div className={style.sttings__right}>
-              <img src={BackArrow} width={8} height={15} />
+              <img src={BackArrow} width={8} height={15} alt="backArrow"/>
             </div>
           </div>
         </Link>

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import ButtonComp from "../ButtonComp/ButtonComp";
 import style from "./style.module.scss";
 import { useDispatch, useSelector } from "react-redux";
+import { connectionObj, Connection} from "../../Helper/connection.helper";
 // import { toast } from "react-toastify";
 // import useAuth from "../../Hooks/useAuth";
 import {
@@ -221,35 +222,46 @@ export const ApproveTx = () => {
     if (isApproved) {
       dispatch(toggleLoader(true));
 
-      evmTransfer(
-        {
-          to: auth?.uiData?.message?.to,
-          amount: auth?.uiData?.message?.value,
-          data: auth?.uiData?.message?.data,
-        },
-        true
-      ).then((rs) => {
-        if (rs.error) {
-          browser.tabs.sendMessage(auth.uiData.tabId, {
-            id: auth.uiData.id,
-            response: null,
-            error: rs.data,
-          });
-        } else {
-          browser.tabs.sendMessage(auth.uiData.tabId, {
-            id: auth.uiData.id,
-            response: rs.data,
-            error: null,
-          });
+      connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.currentNetwork, true).then((apiRes) => {
+
+        console.log("Api Response : ",apiRes);
+        if (!apiRes?.value) {
+          Connection.isExecuting.value = false;
+
+        evmTransfer(
+          apiRes.evmApi,
+          {
+            to: auth?.uiData?.message?.to,
+            amount: auth?.uiData?.message?.value,
+            data: auth?.uiData?.message?.data,
+          },
+          true
+        ).then((rs) => {
+          if (rs.error) {
+            browser.tabs.sendMessage(auth.uiData.tabId, {
+              id: auth.uiData.id,
+              response: null,
+              error: rs.data,
+            });
+          } else {
+            browser.tabs.sendMessage(auth.uiData.tabId, {
+              id: auth.uiData.id,
+              response: rs.data,
+              error: null,
+            });
+          }
+
+          dispatch(setUIdata({}));
+          dispatch(toggleLoader(false));
+
+          setTimeout(() => {
+            window.close();
+          }, 300);
+        });
         }
-
-        dispatch(setUIdata({}));
-        dispatch(toggleLoader(false));
-
-        setTimeout(() => {
-          window.close();
-        }, 300);
       });
+
+
     } else {
       browser.tabs.sendMessage(auth.uiData.tabId, {
         id: auth.uiData.id,

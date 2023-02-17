@@ -1,22 +1,35 @@
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 import React, { useState } from "react";
 import style from "./style.module.scss";
+import Approve from "../Approve/Approve";
+import { useSelector } from "react-redux";
+import useWallet from "../../Hooks/useWallet";
+import { shortner } from "../../Helper/helper";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import CopyIcon from "../../Assets/CopyIcon.svg";
-import WalletCardLogo from "../../Assets/walletcardLogo.svg";
-import { InputField } from "../../Components/InputField/InputFieldSimple";
-import Approve from "../Approve/Approve";
-import ModalCustom from "../../Components/ModalCustom/ModalCustom";
-import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import ComplSwap from "../../Assets/tranCompl.svg";
 import FaildSwap from "../../Assets/tranReject.svg";
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { shortner } from "../../Helper/helper";
 import { NATIVE, EVM } from "../../Constants/index";
-import { toast } from "react-toastify";
-import useWallet from "../../Hooks/useWallet";
+import { connectionObj, Connection } from "../../Helper/connection.helper";
+import WalletCardLogo from "../../Assets/walletcardLogo.svg";
+import ButtonComp from "../../Components/ButtonComp/ButtonComp";
+import ModalCustom from "../../Components/ModalCustom/ModalCustom";
+import { InputField } from "../../Components/InputField/InputFieldSimple";
 
 function Swap() {
+
+  const [error, setError] = useState("");
+  const [txHash, setTxHash] = useState("");
+  const [amount, setAmount] = useState("");
+  const [gassFee, setGassFee] = useState("");
+  const [swapErr, setSwapError] = useState("");
+  const [activeTab, setActiveTab] = useState("one");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFaildOpen, setIsFaildOpen] = useState(false);
+  const [toFrom, setToFrom] = useState({ from: "Native", to: "Evm" });
+  const [address, setAddress] = useState({ fromAddress: "", toAddress: "" });
+  const { currentAccount, balance, wsEndPoints, currentNetwork } = useSelector((state) => state.auth);
   const {
     evmToNativeSwap,
     nativeToEvmSwap,
@@ -24,17 +37,7 @@ function Swap() {
     retriveNativeFee,
     retriveEvmFee,
   } = useWallet();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isFaildOpen, setIsFaildOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("one");
-  const [toFrom, setToFrom] = useState({ from: "Native", to: "Evm" });
-  const [txHash, setTxHash] = useState("");
-  const [amount, setAmount] = useState("");
-  const [gassFee, setGassFee] = useState("");
-  const [error, setError] = useState("");
-  const [swapErr, setSwapError] = useState("");
-  const [address, setAddress] = useState({ fromAddress: "", toAddress: "" });
-  const { currentAccount, balance } = useSelector((state) => state.auth);
+
 
   useEffect(() => {
     if (toFrom.from.toLowerCase() === NATIVE.toLowerCase())
@@ -69,47 +72,58 @@ function Swap() {
     try {
       let amtRes = validateAmount();
       if (!amtRes.error) {
-        if (
-          toFrom.from.toLowerCase() === EVM.toLowerCase() &&
-          toFrom.to.toLowerCase() === NATIVE.toLowerCase()
-        ) {
-          if (Number(amount) >= Number(balance.evmBalance)) {
-            setIsFaildOpen(true);
-            setSwapError("Insufficent Balance!");
-          } else {
-            let res = await evmToNativeSwap(amount);
-            if (res.error) {
-              setIsFaildOpen(true);
-              setSwapError(res.data);
-            } else {
-              setIsModalOpen(true);
-              setTxHash(res.data);
-              setTimeout(() => {
-                getBalance();
-              }, 60000);
+
+        connectionObj.initializeApi(wsEndPoints.testnet, wsEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
+
+          if (!apiRes?.value) {
+
+            console.log("API RES ::: ", apiRes);
+            Connection.isExecuting.value = false;
+
+            if (
+              toFrom.from.toLowerCase() === EVM.toLowerCase() &&
+              toFrom.to.toLowerCase() === NATIVE.toLowerCase()
+            ) {
+              if (Number(amount) >= Number(balance.evmBalance)) {
+                setIsFaildOpen(true);
+                setSwapError("Insufficent Balance!");
+              } else {
+                let res = await evmToNativeSwap(apiRes.evmApi, apiRes.nativeApi, amount);
+                if (res.error) {
+                  setIsFaildOpen(true);
+                  setSwapError(res.data);
+                } else {
+                  setIsModalOpen(true);
+                  setTxHash(res.data);
+                  setTimeout(() => {
+                    getBalance(apiRes.evmApi, apiRes.nativeApi);
+                  }, 60000);
+                }
+              }
+            } else if (
+              toFrom.from.toLowerCase() === NATIVE.toLowerCase() &&
+              toFrom.to.toLowerCase() === EVM.toLowerCase()
+            ) {
+              if (Number(amount) >= Number(balance.nativeBalance)) {
+                setIsFaildOpen(true);
+                setSwapError("Insufficent Balance!");
+              } else {
+                let res = await nativeToEvmSwap(apiRes.evmApi, apiRes.nativeApi, amount);
+                if (res.error) {
+                  setIsFaildOpen(true);
+                  setSwapError(res.data);
+                } else {
+                  setIsModalOpen(true);
+                  setTxHash(res.data);
+                  setTimeout(() => {
+                    getBalance(apiRes.evmApi, apiRes.nativeApi);
+                  }, 60000);
+                }
+              }
             }
           }
-        } else if (
-          toFrom.from.toLowerCase() === NATIVE.toLowerCase() &&
-          toFrom.to.toLowerCase() === EVM.toLowerCase()
-        ) {
-          if (Number(amount) >= Number(balance.nativeBalance)) {
-            setIsFaildOpen(true);
-            setSwapError("Insufficent Balance!");
-          } else {
-            let res = await nativeToEvmSwap(amount);
-            if (res.error) {
-              setIsFaildOpen(true);
-              setSwapError(res.data);
-            } else {
-              setIsModalOpen(true);
-              setTxHash(res.data);
-              setTimeout(() => {
-                getBalance();
-              }, 60000);
-            }
-          }
-        }
+        });
+
       }
     } catch (error) {
       console.log("Error while swapping : ", error);
@@ -119,35 +133,48 @@ function Swap() {
 
   const getFee = async () => {
     let amtRes = validateAmount();
+    console.log("AMOUNT VALIDATION RESPONSE : ",amtRes);
     if (!amtRes.error) {
-      if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase() && amount) {
-        let feeRes = await retriveNativeFee("", amount);
-        console.log("Fee Res : ", feeRes);
-        if (feeRes.error) {
-          if (feeRes.data) {
-            setError(feeRes.error);
-          } else {
-            toast.error("Error while getting fee!");
+
+      console.log("GETTING FEE FOR SWAP");
+      
+      connectionObj.initializeApi(wsEndPoints.testnet, wsEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
+
+        if (!apiRes?.value) {
+
+          console.log("API RES ::: ", apiRes);
+
+          Connection.isExecuting.value = false;
+
+          if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase() && amount) {
+            let feeRes = await retriveNativeFee(apiRes.nativeApi, "", amount);
+            console.log("Fee Res : ", feeRes);
+            if (feeRes.error) {
+              if (feeRes.data) {
+                setError(feeRes.error);
+              } else {
+                toast.error("Error while getting fee!");
+              }
+            } else {
+              setGassFee(feeRes.data);
+            }
+          } else if (
+            toFrom.from.toLocaleLowerCase() === EVM.toLowerCase()
+          ) {
+            let feeRes = await retriveEvmFee(apiRes.evmApi, "", amount);
+            console.log("Fee Res : ", feeRes);
+            if (feeRes.error) {
+              if (feeRes.data) {
+                setError(feeRes.error);
+              } else {
+                toast.error("Error while getting fee!");
+              }
+            } else {
+              setGassFee(feeRes.data);
+            }
           }
-        } else {
-          setGassFee(feeRes.data);
         }
-      } else if (
-        toFrom.from.toLocaleLowerCase() === EVM.toLowerCase() &&
-        amount
-      ) {
-        let feeRes = await retriveEvmFee("", amount);
-        console.log("Fee Res : ", feeRes);
-        if (feeRes.error) {
-          if (feeRes.data) {
-            setError(feeRes.error);
-          } else {
-            toast.error("Error while getting fee!");
-          }
-        } else {
-          setGassFee(feeRes.data);
-        }
-      }
+      });
     }
   };
 
