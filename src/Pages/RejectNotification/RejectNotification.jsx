@@ -1,20 +1,41 @@
-import React, { useEffect, useState } from "react";
 import style from "./style.module.scss";
-import { useSelector } from "react-redux";
 import useWallet from "../../Hooks/useWallet";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { resetBalance } from "../../Store/reducer/auth";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
 
 function ApproveTx() {
+
+  const dispatch = useDispatch();
+  const [fee, setFee] = useState("");
+  const [isReady, setReady] = useState("");
+  const { retriveEvmFee } = useWallet();
   const [activeTab, setActiveTab] = useState("detail");
   const auth = useSelector((state) => state.auth);
-  const [fee, setFee] = useState(0);
-  const { retriveEvmFee } = useWallet();
 
   useEffect(() => {
+
+    dispatch(resetBalance());
+
+    if (!isReady) {
+      setTimeout(()=>{
+        getFee();
+      },5000)
+    }else{
+      getFee();
+    }
+  }, [isReady]);
+
+  const getFee = () => {
+
     connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.currentNetwork, false).then((apiRes) => {
 
       console.log("Api Response : ", apiRes);
+
       if (!apiRes?.value) {
+        setReady(true);
+        console.log("GETTTT FEEEEEEEEE. ");
         Connection.isExecuting.value = false;
         retriveEvmFee(
           apiRes.evmApi,
@@ -22,12 +43,21 @@ function ApproveTx() {
           auth?.uiData?.message?.value,
           auth?.uiData?.message?.data
         )
-          .then(setFee)
-          .catch(setFee);
+          .then((res) => {
+            console.log("Fee res : ", res);
+            if (!res.error) {
+              setFee(res.data);
+            }
+          })
+          .catch((e) => {
+            console.log("Error : ", e);
+          });
+      }else{
+        setReady(false);
       }
     });
 
-  }, []);
+  }
 
   const activeDetail = () => {
     setActiveTab("detail");

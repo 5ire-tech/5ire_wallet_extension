@@ -85,8 +85,9 @@ function Swap() {
               toFrom.to.toLowerCase() === NATIVE.toLowerCase()
             ) {
               if (Number(amount) >= Number(balance.evmBalance)) {
-                setIsFaildOpen(true);
-                setSwapError("Insufficent Balance!");
+                toast.error("Insufficent Balance.")
+                // setIsFaildOpen(true);
+                // setSwapError("Insufficent Balance!");
               } else {
                 let res = await evmToNativeSwap(apiRes.evmApi, apiRes.nativeApi, amount);
                 if (res.error) {
@@ -105,8 +106,9 @@ function Swap() {
               toFrom.to.toLowerCase() === EVM.toLowerCase()
             ) {
               if (Number(amount) >= Number(balance.nativeBalance)) {
-                setIsFaildOpen(true);
-                setSwapError("Insufficent Balance!");
+                toast.error("Insufficent Balance.")
+                // setIsFaildOpen(true);
+                // setSwapError("Insufficent Balance.");
               } else {
                 let res = await nativeToEvmSwap(apiRes.evmApi, apiRes.nativeApi, amount);
                 if (res.error) {
@@ -137,7 +139,7 @@ function Swap() {
     if (!amtRes.error) {
 
       console.log("GETTING FEE FOR SWAP");
-      
+
       connectionObj.initializeApi(wsEndPoints.testnet, wsEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
 
         if (!apiRes?.value) {

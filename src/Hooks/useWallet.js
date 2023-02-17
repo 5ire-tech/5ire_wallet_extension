@@ -401,7 +401,7 @@ export default function UseWallet() {
                   dispatch(toggleLoader(false));
                 });
 
-                dataToDispatch.data.txHash = { mainHash: evmDepositeHash, hash: signedHash };
+                dataToDispatch.data.txHash = { hash: evmDepositeHash, mainHash: signedHash };
                 console.log("Data to dispatch : ", dataToDispatch);
                 dispatch(setTxHistory(dataToDispatch));
                 if (err) {
@@ -581,7 +581,7 @@ export default function UseWallet() {
           dispatch(toggleLoader(false));
           return ({
             error: true,
-            data: "Invalid 'to' address!"
+            data: "Invalid 'To' address."
           });
         }
       }
@@ -610,7 +610,7 @@ export default function UseWallet() {
       dispatch(toggleLoader(false));
       console.log("Error while getting evm fee: ", error);
       return {
-        error: false,
+        error: true,
       }
     }
   };
@@ -635,7 +635,7 @@ export default function UseWallet() {
           dispatch(toggleLoader(false));
           return ({
             error: true,
-            data: "Invalid 'to' address!"
+            data: "Invalid 'to' address."
           });
         }
         transferTx = await nativeApi.tx.evm.deposit(toAddress, amt);

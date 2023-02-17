@@ -37,7 +37,7 @@ function getParameterByName(name, url = window.location.href) {
 function App() {
 
   const auth = useSelector((state) => state.auth);
-  const { currentNetwork, wsEndPoints } = useSelector((state) => state.auth);
+  // const { currentNetwork, wsEndPoints } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
   // useEffect(() => {

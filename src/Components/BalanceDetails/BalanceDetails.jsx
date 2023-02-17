@@ -54,12 +54,13 @@ function BalanceDetails({ className, textLeft, mt0 }) {
     if (currentAccount.evmAddress && currentAccount?.nativeAddress) {
       setAddresses({ evmAddress: shortner(currentAccount?.evmAddress), nativeAddress: shortner(currentAccount?.nativeAddress) });
     }
-    console.log("wsEndPoints.testnet : ", wsEndPoints.testnet);
+    // console.log("wsEndPoints.testnet : ", wsEndPoints.testnet);
 
     //todo
     connectionObj.initializeApi(wsEndPoints.testnet, wsEndPoints.qa, currentNetwork, false).then((res) => {
 
-      console.log("here is the response: ", res)
+      console.log("here is the response: ", res);
+      
       if (!res?.value) {
         Connection.isExecuting.value = false;
         getBalance(res.evmApi, res.nativeApi);

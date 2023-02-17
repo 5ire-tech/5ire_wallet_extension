@@ -15,13 +15,9 @@
 
   "permissions": [
     "activeTab",
-    "alarms",
-    "clipboardWrite",
     "notifications",
     "scripting",
     "storage",
-    "unlimitedStorage",
-    "webRequest",
     "tabs"
   ],
   "host_permissions": [

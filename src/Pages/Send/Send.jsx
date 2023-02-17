@@ -59,11 +59,14 @@ function Send() {
   const validateToAddress = () => {
     if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
-      if (!data.to || !data.to.startsWith("0x")) {
-        setErr((p) => ({ ...p, to: "Please enter to address correctly!" }));
+      if (!data.to) {
+        setErr((p) => ({ ...p, to: "Please enter 'To' address." }));
+        return { error: true }
+      } else if (!data.to.startsWith("0x")) {
+        setErr((p) => ({ ...p, to: "Incorrect 'To' address." }));
         return { error: true }
       } else if (data.to === currentAccount.evmAddress) {
-        setErr((p) => ({ ...p, to: "To can't be same as your current address!" }));
+        setErr((p) => ({ ...p, to: "'To' can't be same as your current address!" }));
         return { error: true }
       } else {
         setErr((p) => ({ ...p, to: "" }));
@@ -72,11 +75,14 @@ function Send() {
     }
     else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
 
-      if (!data.to || !data.to.startsWith("5")) {
-        setErr((p) => ({ ...p, to: "Please enter to address correctly!" }));
+      if (!data.to) {
+        setErr((p) => ({ ...p, to: "Please enter 'To' address." }));
+        return { error: true }
+      } else if (!data.to.startsWith("5")) {
+        setErr((p) => ({ ...p, to: "Incorrect 'To' address." }));
         return { error: true }
       } else if (data.to === currentAccount.nativeAddress) {
-        setErr((p) => ({ ...p, to: "To can't be same as your current address!" }));
+        setErr((p) => ({ ...p, to: "'To' can't be same as your current address." }));
         return { error: true }
       } else {
         setErr((p) => ({ ...p, to: "" }));
@@ -99,7 +105,6 @@ function Send() {
           Connection.isExecuting.value = false;
 
           if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
-            console.log("retriveNativeFee !!!!!!");
 
             let feeRes = await retriveNativeFee(apiRes.nativeApi, data.to, data.amount);
             console.log("Fee Res : ", feeRes);
