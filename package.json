@@ -51,8 +51,8 @@
     "watch": "node ./scripts/watch",
     "start": "react-scripts start",
     "build": "INLINE_RUNTIME_CHUNK=false BUILD_TYPE=CHROME craco build",
-    "build:chrome": "INLINE_RUNTIME_CHUNK=false BUILD_TYPE=CHROME craco build",
-    "build:firefox": "INLINE_RUNTIME_CHUNK=false BUILD_TYPE=FIREFOX craco build",
+    "build:chrome": "GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false BUILD_TYPE=CHROME craco build",
+    "build:firefox": "GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false BUILD_TYPE=FIREFOX craco build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

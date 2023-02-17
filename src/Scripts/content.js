@@ -39,9 +39,23 @@ contentStream.on("data", async (data) => {
           Browser.runtime.sendMessage(data);
         }
         break;
-      case "get_endPoint": 
-      Browser.runtime.sendMessage(data);
-      break;
+      case "get_endPoint":
+      case "native_add_nominator":
+      case "native_renominate":
+      case "native_nominator_payout":
+      case "native_validator_payout":
+      case "native_stop_validator":
+      case "native_stop_nominator":
+      case "native_unbond_validator":
+      case "native_unbond_nominator":
+      case "native_withdraw_nominator":
+      case "native_withdraw_validator":
+      case "native_withdraw_nominator_unbonded":
+      case "native_add_validator":
+      case "native_validator_bondmore":
+      case "native_restart_validator":
+        Browser.runtime.sendMessage(data);
+        break;
       case "keepAlive":
         setTimeout(() => {
           contentStream.write({

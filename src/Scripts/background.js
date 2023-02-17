@@ -52,7 +52,7 @@ try {
 
 
     //check if the current event is transactions
-    if(message?.type === "tx") txNotification(message);
+    if (message?.type === "tx") txNotification(message);
 
 
     if (!isInitialized) {
@@ -76,6 +76,23 @@ try {
         break;
       case "get_endPoint":
         await controller.sendEndPoint(data);
+        break;
+
+      case "native_add_nominator":
+      case "native_renominate":
+      case "native_nominator_payout":
+      case "native_validator_payout":
+      case "native_stop_validator":
+      case "native_stop_nominator":
+      case "native_unbond_validator":
+      case "native_unbond_nominator":
+      case "native_withdraw_nominator":
+      case "native_withdraw_validator":
+      case "native_withdraw_nominator_unbonded":
+      case "native_add_validator":
+      case "native_validator_bondmore":
+      case "native_restart_validator":
+        await controller.handleValidatorNominatorTransactions(data);
         break;
       default:
     }
@@ -103,7 +120,7 @@ try {
   function txNotification(txData) {
     checkTransactions(txData.data);
   }
- 
+
 } catch (err) {
   console.log("BACKGROUND FILE TRY CATCH:", err)
 }

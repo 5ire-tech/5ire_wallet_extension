@@ -124,20 +124,20 @@ export class Controller {
     });
   }
 
- async sendEndPoint(data) {
+  async sendEndPoint(data) {
     try {
       const storage = this.store.getState();
 
-     if(data.tabId) {
-       //pass the current network http endpoint
-       Browser.tabs.sendMessage(data.tabId, {
-        id: data.id,
-        response: {result: storage.auth.httpEndPoints[storage.auth.currentNetwork.toLowerCase()]},
-        error: null,
-      });
-     }
+      if (data.tabId) {
+        //pass the current network http endpoint
+        Browser.tabs.sendMessage(data.tabId, {
+          id: data.id,
+          response: { result: storage.auth.httpEndPoints[storage.auth.currentNetwork.toLowerCase()] },
+          error: null,
+        });
+      }
     } catch (err) {
-     console.log("error while sending the endpoint for injection"); 
+      console.log("error while sending the endpoint for injection");
     }
   }
 
@@ -156,7 +156,7 @@ export class Controller {
 
     if (isExist?.isConnected) {
       const res = isEthReq
-        ? {method: data?.method, result: [state.auth.currentAccount.evmAddress]}
+        ? { method: data?.method, result: [state.auth.currentAccount.evmAddress] }
         : {
           evmAddress: state.auth.currentAccount.evmAddress,
           nativeAddress: state.auth.currentAccount.nativeAddress,
@@ -184,9 +184,16 @@ export class Controller {
         ...data,
         message: data?.message[0],
       }));
-      
+
 
     await this.notificationManager.showPopup("approveTx");
+  }
+
+  //Handle Validator nominator methods
+  async handleValidatorNominatorTransactions(data) {
+
+    this.store.dispatch(setUIdata(data));
+    await this.notificationManager.showPopup("nativeTx");
   }
 
 }
@@ -194,15 +201,15 @@ export class Controller {
 
 //for http-requests
 export async function httpRequest(url, payload) {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: payload
-    });
-    const data = await res.json();
-    return data;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: payload
+  });
+  const data = await res.json();
+  return data;
 }
 
 
@@ -216,22 +223,22 @@ export async function checkTransactions(txData) {
     const accountName = state.auth.currentAccount.accountName;
 
     console.log("Here is the Transaction state: ", txData);
-  
+
     /*
     check for every pending transactions and if they success or fail update it into storage
     and send the success notification
-    */ 
-      const txHash = typeof(txData.txHash) === "object" ? txData.txHash.mainHash : txData.txHash;
-      //check if transaction is swap or not
-      const isSwap = txData.type === "swap";
-      const rpcUrl = state.auth.httpEndPoints[txData.chain] || "https://rpc-testnet.5ire.network";
-      const txRecipt = await httpRequest(rpcUrl, JSON.stringify({jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [txHash], id: 1}));
+    */
+    const txHash = typeof (txData.txHash) === "object" ? txData.txHash.mainHash : txData.txHash;
+    //check if transaction is swap or not
+    const isSwap = txData.type === "swap";
+    const rpcUrl = state.auth.httpEndPoints[txData.chain] || "https://rpc-testnet.5ire.network";
+    const txRecipt = await httpRequest(rpcUrl, JSON.stringify({ jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [txHash], id: 1 }));
 
-      console.log("Here is the Transaction Result: ", txRecipt);
+    console.log("Here is the Transaction Result: ", txRecipt);
 
-      if(txRecipt && txRecipt?.result) {
-        store.dispatch(updateTxHistory({txHash, accountName, status: Boolean(parseInt(txRecipt.result.status)), isSwap}));
-        noti.showNotification(`Transaction ${Boolean(parseInt(txRecipt.result.status)) ? "Success" : "Failed"} ${txHash.slice(0, 30)} ...`)
+    if (txRecipt && txRecipt?.result) {
+      store.dispatch(updateTxHistory({ txHash, accountName, status: Boolean(parseInt(txRecipt.result.status)), isSwap }));
+      noti.showNotification(`Transaction ${Boolean(parseInt(txRecipt.result.status)) ? "Success" : "Failed"} ${txHash.slice(0, 30)} ...`)
     } else checkTransactions(txData)
 
 
