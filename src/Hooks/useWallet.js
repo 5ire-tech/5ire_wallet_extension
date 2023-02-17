@@ -935,7 +935,7 @@ export default function UseWallet() {
     });
   };
 
-  const nominatorPayout = async (validatorIdList) => {
+  const nominatorValidatorPayout = async (validatorIdList) => {
     try {
       const validators = [validatorIdList];
       const allEras = await nativeApi?.derive?.staking?.erasHistoric();
@@ -958,7 +958,7 @@ export default function UseWallet() {
     }
   };
 
-  const stopNominator = async () => {
+  const stopValidatorNominator = async () => {
     try {
       const stopValidator = await nativeApi.tx.staking.chill();
       const txHash = stopValidator.signAndSend(getKeyring())
@@ -971,7 +971,7 @@ export default function UseWallet() {
     }
   };
 
-  const unbondNominator = async (value) => {
+  const unbondNominatorValidator = async (value) => {
     try {
       const amount = (new BigNumber(value).multipliedBy(10 ** 18)).toString()
       const unbound = await nativeApi.tx.staking.unbond(amount);
@@ -1003,7 +1003,7 @@ export default function UseWallet() {
 
   const withdrawNominatorUnbonded = async (value) => {
     try {
-      const unbond = await api.tx.staking.withdrawUnbonded(value);
+      const unbond = await nativeApi.tx.staking.withdrawUnbonded(value);
       const txHash = unbond.signAndSend(getKeyring())
       return {
         error: false,
@@ -1013,6 +1013,87 @@ export default function UseWallet() {
       return { error: true, message: err?.message };
     }
   };
+
+
+  //validators methods
+  const addValidator = async (commission, bondedAmount) => {
+    try {
+      const rotateKey = await nativeApi.rpc.author.rotateKeys();
+
+      const bondAmt = (new BigNumber(bondedAmount).multipliedBy(10 ** 18)).toString()
+
+
+      const stashId = encodeAddress(decodeAddress(currentAccount?.nativeAddress));
+      commission = commission === 0 ? 1 : commission * 10 ** 7;
+
+      const validatorInfo = {
+        bondTx: nativeApi.tx.staking.bond(stashId, bondAmt, 'Staked'),
+        sessionTx: nativeApi.tx.session.setKeys(rotateKey, new Uint8Array()),
+        validateTx: nativeApi.tx.staking.validate({
+          blocked: false,
+          commission,
+        }),
+      };
+      const validationTransfer = await nativeApi.tx.utility.batchAll([
+        validatorInfo.bondTx,
+        validatorInfo.sessionTx,
+        validatorInfo.validateTx,
+      ]);
+      console.log(validationTransfer, 'Under Validator After Stash');
+
+      const txHash = validationTransfer.signAndSend(getKeyring())
+      return {
+        error: false,
+        data: txHash
+      }
+    } catch (err) {
+      return { error: true, message: err?.message };
+
+    }
+
+  };
+
+
+  const bondMoreFunds = async (rawAmount) => {
+    try {
+      const amt = (new BigNumber(rawAmount).multipliedBy(10 ** 18)).toString()
+      const bondExtraTx = await nativeApi.tx.staking.bondExtra(amt);
+      const txHash = bondExtraTx.signAndSend(getKeyring())
+      return {
+        error: false,
+        data: txHash
+      }
+    } catch (err) {
+      return { error: true, message: err?.message };
+
+    }
+  };
+
+
+  const restartValidator = async (commission) => {
+    try {
+      commission = commission === 0 ? 1 : commission * 10 ** 7;
+      const validatorInfo = {
+        validateTx: nativeApi.tx.staking.validate({
+          blocked: false,
+          commission,
+        }),
+      };
+
+      const validationTransfer = await nativeApi.tx.utility.batchAll([validatorInfo.validateTx]);
+      const txHash = validationTransfer.signAndSend(getKeyring())
+      return {
+        error: false,
+        data: txHash
+      }
+    } catch (err) {
+      return { error: true, message: err?.message };
+
+    }
+  };
+
+
+
 
 
   return {
