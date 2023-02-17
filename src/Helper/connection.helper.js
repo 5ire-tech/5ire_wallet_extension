@@ -66,13 +66,13 @@ export class Connection {
 
 
             if (networkMode === "QA") {
-                this.changeExecution();
+                // this.changeExecution();
                 return {
                     nativeApi: Connection.nativeApiQA,
                     evmApi: Connection.evmApiQA
                 }
             } else if (networkMode === "Testnet") {
-                this.changeExecution();
+                // this.changeExecution();
                 return {
                     nativeApi: Connection.nativeApiTestnet,
                     evmApi: Connection.evmApiTestnet
@@ -134,9 +134,9 @@ export class Connection {
 
     }
 
-    changeExecution = () => {
-        Connection.isExecuting.value = false;
-    }
+    // changeExecution = () => {
+    //     Connection.isExecuting.value = false;
+    // }
 }
 
 export const connectionObj = new Connection.getConnector();
