@@ -173,7 +173,7 @@ export class FireProvider {
       
             injectedStream.write(transportRequestMessage);
           } catch (err) {
-            console.log("error in calling this method: ", method, message);
+            console.log("Error in calling this method: ", method, message);
             console.log("Error in handle json-rpc request handler in injected section: ", err);
             reject(err);
           }

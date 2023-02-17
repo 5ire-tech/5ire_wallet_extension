@@ -49,7 +49,7 @@ function CreateNewWallet() {
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Create New Wallet</h1>
-          <p>The decentralized wallet</p>
+          <p>The Decentralized Wallet</p>
         </div>
         <div className={style.cardWhite__linkOuter}>
           <p style={{ color: "red" }}>{warrning}</p>

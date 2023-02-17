@@ -145,8 +145,8 @@ export default function UseWallet() {
       if (Number(totalBalance) % 1 !== 0)
         totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toFixed(6, 8).toString()
 
-      console.log("balance.nativeBalance : ", balance.nativeBalance, " && now ", nativeBalance);
-      console.log("balance.nativeBalance : ", balance.evmBalance, " && now ", evmBalance);
+      // console.log("balance.nativeBalance : ", balance.nativeBalance, " && now ", nativeBalance);
+      // console.log("balance.nativeBalance : ", balance.evmBalance, " && now ", evmBalance);
 
       // if ((balance.nativeBalance !== nativeBalance && balance.evmBalance !== evmBalance) && (!isNaN(evmBalance) && !(isNaN(nativeBalance)))) {
       const payload = {
@@ -163,7 +163,7 @@ export default function UseWallet() {
   }
 
   const evmTransfer = async (evmApi, data, isBig = false) => {
-    console.log("EVM APIIII : ", evmApi);
+    // console.log("EVM APIIII : ", evmApi);
     return (new Promise(async (resolve, reject) => {
 
       // console.log("Condition Here: ", (Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0);
@@ -295,7 +295,7 @@ export default function UseWallet() {
 
               if (hash !== txHash.toHex()) {
                 hash = txHash.toHex();
-                console.log("Hash : ", hash);
+                // console.log("Hash : ", hash);
                 let phase = events.filter(({ phase }) => phase.isApplyExtrinsic);
 
                 //Matching Extrinsic Events for get the status
@@ -376,6 +376,7 @@ export default function UseWallet() {
             (new BigNumber(amount).multipliedBy(10 ** 18)).toString()
           );
           evmDepositeHash = deposit.hash.toHex();
+          console.log("evmDepositHash",evmDepositeHash)
 
           //Sign and Send txn
           deposit.signAndSend(alice, ({ status, events, txHash }) => {
@@ -383,7 +384,7 @@ export default function UseWallet() {
 
               if (signedHash !== txHash) {
                 signedHash = txHash.toHex();
-                console.log("Hash : ", signedHash);
+                // console.log("Hash : ", signedHash);
                 let phase = events.filter(({ phase }) => phase.isApplyExtrinsic);
 
                 //Matching Extrinsic Events for get the status
@@ -402,7 +403,7 @@ export default function UseWallet() {
                 });
 
                 dataToDispatch.data.txHash = { hash: evmDepositeHash, mainHash: signedHash };
-                console.log("Data to dispatch : ", dataToDispatch);
+                // console.log("Data to dispatch : ", dataToDispatch);
                 dispatch(setTxHistory(dataToDispatch));
                 if (err) {
                   resolve({
@@ -472,7 +473,7 @@ export default function UseWallet() {
             );
             let signRes = await withdraw.signAndSend(alice);
 
-            console.log("Sign Res : ", signRes.toHex());
+            // console.log("Sign Res : ", signRes.toHex());
 
             let dataToDispatch = {
               data: {
@@ -482,7 +483,7 @@ export default function UseWallet() {
                 to: "Evm to Native",
                 type: TX_TYPE?.SWAP,
                 amount: amount,
-                txHash: { mainHash: signRes.toHex(), hash: signHash },
+                txHash: { mainHash: signHash, hash:signRes.toHex() },
                 status: STATUS.PENDING
               },
               index: getAccId(currentAccount.id),
@@ -490,7 +491,7 @@ export default function UseWallet() {
 
             //send the transaction notification
             
-            console.log("data to dispatch : ",dataToDispatch);
+            // console.log("data to dispatch : ",dataToDispatch);
             dispatch(setTxHistory(dataToDispatch));
             dispatch(toggleLoader(false));
             Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch });
@@ -629,7 +630,7 @@ export default function UseWallet() {
       if (toAddress.startsWith("0x")) {
         const amt = new BigNumber(amount).multipliedBy(10 ** 18).toFixed().toString();
         try {
-          console.log("Amount after ", amt);
+          // console.log("Amount after ", amt);
           Web3.utils.toChecksumAddress(toAddress);
         } catch (error) {
           dispatch(toggleLoader(false));

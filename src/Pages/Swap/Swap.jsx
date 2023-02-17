@@ -77,7 +77,7 @@ function Swap() {
 
           if (!apiRes?.value) {
 
-            console.log("API RES ::: ", apiRes);
+            // console.log("API RES ::: ", apiRes);
             Connection.isExecuting.value = false;
 
             if (
@@ -135,22 +135,22 @@ function Swap() {
 
   const getFee = async () => {
     let amtRes = validateAmount();
-    console.log("AMOUNT VALIDATION RESPONSE : ",amtRes);
+    // console.log("AMOUNT VALIDATION RESPONSE : ",amtRes);
     if (!amtRes.error) {
 
-      console.log("GETTING FEE FOR SWAP");
+      // console.log("GETTING FEE FOR SWAP");
 
       connectionObj.initializeApi(wsEndPoints.testnet, wsEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
 
         if (!apiRes?.value) {
 
-          console.log("API RES ::: ", apiRes);
+          // console.log("API RES ::: ", apiRes);
 
           Connection.isExecuting.value = false;
 
           if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase() && amount) {
             let feeRes = await retriveNativeFee(apiRes.nativeApi, "", amount);
-            console.log("Fee Res : ", feeRes);
+            // console.log("Fee Res : ", feeRes);
             if (feeRes.error) {
               if (feeRes.data) {
                 setError(feeRes.error);
@@ -164,7 +164,7 @@ function Swap() {
             toFrom.from.toLocaleLowerCase() === EVM.toLowerCase()
           ) {
             let feeRes = await retriveEvmFee(apiRes.evmApi, "", amount);
-            console.log("Fee Res : ", feeRes);
+            // console.log("Fee Res : ", feeRes);
             if (feeRes.error) {
               if (feeRes.data) {
                 setError(feeRes.error);

@@ -107,7 +107,7 @@ function Send() {
           if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
 
             let feeRes = await retriveNativeFee(apiRes.nativeApi, data.to, data.amount);
-            console.log("Fee Res : ", feeRes);
+            // console.log("Fee Res : ", feeRes);
             if (feeRes.error) {
               if (feeRes.data) {
                 setErr(p => ({ ...p, to: feeRes.data }));
@@ -119,10 +119,10 @@ function Send() {
             }
           }
           else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-            console.log("retriveEvmFee !!!!!!");
+          
 
             let feeRes = await retriveEvmFee(apiRes.evmApi, data.to, data.amount);
-            console.log("Fee Res : ", feeRes);
+            // console.log("Fee Res : ", feeRes);
             if (feeRes.error) {
               if (feeRes.data) {
                 setErr(p => ({ ...p, to: feeRes.data }));
@@ -154,7 +154,7 @@ function Send() {
 
         connectionObj.initializeApi(wsEndPoints.testnet, wsEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
 
-          console.log("Response (api ): ", apiRes);
+          // console.log("Response (api ): ", apiRes);
 
           if (!apiRes?.value) {
 
@@ -171,7 +171,7 @@ function Send() {
                 setTxHash(res.data);
                 setIsModalOpen(true);
                 setTimeout(() => {
-                  console.log("Getting Balance after Send");
+                  // console.log("Getting Balance after Send");
                   getBalance(apiRes.evmApi, apiRes.nativeApi);
                 }, 60000);
               }
@@ -186,7 +186,7 @@ function Send() {
                 setTxHash(res.data);
                 setIsModalOpen(true);
                 setTimeout(() => {
-                  console.log("Getting Balance after Send");
+                  // console.log("Getting Balance after Send");
                   getBalance(apiRes.evmApi, apiRes.nativeApi)
                 }, 60000);
               }

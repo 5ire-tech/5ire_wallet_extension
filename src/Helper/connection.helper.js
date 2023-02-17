@@ -34,7 +34,7 @@ export class Connection {
     //initialize and get Api
     initializeApi = async (networkTest, networkQA, networkMode, bothInit = false) => {
         i++;
-        console.log("call number: ", i, Connection.isExecuting.value);
+        // console.log("call number: ", i, Connection.isExecuting.value);
 
         try {
 
@@ -96,7 +96,7 @@ export class Connection {
             connection.connect();
         });
         connection.on("error", async (err) => {
-            console.log("rror occued while making connection with native : ", err);
+            console.log("Error occued while making connection with native : ", err);
             connection.connect();
         });
 

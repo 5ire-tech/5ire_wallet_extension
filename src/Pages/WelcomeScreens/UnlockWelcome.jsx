@@ -49,7 +49,7 @@ function UnlockWelcome() {
             <img src={PlaceLogo} />
             <div className={style.cardWhite__cardInner__innercontact}>
               <h1>Welcome Back!</h1>
-              <span>The decentralized web awaits</span>
+              <span>The Decentralized Web Awaits</span>
             </div>
           </div>
         </div>

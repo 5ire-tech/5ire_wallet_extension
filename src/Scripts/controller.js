@@ -215,7 +215,7 @@ export async function checkTransactions(txData) {
     const noti = new Controller(store)
     const accountName = state.auth.currentAccount.accountName;
 
-    console.log("Here is the Transaction state: ", txData);
+    // console.log("Here is the Transaction state: ", txData);
   
     /*
     check for every pending transactions and if they success or fail update it into storage

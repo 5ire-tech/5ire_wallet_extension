@@ -165,7 +165,7 @@ injectedStream.on("data", (data) => {
     }, 1000 * 30);
   }
 
-  console.log("Here is response from extension: ", data);
+  // console.log("Here is response from extension: ", data);
 
   //get specfic handler using id and resolve or reject it
   if (data.id) {

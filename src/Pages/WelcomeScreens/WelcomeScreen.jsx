@@ -13,7 +13,7 @@ function WelcomeScreen() {
             <img src={PlaceLogo} alt="placeLogo" />
             <div className={style.cardWhite__cardInner__innercontact}>
               <h1>5irechain Wallet</h1>
-              <p>The decentralized wallet</p>
+              <p>The Decentralized Wallet</p>
             </div>
           </div>
         </div>
