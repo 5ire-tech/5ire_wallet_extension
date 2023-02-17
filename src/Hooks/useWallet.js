@@ -30,11 +30,6 @@ import {
   toggleLoader,
   // setApiReady
 } from "../Store/reducer/auth";
-import { setAccountName } from "../Store/reducer/auth";
-import Web3 from "web3";
-import { decryptor, encryptor } from "../Helper/CryptoHelper";
-import { BigNumber } from "bignumber.js";
-import Browser from "webextension-polyfill";
 
 
 
