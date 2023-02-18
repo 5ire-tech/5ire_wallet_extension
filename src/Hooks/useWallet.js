@@ -106,7 +106,7 @@ export default function UseWallet() {
         data: "success!",
       };
     } catch (error) {
-      console.log("error occured while creating new account ", error);
+      // console.log("error occured while creating new account ", error);
       dispatch(toggleLoader(false));
 
       return {
@@ -145,8 +145,8 @@ export default function UseWallet() {
       if (Number(totalBalance) % 1 !== 0)
         totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toFixed(6, 8).toString()
 
-      console.log("balance.nativeBalance : ", balance.nativeBalance, " && now ", nativeBalance);
-      console.log("balance.nativeBalance : ", balance.evmBalance, " && now ", evmBalance);
+      // console.log("balance.nativeBalance : ", balance.nativeBalance, " && now ", nativeBalance);
+      // console.log("balance.nativeBalance : ", balance.evmBalance, " && now ", evmBalance);
 
       // if ((balance.nativeBalance !== nativeBalance && balance.evmBalance !== evmBalance) && (!isNaN(evmBalance) && !(isNaN(nativeBalance)))) {
       const payload = {
@@ -158,12 +158,12 @@ export default function UseWallet() {
       // }
 
     } catch (error) {
-      console.log("Error while geting balance : ", error);
+      // console.log("Error while geting balance : ", error);
     }
   }
 
   const evmTransfer = async (evmApi, data, isBig = false) => {
-    console.log("EVM APIIII : ", evmApi);
+    // console.log("EVM APIIII : ", evmApi);
     return (new Promise(async (resolve, reject) => {
 
       // console.log("Condition Here: ", (Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0);
@@ -230,11 +230,13 @@ export default function UseWallet() {
               index: getAccId(currentAccount.id),
             };
 
+            
+            dispatch(setTxHistory(dataToDispatch));
+            dispatch(toggleLoader(false));
+            
             //send the tx notification
             Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch });
 
-            dispatch(setTxHistory(dataToDispatch));
-            dispatch(toggleLoader(false));
             resolve({
               error: false,
               data: hash,
@@ -295,7 +297,7 @@ export default function UseWallet() {
 
               if (hash !== txHash.toHex()) {
                 hash = txHash.toHex();
-                console.log("Hash : ", hash);
+                // console.log("Hash : ", hash);
                 let phase = events.filter(({ phase }) => phase.isApplyExtrinsic);
 
                 //Matching Extrinsic Events for get the status
@@ -303,11 +305,11 @@ export default function UseWallet() {
 
                   if (nativeApi.events.system.ExtrinsicSuccess.is(event)) {
                     err = false;
-                    console.log("Extrinsic Success !! ");
+                    // console.log("Extrinsic Success !! ");
                     dataToDispatch.data.status = STATUS.SUCCESS;
                   } else if (nativeApi.events.system.ExtrinsicFailed.is(event)) {
                     err = false;
-                    console.log("Extrinsic Failed");
+                    // console.log("Extrinsic Failed");
                     dataToDispatch.data.status = STATUS.FAILED;
                   }
                   dispatch(toggleLoader(false));
@@ -331,7 +333,7 @@ export default function UseWallet() {
           });
         }
       } catch (error) {
-        console.log("Error while native transfer : ", error);
+        // console.log("Error while native transfer : ", error);
         dispatch(toggleLoader(false));
         resolve({
           error: true,
@@ -383,7 +385,7 @@ export default function UseWallet() {
 
               if (signedHash !== txHash) {
                 signedHash = txHash.toHex();
-                console.log("Hash : ", signedHash);
+                // console.log("Hash : ", signedHash);
                 let phase = events.filter(({ phase }) => phase.isApplyExtrinsic);
 
                 //Matching Extrinsic Events for get the status
@@ -391,18 +393,18 @@ export default function UseWallet() {
 
                   if (nativeApi.events.system.ExtrinsicSuccess.is(event)) {
                     err = false;
-                    console.log("Extrinsic Success !! ");
+                    // console.log("Extrinsic Success !! ");
                     dataToDispatch.data.status = STATUS.SUCCESS;
                   } else if (nativeApi.events.system.ExtrinsicFailed.is(event)) {
                     err = true;
-                    console.log("Extrinsic Failed !!");
+                    // console.log("Extrinsic Failed !!");
                     dataToDispatch.data.status = STATUS.FAILED;
                   }
                   dispatch(toggleLoader(false));
                 });
 
                 dataToDispatch.data.txHash = { hash: evmDepositeHash, mainHash: signedHash };
-                console.log("Data to dispatch : ", dataToDispatch);
+                // console.log("Data to dispatch : ", dataToDispatch);
                 dispatch(setTxHistory(dataToDispatch));
                 if (err) {
                   resolve({
@@ -412,7 +414,7 @@ export default function UseWallet() {
                 } else {
                   resolve({
                     error: false,
-                    data: evmDepositeHash
+                    data: signedHash
                   })
                 }
               }
@@ -420,7 +422,7 @@ export default function UseWallet() {
           });
         }
       } catch (error) {
-        console.log("Error occured while swapping native to evm : ", error);
+        // console.log("Error occured while swapping native to evm : ", error);
         dispatch(toggleLoader(false));
         resolve({
           error: true,
@@ -472,7 +474,7 @@ export default function UseWallet() {
             );
             let signRes = await withdraw.signAndSend(alice);
 
-            console.log("Sign Res : ", signRes.toHex());
+            // console.log("Sign Res : ", signRes.toHex());
 
             let dataToDispatch = {
               data: {
@@ -482,7 +484,7 @@ export default function UseWallet() {
                 to: "Evm to Native",
                 type: TX_TYPE?.SWAP,
                 amount: amount,
-                txHash: { mainHash: signRes.toHex(), hash: signHash },
+                txHash: { mainHash: signHash, hash: signRes.toHex()},
                 status: STATUS.PENDING
               },
               index: getAccId(currentAccount.id),
@@ -490,7 +492,7 @@ export default function UseWallet() {
 
             //send the transaction notification
             
-            console.log("data to dispatch : ",dataToDispatch);
+            // console.log("data to dispatch : ",dataToDispatch);
             dispatch(setTxHistory(dataToDispatch));
             dispatch(toggleLoader(false));
             Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch });
@@ -503,7 +505,7 @@ export default function UseWallet() {
           else throw new Error("Error occured! ");
         }
       } catch (error) {
-        console.log("Error occured while swapping evm to native : ", error);
+        // console.log("Error occured while swapping evm to native: ", error);
         dispatch(toggleLoader(false));
         resolve({
           error: true,
@@ -557,7 +559,7 @@ export default function UseWallet() {
         data: "Invalid mnemonics!",
       };
     } catch (error) {
-      console.log("Error while importing : ", error);
+      // console.log("Error while importing : ", error);
       return {
         error: true,
         data: "Error Occured!",
@@ -608,7 +610,7 @@ export default function UseWallet() {
 
     } catch (error) {
       dispatch(toggleLoader(false));
-      console.log("Error while getting evm fee: ", error);
+      // console.log("Error while getting evm fee: ", error);
       return {
         error: true,
       }
@@ -629,7 +631,7 @@ export default function UseWallet() {
       if (toAddress.startsWith("0x")) {
         const amt = new BigNumber(amount).multipliedBy(10 ** 18).toFixed().toString();
         try {
-          console.log("Amount after ", amt);
+          // console.log("Amount after ", amt);
           Web3.utils.toChecksumAddress(toAddress);
         } catch (error) {
           dispatch(toggleLoader(false));
@@ -671,7 +673,7 @@ export default function UseWallet() {
       };
     } catch (error) {
       dispatch(toggleLoader(false));
-      console.log("Error while getting native fee: ", error);
+      // console.log("Error while getting native fee: ", error);
       return {
         error: true,
       }

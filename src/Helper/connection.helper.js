@@ -34,13 +34,13 @@ export class Connection {
     //initialize and get Api
     initializeApi = async (networkTest, networkQA, networkMode, bothInit = false) => {
         i++;
-        console.log("call number: ", i, Connection.isExecuting.value);
+        // console.log("call number: ", i, Connection.isExecuting.value);
 
         try {
 
             if (Connection.isExecuting.value) return { error: "Already in execution.", value: true }
 
-            console.log("is first init: ", bothInit);
+            // console.log("is first init: ", bothInit);
 
             Connection.isExecuting.value = true;
             //create the Testnet Connection
@@ -80,7 +80,7 @@ export class Connection {
             }
 
         } catch (err) {
-            console.log("Error while making connection with socket api's : ", err);
+            // console.log("Error while making connection with socket api's : ", err);
             return { error: err, value: true }
         }
     }
@@ -96,7 +96,7 @@ export class Connection {
             connection.connect();
         });
         connection.on("error", async (err) => {
-            console.log("rror occued while making connection with native : ", err);
+            // console.log("error occued while making connection with native : ", err);
             connection.connect();
         });
 
@@ -122,21 +122,17 @@ export class Connection {
 
         //bind event for failure for reconnect
         web3Provider.on('end', async () => {
-            console.log("Trying to reconnect with Evm api");
+            // console.log("Trying to reconnect with Evm api");
             web3Provider.connect();
         });
-        web3Provider.on('error', async (e) => {
-            console.log("error occued while making connection with web3 : ", e);
+        web3Provider.on('error', async (err) => {
+            // console.log("error while making connection with evm: ", err);
             web3Provider.connect();
         });
 
         return connection;
 
     }
-
-    // changeExecution = () => {
-    //     Connection.isExecuting.value = false;
-    // }
 }
 
-export const connectionObj = new Connection.getConnector();
+export const connectionObj = Connection.getConnector();

@@ -59,7 +59,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
     //todo
     connectionObj.initializeApi(wsEndPoints.testnet, wsEndPoints.qa, currentNetwork, false).then((res) => {
 
-      console.log("here is the response: ", res);
+      // console.log("here is the response: ", res);
       
       if (!res?.value) {
         Connection.isExecuting.value = false;
