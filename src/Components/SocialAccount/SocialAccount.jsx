@@ -19,7 +19,7 @@ function SocialAccount() {
 
   const handleClick = (e) => {
     let name = e.target.name;
-    console.log("name ", name);
+    // console.log("name ", name);
     let url = null;
     if (links.hasOwnProperty(name)) {
       url = links[name];

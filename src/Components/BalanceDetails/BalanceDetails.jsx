@@ -85,7 +85,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
 
 
   const handleNetworkChange = (network) => {
-    console.log("hadndle change called for : ", network);
+    // console.log("hadndle change called for : ", network);
     dispatch(setCurrentNetwork(network));
     dispatch(resetBalance());
   };
@@ -208,7 +208,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
               <div className={style.balanceDetails__innerBalance}>
                 <div className={style.balanceDetails__innerBalance__totalBalnce}>
                   <p>
-                    Total Balance : <span>{balance?.totalBalance}</span>
+                    Total Balance : <span>{balance?.totalBalance} 5ire</span>
                   </p>
                 </div>
                 <div className={style.balanceDetails__innerBalance__chainBalance}>

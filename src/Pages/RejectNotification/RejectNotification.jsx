@@ -31,7 +31,7 @@ function ApproveTx() {
 
     connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.currentNetwork, false).then((apiRes) => {
 
-      console.log("Api Response : ", apiRes);
+      // console.log("Api Response : ", apiRes);
 
       if (!apiRes?.value) {
         setReady(true);

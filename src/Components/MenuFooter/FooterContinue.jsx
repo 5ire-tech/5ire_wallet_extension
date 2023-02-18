@@ -224,7 +224,7 @@ export const ApproveTx = () => {
 
       connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.currentNetwork, false).then((apiRes) => {
 
-        console.log("Api Response : ",apiRes);
+        // console.log("Api Response : ",apiRes);
         if (!apiRes?.value) {
           Connection.isExecuting.value = false;
 

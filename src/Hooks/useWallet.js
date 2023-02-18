@@ -233,7 +233,7 @@ export default function UseWallet() {
             
             dispatch(setTxHistory(dataToDispatch));
             dispatch(toggleLoader(false));
-            
+
             //send the tx notification
             Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch });
 
@@ -378,6 +378,7 @@ export default function UseWallet() {
             (new BigNumber(amount).multipliedBy(10 ** 18)).toString()
           );
           evmDepositeHash = deposit.hash.toHex();
+          console.log("evmDepositHash",evmDepositeHash)
 
           //Sign and Send txn
           deposit.signAndSend(alice, ({ status, events, txHash }) => {

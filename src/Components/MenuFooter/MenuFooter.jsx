@@ -155,7 +155,7 @@ function MenuFooter() {
                   ? `To: ${data?.to ? shortner(data.to) : ""}`
                   : data.to
               }
-              amount={data?.amount}
+              amount={`${data?.amount} 5ire`}
               status={data?.status}
               img={Sendhistry}
             />
