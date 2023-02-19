@@ -176,10 +176,10 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                         value: NETWORK.TEST_NETWORK,
                         label: <span className="flexedItemSelect">Testnet</span>,
                       },
-                      {
-                        value: NETWORK.QA_NETWORK,
-                        label: <span className="flexedItemSelect">QA</span>,
-                      },
+                      // {
+                      //   value: NETWORK.QA_NETWORK,
+                      //   label: <span className="flexedItemSelect">QA</span>,
+                      // },
                     ]}
                   />
                 </div>
