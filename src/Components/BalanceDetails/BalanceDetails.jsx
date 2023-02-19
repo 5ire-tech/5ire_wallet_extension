@@ -39,12 +39,11 @@ function BalanceDetails({ className, textLeft, mt0 }) {
     currentNetwork,
     balance,
     connectedSites,
-    wsEndPoints
+    httpEndPoints
   } = useSelector((state) => state.auth);
 
   useEffect(() => {
     getCurrentTabUrl((cv) => {
-      // console.log(cv);
       const isExist = connectedSites.find((ct) => ct?.origin === cv);
       if (isExist) {
         setIsConnected(isExist.isConnected);
@@ -54,22 +53,17 @@ function BalanceDetails({ className, textLeft, mt0 }) {
     if (currentAccount.evmAddress && currentAccount?.nativeAddress) {
       setAddresses({ evmAddress: shortner(currentAccount?.evmAddress), nativeAddress: shortner(currentAccount?.nativeAddress) });
     }
-    // console.log("wsEndPoints.testnet : ", wsEndPoints.testnet);
 
-    //todo
-    connectionObj.initializeApi(wsEndPoints.testnet, wsEndPoints.qa, currentNetwork, false).then((res) => {
-
-      // console.log("here is the response: ", res);
+    connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then((res) => {
       
       if (!res?.value) {
         Connection.isExecuting.value = false;
-        getBalance(res.evmApi, res.nativeApi);
+        getBalance(res.evmApi, res.nativeApi, true);
       }
     })
       .catch((err) => {
         console.log("Error while getting the balance of Testnet network: ", err.message)
       });
-
 
 
   }, [currentNetwork, currentAccount]);
@@ -85,7 +79,6 @@ function BalanceDetails({ className, textLeft, mt0 }) {
 
 
   const handleNetworkChange = (network) => {
-    // console.log("hadndle change called for : ", network);
     dispatch(setCurrentNetwork(network));
     dispatch(resetBalance());
   };

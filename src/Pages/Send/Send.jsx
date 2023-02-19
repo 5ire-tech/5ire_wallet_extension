@@ -11,7 +11,7 @@ import { shortner } from "../../Helper/helper";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import { toast } from "react-toastify";
 import { NATIVE, EVM } from "../../Constants/index";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { connectionObj, Connection } from "../../Helper/connection.helper"
 import {
   InputField,
@@ -20,6 +20,7 @@ import {
 // const dispatch = useDispatch();
 
 function Send() {
+  const [disableBtn, setDisable] = useState(true);
   const {
     evmTransfer,
     nativeTransfer,
@@ -27,7 +28,7 @@ function Send() {
     retriveEvmFee,
     retriveNativeFee,
   } = useWallet();
-  const { balance, currentAccount, wsEndPoints, currentNetwork } = useSelector(state => state.auth);
+  const { balance, currentAccount, httpEndPoints, currentNetwork } = useSelector(state => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("native");
@@ -46,13 +47,37 @@ function Send() {
   }, [data.to, data.amount]);
 
   const validateAmount = () => {
-    // console.log("");
-    if (!data.amount || isNaN(data.amount) || Number(data.amount) <= 0) {
-      setErr((p) => ({ ...p, amount: "Please enter amount correctly!" }));
-      return { error: true }
-    } else {
-      setErr((p) => ({ ...p, amount: "" }));
-      return { error: false }
+
+    if (!data.amount) {
+      setErr((p) => ({ ...p, amount: "Please enter amount." }));
+      return { error: true };
+
+    } else if (isNaN(data.amount)) {
+      setErr((p) => ({ ...p, amount: "Please enter amount correctly." }));
+      return { error: true };
+
+    } else if (Number(data.amount) <= 0) {
+      setErr((p) => ({ ...p, amount: "Amount can't be 0 or less then 0" }));
+      return { error: true };
+
+    } else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
+     
+      if (Number(data.amount) >= Number(balance.evmBalance)) {
+        setErr((p) => ({ ...p, amount: "Amount is bigger than available balance." }));
+        return { error: true };
+      } else {
+        setErr((p) => ({ ...p, amount: "" }));
+        return { error: false };
+      }
+    } else if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
+  
+      if (Number(data.amount) >= Number(balance.nativeBalance)) {
+        setErr((p) => ({ ...p, amount: "Amount is bigger than available balance." }));
+        return { error: true };
+      } else {
+        setErr((p) => ({ ...p, amount: "" }));
+        return { error: false };
+      }
     }
   }
 
@@ -60,14 +85,17 @@ function Send() {
     if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
       if (!data.to) {
-        setErr((p) => ({ ...p, to: "Please enter 'To' address." }));
+        setErr((p) => ({ ...p, to: "Please enter 'Recipient' address." }));
         return { error: true }
+
       } else if (!data.to.startsWith("0x")) {
-        setErr((p) => ({ ...p, to: "Incorrect 'To' address." }));
+        setErr((p) => ({ ...p, to: "Incorrect 'Recipient' address." }));
         return { error: true }
+
       } else if (data.to === currentAccount.evmAddress) {
-        setErr((p) => ({ ...p, to: "'To' can't be same as your current address!" }));
+        setErr((p) => ({ ...p, to: "'Recipient' can't be same as your current address!" }));
         return { error: true }
+
       } else {
         setErr((p) => ({ ...p, to: "" }));
         return { error: false }
@@ -76,13 +104,15 @@ function Send() {
     else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
 
       if (!data.to) {
-        setErr((p) => ({ ...p, to: "Please enter 'To' address." }));
+        setErr((p) => ({ ...p, to: "Please enter 'Recipient' address." }));
         return { error: true }
+
       } else if (!data.to.startsWith("5")) {
-        setErr((p) => ({ ...p, to: "Incorrect 'To' address." }));
+        setErr((p) => ({ ...p, to: "Incorrect 'Recipient' address." }));
         return { error: true }
+
       } else if (data.to === currentAccount.nativeAddress) {
-        setErr((p) => ({ ...p, to: "'To' can't be same as your current address." }));
+        setErr((p) => ({ ...p, to: "'Recipient' can't be same as your current address." }));
         return { error: true }
       } else {
         setErr((p) => ({ ...p, to: "" }));
@@ -97,9 +127,9 @@ function Send() {
     let addressRes = validateToAddress();
     if (!(amtRes.error) && !(addressRes.error)) {
 
-      connectionObj.initializeApi(wsEndPoints.testnet, wsEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
+      setDisable(false);
+      connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
 
-        console.log("Api RESPONSE::: ", apiRes);
         if (!apiRes?.value) {
 
           Connection.isExecuting.value = false;
@@ -119,7 +149,7 @@ function Send() {
             }
           }
           else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-          
+
 
             let feeRes = await retriveEvmFee(apiRes.evmApi, data.to, data.amount);
             // console.log("Fee Res : ", feeRes);
@@ -135,10 +165,13 @@ function Send() {
           }
         }
       });
+    } else {
+      setDisable(true);
     }
   };
 
   const handleChange = (e) => {
+    setGassFee("");
     setData((p) => ({
       ...p,
       [e.target.name]: (e.target.value).trim(),
@@ -146,15 +179,14 @@ function Send() {
     setGassFee("");
   };
 
+
   const handleApprove = async () => {
     try {
       let amtRes = validateAmount();
       let addressRes = validateToAddress();
       if (!(amtRes.error) && !(addressRes.error)) {
 
-        connectionObj.initializeApi(wsEndPoints.testnet, wsEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
-
-          // console.log("Response (api ): ", apiRes);
+        connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
 
           if (!apiRes?.value) {
 
@@ -171,8 +203,7 @@ function Send() {
                 setTxHash(res.data);
                 setIsModalOpen(true);
                 setTimeout(() => {
-                  // console.log("Getting Balance after Send");
-                  getBalance(apiRes.evmApi, apiRes.nativeApi);
+                  getBalance(apiRes.evmApi, apiRes.nativeApi, true);
                 }, 60000);
               }
 
@@ -186,9 +217,8 @@ function Send() {
                 setTxHash(res.data);
                 setIsModalOpen(true);
                 setTimeout(() => {
-                  // console.log("Getting Balance after Send");
-                  getBalance(apiRes.evmApi, apiRes.nativeApi)
-                }, 60000);
+                  getBalance(apiRes.evmApi, apiRes.nativeApi, true)
+                }, 30000);
               }
             }
           }
@@ -205,7 +235,7 @@ function Send() {
   const activeSend = (e) => {
     setActiveTab(e.target.name);
     setData({ to: "", amount: "" });
-    setGassFee(0);
+    setGassFee("");
     setErr({ to: "", amount: "" });
   };
 
@@ -267,7 +297,6 @@ function Send() {
           </div>
         </div>
         <div className={style.sendSec__inputInnerSec}>
-          <span className={style.errorText}>{err.to}</span>
           <InputFieldOnly
             name="to"
             value={data.to}
@@ -277,8 +306,9 @@ function Send() {
             onChange={handleChange}
           // keyUp={validateToAddress}
           />
+          <span className={style.errorText}>{err.to}</span>
+
           <div>
-            <span className={style.errorText}>{err.amount}</span>
             <InputField
               coloredBg={true}
               placeholderBaseColor={true}
@@ -294,6 +324,7 @@ function Send() {
                 </span>
               }
             />
+            <span className={style.errorText}>{err.amount}</span>
 
             {/* <span className={style.sendSec__spanbalanceText}>
               Balance 00.0000 5IRE
@@ -308,10 +339,10 @@ function Send() {
           /> */}
         </div>
         <div className={style.sendSec__transactionFee}>
-          <p>Transaction Fee : {gassFee ? gassFee + " 5IRE" : gassFee}</p>
+          <p>{gassFee ? `Transaction Fee : ${gassFee} 5IRE` : ""}</p>
         </div>
       </div>
-      <Approve onClick={handleApprove} text="Send" />
+      <Approve onClick={handleApprove} text="Transfer" isDisable={disableBtn} />
 
       <ModalCustom
         isModalOpen={isModalOpen}
@@ -346,7 +377,7 @@ function Send() {
         <div className="swapsendModel">
           <div className="innerContact">
             <img src={FaildSwap} alt="swapFaild" />
-            <h2 className="title">Send Failed!</h2>
+            <h2 className="title">Transfer Failed!</h2>
             <p className="transId">{sendError}</p>
 
             <div className="footerbuttons">

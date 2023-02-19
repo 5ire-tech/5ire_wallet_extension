@@ -37,7 +37,7 @@ function UnlockWelcome() {
       navigate(location.state?.redirectRoute || "/wallet");
     } else {
       toast.error(res.data);
-      console.log("Error", res.data);
+      // console.log("Error", res.data);
     }
   };
   return (

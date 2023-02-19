@@ -24,12 +24,13 @@ function Swap() {
   const [amount, setAmount] = useState("");
   const [gassFee, setGassFee] = useState("");
   const [swapErr, setSwapError] = useState("");
-  const [activeTab, setActiveTab] = useState("one");
+  const [disableBtn, setDisable] = useState(true);
+  // const [activeTab, setActiveTab] = useState("one");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [toFrom, setToFrom] = useState({ from: "Native", to: "Evm" });
   const [address, setAddress] = useState({ fromAddress: "", toAddress: "" });
-  const { currentAccount, balance, wsEndPoints, currentNetwork } = useSelector((state) => state.auth);
+  const { currentAccount, balance, httpEndPoints, currentNetwork } = useSelector((state) => state.auth);
   const {
     evmToNativeSwap,
     nativeToEvmSwap,
@@ -59,12 +60,37 @@ function Swap() {
   }, [amount, toFrom]);
 
   const validateAmount = () => {
-    if (!amount || isNaN(amount) || Number(amount) <= 0) {
-      setError("Please enter amount correctly!");
+    if (amount.length === 0) {
+      setError("Please enter amount.");
       return { error: true };
-    } else {
-      setError("");
-      return { error: false };
+    } else if (isNaN(amount)) {
+      setError("Please enter amount correctly.");
+      return { error: true };
+    } else if (Number(amount) <= 0) {
+      setError("Amount can't be 0 or less then 0");
+      return { error: true };
+    }
+    else if (toFrom.from.toLowerCase() === EVM.toLowerCase() &&
+      toFrom.to.toLowerCase() === NATIVE.toLowerCase()) {
+
+      if (Number(amount) >= Number(balance.evmBalance)) {
+        setError("Amount is bigger than available balance.");
+        return { error: true };
+      } else {
+        setError("");
+        return { error: false };
+      }
+    } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase() &&
+      toFrom.to.toLowerCase() === EVM.toLowerCase()) {
+
+      if (Number(amount) >= Number(balance.nativeBalance)) {
+        setError("Amount is bigger than available balance.");
+        return { error: true };
+      } else {
+        setError("");
+        return { error: false };
+      }
+
     }
   };
 
@@ -73,7 +99,7 @@ function Swap() {
       let amtRes = validateAmount();
       if (!amtRes.error) {
 
-        connectionObj.initializeApi(wsEndPoints.testnet, wsEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
+        connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
 
           if (!apiRes?.value) {
 
@@ -85,9 +111,8 @@ function Swap() {
               toFrom.to.toLowerCase() === NATIVE.toLowerCase()
             ) {
               if (Number(amount) >= Number(balance.evmBalance)) {
-                toast.error("Insufficent Balance.")
-                // setIsFaildOpen(true);
-                // setSwapError("Insufficent Balance!");
+                toast.error("Insufficent Balance.");
+
               } else {
                 let res = await evmToNativeSwap(apiRes.evmApi, apiRes.nativeApi, amount);
                 if (res.error) {
@@ -97,7 +122,7 @@ function Swap() {
                   setIsModalOpen(true);
                   setTxHash(res.data);
                   setTimeout(() => {
-                    getBalance(apiRes.evmApi, apiRes.nativeApi);
+                    getBalance(apiRes.evmApi, apiRes.nativeApi, true);
                   }, 60000);
                 }
               }
@@ -107,8 +132,6 @@ function Swap() {
             ) {
               if (Number(amount) >= Number(balance.nativeBalance)) {
                 toast.error("Insufficent Balance.")
-                // setIsFaildOpen(true);
-                // setSwapError("Insufficent Balance.");
               } else {
                 let res = await nativeToEvmSwap(apiRes.evmApi, apiRes.nativeApi, amount);
                 if (res.error) {
@@ -118,7 +141,7 @@ function Swap() {
                   setIsModalOpen(true);
                   setTxHash(res.data);
                   setTimeout(() => {
-                    getBalance(apiRes.evmApi, apiRes.nativeApi);
+                    getBalance(apiRes.evmApi, apiRes.nativeApi, true);
                   }, 60000);
                 }
               }
@@ -135,12 +158,10 @@ function Swap() {
 
   const getFee = async () => {
     let amtRes = validateAmount();
-    // console.log("AMOUNT VALIDATION RESPONSE : ",amtRes);
+
     if (!amtRes.error) {
-
-      // console.log("GETTING FEE FOR SWAP");
-
-      connectionObj.initializeApi(wsEndPoints.testnet, wsEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
+      setDisable(false);
+      connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
 
         if (!apiRes?.value) {
 
@@ -177,13 +198,14 @@ function Swap() {
           }
         }
       });
+    } else {
+      setDisable(true);
     }
   };
 
   const handleChange = (e) => {
     setAmount(e.target.value.trim());
     setGassFee("");
-    // setError("");
   };
 
   const handleOk = () => {
@@ -218,7 +240,7 @@ function Swap() {
       setToFrom({ from: "Evm", to: "Native" });
 
     setAmount("");
-    setGassFee("0");
+    setGassFee("");
   };
 
   const handleCopy = (e) => {
@@ -272,7 +294,6 @@ function Swap() {
         </div>
         <div className={style.swap__swapAccount}>
           <div>
-            <p style={{ color: "red" }}>{error}</p>
             <InputField
               coloredBg={true}
               placeholderBaseColor={true}
@@ -286,6 +307,8 @@ function Swap() {
                 </span>
               }
             />
+            <p style={{ color: "red" }}>{error}</p>
+
             {/* <span className={style.swap__spanbalanceText}>
               Balance 00.0000 5IRE
             </span> */}
@@ -332,10 +355,10 @@ function Swap() {
           </div> */}
         </div>
         <div className={style.swap__transactionFee}>
-          <p>Transaction Fee : {gassFee ? gassFee + "5IRE" : ""}</p>
+          <p>{gassFee ? `Transaction Fee : ${gassFee} 5IRE` : ""}</p>
         </div>
       </div>
-      <Approve onClick={handleApprove} text="Swap" />
+      <Approve onClick={handleApprove} text="Swap" isDisable={disableBtn} />
       <ModalCustom
         isModalOpen={isModalOpen}
         handleOk={handleOk}
