@@ -542,7 +542,7 @@ export default function UseWallet() {
           temp1m,
           txHistory: [],
           nativeAddress,
-          accountName: data.accName,
+          accountName: data.accName.trim(),
           evmAddress: address,
         };
         if (!isLogin) dispatch(setNewAccount(dataToDispatch));

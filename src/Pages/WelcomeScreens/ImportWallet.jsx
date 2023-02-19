@@ -18,13 +18,13 @@ function ImportWallet() {
   const { isLogin } = useSelector((state) => state.auth);
 
   const handleChange = (e) => {
-    setData((p) => ({ ...p, [e.target.name]: (e.target.value).trim() }));
+    setData((p) => ({ ...p, [e.target.name]: (e.target.value) }));
     setWarrning("");
   };
 
   const handleClick = async () => {
 
-    if (data.accName.length === 0) {
+    if (data.accName.trim().length === 0) {
       setWarrning("Please enter your account name!");
     }
     else if (data.key.length === 0 )

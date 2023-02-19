@@ -15,13 +15,13 @@ function CreateNewWallet() {
   const [warrning, setWarrning] = useState("");
 
   const handleChange = (e) => {
-    setData(e.target.value.trim());
+    setData(e.target.value);
     setWarrning("");
   };
 
   const handleClick = () => {
     
-    if (data.length === 0) setWarrning("Please enter account name!");
+    if (data.trim().length === 0) setWarrning("Please enter account name!");
     else {
       const match = accounts.find(e => {
         if (e.accountName === data) {
@@ -32,7 +32,7 @@ function CreateNewWallet() {
           return false;
       });
       if (!match) {
-        dispatch(setAccountName(data));
+        dispatch(setAccountName(data.trim()));
         navigate("/beforebegin");
       }
     }

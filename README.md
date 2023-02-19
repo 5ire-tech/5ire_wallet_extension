@@ -1,2 +1,2 @@
-# atlas-wallet
+# 5ire-wallet-extension
 
