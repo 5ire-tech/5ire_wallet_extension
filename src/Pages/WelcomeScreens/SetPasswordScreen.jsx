@@ -57,24 +57,35 @@ export default function SetPasswordScreen() {
   };
 
   const validateConfirmPass = () => {
-    if (pass.confirmPass !== pass.pass) {
+    if (pass.confirmPass.length === 0) {
+      setconfirmError("This field is required.");
+    }
+    else if (pass.confirmPass !== pass.pass) {
       // setconfirmError("Password and confirm password don't match!");
-      toast.error("Password and confirm password don't match!");
-      return { error: true };
+      setconfirmError("Passwords do not match.");
+      // return { error: true };
     } else {
       setconfirmError("");
-      return { error: false };
+      // return { error: false };
     }
   };
 
   const handleSubmit = async () => {
-    if (pass.pass.length === 0 || pass.confirmPass.length === 0) {
-      setError("Please fill password or confirm password correctly!");
-    } else {
-      let confirmRes = validateConfirmPass();
+    if (pass.pass.length === 0 && pass.confirmPass.length === 0) {
+      setError("This field is required.");
+      setconfirmError("This field is required.");
+    }
+    else if (pass.pass.length === 0) {
+      setError("This field is required.");
+    }
+    else if (pass.confirmPass.length === 0) {
+      setconfirmError("This field is required.");
+    }
+    else {
+      // let confirmRes = validateConfirmPass();
       // console.log("Confirm Res : ",confirmRes);
       // console.log("error : ",error);
-      if ((error === "" || error === null) && !confirmRes.error) {
+      if (!error && !confirmError) {
         dispatch(toggleLoader(true));
         let res = await setUserPass(pass.pass);
         if (res.error) {
@@ -100,7 +111,7 @@ export default function SetPasswordScreen() {
     setPass((prev) => {
       return {
         ...prev,
-        [e.target.name]: e.target.value,
+        [e.target.name]: e.target.value.trim(),
       };
     });
   };
@@ -118,6 +129,7 @@ export default function SetPasswordScreen() {
           <div className={style.cardWhite__beginText__passInputSec}>
             <InputFieldSimple
               // type="password"
+              value={pass.pass}
               name="pass"
               onChange={handleChange}
               placeholder={"Enter Password"}
@@ -130,13 +142,15 @@ export default function SetPasswordScreen() {
           <div className={style.cardWhite__beginText__passInputSec}>
             <InputFieldSimple
               // type="password"
+              value={pass.confirmPass}
               name="confirmPass"
               onChange={handleChange}
               placeholder={"Confirm Password"}
               placeholderBaseColor={true}
               coloredBg={true}
-            // keyUp={validateConfirmPass}
+              keyUp={validateConfirmPass}
             />
+            <p className={style.errorText}>{confirmError ? confirmError : ""}</p>
           </div>
           <div style={{ marginTop: "30px" }}>
             <ButtonComp

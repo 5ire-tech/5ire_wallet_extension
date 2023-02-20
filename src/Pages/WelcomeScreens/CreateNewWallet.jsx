@@ -29,21 +29,26 @@ function CreateNewWallet() {
   }
   const handleClick = () => {
 
-    if(!warrning) {
-      const match = accounts.find(e => {
-        if (e.accountName === data) {
-          setWarrning("Account with this name is allready exists!");
-          return true;
-        }
-        else
-          return false;
-      });
-      if (!match) {
-        dispatch(setAccountName(data.trim()));
-        navigate("/beforebegin");
-      }
+    if (data.trim().length === 0) {
+      setWarrning("This field is required.")
     }
-  };
+    else {
+      if (!warrning) {
+        const match = accounts.find(e => {
+          if (e.accountName === data) {
+            setWarrning("Account with this name is allready exists!");
+            return true;
+          }
+          else
+            return false;
+        });
+        if (!match) {
+          dispatch(setAccountName(data.trim()));
+          navigate("/beforebegin");
+        }
+      }
+    };
+  }
 
   const handleCancle = () => {
     if (isLogin) navigate("/wallet");

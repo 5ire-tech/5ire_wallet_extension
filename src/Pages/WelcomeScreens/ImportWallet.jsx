@@ -32,7 +32,7 @@ function ImportWallet() {
 
   const validateKey = () => {
     if (data.key.length === 0) {
-      setWarrning(p => ({ ...p, key: "Required feild." }));
+      setWarrning(p => ({ ...p, key: "This field is required." }));
     }
     else {
       setWarrning(p => ({ ...p, key: "" }));
@@ -40,34 +40,37 @@ function ImportWallet() {
   }
 
   const handleClick = async () => {
-    // if (data.key.length === 0) {
-    //   setWarrning(p => ({ ...p, key: "Please enter your secret mnemonic." }));
-    // }
-    if (!warrning.key && !warrning.acc) {
+    if (data.key.length === 0) {
+      setWarrning(p => ({ ...p, key: "This field is required." }));
+    } else if (data.accName.trim().length === 0) {
+      setWarrning(p => ({ ...p, acc: "This field is required." }))
+    } else {
+      if (!warrning.key && !warrning.acc) {
 
-      const match = accounts.find(e => {
-        if (e.accountName === data.accName) {
-          setWarrning(p => ({ ...p, acc: "Account with this name allready exists." }));
-          return true;
-        }
-        else if (decryptor(e.temp1m, pass) === data.key) {
-          setWarrning(p => ({ ...p, key: "Account with this mnemonic allready exists." }));
-          return true
-        }
-        else
-          return false;
-      });
+        const match = accounts.find(e => {
+          if (e.accountName === data.accName) {
+            setWarrning(p => ({ ...p, acc: "Account with this name allready exists." }));
+            return true;
+          }
+          else if (decryptor(e.temp1m, pass) === data.key) {
+            setWarrning(p => ({ ...p, key: "Account with this mnemonic allready exists." }));
+            return true
+          }
+          else
+            return false;
+        });
 
-      if (!match) {
-        let res = await importAccount(data);
-        if (res.error) setWarrning(p => ({...p, key : res.data}));
-        else {
-          setWarrning({ acc: "", key: "" });
-          if (isLogin) navigate("/wallet");
-          else navigate("/setPassword");
+        if (!match) {
+          let res = await importAccount(data);
+          if (res.error) setWarrning(p => ({ ...p, key: res.data }));
+          else {
+            setWarrning({ acc: "", key: "" });
+            if (isLogin) navigate("/wallet");
+            else navigate("/setPassword");
+          }
         }
+
       }
-
     }
   };
 
