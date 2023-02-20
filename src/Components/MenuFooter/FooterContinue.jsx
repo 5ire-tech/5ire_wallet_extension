@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-// import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
-import ButtonComp from "../ButtonComp/ButtonComp";
+import React from "react";
 import style from "./style.module.scss";
+import browser from "webextension-polyfill";
+import useWallet from "../../Hooks/useWallet";
+import { useNavigate } from "react-router-dom";
+import ButtonComp from "../ButtonComp/ButtonComp";
 import { useDispatch, useSelector } from "react-redux";
 import { connectionObj, Connection} from "../../Helper/connection.helper";
-// import { toast } from "react-toastify";
-// import useAuth from "../../Hooks/useAuth";
 import {
   // setLogin,
   setSite,
@@ -15,8 +14,6 @@ import {
   toggleSite,
   setNewAccount,
 } from "../../Store/reducer/auth";
-import browser from "webextension-polyfill";
-import useWallet from "../../Hooks/useWallet";
 
 function FooterStepOne() {
   const { isLogin } = useSelector(state => state.auth);

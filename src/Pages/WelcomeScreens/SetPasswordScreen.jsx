@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from "react";
-import InputFieldSimple, { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
+import React, { useState } from "react";
 import style from "./style.module.scss";
-import { useNavigate } from "react-router-dom";
-// import { setPassword, setPassError } from "../../Store/reducer/auth";
-import { useDispatch, useSelector } from "react-redux";
-import useAuth from "../../Hooks/useAuth";
-import { toggleLoader, setLogin } from "../../Store/reducer/auth";
 import { toast } from "react-toastify";
+import useAuth from "../../Hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
+import { toggleLoader, setLogin } from "../../Store/reducer/auth";
+import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
 import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
+// import { setPassword, setPassError } from "../../Store/reducer/auth";
+
 
 export default function SetPasswordScreen() {
-  const [pass, setPass] = useState({ pass: "", confirmPass: "" });
-  const [error, setError] = useState("");
-  const [confirmError, setconfirmError] = useState("");
-  // const [isError, setIsError] = useState(false);
-  const dispatch = useDispatch();
-  const { isLogin } = useSelector((state) => state.auth);
-  const [show, setShow] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { setUserPass } = useAuth();
+  const [error, setError] = useState("");
+  const [show, setShow] = useState(false);
+  const [confirmError, setconfirmError] = useState("");
+  const { isLogin } = useSelector((state) => state.auth);
+  const [pass, setPass] = useState({ pass: "", confirmPass: "" });
 
   const validatePass = () => {
     const uppercaseRegExp = /(?=.*?[A-Z])/;
@@ -30,20 +30,29 @@ export default function SetPasswordScreen() {
 
     let errMsg = "";
     if (pass.pass.length === 0) {
-      errMsg = "Password is empty";
-    } else if (!uppercaseRegExp.test(pass.pass)) {
-      errMsg = "At least one Uppercase";
-    } else if (!lowercaseRegExp.test(pass.pass)) {
-      errMsg = "At least one Lowercase";
-    } else if (!digitsRegExp.test(pass.pass)) {
-      errMsg = "At least one digit";
-    } else if (!specialCharRegExp.test(pass.pass)) {
-      errMsg = "At least one Special Characters";
-    } else if (!minLengthRegExp.test(pass.pass)) {
-      errMsg = "At least minumum 8 characters";
+      errMsg = "This field is required.";
+    } else if (!uppercaseRegExp.test(pass.pass) || !lowercaseRegExp.test(pass.pass) || !digitsRegExp.test(pass.pass) || !specialCharRegExp.test(pass.pass) || !minLengthRegExp.test(pass.pass)) {
+      errMsg = "Password must have at least 8 characters, combination of Mixed case, 1 Special Character and 1 Number.";
     } else {
       errMsg = "";
     }
+
+    // let errMsg = "";
+    // if (pass.pass.length === 0) {
+    //   errMsg = "Password is empty";
+    // } else if (!uppercaseRegExp.test(pass.pass)) {
+    //   errMsg = "At least one Uppercase";
+    // } else if (!lowercaseRegExp.test(pass.pass)) {
+    //   errMsg = "At least one Lowercase";
+    // } else if (!digitsRegExp.test(pass.pass)) {
+    //   errMsg = "At least one digit";
+    // } else if (!specialCharRegExp.test(pass.pass)) {
+    //   errMsg = "At least one Special Characters";
+    // } else if (!minLengthRegExp.test(pass.pass)) {
+    //   errMsg = "At least minumum 8 characters";
+    // } else {
+    //   errMsg = "";
+    // }
     setError(errMsg);
   };
 
@@ -126,7 +135,7 @@ export default function SetPasswordScreen() {
               placeholder={"Confirm Password"}
               placeholderBaseColor={true}
               coloredBg={true}
-              // keyUp={validateConfirmPass}
+            // keyUp={validateConfirmPass}
             />
           </div>
           <div style={{ marginTop: "30px" }}>

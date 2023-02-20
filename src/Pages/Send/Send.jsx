@@ -179,7 +179,6 @@ function Send() {
     setGassFee("");
   };
 
-
   const handleApprove = async () => {
     try {
       let amtRes = validateAmount();

@@ -11,11 +11,11 @@ import CopyIcon from "../../Assets/CopyIcon.svg";
 import ComplSwap from "../../Assets/tranCompl.svg";
 import FaildSwap from "../../Assets/tranReject.svg";
 import { NATIVE, EVM } from "../../Constants/index";
-import { connectionObj, Connection } from "../../Helper/connection.helper";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import { InputField } from "../../Components/InputField/InputFieldSimple";
+import { connectionObj, Connection } from "../../Helper/connection.helper";
 
 function Swap() {
 

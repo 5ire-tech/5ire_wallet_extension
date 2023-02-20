@@ -1,9 +1,8 @@
-import { Input } from "antd";
 import React from "react";
+import { Input } from "antd";
+import style from "./style.module.scss";
 import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
 import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
-import style from "./style.module.scss";
-import { Link } from "react-router-dom";
 
 function InputFieldSimple({
   placeholder,
