@@ -11,11 +11,13 @@ import { shortner } from "../../Helper/helper";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import { toast } from "react-toastify";
 import { NATIVE, EVM } from "../../Constants/index";
+import { useDispatch, useSelector } from "react-redux";
+import { connectionObj, Connection } from "../../Helper/connection.helper"
 import {
   InputField,
   InputFieldOnly,
 } from "../../Components/InputField/InputFieldSimple";
-import { useDispatch, useSelector } from "react-redux"
+// const dispatch = useDispatch();
 
 function Send() {
   const {
@@ -25,8 +27,7 @@ function Send() {
     retriveEvmFee,
     retriveNativeFee,
   } = useWallet();
-  // const dispatch = useDispatch();
-  const { balance, currentAccount } = useSelector(state => state.auth);
+  const { balance, currentAccount, wsEndPoints, currentNetwork } = useSelector(state => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("native");
@@ -58,11 +59,14 @@ function Send() {
   const validateToAddress = () => {
     if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
-      if (!data.to || !data.to.startsWith("0x")) {
-        setErr((p) => ({ ...p, to: "Please enter to address correctly!" }));
+      if (!data.to) {
+        setErr((p) => ({ ...p, to: "Please enter 'To' address." }));
+        return { error: true }
+      } else if (!data.to.startsWith("0x")) {
+        setErr((p) => ({ ...p, to: "Incorrect 'To' address." }));
         return { error: true }
       } else if (data.to === currentAccount.evmAddress) {
-        setErr((p) => ({ ...p, to: "To can't be same as your current address!" }));
+        setErr((p) => ({ ...p, to: "'To' can't be same as your current address!" }));
         return { error: true }
       } else {
         setErr((p) => ({ ...p, to: "" }));
@@ -71,11 +75,14 @@ function Send() {
     }
     else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
 
-      if (!data.to || !data.to.startsWith("5")) {
-        setErr((p) => ({ ...p, to: "Please enter to address correctly!" }));
+      if (!data.to) {
+        setErr((p) => ({ ...p, to: "Please enter 'To' address." }));
+        return { error: true }
+      } else if (!data.to.startsWith("5")) {
+        setErr((p) => ({ ...p, to: "Incorrect 'To' address." }));
         return { error: true }
       } else if (data.to === currentAccount.nativeAddress) {
-        setErr((p) => ({ ...p, to: "To can't be same as your current address!" }));
+        setErr((p) => ({ ...p, to: "'To' can't be same as your current address." }));
         return { error: true }
       } else {
         setErr((p) => ({ ...p, to: "" }));
@@ -89,32 +96,45 @@ function Send() {
     let amtRes = validateAmount();
     let addressRes = validateToAddress();
     if (!(amtRes.error) && !(addressRes.error)) {
-      if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
-        let feeRes = await retriveNativeFee(data.to, data.amount);
-        console.log("Fee Res : ", feeRes);
-        if (feeRes.error) {
-          if (feeRes.data) {
-            setErr(p => ({ ...p, to: feeRes.data }));
-          } else {
-            toast.error("Error while getting fee!");
+
+      connectionObj.initializeApi(wsEndPoints.testnet, wsEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
+
+        console.log("Api RESPONSE::: ", apiRes);
+        if (!apiRes?.value) {
+
+          Connection.isExecuting.value = false;
+
+          if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
+
+            let feeRes = await retriveNativeFee(apiRes.nativeApi, data.to, data.amount);
+            // console.log("Fee Res : ", feeRes);
+            if (feeRes.error) {
+              if (feeRes.data) {
+                setErr(p => ({ ...p, to: feeRes.data }));
+              } else {
+                toast.error("Error while getting fee!");
+              }
+            } else {
+              setGassFee(feeRes.data);
+            }
           }
-        } else {
-          setGassFee(feeRes.data);
-        }
-      }
-      if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-        let feeRes = await retriveEvmFee(data.to, data.amount);
-        console.log("Fee Res : ", feeRes);
-        if (feeRes.error) {
-          if (feeRes.data) {
-            setErr(p => ({ ...p, to: feeRes.data }));
-          } else {
-            toast.error("Error while getting fee!");
+          else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
+          
+
+            let feeRes = await retriveEvmFee(apiRes.evmApi, data.to, data.amount);
+            // console.log("Fee Res : ", feeRes);
+            if (feeRes.error) {
+              if (feeRes.data) {
+                setErr(p => ({ ...p, to: feeRes.data }));
+              } else {
+                toast.error("Error while getting fee!");
+              }
+            } else {
+              setGassFee(feeRes.data);
+            }
           }
-        } else {
-          setGassFee(feeRes.data);
         }
-      }
+      });
     }
   };
 
@@ -132,36 +152,48 @@ function Send() {
       let addressRes = validateToAddress();
       if (!(amtRes.error) && !(addressRes.error)) {
 
-        if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-          const res = await evmTransfer(data);
-          if (res.error) {
-            setSendError(res.data);
-            setIsFaildOpen(true);
+        connectionObj.initializeApi(wsEndPoints.testnet, wsEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
+
+          // console.log("Response (api ): ", apiRes);
+
+          if (!apiRes?.value) {
+
+            Connection.isExecuting.value = false;
+
+
+            if (activeTab.toLowerCase() === EVM.toLowerCase()) {
+              const res = await evmTransfer(apiRes.evmApi, data);
+              if (res.error) {
+                setSendError(res.data);
+                setIsFaildOpen(true);
+              }
+              else {
+                setTxHash(res.data);
+                setIsModalOpen(true);
+                setTimeout(() => {
+                  // console.log("Getting Balance after Send");
+                  getBalance(apiRes.evmApi, apiRes.nativeApi);
+                }, 60000);
+              }
+
+            } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
+              const res = await nativeTransfer(apiRes.nativeApi, data);
+              if (res.error) {
+                setSendError(res.data);
+                setIsFaildOpen(true);
+              }
+              else {
+                setTxHash(res.data);
+                setIsModalOpen(true);
+                setTimeout(() => {
+                  // console.log("Getting Balance after Send");
+                  getBalance(apiRes.evmApi, apiRes.nativeApi)
+                }, 60000);
+              }
+            }
           }
-          else {
-            setTxHash(res.data);
-            setIsModalOpen(true);
-            setTimeout(() => {
-              console.log("Getting Balance after Send");
-              getBalance();
-            }, 60000);
-          }
-        } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
-          const res = await nativeTransfer(data);
-          if (res.error) {
-            setSendError(res.data);
-            setIsFaildOpen(true);
-          }
-          else {
-            setTxHash(res.data);
-            setIsModalOpen(true);
-            setTimeout(() => {
-              console.log("Getting Balance after Send");
-              getBalance()
-            }, 60000);
-          }
-        }
-        setGassFee("");
+          setGassFee("");
+        });
       }
 
     } catch (error) {
@@ -235,7 +267,7 @@ function Send() {
           </div>
         </div>
         <div className={style.sendSec__inputInnerSec}>
-          <span style={{ color: "red" }}>{err.to}</span>
+          <span className={style.errorText}>{err.to}</span>
           <InputFieldOnly
             name="to"
             value={data.to}
@@ -246,7 +278,7 @@ function Send() {
           // keyUp={validateToAddress}
           />
           <div>
-            <span style={{ color: "red" }}>{err.amount}</span>
+            <span className={style.errorText}>{err.amount}</span>
             <InputField
               coloredBg={true}
               placeholderBaseColor={true}

@@ -1,7 +1,7 @@
 import React from "react";
 import style from "./style.module.scss";
 import BackArrowIcon from "../../../Assets/PNG/arrowright.png";
-import SilverLogo from "../../../Assets/Sirlver_Logo.svg";
+import SilverLogo from "../../../Assets/DarkLogo.svg";
 import { Link } from "react-router-dom";
 function MenuRestofHeaders({
   title,

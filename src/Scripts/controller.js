@@ -73,7 +73,8 @@ export function loadStore(sendStoreMessage = true) {
         resolve(store);
       });
     } catch (err) {
-      console.log("Here error in store", err);
+      // console.log("Here error in store", err);
+      //error while loading the store
     }
   });
 }
@@ -137,7 +138,8 @@ export class Controller {
         });
       }
     } catch (err) {
-      console.log("error while sending the endpoint for injection");
+      //  console.log("Error while sending the endpoint for injection");
+      //handle the error message passing also
     }
   }
 
@@ -152,7 +154,7 @@ export class Controller {
       (st) => st.origin === data.message?.origin
     );
 
-    console.log("is Connected Website: ", isExist?.isConnected);
+    // console.log("is Connected Website: ", isExist?.isConnected);
 
     if (isExist?.isConnected) {
       const res = isEthReq
@@ -222,7 +224,7 @@ export async function checkTransactions(txData) {
     const noti = new Controller(store)
     const accountName = state.auth.currentAccount.accountName;
 
-    console.log("Here is the Transaction state: ", txData);
+    // console.log("Here is the Transaction state: ", txData);
 
     /*
     check for every pending transactions and if they success or fail update it into storage
@@ -230,11 +232,14 @@ export async function checkTransactions(txData) {
     */
     const txHash = typeof (txData.txHash) === "object" ? txData.txHash.mainHash : txData.txHash;
     //check if transaction is swap or not
+
+    // console.log("data is here: ", txData.chain, txHash, state.auth.httpEndPoints[txData.chain]);
+
     const isSwap = txData.type === "swap";
     const rpcUrl = state.auth.httpEndPoints[txData.chain] || "https://rpc-testnet.5ire.network";
     const txRecipt = await httpRequest(rpcUrl, JSON.stringify({ jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [txHash], id: 1 }));
 
-    console.log("Here is the Transaction Result: ", txRecipt);
+    // console.log("Here is the Transaction Result: ", txRecipt);
 
     if (txRecipt && txRecipt?.result) {
       store.dispatch(updateTxHistory({ txHash, accountName, status: Boolean(parseInt(txRecipt.result.status)), isSwap }));
@@ -244,7 +249,7 @@ export async function checkTransactions(txData) {
 
 
   } catch (err) {
-    console.log("Error while updating the transaction: ", err);
+    // console.log("Error while updating the transaction: ", err);
   }
 }
 

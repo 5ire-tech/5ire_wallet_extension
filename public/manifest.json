@@ -15,14 +15,11 @@
 
   "permissions": [
     "activeTab",
-    "alarms",
-    "clipboardWrite",
     "notifications",
     "scripting",
     "storage",
-    "unlimitedStorage",
-    "webRequest",
-    "tabs"
+    "tabs",
+    "webRequest"
   ],
   "host_permissions": [
     "<all_urls>"

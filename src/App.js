@@ -1,28 +1,30 @@
-import { useEffect } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
 import "./App.scss";
-import FixWidthLayout from "./Layout/FixWidthLayout";
+import { useEffect } from "react";
+import Send from "./Pages/Send/Send";
+import Swap from "./Pages/Swap/Swap";
+import { NETWORK } from "./Constants";
+import Loader from "./Pages/Loader/Loader";
+import Wallet from "./Pages/Wallet/Wallet";
 import OnlyContent from "./Layout/OnlyContent";
 import WelcomeLayout from "./Layout/WelcomeLayout";
-import Send from "./Pages/Send/Send";
-import Wallet from "./Pages/Wallet/Wallet";
-import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
-import WelcomeScreen from "./Pages/WelcomeScreens/WelcomeScreen";
-import Swap from "./Pages/Swap/Swap";
-import CreateNewWallet from "./Pages/WelcomeScreens/CreateNewWallet";
-import Beforebegin from "./Pages/WelcomeScreens/Beforebegin";
-import CreateWalletChain from "./Pages/WelcomeScreens/CreateWalletChain";
-import ImportWallet from "./Pages/WelcomeScreens/ImportWallet";
-import { useSelector } from "react-redux";
-import ManageWallet from "./Components/Setting/ManageWallet.jsx";
-import EnterPassword from "./Components/Setting/EnterPassword";
-import SwapApprove from "./Pages/Swap/SwapApprove/SwapApprove";
+import FixWidthLayout from "./Layout/FixWidthLayout";
+import { useDispatch, useSelector } from "react-redux";
 import PrivateKey from "./Components/Setting/PrivateKey";
-import UnlockWelcome from "./Pages/WelcomeScreens/UnlockWelcome";
-import ApproveTx from "./Pages/RejectNotification/RejectNotification";
-import Loader from "./Pages/Loader/Loader";
+import { connectionObj } from "./Helper/connection.helper";
+import Beforebegin from "./Pages/WelcomeScreens/Beforebegin";
+import { Route, Routes, useNavigate } from "react-router-dom";
+import EnterPassword from "./Components/Setting/EnterPassword";
 import LoginApprove from "./Pages/WelcomeScreens/LoginApprove";
 import NativeTx from "./Components/NativeTx";
+import SwapApprove from "./Pages/Swap/SwapApprove/SwapApprove";
+import ImportWallet from "./Pages/WelcomeScreens/ImportWallet";
+import UnlockWelcome from "./Pages/WelcomeScreens/UnlockWelcome";
+import ManageWallet from "./Components/Setting/ManageWallet.jsx";
+import WelcomeScreen from "./Pages/WelcomeScreens/WelcomeScreen";
+import CreateNewWallet from "./Pages/WelcomeScreens/CreateNewWallet";
+import ApproveTx from "./Pages/RejectNotification/RejectNotification";
+import CreateWalletChain from "./Pages/WelcomeScreens/CreateWalletChain";
+import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
 
 function getParameterByName(name, url = window.location.href) {
   name = name.replace(/[[\]]/g, "\\$&");
@@ -34,8 +36,23 @@ function getParameterByName(name, url = window.location.href) {
 }
 
 function App() {
+
   const auth = useSelector((state) => state.auth);
+  // const { currentNetwork, wsEndPoints } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+
+  // useEffect(() => {
+
+  //   if (currentNetwork.toLowerCase() === NETWORK.TEST_NETWORK.toLowerCase()) {
+  //     connectionObj.initializeApi(wsEndPoints.testnet).then((res)=>{
+  //       console.log("Api initialize for ist time for testnet");
+  //     });
+  //   }else if(currentNetwork.toLowerCase() === NETWORK.QA_NETWORK.toLowerCase()){
+  //     connectionObj.initializeApi(wsEndPoints.qa).then((res)=>{
+  //       console.log("Api initialize for ist time for qa");
+  //     });
+  //   }
+  // }, []);
 
   useEffect(() => {
     const route = getParameterByName("route");
@@ -55,7 +72,7 @@ function App() {
     } else {
       navigate("/");
     }
-    // fetchLogin();
+    
   }, [auth?.login]);
 
   return (

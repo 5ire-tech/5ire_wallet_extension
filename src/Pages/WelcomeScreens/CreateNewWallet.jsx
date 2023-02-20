@@ -15,13 +15,13 @@ function CreateNewWallet() {
   const [warrning, setWarrning] = useState("");
 
   const handleChange = (e) => {
-    setData(e.target.value.trim());
+    setData(e.target.value);
     setWarrning("");
   };
 
   const handleClick = () => {
     
-    if (data.length === 0) setWarrning("Please enter account name!");
+    if (data.trim().length === 0) setWarrning("Please enter account name!");
     else {
       const match = accounts.find(e => {
         if (e.accountName === data) {
@@ -32,7 +32,7 @@ function CreateNewWallet() {
           return false;
       });
       if (!match) {
-        dispatch(setAccountName(data));
+        dispatch(setAccountName(data.trim()));
         navigate("/beforebegin");
       }
     }
@@ -49,7 +49,7 @@ function CreateNewWallet() {
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Create New Wallet</h1>
-          <p>The decentralized wallet</p>
+          <p>The Decentralized Wallet</p>
         </div>
         <div className={style.cardWhite__linkOuter}>
           <p style={{ color: "red" }}>{warrning}</p>

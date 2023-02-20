@@ -1,43 +1,34 @@
+import Web3 from "web3";
+import { ethers } from "ethers";
+import { BigNumber } from "bignumber.js";
+import { Keyring } from "@polkadot/keyring";
 import { useState, useEffect } from "react";
+import Browser from "webextension-polyfill";
+import { TX_TYPE, STATUS } from "../Constants/index";
+import { setAccountName } from "../Store/reducer/auth";
+import { useSelector, useDispatch } from "react-redux";
+import { u8aToHex, hexToU8a, isHex } from "@polkadot/util";
+import { decryptor, encryptor } from "../Helper/CryptoHelper";
+import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import {
   mnemonicGenerate,
   mnemonicToMiniSecret,
   mnemonicValidate,
-  ed25519PairFromSeed,
-  cryptoWaitReady,
+  ed25519PairFromSeed
 } from "@polkadot/util-crypto";
-import { u8aToHex, hexToU8a, isHex } from "@polkadot/util";
-// import { waitReady } from "@polkadot/wasm-crypto";
-import { ApiPromise } from "@polkadot/api";
-import { HttpProvider, WsProvider } from "@polkadot/rpc-provider";
-import { ethers } from "ethers";
-import { useSelector, useDispatch } from "react-redux";
-import { NETWORK, TX_TYPE, STATUS, NATIVE, EVM } from "../Constants/index";
-import { decodeAddress, encodeAddress } from "@polkadot/keyring";
-import { Keyring } from "@polkadot/keyring";
 import {
   setCurrentAcc,
   setNewAccount,
   pushAccounts,
   setBalance,
   setTxHistory,
-  resetBalance,
   toggleLoader,
-  setApiReady
 } from "../Store/reducer/auth";
-import { setAccountName } from "../Store/reducer/auth";
-import Web3 from "web3";
-import { decryptor, encryptor } from "../Helper/CryptoHelper";
-import { BigNumber } from "bignumber.js";
-import Browser from "webextension-polyfill";
-// import { toast } from "react-toastify";
 
-let evmApi = null;
-let nativeApi = null;
-let web3Provider = null;
-let tempNet = null;
 
 export default function UseWallet() {
+
+  const dispatch = useDispatch();
   const [authData, setAuthData] = useState({
     temp1m: "",
     temp2p: "",
@@ -46,130 +37,19 @@ export default function UseWallet() {
   });
   const {
     currentAccount,
-    wsEndPoints,
     currentNetwork,
     balance,
     pass,
     accountName,
     accounts,
     isLogin,
-    isApiReady
   } = useSelector((state) => state?.auth);
-  const dispatch = useDispatch();
 
-  const resetApi = () => {
-    evmApi = null;
-    nativeApi = null;
-  }
-
-  useEffect(() => {
-
-    if (currentNetwork.toLowerCase() === "testnet") {
-
-      if (tempNet !== wsEndPoints.testnet) {
-        tempNet = wsEndPoints.testnet;
-        if (isApiReady === true)
-          dispatch(setApiReady(false));
-        resetApi();
-        dispatch(resetBalance());
-
-        initializeApi(wsEndPoints.testnet).then(() => {
-          console.log("native and evm api is readyyyy for testnet!");
-          dispatch(setApiReady(true));
-        }).catch((err) => {
-          console.log("Error while connecting the evm and native chain: ", err);
-          if (isApiReady === true)
-            dispatch(setApiReady(false));
-        })
-
-        // Promise.all([initializeNativeApi(wsEndPoints.testnet), initializeEvmApi(wsEndPoints.testnet)])
-        //   .then(() => {
-        //     console.log("native and evm api is readyyyy for testnet");
-        //     dispatch(setApiReady(true));
-        //   })
-        //   .catch((err) => {
-        //     console.log("Error while connecting the evm and native chain: ", err);
-        //     if (isApiReady === true)
-        //       dispatch(setApiReady(false));
-        //   })
-      }
-    } else if (currentNetwork.toLowerCase() === "qa") {
-      if (tempNet !== wsEndPoints.qa) {
-        tempNet = wsEndPoints.qa;
-        if (isApiReady === true)
-          dispatch(setApiReady(false));
-        dispatch(resetBalance());
-        resetApi();
-        initializeApi(wsEndPoints.qa).then(() => {
-          console.log("native and evm api is readyyyy for qa!");
-          dispatch(setApiReady(true));
-        }).catch((err) => {
-          console.log("Error while connecting the evm and native chain: ", err);
-          if (isApiReady === true)
-            dispatch(setApiReady(false));
-        })
-        // Promise.all([initializeNativeApi(wsEndPoints.qa), initializeEvmApi(wsEndPoints.qa)])
-        //   .then(() => {
-        //     console.log("native and evm api is readyyyy for qa");
-        //     dispatch(setApiReady(true));
-        //   })
-        //   .catch((err) => {
-        //     console.log("Error while connecting the evm and native chain: ", err);
-        //     if (isApiReady === true)
-        //       dispatch(setApiReady(false));
-        //   })
-      }
-    }
-  }, [currentNetwork]);
-
-  console.log("is api ready : ", isApiReady);
-  console.log("currentNetwork ", currentNetwork, "temp net : ", tempNet);
-
-  const initializeApi = async (network) => {
-    try {
-      let provider = new WsProvider(network);
-      nativeApi = await ApiPromise.create({ provider: provider });
-      console.log("native Api : ", nativeApi);
-
-      let w3options = {
-        reconnect: {
-          auto: true,
-          delay: 5000, //ms
-          maxAttempts: 10,
-          onTimeout: false
-        }
-      };
-      web3Provider = new Web3.providers.WebsocketProvider(network, w3options);
-      evmApi = new Web3(web3Provider);
-
-      web3Provider.on('end', async () => {
-        console.log("Trying to reconnect with Evm api");
-        web3Provider.connect();
-      });
-      web3Provider.on('error', async (e) => {
-        console.log("error occued while making connection with web3 : ", e);
-        web3Provider.connect();
-      });
-
-      nativeApi.on("disconnected", async () => {
-        nativeApi.connect();
-      });
-      nativeApi.on("error", async (e) => {
-        console.log("rror occued while making connection with native : ", e);
-        nativeApi.connect();
-      })
-
-      console.log("evmApi : ", evmApi);
-    } catch (error) {
-      console.log("Error while making connection with Native Api");
-    }
-  }
 
   const getKey = (str, p) => {
     const seed = decryptor(str, p);
     if (seed) {
       const { privateKey } = ethers.Wallet.fromMnemonic(seed);
-
       return privateKey;
     }
   };
@@ -226,7 +106,7 @@ export default function UseWallet() {
         data: "success!",
       };
     } catch (error) {
-      console.log("error occured while creating new account ", error);
+      // console.log("error occured while creating new account ", error);
       dispatch(toggleLoader(false));
 
       return {
@@ -236,57 +116,59 @@ export default function UseWallet() {
     }
   };
 
-  const getBalance = async () => {
+  const getBalance = async (evm_api, native_api) => {
     try {
 
       // Evm Balance
-      const w3balance = await evmApi?.eth.getBalance(
+      const w3balance = await evm_api?.eth?.getBalance(
         currentAccount?.evmAddress
       );
 
       //Native Balance
-      const nbalance = await nativeApi?.derive.balances.all(
+      const nbalance = await native_api?.derive.balances.all(
         currentAccount?.nativeAddress
       );
 
       let evmBalance = new BigNumber(w3balance).dividedBy(10 ** 18).toString();
       let nativeBalance = new BigNumber(nbalance.availableBalance).dividedBy(10 ** 18).toString();
 
-      if (Number(nativeBalance) % 1 !== 0) {
+
+      if (Number(nativeBalance) % 1 !== 0)
         nativeBalance = new BigNumber(nbalance.availableBalance).dividedBy(10 ** 18).toFixed(6, 8).toString();
-      }
-      if (Number(evmBalance) % 1 !== 0) {
+
+
+      if (Number(evmBalance) % 1 !== 0)
         evmBalance = new BigNumber(w3balance).dividedBy(10 ** 18).toFixed(6, 8).toString();
-      }
+
 
       let totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toString();
-
-      if (Number(totalBalance) % 1 !== 0) {
+      if (Number(totalBalance) % 1 !== 0)
         totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toFixed(6, 8).toString()
-      }
 
-      if ((balance.nativeBalance !== nativeBalance && balance.evmBalance !== evmBalance) && (!isNaN(evmBalance) && !(isNaN(nativeBalance)))) {
-        const payload = {
-          evmBalance,
-          nativeBalance,
-          totalBalance
-        }
-        // console.log("Payload for set balance", payload);
-        dispatch(setBalance(payload));
+      // console.log("balance.nativeBalance : ", balance.nativeBalance, " && now ", nativeBalance);
+      // console.log("balance.nativeBalance : ", balance.evmBalance, " && now ", evmBalance);
+
+      // if ((balance.nativeBalance !== nativeBalance && balance.evmBalance !== evmBalance) && (!isNaN(evmBalance) && !(isNaN(nativeBalance)))) {
+      const payload = {
+        evmBalance,
+        nativeBalance,
+        totalBalance
       }
+      dispatch(setBalance(payload));
+      // }
 
     } catch (error) {
-      console.log("Error while geting balance of evm : ", error);
+      // console.log("Error while geting balance : ", error);
     }
   }
 
-  const evmTransfer = async (data, isBig = false) => {
-
+  const evmTransfer = async (evmApi, data, isBig = false) => {
+    // console.log("EVM APIIII : ", evmApi);
     return (new Promise(async (resolve, reject) => {
 
-      console.log("Condition Here: ", (Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0);
-      console.log("Here are individual conditions: ", data.amount !== '0x0', (Number(data.amount) > Number(balance.evmBalance), Number(balance.evmBalance) <= 0));
-      console.log("individual balance: ", Number(data.amount), Number(balance.evmBalance), data.amount);
+      // console.log("Condition Here: ", (Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0);
+      // console.log("Here are individual conditions: ", data.amount !== '0x0', (Number(data.amount) > Number(balance.evmBalance), Number(balance.evmBalance) <= 0));
+      // console.log("individual balance: ", Number(data.amount), Number(balance.evmBalance), data.amount);
 
       try {
         if ((Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0) {
@@ -327,11 +209,13 @@ export default function UseWallet() {
             transactions,
             temp2p
           );
+
+          //Sign And Send Transaction
           const txInfo = await evmApi.eth.sendSignedTransaction(signedTx.rawTransaction);
           const hash = txInfo.transactionHash;
 
           if (hash) {
-            let index = getAccId(currentAccount.id);
+
             let dataToDispatch = {
               data: {
                 chain: currentNetwork.toLowerCase(),
@@ -343,14 +227,16 @@ export default function UseWallet() {
                 txHash: hash,
                 status: STATUS.PENDING
               },
-              index: index,
+              index: getAccId(currentAccount.id),
             };
+
+
+            dispatch(setTxHistory(dataToDispatch));
+            dispatch(toggleLoader(false));
 
             //send the tx notification
             Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch });
 
-            dispatch(setTxHistory(dataToDispatch));
-            dispatch(toggleLoader(false));
             resolve({
               error: false,
               data: hash,
@@ -370,7 +256,7 @@ export default function UseWallet() {
 
   };
 
-  const nativeTransfer = async (data) => {
+  const nativeTransfer = async (nativeApi, data) => {
     return new Promise(async (resolve, reject) => {
       try {
         if (Number(data.amount) >= Number(balance.nativeBalance)) {
@@ -411,7 +297,7 @@ export default function UseWallet() {
 
               if (hash !== txHash.toHex()) {
                 hash = txHash.toHex();
-                console.log("Hash : ", hash);
+                // console.log("Hash : ", hash);
                 let phase = events.filter(({ phase }) => phase.isApplyExtrinsic);
 
                 //Matching Extrinsic Events for get the status
@@ -419,11 +305,11 @@ export default function UseWallet() {
 
                   if (nativeApi.events.system.ExtrinsicSuccess.is(event)) {
                     err = false;
-                    console.log("Extrinsic Success !! ");
+                    // console.log("Extrinsic Success !! ");
                     dataToDispatch.data.status = STATUS.SUCCESS;
                   } else if (nativeApi.events.system.ExtrinsicFailed.is(event)) {
                     err = false;
-                    console.log("Extrinsic Failed");
+                    // console.log("Extrinsic Failed");
                     dataToDispatch.data.status = STATUS.FAILED;
                   }
                   dispatch(toggleLoader(false));
@@ -447,7 +333,7 @@ export default function UseWallet() {
           });
         }
       } catch (error) {
-        console.log("Error while native transfer : ", error);
+        // console.log("Error while native transfer : ", error);
         dispatch(toggleLoader(false));
         resolve({
           error: true,
@@ -457,8 +343,8 @@ export default function UseWallet() {
     })
   };
 
-  const nativeToEvmSwap = async (amount) => {
-    return new Promise(async (resolve, reject) => {
+  const nativeToEvmSwap = async (evmApi, nativeApi, amount) => {
+    return new Promise(async (resolve) => {
       try {
         if (Number(amount) >= Number(balance.nativeBalance) || Number(amount) <= 0) {
           resolve({
@@ -466,7 +352,7 @@ export default function UseWallet() {
             data: "Insufficent Balance!"
           })
         } else {
-          let count = 1, err, evmDepositeHash, signedHash;
+          let err, evmDepositeHash, signedHash;
           dispatch(toggleLoader(true));
           let dataToDispatch = {
             data: {
@@ -486,21 +372,21 @@ export default function UseWallet() {
           const keyring = new Keyring({ type: "ed25519" });
           const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
 
+          //Deposite amount
           let deposit = await nativeApi.tx.evm.deposit(
             currentAccount?.evmAddress,
             (new BigNumber(amount).multipliedBy(10 ** 18)).toString()
           );
-
           evmDepositeHash = deposit.hash.toHex();
+          console.log("evmDepositHash", evmDepositeHash)
 
+          //Sign and Send txn
           deposit.signAndSend(alice, ({ status, events, txHash }) => {
-
             if (status.isInBlock) {
-              console.log("Calling Count::: ", count);
-              count++;
+
               if (signedHash !== txHash) {
                 signedHash = txHash.toHex();
-                console.log("Hash : ", signedHash);
+                // console.log("Hash : ", signedHash);
                 let phase = events.filter(({ phase }) => phase.isApplyExtrinsic);
 
                 //Matching Extrinsic Events for get the status
@@ -508,18 +394,18 @@ export default function UseWallet() {
 
                   if (nativeApi.events.system.ExtrinsicSuccess.is(event)) {
                     err = false;
-                    console.log("Extrinsic Success !! ");
+                    // console.log("Extrinsic Success !! ");
                     dataToDispatch.data.status = STATUS.SUCCESS;
                   } else if (nativeApi.events.system.ExtrinsicFailed.is(event)) {
                     err = true;
-                    console.log("Extrinsic Failed !!");
+                    // console.log("Extrinsic Failed !!");
                     dataToDispatch.data.status = STATUS.FAILED;
                   }
                   dispatch(toggleLoader(false));
                 });
 
                 dataToDispatch.data.txHash = { hash: evmDepositeHash, mainHash: signedHash };
-                console.log("Data to dispatch : ", dataToDispatch);
+                // console.log("Data to dispatch : ", dataToDispatch);
                 dispatch(setTxHistory(dataToDispatch));
                 if (err) {
                   resolve({
@@ -529,7 +415,7 @@ export default function UseWallet() {
                 } else {
                   resolve({
                     error: false,
-                    data: evmDepositeHash
+                    data: signedHash
                   })
                 }
               }
@@ -537,7 +423,7 @@ export default function UseWallet() {
           });
         }
       } catch (error) {
-        console.log("Error occured while swapping native to evm : ", error);
+        // console.log("Error occured while swapping native to evm : ", error);
         dispatch(toggleLoader(false));
         resolve({
           error: true,
@@ -547,7 +433,7 @@ export default function UseWallet() {
     })
   };
 
-  const evmToNativeSwap = async (amount) => {
+  const evmToNativeSwap = async (evmApi, nativeApi, amount) => {
     return (new Promise(async (resolve, reject) => {
       try {
         if (Number(amount) >= Number(balance.evmBalance) || Number(amount) <= 0) {
@@ -566,7 +452,6 @@ export default function UseWallet() {
 
           const transaction = {
             to: publicKey.slice(0, 42),
-            // value: Math.round(Number(amount) * Math.pow(10, 18)).toString(),
             value: (new BigNumber(amount).multipliedBy(10 ** 18)).toString(),
             gas: 21000,
             nonce: await evmApi.eth.getTransactionCount(currentAccount?.evmAddress),
@@ -577,17 +462,20 @@ export default function UseWallet() {
             transaction,
             temp2p
           );
+
+          //sign and send
           const txInfo = await evmApi.eth.sendSignedTransaction(signedTx.rawTransaction);
           const signHash = txInfo.transactionHash;
 
           if (signHash) {
+            //withdraw amount
             const withdraw = await nativeApi.tx.evm.withdraw(
               publicKey.slice(0, 42),
               (new BigNumber(amount).multipliedBy(10 ** 18)).toString()
             );
             let signRes = await withdraw.signAndSend(alice);
 
-            console.log("Sign Res : ", signRes.toHex());
+            // console.log("Sign Res : ", signRes.toHex());
 
             let dataToDispatch = {
               data: {
@@ -597,18 +485,18 @@ export default function UseWallet() {
                 to: "Evm to Native",
                 type: TX_TYPE?.SWAP,
                 amount: amount,
-                txHash: { hash: signRes.toHex(), mainHash: signHash },
+                txHash: { mainHash: signHash, hash: signRes.toHex() },
                 status: STATUS.PENDING
               },
               index: getAccId(currentAccount.id),
             };
 
-
             //send the transaction notification
-            Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch });
 
+            // console.log("data to dispatch : ",dataToDispatch);
             dispatch(setTxHistory(dataToDispatch));
             dispatch(toggleLoader(false));
+            Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch });
 
             resolve({
               error: false,
@@ -618,7 +506,7 @@ export default function UseWallet() {
           else throw new Error("Error occured! ");
         }
       } catch (error) {
-        console.log("Error occured while swapping evm to native : ", error);
+        // console.log("Error occured while swapping evm to native: ", error);
         dispatch(toggleLoader(false));
         resolve({
           error: true,
@@ -654,7 +542,7 @@ export default function UseWallet() {
           temp1m,
           txHistory: [],
           nativeAddress,
-          accountName: data.accName,
+          accountName: data.accName.trim(),
           evmAddress: address,
         };
         if (!isLogin) dispatch(setNewAccount(dataToDispatch));
@@ -672,7 +560,7 @@ export default function UseWallet() {
         data: "Invalid mnemonics!",
       };
     } catch (error) {
-      console.log("Error while importing : ", error);
+      // console.log("Error while importing : ", error);
       return {
         error: true,
         data: "Error Occured!",
@@ -680,14 +568,13 @@ export default function UseWallet() {
     }
   };
 
-  const retriveEvmFee = async (toAddress, amount, data = "") => {
+  const retriveEvmFee = async (evmApi, toAddress, amount, data = "") => {
     try {
       dispatch(toggleLoader(true));
       toAddress = toAddress ? toAddress : currentAccount?.nativeAddress;
 
       if (toAddress.startsWith("5"))
         toAddress = u8aToHex(toAddress).slice(0, 42);
-
 
       if (toAddress.startsWith("0x")) {
         try {
@@ -697,10 +584,11 @@ export default function UseWallet() {
           dispatch(toggleLoader(false));
           return ({
             error: true,
-            data: "Invalid 'to' address!"
+            data: "Invalid 'To' address."
           });
         }
       }
+
       const tx = {
         to: toAddress,
         from: currentAccount?.evmAddress,
@@ -710,6 +598,7 @@ export default function UseWallet() {
       if (data) {
         tx.data = data;
       }
+
       const gasAmount = await evmApi.eth.estimateGas(tx);
       const gasPrice = await evmApi.eth.getGasPrice();
       let fee = (new BigNumber(gasPrice * gasAmount)).dividedBy(10 ** 18).toString();
@@ -722,14 +611,14 @@ export default function UseWallet() {
 
     } catch (error) {
       dispatch(toggleLoader(false));
-      console.log("Error while getting evm fee: ", error);
+      // console.log("Error while getting evm fee: ", error);
       return {
-        error: false,
+        error: true,
       }
     }
   };
 
-  const retriveNativeFee = async (toAddress, amount) => {
+  const retriveNativeFee = async (nativeApi, toAddress, amount) => {
     try {
       dispatch(toggleLoader(true));
       toAddress = toAddress ? toAddress : currentAccount?.evmAddress;
@@ -743,13 +632,13 @@ export default function UseWallet() {
       if (toAddress.startsWith("0x")) {
         const amt = new BigNumber(amount).multipliedBy(10 ** 18).toFixed().toString();
         try {
-          console.log("Amount after ", amt);
+          // console.log("Amount after ", amt);
           Web3.utils.toChecksumAddress(toAddress);
         } catch (error) {
           dispatch(toggleLoader(false));
           return ({
             error: true,
-            data: "Invalid 'to' address!"
+            data: "Invalid 'to' address."
           });
         }
         transferTx = await nativeApi.tx.evm.deposit(toAddress, amt);
@@ -785,10 +674,9 @@ export default function UseWallet() {
       };
     } catch (error) {
       dispatch(toggleLoader(false));
-      console.log("Error while getting native fee: ", error);
+      // console.log("Error while getting native fee: ", error);
       return {
         error: true,
-        // data: ""
       }
     }
   };
@@ -889,9 +777,17 @@ export default function UseWallet() {
 
   //Nominator methods
 
-  const addNominator = async ({ stakeAmount, validatorsAccounts }, isFee = false) => {
+  const addNominator = async (nativeApi, payload, isFee = false) => {
 
     try {
+      if (!payload?.stakeAmount || !payload.validatorsAccounts) {
+        return {
+          error: true,
+          data: "Invalid Params: Stake Amount and Validator Accounts are required"
+        }
+      }
+      const { stakeAmount, validatorsAccounts } = payload;
+
       const bondedAmount = (new BigNumber(stakeAmount).multipliedBy(10 ** 18)).toString()
 
       const stashId = encodeAddress(currentAccount?.nativeAddress);
@@ -928,25 +824,49 @@ export default function UseWallet() {
     }
   }
 
-  const reNominate = async (validatorAccounts) => {
-    return new Promise(async (resolve) => {
-      try {
-        const nominateTx = nativeApi.tx.staking.nominate(validatorAccounts);
-        const points = await nativeApi.derive.staking?.currentPoints(); //find points
-        const batchAll = await nativeApi.tx.utility.batchAll([nominateTx]);
-        const txHash = batchAll.signAndSend(getKeyring())
-        resolve({
-          error: false,
-          data: { txHash, points },
-        });
-      } catch (err) {
-        resolve({ error: true, message: err?.message });
+  const reNominate = async (nativeApi, payload, isFee = false) => {
+    try {
+
+      if (!payload.validatorAccounts) {
+        return {
+          error: true,
+          data: "Invalid Params: Validator Accounts are required"
+        }
       }
-    });
+      const { validatorAccounts } = payload
+      const nominateTx = nativeApi.tx.staking.nominate(validatorAccounts);
+      const points = await nativeApi.derive.staking?.currentPoints(); //find points
+      const batchAll = await nativeApi.tx.utility.batchAll([nominateTx]);
+      if (isFee) {
+        const info = await batchAll?.paymentInfo(getKeyring());
+        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        return {
+          error: false,
+          data: fee
+        }
+      }
+      const txHash = batchAll.signAndSend(getKeyring())
+      return {
+        error: false,
+        data: { txHash, points },
+      };
+    } catch (err) {
+      return { error: true, message: err?.message };
+    }
+
   };
 
-  const nominatorValidatorPayout = async (validatorIdList) => {
+  const nominatorValidatorPayout = async (nativeApi, payload, isFee = false) => {
     try {
+
+      if (!payload.validatorIdList) {
+        return {
+          error: true,
+          data: "Invalid Params: Validator Accounts are required"
+        }
+      }
+
+      const { validatorIdList } = payload;
       const validators = [validatorIdList];
       const allEras = await nativeApi?.derive?.staking?.erasHistoric();
       const era = await nativeApi?.derive?.staking?.stakerRewardsMultiEras(validators, allEras);
@@ -957,10 +877,19 @@ export default function UseWallet() {
         };
       }
       const payout = await nativeApi?.tx?.staking?.payoutStakers(validators[0], era[0][0]?.era);
+
+      if (isFee) {
+        const info = await payout?.paymentInfo(getKeyring());
+        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        return {
+          error: false,
+          data: fee
+        }
+      }
       const txHash = payout.signAndSend(getKeyring())
       return {
         error: false,
-        data: txHash
+        data: { txHash }
       }
 
     } catch (err) {
@@ -968,27 +897,55 @@ export default function UseWallet() {
     }
   };
 
-  const stopValidatorNominator = async () => {
+  const stopValidatorNominator = async (nativeApi, isFee = false) => {
     try {
       const stopValidator = await nativeApi.tx.staking.chill();
+
+      if (isFee) {
+        const info = await stopValidator?.paymentInfo(getKeyring());
+        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        return {
+          error: false,
+          data: fee
+        }
+      }
       const txHash = stopValidator.signAndSend(getKeyring())
       return {
         error: false,
-        data: txHash
+        data: { txHash }
       }
     } catch (err) {
       return { error: true, message: err?.message };
     }
   };
 
-  const unbondNominatorValidator = async (value) => {
+  const unbondNominatorValidator = async (nativeApi, payload, isFee = false) => {
     try {
-      const amount = (new BigNumber(value).multipliedBy(10 ** 18)).toString()
-      const unbound = await nativeApi.tx.staking.unbond(amount);
+
+
+      if (!payload.amount) {
+        return {
+          error: true,
+          data: "Invalid Params: Amount is required"
+        }
+
+      }
+
+
+      const amt = (new BigNumber(payload.amount).multipliedBy(10 ** 18)).toString()
+      const unbound = await nativeApi.tx.staking.unbond(amt);
+      if (isFee) {
+        const info = await unbound?.paymentInfo(getKeyring());
+        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        return {
+          error: false,
+          data: fee
+        }
+      }
       const txHash = unbound.signAndSend(getKeyring())
       return {
         error: false,
-        data: txHash
+        data: { txHash }
       }
     } catch (err) {
       return { error: true, message: err?.message };
@@ -996,28 +953,61 @@ export default function UseWallet() {
   };
 
 
-  const withdrawNominatorData = async (amount, address) => {
+  const withdrawNominatorValidatorData = async (nativeApi, payload, isFee = false) => {
     try {
 
+      if (!payload.amount || !payload.address) {
+        return {
+          error: true,
+          data: "Invalid Params: Amount and Address are required"
+        }
+      }
+
+      const { amount, address } = payload
       const sendAmounts = (new BigNumber(amount).multipliedBy(10 ** 18)).toString()
       const sendAmt = nativeApi.tx.balances.transferKeepAlive(address, sendAmounts);
+
+      if (isFee) {
+        const info = await sendAmt?.paymentInfo(getKeyring());
+        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        return {
+          error: false,
+          data: fee
+        }
+      }
       const txHash = sendAmt.signAndSend(getKeyring())
       return {
         error: false,
-        data: txHash
+        data: { txHash }
       }
     } catch (err) {
       return { error: true, message: err?.message };
     }
   };
 
-  const withdrawNominatorUnbonded = async (value) => {
+  const withdrawNominatorUnbonded = async (nativeApi, payload, isFee = false) => {
     try {
-      const unbond = await nativeApi.tx.staking.withdrawUnbonded(value);
+
+      if (!payload.value) {
+        return {
+          error: true,
+          data: "Invalid Params: Value is required"
+        }
+      }
+      const unbond = await nativeApi.tx.staking.withdrawUnbonded(payload.value);
+
+      if (isFee) {
+        const info = await unbond?.paymentInfo(getKeyring());
+        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        return {
+          error: false,
+          data: fee
+        }
+      }
       const txHash = unbond.signAndSend(getKeyring())
       return {
         error: false,
-        data: txHash
+        data: { txHash }
       }
     } catch (err) {
       return { error: true, message: err?.message };
@@ -1026,12 +1016,18 @@ export default function UseWallet() {
 
 
   //validators methods
-  const addValidator = async (commission, bondedAmount) => {
+  const addValidator = async (nativeApi, payload, isFee = false) => {
     try {
+
+      if (!payload.commission || !payload.bondedAmount) {
+        return {
+          error: true,
+          data: "Invalid Params: Commission and Bonded Amount are required"
+        }
+      }
+      const { commission, bondedAmount } = payload;
       const rotateKey = await nativeApi.rpc.author.rotateKeys();
-
       const bondAmt = (new BigNumber(bondedAmount).multipliedBy(10 ** 18)).toString()
-
 
       const stashId = encodeAddress(decodeAddress(currentAccount?.nativeAddress));
       commission = commission === 0 ? 1 : commission * 10 ** 7;
@@ -1049,12 +1045,21 @@ export default function UseWallet() {
         validatorInfo.sessionTx,
         validatorInfo.validateTx,
       ]);
-      console.log(validationTransfer, 'Under Validator After Stash');
+
+
+      if (isFee) {
+        const info = await validationTransfer?.paymentInfo(getKeyring());
+        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        return {
+          error: false,
+          data: fee
+        }
+      }
 
       const txHash = validationTransfer.signAndSend(getKeyring())
       return {
         error: false,
-        data: txHash
+        data: { txHash }
       }
     } catch (err) {
       return { error: true, message: err?.message };
@@ -1064,14 +1069,30 @@ export default function UseWallet() {
   };
 
 
-  const bondMoreFunds = async (rawAmount) => {
+  const bondMoreFunds = async (nativeApi, payload, isFee = false) => {
     try {
-      const amt = (new BigNumber(rawAmount).multipliedBy(10 ** 18)).toString()
+
+      if (!payload.amount) {
+        return {
+          error: true,
+          data: "Invalid Params: Amount is required"
+        }
+      }
+      const amt = (new BigNumber(payload.amount).multipliedBy(10 ** 18)).toString()
       const bondExtraTx = await nativeApi.tx.staking.bondExtra(amt);
+
+      if (isFee) {
+        const info = await bondExtraTx?.paymentInfo(getKeyring());
+        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        return {
+          error: false,
+          data: fee
+        }
+      }
       const txHash = bondExtraTx.signAndSend(getKeyring())
       return {
         error: false,
-        data: txHash
+        data: { txHash }
       }
     } catch (err) {
       return { error: true, message: err?.message };
@@ -1080,9 +1101,15 @@ export default function UseWallet() {
   };
 
 
-  const restartValidator = async (commission) => {
+  const restartValidator = async (nativeApi, payload, isFee = false) => {
     try {
-      commission = commission === 0 ? 1 : commission * 10 ** 7;
+      if (!payload.commission) {
+        return {
+          error: true,
+          data: "Invalid Params: Commission is required"
+        }
+      }
+      const commission = payload.commission === 0 ? 1 : payload.commission * 10 ** 7;
       const validatorInfo = {
         validateTx: nativeApi.tx.staking.validate({
           blocked: false,
@@ -1091,10 +1118,19 @@ export default function UseWallet() {
       };
 
       const validationTransfer = await nativeApi.tx.utility.batchAll([validatorInfo.validateTx]);
+
+      if (isFee) {
+        const info = await validationTransfer?.paymentInfo(getKeyring());
+        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        return {
+          error: false,
+          data: fee
+        }
+      }
       const txHash = validationTransfer.signAndSend(getKeyring())
       return {
         error: false,
-        data: txHash
+        data: { txHash }
       }
     } catch (err) {
       return { error: true, message: err?.message };
@@ -1118,7 +1154,16 @@ export default function UseWallet() {
     retriveNativeFee,
     getKey,
     getBalance,
-    addNominator
+    addNominator,
+    reNominate,
+    nominatorValidatorPayout,
+    stopValidatorNominator,
+    unbondNominatorValidator,
+    withdrawNominatorValidatorData,
+    withdrawNominatorUnbonded,
+    addValidator,
+    bondMoreFunds,
+    restartValidator
     // setAuthData,
     // getEvmBalance,
     // getNativeBalance,

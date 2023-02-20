@@ -1,4 +1,4 @@
-import { createSlice, current } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 export const userState = {
   pass: null,
@@ -19,11 +19,13 @@ export const userState = {
   httpEndPoints: {
     qa: "https://qa-http-nodes.5ire.network",
     testnet: "https://rpc-testnet.5ire.network"
+    // testnet: "http://52.15.41.233:9933"
   },
 
   wsEndPoints: {
     qa: "wss://qa-wss-nodes.5ire.network",
     testnet: "wss://wss-testnet.5ire.network"
+    // testnet: "ws://52.15.41.233:9944"
   },
 
   balance: {
@@ -32,7 +34,8 @@ export const userState = {
     totalBalance: ""
   },
 
-  currentNetwork: "Testnet",
+  currentNetwork: "QA",
+  // currentNetwork: "QA",
 
   accountName: "",
 
@@ -45,7 +48,8 @@ export const userState = {
   connectedSites: [],
   isLoading: false,
   
-  isApiReady:false
+  // isApiReady:false,
+  
 };
 
 export const userSlice = createSlice({
@@ -148,9 +152,9 @@ export const userSlice = createSlice({
       state.isLoading = action.payload;
     },
 
-    setApiReady : (state, action) => {
-      state.isApiReady = action.payload;
-    }
+    // setApiReady : (state, action) => {
+    //   state.isApiReady = action.payload;
+    // }
   },
 });
 
@@ -173,7 +177,7 @@ export const {
   setNewAccount,
   resetBalance,
   updateTxHistory,
-  setApiReady
+  // setApiReady
 } = userSlice.actions;
 
 export default userSlice.reducer;

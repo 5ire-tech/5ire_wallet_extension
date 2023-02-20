@@ -5,14 +5,14 @@ import {
   loadStore,
   checkTransactions
 } from "./controller";
-import { setApiReady } from "../Store/reducer/auth";
+// import { setApiReady } from "../Store/reducer/auth";
 import Browser from "webextension-polyfill";
 
 try {
 
   //background globals
-  let isInitialized = false,
-    store;
+  let isInitialized = false;
+  let store = null;
 
   Browser.runtime.onConnect.addListener(async (port) => {
     if (port.name === CONNECTION_NAME) {
@@ -20,9 +20,10 @@ try {
       isInitialized = true;
 
       port.onDisconnect.addListener(function () {
-        console.log("popup has been closed !!!!!!!!!!!1");
-        store.dispatch(setApiReady(false));
+        //handle popup close actions
+        // store.dispatch(setApiReady(false));
       });
+
     }
   });
 
@@ -30,8 +31,9 @@ try {
    *  when the extension is updated to a new version,
    *  and when Chrome is updated to a new version. */
   Browser.runtime.onInstalled.addListener(async (details) => {
-    console.log("[background.js] onInstalled", details);
-
+    //on install of extension
+    // console.log("[background.js] onInstalled", details);
+    // store.dispatch(setApiReady(false));
     for (const cs of Browser.runtime.getManifest().content_scripts) {
       for (const tab of await Browser.tabs.query({ url: cs.matches })) {
         Browser.scripting.executeScript({
@@ -43,8 +45,9 @@ try {
   });
 
   Browser.runtime.onStartup.addListener(() => {
-    store.dispatch(setApiReady(false));
-    console.log("[background.js] onStartup");
+    //on background script startup
+    // store.dispatch(setApiReady(false));
+    // console.log("[background.js] onStartup");
   });
 
 
@@ -108,7 +111,8 @@ try {
    *  unloaded the onSuspendCanceled event will
    *  be sent and the page won't be unloaded. */
   Browser.runtime.onSuspend.addListener(() => {
-    console.log("[background.js] onSuspend");
+    //event called when extension is suspended or closed
+    // console.log("[background.js] onSuspend");
     isInitialized = false;
   });
 
@@ -122,5 +126,5 @@ try {
   }
 
 } catch (err) {
-  console.log("BACKGROUND FILE TRY CATCH:", err)
+  console.log("Error: ", err)
 }

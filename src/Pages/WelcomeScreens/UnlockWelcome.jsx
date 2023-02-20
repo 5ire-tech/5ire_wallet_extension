@@ -1,7 +1,7 @@
 import React from "react";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
+import InputFieldSimple, { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import style from "./style.module.scss";
 import PlaceLogo from "../../Assets/PlaceLog.svg";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -31,7 +31,7 @@ function UnlockWelcome() {
     dispatch(toggleLoader(false));
 
     if (!res.error) {
-      console.log("SeTTING LOGIN true!!!");
+
       if (isLogin !== true)
         dispatch(setLogin(true));
       navigate(location.state?.redirectRoute || "/wallet");
@@ -49,13 +49,13 @@ function UnlockWelcome() {
             <img src={PlaceLogo} />
             <div className={style.cardWhite__cardInner__innercontact}>
               <h1>Welcome Back!</h1>
-              <span>The decentralized web awaits</span>
+              <span>The Decentralized Web Awaits</span>
             </div>
           </div>
         </div>
         <div className={style.cardWhite__linkOuter}>
-          <InputFieldOnly
-            type="password"
+          <InputFieldSimple
+            // type="password"
             name={"key"}
             onChange={handleChange}
             placeholder={"Enter Password"}

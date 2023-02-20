@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
+import InputFieldSimple, { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import style from "./style.module.scss";
 import { useNavigate } from "react-router-dom";
 // import { setPassword, setPassError } from "../../Store/reducer/auth";
@@ -8,7 +8,7 @@ import useAuth from "../../Hooks/useAuth";
 import { toggleLoader, setLogin } from "../../Store/reducer/auth";
 import { toast } from "react-toastify";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen"
+import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
 
 export default function SetPasswordScreen() {
   const [pass, setPass] = useState({ pass: "", confirmPass: "" });
@@ -45,20 +45,18 @@ export default function SetPasswordScreen() {
       errMsg = "";
     }
     setError(errMsg);
-  }
+  };
 
   const validateConfirmPass = () => {
-
     if (pass.confirmPass !== pass.pass) {
       // setconfirmError("Password and confirm password don't match!");
-      toast.error("Password and confirm password don't match!")
-      return { error: true }
-    }
-    else {
+      toast.error("Password and confirm password don't match!");
+      return { error: true };
+    } else {
       setconfirmError("");
-      return { error: false }
+      return { error: false };
     }
-  }
+  };
 
   const handleSubmit = async () => {
     if (pass.pass.length === 0 || pass.confirmPass.length === 0) {
@@ -67,7 +65,7 @@ export default function SetPasswordScreen() {
       let confirmRes = validateConfirmPass();
       // console.log("Confirm Res : ",confirmRes);
       // console.log("error : ",error);
-      if ((error === "" || error === null) && !(confirmRes.error)) {
+      if ((error === "" || error === null) && !confirmRes.error) {
         dispatch(toggleLoader(true));
         let res = await setUserPass(pass.pass);
         if (res.error) {
@@ -78,8 +76,7 @@ export default function SetPasswordScreen() {
           setShow(true);
           setTimeout(() => {
             //look
-            if (isLogin !== true)
-              dispatch(setLogin(true));
+            if (isLogin !== true) dispatch(setLogin(true));
             setShow(false);
             setTimeout(() => {
               navigate("/wallet");
@@ -89,7 +86,6 @@ export default function SetPasswordScreen() {
       }
     }
   };
-
 
   const handleChange = (e) => {
     setPass((prev) => {
@@ -106,13 +102,13 @@ export default function SetPasswordScreen() {
         <div className={style.cardWhite__beginText}>
           <h1>Create Password</h1>
           <p>
-            Your password is used to unlock your wallet and is stored securely on
-            your device. We recommend 12 characters, with uppercase and lowercase
-            letters, symbols and numbers.
+            Your password is used to unlock your wallet and is stored securely
+            on your device. We recommend 12 characters, with uppercase and
+            lowercase letters, symbols and numbers.
           </p>
           <div className={style.cardWhite__beginText__passInputSec}>
-            <InputFieldOnly
-              type="password"
+            <InputFieldSimple
+              // type="password"
               name="pass"
               onChange={handleChange}
               placeholder={"Enter Password"}
@@ -121,36 +117,34 @@ export default function SetPasswordScreen() {
               keyUp={validatePass}
             />
           </div>
-          <p style={{ color: "red" }}>{error ? error : ""}</p>
+          <p className={style.errorText}>{error ? error : ""}</p>
           <div className={style.cardWhite__beginText__passInputSec}>
-            <InputFieldOnly
-              type="password"
+            <InputFieldSimple
+              // type="password"
               name="confirmPass"
               onChange={handleChange}
               placeholder={"Confirm Password"}
               placeholderBaseColor={true}
               coloredBg={true}
-            // keyUp={validateConfirmPass}
+              // keyUp={validateConfirmPass}
+            />
+          </div>
+          <div style={{ marginTop: "30px" }}>
+            <ButtonComp
+              onClick={handleSubmit}
+              text={"Continue"}
+              maxWidth={"100%"}
             />
           </div>
         </div>
       </div>
       <div className={style.menuItems__cancleContinue}>
-
         {show && (
           <div className="loader">
             <CongratulationsScreen />
           </div>
         )}
-
-        <ButtonComp
-          onClick={handleSubmit}
-          text={"Continue"}
-          maxWidth={"100%"}
-        />
       </div>
     </>
-
   );
 }
-
