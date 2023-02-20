@@ -49,7 +49,7 @@ export class FireProvider {
       "get_endPoint",
       "eth_sendTransaction",
       ...this.conntectMethods,
-      this.stakingMethods
+      ...this.stakingMethods
     ];
 
 

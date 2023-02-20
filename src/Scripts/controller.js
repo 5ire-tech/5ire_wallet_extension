@@ -191,7 +191,7 @@ export class Controller {
 
   //Handle Validator nominator methods
   async handleValidatorNominatorTransactions(data) {
-
+    console.log("Here i got native message", data)
     this.store.dispatch(setUIdata(data));
     await this.notificationManager.showPopup("nativeTx");
   }

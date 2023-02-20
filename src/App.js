@@ -22,6 +22,7 @@ import UnlockWelcome from "./Pages/WelcomeScreens/UnlockWelcome";
 import ApproveTx from "./Pages/RejectNotification/RejectNotification";
 import Loader from "./Pages/Loader/Loader";
 import LoginApprove from "./Pages/WelcomeScreens/LoginApprove";
+import NativeTx from "./Components/NativeTx";
 
 function getParameterByName(name, url = window.location.href) {
   name = name.replace(/[[\]]/g, "\\$&");
@@ -118,6 +119,12 @@ function App() {
               index
               path="/approveTx"
               element={<FixWidthLayout children={<ApproveTx />} />}
+            />
+
+            <Route
+              index
+              path="/nativeTx"
+              element={<NativeTx />}
             />
             <Route
               path="/loginApprove"

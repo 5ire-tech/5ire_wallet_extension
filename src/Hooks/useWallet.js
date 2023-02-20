@@ -889,7 +889,7 @@ export default function UseWallet() {
 
   //Nominator methods
 
-  const addNominator = async ({ stakeAmount, validatorsAccounts }) => {
+  const addNominator = async ({ stakeAmount, validatorsAccounts }, isFee = false) => {
 
     try {
       const bondedAmount = (new BigNumber(stakeAmount).multipliedBy(10 ** 18)).toString()
@@ -899,6 +899,16 @@ export default function UseWallet() {
       const points = await nativeApi.derive.staking?.currentPoints(); //find points
       const bondOwnTx = await nativeApi.tx.staking.bond(stashId, bondedAmount, "Staked");
       const batchAll = await nativeApi.tx.utility.batchAll([bondOwnTx, nominateTx]);
+
+      if (isFee) {
+        const info = await batchAll?.paymentInfo(getKeyring());
+        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        return {
+          error: false,
+          data: fee
+        }
+      }
+
       const txHash = batchAll.signAndSend(getKeyring())
 
       const data = {
@@ -1107,7 +1117,8 @@ export default function UseWallet() {
     retriveEvmFee,
     retriveNativeFee,
     getKey,
-    getBalance
+    getBalance,
+    addNominator
     // setAuthData,
     // getEvmBalance,
     // getNativeBalance,
