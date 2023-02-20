@@ -5,7 +5,7 @@ import {
   loadStore,
   checkTransactions
 } from "./controller";
-// import { setApiReady } from "../Store/reducer/auth";
+import { setNewAccount } from "../Store/reducer/auth";
 import Browser from "webextension-polyfill";
 
 try {
@@ -21,7 +21,7 @@ try {
 
       port.onDisconnect.addListener(function () {
         //handle popup close actions
-        // store.dispatch(setApiReady(false));
+        store.dispatch(setNewAccount(null));
       });
 
     }

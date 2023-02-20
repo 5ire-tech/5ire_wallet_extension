@@ -1,15 +1,15 @@
 import React from "react";
-import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
-import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import InputFieldSimple, { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
-import style from "./style.module.scss";
-import PlaceLogo from "../../Assets/PlaceLog.svg";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import useAuth from "../../Hooks/useAuth";
 import { toast } from "react-toastify";
+import style from "./style.module.scss";
+import useAuth from "../../Hooks/useAuth";
+import PlaceLogo from "../../Assets/PlaceLog.svg";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { setLogin, toggleLoader } from "../../Store/reducer/auth";
+import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
+import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 
 function UnlockWelcome() {
   const navigate = useNavigate();
@@ -46,7 +46,7 @@ function UnlockWelcome() {
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__centerLogo}>
           <div className={style.cardWhite__cardInner__innerLogocontact}>
-            <img src={PlaceLogo} />
+            <img src={PlaceLogo} alt= "placeLogo"/>
             <div className={style.cardWhite__cardInner__innercontact}>
               <h1>Welcome Back!</h1>
               <span>The Decentralized Web Awaits</span>

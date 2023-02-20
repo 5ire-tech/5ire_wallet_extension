@@ -107,7 +107,7 @@ function MenuFooter() {
 
   return (
     <div className={`${style.menuItems} welcomeFooter`}>
-      {path === "wallet" && (
+      {/* {path === "wallet" && (
         <Link
           to="/wallet"
           // onClick={() => setactiveLink("wallet")}
@@ -119,7 +119,7 @@ function MenuFooter() {
           </div>
           <span className={style.menuItems__items__title}>Wallet</span>
         </Link>
-      )}
+      )} */}
       {path === "wallet" && (
         <Link
           to="#"
@@ -229,7 +229,7 @@ function MenuFooter() {
       <Drawer
         title={
           <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            Setting
+            Settings
           </span>
         }
         placement="bottom"

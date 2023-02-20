@@ -35,7 +35,6 @@ export const userState = {
   },
 
   currentNetwork: "Testnet",
-  // currentNetwork: "QA",
 
   accountName: "",
 
@@ -43,12 +42,9 @@ export const userState = {
 
   isLogin: false,
 
-  // passError: false,
-
   connectedSites: [],
-  isLoading: false,
   
-  // isApiReady:false,
+  isLoading: false,
   
 };
 

@@ -11,11 +11,11 @@ import CopyIcon from "../../Assets/CopyIcon.svg";
 import ComplSwap from "../../Assets/tranCompl.svg";
 import FaildSwap from "../../Assets/tranReject.svg";
 import { NATIVE, EVM } from "../../Constants/index";
-import { connectionObj, Connection } from "../../Helper/connection.helper";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import { InputField } from "../../Components/InputField/InputFieldSimple";
+import { connectionObj, Connection } from "../../Helper/connection.helper";
 
 function Swap() {
 
@@ -56,6 +56,9 @@ function Swap() {
   useEffect(() => {
     if (amount) {
       getFee();
+    }else{
+      setGassFee("");
+      setDisable(true);
     }
   }, [amount, toFrom]);
 
@@ -80,6 +83,7 @@ function Swap() {
         setError("");
         return { error: false };
       }
+
     } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase() &&
       toFrom.to.toLowerCase() === EVM.toLowerCase()) {
 
@@ -123,7 +127,7 @@ function Swap() {
                   setTxHash(res.data);
                   setTimeout(() => {
                     getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-                  }, 60000);
+                  }, 40000);
                 }
               }
             } else if (
@@ -166,7 +170,6 @@ function Swap() {
         if (!apiRes?.value) {
 
           // console.log("API RES ::: ", apiRes);
-
           Connection.isExecuting.value = false;
 
           if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase() && amount) {
@@ -176,7 +179,7 @@ function Swap() {
               if (feeRes.data) {
                 setError(feeRes.error);
               } else {
-                toast.error("Error while getting fee!");
+                toast.error("Error while getting fee.");
               }
             } else {
               setGassFee(feeRes.data);
@@ -185,12 +188,11 @@ function Swap() {
             toFrom.from.toLocaleLowerCase() === EVM.toLowerCase()
           ) {
             let feeRes = await retriveEvmFee(apiRes.evmApi, "", amount);
-            // console.log("Fee Res : ", feeRes);
             if (feeRes.error) {
               if (feeRes.data) {
                 setError(feeRes.error);
               } else {
-                toast.error("Error while getting fee!");
+                toast.error("Error while getting fee.");
               }
             } else {
               setGassFee(feeRes.data);
@@ -210,27 +212,41 @@ function Swap() {
 
   const handleOk = () => {
     setIsModalOpen(false);
+    setDisable(true);
     setAmount("");
+    setGassFee("");
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
+    setDisable(true);
     setAmount("");
+    setGassFee("");
+
   };
 
   const faildOk = () => {
     setIsFaildOpen(false);
+    setDisable(true);
+    setAmount("");
+    setGassFee("");
+
   };
 
   const faildCancel = () => {
     setIsFaildOpen(false);
+    setDisable(true);
     setAmount("");
+    setGassFee("");
+
   };
 
   const handleSwapAgain = () => {
     setIsFaildOpen(false);
     setIsModalOpen(false);
+    setDisable(true);
     setAmount("");
+    setGassFee("");
   };
 
   const handleClick = () => {
@@ -241,6 +257,7 @@ function Swap() {
 
     setAmount("");
     setGassFee("");
+    
   };
 
   const handleCopy = (e) => {

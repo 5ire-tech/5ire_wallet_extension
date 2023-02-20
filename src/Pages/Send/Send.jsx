@@ -43,6 +43,7 @@ function Send() {
       getFee();
     } else {
       setGassFee("");
+      setDisable(true);
     }
   }, [data.to, data.amount]);
 
@@ -61,7 +62,7 @@ function Send() {
       return { error: true };
 
     } else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-     
+
       if (Number(data.amount) >= Number(balance.evmBalance)) {
         setErr((p) => ({ ...p, amount: "Amount is bigger than available balance." }));
         return { error: true };
@@ -70,7 +71,7 @@ function Send() {
         return { error: false };
       }
     } else if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
-  
+
       if (Number(data.amount) >= Number(balance.nativeBalance)) {
         setErr((p) => ({ ...p, amount: "Amount is bigger than available balance." }));
         return { error: true };
@@ -171,14 +172,12 @@ function Send() {
   };
 
   const handleChange = (e) => {
-    setGassFee("");
     setData((p) => ({
       ...p,
       [e.target.name]: (e.target.value).trim(),
     }));
     setGassFee("");
   };
-
 
   const handleApprove = async () => {
     try {
@@ -218,7 +217,7 @@ function Send() {
                 setIsModalOpen(true);
                 setTimeout(() => {
                   getBalance(apiRes.evmApi, apiRes.nativeApi, true)
-                }, 30000);
+                }, 40000);
               }
             }
           }
@@ -234,18 +233,23 @@ function Send() {
 
   const activeSend = (e) => {
     setActiveTab(e.target.name);
-    setData({ to: "", amount: "" });
     setGassFee("");
+    setDisable(true);
     setErr({ to: "", amount: "" });
+    setData({ to: "", amount: "" });
   };
 
   const handleOk = () => {
+    setDisable(true);
+    setGassFee("");
     setIsModalOpen(false);
     setData({ to: "", amount: "" });
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
+    setDisable(true);
+    setGassFee("");
     setData({ to: "", amount: "" });
   };
 
@@ -256,16 +260,24 @@ function Send() {
 
   const handleSwapAgain = () => {
     setIsFaildOpen(false);
+    setDisable(true);
+    setGassFee("");
     setIsModalOpen(false);
     setData({ to: "", amount: "" });
   };
 
   const faildOk = () => {
+    setDisable(true);
     setIsFaildOpen(false);
+    setGassFee("");
+    setData({ to: "", amount: "" });
   };
 
   const faildCancel = () => {
     setIsFaildOpen(false);
+    setDisable(true);
+    setGassFee("");
+    setData({ to: "", amount: "" });
   };
 
   return (
@@ -363,7 +375,7 @@ function Send() {
             />
 
             <div className="footerbuttons">
-              <ButtonComp text={"Send Again"} onClick={handleSwapAgain} />
+              <ButtonComp text={"Transfer Again"} onClick={handleSwapAgain} />
             </div>
           </div>
         </div>

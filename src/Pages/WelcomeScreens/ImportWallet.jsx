@@ -14,45 +14,63 @@ function ImportWallet() {
   const { accounts, pass } = useSelector(state => state.auth);
   const { importAccount } = useWallet();
   const [data, setData] = useState({ accName: "", key: "" });
-  const [warrning, setWarrning] = useState("");
+  const [warrning, setWarrning] = useState({ acc: "", key: "" });
   const { isLogin } = useSelector((state) => state.auth);
 
   const handleChange = (e) => {
     setData((p) => ({ ...p, [e.target.name]: (e.target.value) }));
-    setWarrning("");
   };
 
-  const handleClick = async () => {
-
-    if (data.accName.trim().length === 0) {
-      setWarrning("Please enter your account name!");
+  const validateAccName = () => {
+    if (data.accName.trim().length < 2 || data.accName.trim().length >= 16) {
+      setWarrning(p => ({ ...p, acc: "Please input account name between " + 2 + " and " + 15 + " characters." }));
     }
-    else if (data.key.length === 0 )
-      setWarrning("Please enter your secret mnemonic!");
     else {
-      const match = accounts.find(e => {
-        if (e.accountName === data.accName) {
-          setWarrning("Account with this name allready exists!");
-          return true;
-        }
-        else if (decryptor(e.temp1m, pass) === data.key) {
-          setWarrning("Account with this mnemonic allready exists!");
-          return true
-        }
-        else
-          return false;
-      });
+      setWarrning(p => ({ ...p, acc: "" }));
+    }
+  }
 
-      if (!match) {
-        let res = await importAccount(data);
-        if (res.error) setWarrning(res.data);
-        else {
-          setWarrning("");
-          if (isLogin) navigate("/wallet");
-          else navigate("/setPassword");
+  const validateKey = () => {
+    if (data.key.length === 0) {
+      setWarrning(p => ({ ...p, key: "This field is required." }));
+    }
+    else {
+      setWarrning(p => ({ ...p, key: "" }));
+    }
+  }
+
+  const handleClick = async () => {
+    if (data.key.length === 0) {
+      setWarrning(p => ({ ...p, key: "This field is required." }));
+    } else if (data.accName.trim().length === 0) {
+      setWarrning(p => ({ ...p, acc: "This field is required." }))
+    } else {
+      if (!warrning.key && !warrning.acc) {
+
+        const match = accounts.find(e => {
+          if (e.accountName === data.accName) {
+            setWarrning(p => ({ ...p, acc: "Account with this name allready exists." }));
+            return true;
+          }
+          else if (decryptor(e.temp1m, pass) === data.key) {
+            setWarrning(p => ({ ...p, key: "Account with this mnemonic allready exists." }));
+            return true
+          }
+          else
+            return false;
+        });
+
+        if (!match) {
+          let res = await importAccount(data);
+          if (res.error) setWarrning(p => ({ ...p, key: res.data }));
+          else {
+            setWarrning({ acc: "", key: "" });
+            if (isLogin) navigate("/wallet");
+            else navigate("/setPassword");
+          }
         }
+
       }
-
     }
   };
 
@@ -69,14 +87,15 @@ function ImportWallet() {
           <h1>Import Account </h1>
         </div>
         <div className={style.cardWhite__linkOuter}>
-          <p style={{ color: "red" }}>{warrning}</p>
           <InputFieldOnly
             placeholder={"Enter Account name"}
             placeholderBaseColor={true}
             coloredBg={true}
             name="accName"
             onChange={handleChange}
+            keyUp={validateAccName}
           />
+          <p style={{ color: "red" }}>{warrning.acc}</p>
           <InputFieldOnly
             type="password"
             placeholder={"Enter mnemonic here"}
@@ -84,7 +103,10 @@ function ImportWallet() {
             coloredBg={true}
             name="key"
             onChange={handleChange}
+            keyUp={validateKey}
           />
+          <p style={{ color: "red" }}>{warrning.key}</p>
+
         </div>
         <div className={style.setPassword__footerbuttons}>
           <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancle} />
