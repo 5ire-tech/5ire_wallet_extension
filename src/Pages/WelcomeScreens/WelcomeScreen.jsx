@@ -5,15 +5,15 @@ import { Link } from "react-router-dom";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 function WelcomeScreen() {
   return (
-    <div className={style.cardWhite}>
-      <MenuRestofHeaders logosilver={true} title="5ire Non-Custodial Wallet" />
+    <div className={`${style.cardWhite} ${style.cardWhiteCenterd}`}>
+      {/* <MenuRestofHeaders logosilver={true} title="5ire Non-Custodial Wallet" /> */}
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__centerLogo}>
           <div className={style.cardWhite__cardInner__innerLogocontact}>
             <img src={PlaceLogo} alt="placeLogo" />
             <div className={style.cardWhite__cardInner__innercontact}>
               <h1>5irechain Wallet</h1>
-              <p>The Decentralized Wallet</p>
+              {/* <p>The Decentralized Wallet</p> */}
             </div>
           </div>
         </div>

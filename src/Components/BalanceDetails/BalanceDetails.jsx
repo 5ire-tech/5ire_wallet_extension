@@ -6,9 +6,9 @@ import useWallet from "../../Hooks/useWallet";
 import { useLocation } from "react-router-dom";
 import { shortner } from "../../Helper/helper";
 import CopyIcon from "../../Assets/CopyIcon.svg";
-import WalletQr from "../../Assets/walletqr.png";
+import WalletQr from "../../Assets/QRicon.svg";
 import DarkLogo from "../../Assets/DarkLogo.svg";
-import ModelLogo from "../../Assets/modalLogo.svg";
+// import ModelLogo from "../../Assets/modalLogo.svg";
 import React, { useEffect, useState } from "react";
 import GrayCircle from "../../Assets/graycircle.svg";
 import ModalCustom from "../ModalCustom/ModalCustom";
@@ -218,7 +218,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                       </h3>
                     </div>
                     <div className={style.balanceDetails__innerBalance__walletQa}>
-                      <img onClick={showModal} src={WalletQr} />
+                      <img onClick={showModal} src={WalletQr} width={30} height={30} />
                     </div>
                   </div>
                   <div
@@ -234,7 +234,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                       </h3>
                     </div>
                     <div className={style.balanceDetails__innerBalance__walletQa}>
-                      <img onClick={evmModal} src={WalletQr} />
+                      <img onClick={evmModal} src={WalletQr} width={30} height={30} />
                     </div>
                   </div>
                 </div>
@@ -247,7 +247,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
             >
               <div className={style.balanceDetails__nativemodal}>
                 <div className={style.balanceDetails__nativemodal__innerContact}>
-                  <img src={ModelLogo} alt="logo" />
+                  <img src={DarkLogo} alt="logo" />
                   <p className={style.balanceDetails__nativemodal__title}>
                     5ire Native Chain
                   </p>
@@ -290,7 +290,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
             >
               <div className={style.balanceDetails__nativemodal}>
                 <div className={style.balanceDetails__nativemodal__innerContact}>
-                  <img src={ModelLogo} />
+                  <img src={DarkLogo} />
                   <p className={style.balanceDetails__nativemodal__title}>
                     5ire EVM Chain
                   </p>

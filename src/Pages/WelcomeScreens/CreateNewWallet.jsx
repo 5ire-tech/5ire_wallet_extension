@@ -57,11 +57,11 @@ function CreateNewWallet() {
 
   return (
     <div className={style.cardWhite}>
-      <MenuRestofHeaders logosilver={true} title="5ire Non-Custodial Wallet" />
+      <MenuRestofHeaders logosilver={true} title="5irechain Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Create New Wallet</h1>
-          <p>The Decentralized Wallet</p>
+          {/* <p>The Decentralized Wallet</p> */}
         </div>
         <div className={style.cardWhite__linkOuter}>
           <InputFieldOnly

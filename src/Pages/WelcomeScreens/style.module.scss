@@ -3,6 +3,13 @@
 .cardWhite {
   background-color: $blue-08132C;
   // padding: 36px 24px 26px;
+  &.cardWhiteCenterd {
+    min-height: 100vh;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+  }
 
   // Welcome Screen Css Starts here//
   &__title {
@@ -452,4 +459,13 @@
   font-size: 13px;
   font-weight: bold;
   line-height: 16px;
+}
+.copyButton {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 18px 16px;
+  button {
+    min-width: 90px;
+    font-size: 12px;
+  }
 }
