@@ -5,6 +5,9 @@ input::placeholder {
 .inputPassword {
   border-radius: 12px !important;
   border: 1px solid #404058 !important;
+  span {
+    cursor: pointer !important;
+  }
 }
 .inputSimple {
   background-color: $blue-08132C;
