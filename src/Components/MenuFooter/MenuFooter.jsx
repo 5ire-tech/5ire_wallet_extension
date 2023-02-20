@@ -229,7 +229,7 @@ function MenuFooter() {
       <Drawer
         title={
           <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            Setting
+            Settings
           </span>
         }
         placement="bottom"

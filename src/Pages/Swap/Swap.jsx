@@ -211,26 +211,35 @@ function Swap() {
   const handleOk = () => {
     setIsModalOpen(false);
     setAmount("");
+    setGassFee("");
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
     setAmount("");
+    setGassFee("");
+
   };
 
   const faildOk = () => {
     setIsFaildOpen(false);
+    setAmount("");
+    setGassFee("");
+
   };
 
   const faildCancel = () => {
     setIsFaildOpen(false);
     setAmount("");
+    setGassFee("");
+
   };
 
   const handleSwapAgain = () => {
     setIsFaildOpen(false);
     setIsModalOpen(false);
     setAmount("");
+    setGassFee("");
   };
 
   const handleClick = () => {
@@ -241,6 +250,7 @@ function Swap() {
 
     setAmount("");
     setGassFee("");
+    
   };
 
   const handleCopy = (e) => {

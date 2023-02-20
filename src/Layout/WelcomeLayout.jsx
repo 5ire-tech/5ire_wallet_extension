@@ -17,17 +17,17 @@ function WelcomeLayout({ children }) {
         </div> */}
         {path === "beforebegin" && (
           <div className={style.cardWhite__numberingSec}>
-            <p>1 of 3</p>
+            {/* <p>1 of 3</p> */}
           </div>
         )}
         {path === "createwalletchain" && (
           <div className={style.cardWhite__numberingSec}>
-            <p>2 of 3</p>
+            {/* <p>2 of 3</p> */}
           </div>
         )}
         {path === "setPassword" && (
           <div className={style.cardWhite__numberingSec}>
-            <p>3 of 3</p>
+            {/* <p>3 of 3</p> */}
           </div>
         )}
         <Content className="WelcomeLayout__content">{children}</Content>

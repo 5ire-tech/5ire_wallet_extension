@@ -363,7 +363,7 @@ function Send() {
             />
 
             <div className="footerbuttons">
-              <ButtonComp text={"Send Again"} onClick={handleSwapAgain} />
+              <ButtonComp text={"Transfer Again"} onClick={handleSwapAgain} />
             </div>
           </div>
         </div>
