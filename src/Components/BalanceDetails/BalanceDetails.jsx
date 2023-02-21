@@ -247,7 +247,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
             >
               <div className={style.balanceDetails__nativemodal}>
                 <div className={style.balanceDetails__nativemodal__innerContact}>
-                  <img src={DarkLogo} alt="logo" />
+                  <img src={DarkLogo} alt="logo" width={55} height={55} />
                   <p className={style.balanceDetails__nativemodal__title}>
                     5ire Native Chain
                   </p>
@@ -290,7 +290,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
             >
               <div className={style.balanceDetails__nativemodal}>
                 <div className={style.balanceDetails__nativemodal__innerContact}>
-                  <img src={DarkLogo} />
+                  <img src={DarkLogo} width={55} height={55} />
                   <p className={style.balanceDetails__nativemodal__title}>
                     5ire EVM Chain
                   </p>
