@@ -1,7 +1,6 @@
 import Browser from "webextension-polyfill";
 import { WindowPostMessageStream } from "./stream";
 import { CONTENT_SCRIPT, INPAGE } from "./constants";
-
 const contentStream = new WindowPostMessageStream({
   name: CONTENT_SCRIPT,
   target: INPAGE,
@@ -86,3 +85,25 @@ const messageFromExtensionUI = (message, sender, cb) => {
  * Fired when a message is sent from either an extension process or a content script.
  */
 Browser.runtime.onMessage.addListener(messageFromExtensionUI);
+
+
+
+// These require calls need to use require to be statically recognized by browserify
+// const path = require('path');
+
+function injectScript() {
+  try {
+    const container = document.head || document.documentElement;
+    const scriptTag = document.createElement('script');
+    scriptTag.setAttribute('async', 'false');
+    // scriptTag.textContent = content;
+    scriptTag.setAttribute('src', Browser.runtime.getURL('static/js/injected.js'));
+
+    container.insertBefore(scriptTag, container.children[0]);
+    container.removeChild(scriptTag);
+  } catch (error) {
+    console.error('MetaMask: Provider injection failed.', error);
+  }
+}
+
+injectScript()
