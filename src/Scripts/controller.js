@@ -88,10 +88,10 @@ export async function initScript() {
         matches: ["file://*/*", "http://*/*", "https://*/*"],
         js: ["./static/js/injected.js"],
         runAt: "document_start",
+        world: "MAIN",
       },
     ]);
   } catch (err) {
-
     /**
      * An error occurs when app-init.js is reloaded. Attempts to avoid the duplicate script error:
      * 1. registeringContentScripts inside runtime.onInstalled - This caused a race condition
@@ -245,3 +245,8 @@ export async function checkTransactions(txData) {
     // console.log("Error while updating the transaction: ", err);
   }
 }
+
+
+
+
+
