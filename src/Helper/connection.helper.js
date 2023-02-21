@@ -93,10 +93,14 @@ export class Connection {
 
         //connection with native (Polkadot)
         if (networkEndpoint.startsWith("ws")) {
-            connection = await ApiPromise.create({ provider: new WsProvider(networkEndpoint) });
+            connection = await ApiPromise.create({ provider: new WsProvider(networkEndpoint),
+                noInitWarn: true
+            });
         }
         else if (networkEndpoint.startsWith("http")) {
-            connection = await ApiPromise.create({ provider: new HttpProvider(networkEndpoint) });
+            connection = await ApiPromise.create({ provider: new HttpProvider(networkEndpoint),
+            noInitWarn: true
+            });
         }
 
         //bind events for failure and reconnection
