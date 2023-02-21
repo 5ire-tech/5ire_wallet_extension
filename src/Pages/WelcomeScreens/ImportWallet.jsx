@@ -88,7 +88,7 @@ function ImportWallet() {
 
   return (
     <div className={style.cardWhite}>
-      <MenuRestofHeaders logosilver={true} title="5ire Non-Custodial Wallet" />
+      <MenuRestofHeaders logosilver={true} title="5irechain Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Import Account </h1>
