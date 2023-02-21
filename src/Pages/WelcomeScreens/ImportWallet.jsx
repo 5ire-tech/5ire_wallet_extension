@@ -11,65 +11,72 @@ import { decryptor } from "../../Helper/CryptoHelper";
 
 function ImportWallet() {
   const navigate = useNavigate();
-  const { accounts, pass } = useSelector(state => state.auth);
+  const { accounts, pass } = useSelector((state) => state.auth);
   const { importAccount } = useWallet();
   const [data, setData] = useState({ accName: "", key: "" });
   const [warrning, setWarrning] = useState({ acc: "", key: "" });
   const { isLogin } = useSelector((state) => state.auth);
 
   const handleChange = (e) => {
-    setData((p) => ({ ...p, [e.target.name]: (e.target.value) }));
+    setData((p) => ({ ...p, [e.target.name]: e.target.value }));
   };
 
   const validateAccName = () => {
     if (data.accName.trim().length < 2 || data.accName.trim().length >= 16) {
-      setWarrning(p => ({ ...p, acc: "Please input account name between " + 2 + " and " + 15 + " characters." }));
+      setWarrning((p) => ({
+        ...p,
+        acc:
+          "Please input account name between " +
+          2 +
+          " and " +
+          15 +
+          " characters.",
+      }));
+    } else {
+      setWarrning((p) => ({ ...p, acc: "" }));
     }
-    else {
-      setWarrning(p => ({ ...p, acc: "" }));
-    }
-  }
+  };
 
   const validateKey = () => {
     if (data.key.length === 0) {
-      setWarrning(p => ({ ...p, key: "This field is required." }));
+      setWarrning((p) => ({ ...p, key: "This field is required." }));
+    } else {
+      setWarrning((p) => ({ ...p, key: "" }));
     }
-    else {
-      setWarrning(p => ({ ...p, key: "" }));
-    }
-  }
+  };
 
   const handleClick = async () => {
     if (data.key.length === 0) {
-      setWarrning(p => ({ ...p, key: "This field is required." }));
+      setWarrning((p) => ({ ...p, key: "This field is required." }));
     } else if (data.accName.trim().length === 0) {
-      setWarrning(p => ({ ...p, acc: "This field is required." }))
+      setWarrning((p) => ({ ...p, acc: "This field is required." }));
     } else {
       if (!warrning.key && !warrning.acc) {
-
-        const match = accounts.find(e => {
+        const match = accounts.find((e) => {
           if (e.accountName === data.accName) {
-            setWarrning(p => ({ ...p, acc: "Account with this name allready exists." }));
+            setWarrning((p) => ({
+              ...p,
+              acc: "Account with this name allready exists.",
+            }));
             return true;
-          }
-          else if (decryptor(e.temp1m, pass) === data.key) {
-            setWarrning(p => ({ ...p, key: "Account with this mnemonic allready exists." }));
-            return true
-          }
-          else
-            return false;
+          } else if (decryptor(e.temp1m, pass) === data.key) {
+            setWarrning((p) => ({
+              ...p,
+              key: "Account with this mnemonic allready exists.",
+            }));
+            return true;
+          } else return false;
         });
 
         if (!match) {
           let res = await importAccount(data);
-          if (res.error) setWarrning(p => ({ ...p, key: res.data }));
+          if (res.error) setWarrning((p) => ({ ...p, key: res.data }));
           else {
             setWarrning({ acc: "", key: "" });
             if (isLogin) navigate("/wallet");
             else navigate("/setPassword");
           }
         }
-
       }
     }
   };
@@ -87,6 +94,7 @@ function ImportWallet() {
           <h1>Import Account </h1>
         </div>
         <div className={style.cardWhite__linkOuter}>
+          <div>
           <InputFieldOnly
             placeholder={"Enter Account name"}
             placeholderBaseColor={true}
@@ -95,7 +103,9 @@ function ImportWallet() {
             onChange={handleChange}
             keyUp={validateAccName}
           />
-          <p style={{ color: "red" }}>{warrning.acc}</p>
+          <p className="errorText">{warrning.acc}</p>
+          </div>
+          <div>
           <InputFieldOnly
             type="password"
             placeholder={"Enter mnemonic here"}
@@ -105,8 +115,8 @@ function ImportWallet() {
             onChange={handleChange}
             keyUp={validateKey}
           />
-          <p style={{ color: "red" }}>{warrning.key}</p>
-
+          <p className="errorText">{warrning.key}</p>
+          </div>
         </div>
         <div className={style.setPassword__footerbuttons}>
           <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancle} />

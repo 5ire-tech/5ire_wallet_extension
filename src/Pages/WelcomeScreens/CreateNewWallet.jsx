@@ -21,34 +21,31 @@ function CreateNewWallet() {
 
   const validateAccName = () => {
     if (data.trim().length < 2 || data.trim().length >= 19) {
-      setWarrning("Please input account name between " + 2 + " and " + 18 + " characters.");
-    }
-    else {
+      setWarrning(
+        "Please input account name between " + 2 + " and " + 18 + " characters."
+      );
+    } else {
       setWarrning("");
     }
-  }
+  };
   const handleClick = () => {
-
     if (data.trim().length === 0) {
-      setWarrning("This field is required.")
-    }
-    else {
+      setWarrning("This field is required.");
+    } else {
       if (!warrning) {
-        const match = accounts.find(e => {
+        const match = accounts.find((e) => {
           if (e.accountName === data) {
             setWarrning("Account with this name is allready exists!");
             return true;
-          }
-          else
-            return false;
+          } else return false;
         });
         if (!match) {
           dispatch(setAccountName(data.trim()));
           navigate("/beforebegin");
         }
       }
-    };
-  }
+    }
+  };
 
   const handleCancle = () => {
     if (isLogin) navigate("/wallet");
@@ -64,16 +61,18 @@ function CreateNewWallet() {
           {/* <p>The Decentralized Wallet</p> */}
         </div>
         <div className={style.cardWhite__linkOuter}>
-          <InputFieldOnly
-            value={data}
-            placeholder={"Enter Wallet Name"}
-            placeholderBaseColor={true}
-            coloredBg={true}
-            name="accountName"
-            onChange={handleChange}
-            keyUp={validateAccName}
-          />
-          <p style={{ color: "red" }}>{warrning}</p>
+          <div>
+            <InputFieldOnly
+              value={data}
+              placeholder={"Enter Wallet Name"}
+              placeholderBaseColor={true}
+              coloredBg={true}
+              name="accountName"
+              onChange={handleChange}
+              keyUp={validateAccName}
+            />
+            <p className="errorText">{warrning}</p>
+          </div>
         </div>
         <div className={style.setPassword__footerbuttons}>
           <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancle} />

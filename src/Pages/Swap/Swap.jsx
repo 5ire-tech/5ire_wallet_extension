@@ -324,7 +324,7 @@ function Swap() {
                 </span>
               }
             />
-            <p style={{ color: "red" }}>{error}</p>
+            <p className="errorText">{error}</p>
 
             {/* <span className={style.swap__spanbalanceText}>
               Balance 00.0000 5IRE
