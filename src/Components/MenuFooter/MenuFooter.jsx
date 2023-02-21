@@ -202,7 +202,7 @@ function MenuFooter() {
         ))}
         <AccountSetting
           img={Createaccount}
-          title="Create New Account"
+          title="Create a New Account"
           onClick={hanldeCreateNewAcc}
         />
         <AccountSetting
