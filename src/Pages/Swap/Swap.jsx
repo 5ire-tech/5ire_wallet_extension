@@ -8,8 +8,8 @@ import useWallet from "../../Hooks/useWallet";
 import { shortner } from "../../Helper/helper";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import CopyIcon from "../../Assets/CopyIcon.svg";
-import ComplSwap from "../../Assets/tranCompl.svg";
-import FaildSwap from "../../Assets/tranReject.svg";
+import ComplSwap from "../../Assets/DarkLogo.svg";
+import FaildSwap from "../../Assets/DarkLogo.svg";
 import { NATIVE, EVM } from "../../Constants/index";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
@@ -383,7 +383,7 @@ function Swap() {
       >
         <div className="swapsendModel">
           <div className="innerContact">
-            <img src={ComplSwap} alt="swapIcon" />
+            <img src={ComplSwap} alt="swapIcon"  width={127} height={127} />
             <h2 className="title">Swap Completed</h2>
             <p className="transId">Your Swapped Transaction ID</p>
             <span className="address">
@@ -411,7 +411,7 @@ function Swap() {
       >
         <div className="swapsendModel">
           <div className="innerContact">
-            <img src={FaildSwap} alt="swapFaild" />
+            <img src={FaildSwap} alt="swapFaild" width={127} height={127} />
             <h2 className="title">Swap Failed!</h2>
             <p className="transId">{swapErr}</p>
 

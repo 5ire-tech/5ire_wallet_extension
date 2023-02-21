@@ -4,9 +4,9 @@ import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
-import ComplSwap from "../../Assets/tranCompl.svg";
+import ComplSwap from "../../Assets/DarkLogo.svg";
 import useWallet from "../../Hooks/useWallet";
-import FaildSwap from "../../Assets/tranReject.svg";
+import FaildSwap from "../../Assets/DarkLogo.svg";
 import { shortner } from "../../Helper/helper";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import { toast } from "react-toastify";
@@ -363,7 +363,7 @@ function Send() {
       >
         <div className="swapsendModel">
           <div className="innerContact">
-            <img src={ComplSwap} alt="swapImage" />
+            <img src={ComplSwap} alt="swapImage"  width={127} height={127} />
             <h2 className="title">Transfer Completed</h2>
             <p className="transId">Your Transaction ID</p>
             <span className="address">{shortner(txHash)}</span>
@@ -388,7 +388,7 @@ function Send() {
       >
         <div className="swapsendModel">
           <div className="innerContact">
-            <img src={FaildSwap} alt="swapFaild" />
+            <img src={FaildSwap} alt="swapFaild"  width={127} height={127} />
             <h2 className="title">Transfer Failed!</h2>
             <p className="transId">{sendError}</p>
 

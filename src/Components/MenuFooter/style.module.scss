@@ -3,7 +3,7 @@
   padding: 24px 28px;
   box-shadow: 0px 3px 8px #223f7017;
   //   border: 1px solid #c4d7f8;
-  background-color: #0F2046;
+  background-color: #0f2046;
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -32,59 +32,75 @@
     &__img {
       // filter: grayscale(1);
     }
-    span{
-      color: #00AEEF;
+    span {
+      color: #00aeef;
     }
   }
   &__needHelp {
     width: 100%;
-    padding: 16px 37px ;
-    p{
-      color: #8FA2B7;
+    padding: 16px 37px;
+    p {
+      color: #8fa2b7;
     }
-    a{
+    a {
       cursor: pointer;
-      &:hover{
+      &:hover {
         text-decoration: underline;
       }
     }
   }
-  &__cancleContinue{
+  &__cancleContinue {
     display: flex;
     justify-content: space-between;
     width: 100%;
     gap: 67px;
     border-top: 1px solid #404058;
-    padding: 16px 37px ;
+    padding: 16px 37px;
   }
 }
 
-.sttings{
+.sttings {
   display: flex;
   justify-content: space-between;
   background-color: $baseColor-Text2;
   padding: 14px 16px;
   align-items: center;
   border-radius: 10px;
-  &__left{
+  &__left {
     display: flex;
     gap: 12px;
     align-items: center;
-    &__textsTop{
+    &__textsTop {
       font-size: 14px;
       font-weight: 400;
       margin: 0;
       color: #fff;
     }
   }
-  &__right{
-    img{
-     margin-right: 25px;
+  &__right {
+    img {
+      margin-right: 25px;
     }
   }
 }
 
-.noTxn{
+.noTxn {
   color: white;
   text-align: center;
+}
+.walletIconBorder {
+  background-image: url("../../Assets/PNG/wallet.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 12px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  img {
+    width: 16px;
+    height: 14px;
+  }
 }

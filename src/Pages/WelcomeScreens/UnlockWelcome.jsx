@@ -42,14 +42,14 @@ function UnlockWelcome() {
   };
   return (
     <div className={style.cardWhite}>
-      <MenuRestofHeaders logosilver={true} title="5ire Non-Custodial Wallet" />
+      <MenuRestofHeaders logosilver={false} title="5irechain Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__centerLogo}>
           <div className={style.cardWhite__cardInner__innerLogocontact}>
             <img src={PlaceLogo} alt= "placeLogo"/>
             <div className={style.cardWhite__cardInner__innercontact}>
               <h1>Welcome Back!</h1>
-              <span>The Decentralized Web Awaits</span>
+              {/* <span>The Decentralized Web Awaits</span> */}
             </div>
           </div>
         </div>
