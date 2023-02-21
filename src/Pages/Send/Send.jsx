@@ -64,7 +64,7 @@ function Send() {
     } else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
       if (Number(data.amount) >= Number(balance.evmBalance)) {
-        setErr((p) => ({ ...p, amount: "Amount is bigger than available balance." }));
+        setErr((p) => ({ ...p, amount: "Insufficent balance." }));
         return { error: true };
       } else {
         setErr((p) => ({ ...p, amount: "" }));
@@ -73,7 +73,7 @@ function Send() {
     } else if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
 
       if (Number(data.amount) >= Number(balance.nativeBalance)) {
-        setErr((p) => ({ ...p, amount: "Amount is bigger than available balance." }));
+        setErr((p) => ({ ...p, amount: "Insufficent balance." }));
         return { error: true };
       } else {
         setErr((p) => ({ ...p, amount: "" }));

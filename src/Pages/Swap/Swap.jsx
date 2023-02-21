@@ -77,7 +77,7 @@ function Swap() {
       toFrom.to.toLowerCase() === NATIVE.toLowerCase()) {
 
       if (Number(amount) >= Number(balance.evmBalance)) {
-        setError("Amount is bigger than available balance.");
+        setError("Insufficent balance.");
         return { error: true };
       } else {
         setError("");
@@ -88,7 +88,7 @@ function Swap() {
       toFrom.to.toLowerCase() === EVM.toLowerCase()) {
 
       if (Number(amount) >= Number(balance.nativeBalance)) {
-        setError("Amount is bigger than available balance.");
+        setError("Insufficent balance.");
         return { error: true };
       } else {
         setError("");
