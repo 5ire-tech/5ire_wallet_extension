@@ -2,7 +2,6 @@
   "name": "5ire-wallet-extension",
   "version": "0.1.0",
   "private": true,
-
   "dependencies": {
     "@lottiefiles/react-lottie-player": "^3.5.0",
     "@metamask/safe-event-emitter": "^2.0.0",
@@ -52,8 +51,8 @@
     "watch": "node ./scripts/watch",
     "start": "react-scripts start",
     "build": "INLINE_RUNTIME_CHUNK=false BUILD_TYPE=CHROME craco build",
-    "build:chrome": "INLINE_RUNTIME_CHUNK=false BUILD_TYPE=CHROME GENERATE_SOURCEMAP=false craco build",
-    "build:firefox": "INLINE_RUNTIME_CHUNK=false BUILD_TYPE=FIREFOX GENERATE_SOURCEMAP=false craco build",
+    "build:chrome": "GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false BUILD_TYPE=CHROME GENERATE_SOURCEMAP=false craco build",
+    "build:firefox": "GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false BUILD_TYPE=FIREFOX GENERATE_SOURCEMAP=false craco build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -80,5 +79,4 @@
     "json-loader": "^0.5.7",
     "webpack": "^5.75.0"
   }
-
 }
