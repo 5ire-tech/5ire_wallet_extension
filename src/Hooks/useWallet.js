@@ -565,10 +565,13 @@ export default function UseWallet() {
                 type: TX_TYPE?.SWAP,
                 amount: amount,
                 txHash: { mainHash: signHash, hash: signRes.toHex() },
-                status: STATUS.SUCCESS
+                status: STATUS.PENDING
               },
               index: getAccId(currentAccount.id),
             };
+            if(signRes){
+              dataToDispatch.data.status=STATUS.SUCCESS
+            }
 
             //send the transaction notification
 
