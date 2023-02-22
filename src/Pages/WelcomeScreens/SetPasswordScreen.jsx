@@ -22,8 +22,12 @@ export default function SetPasswordScreen() {
   const [pass, setPass] = useState({ pass: "", confirmPass: "" });
 
   useEffect(()=>{
+    console.log(pass.confirmPass === pass.pass);
     if (pass.confirmPass === pass.pass) {
       setconfirmError("");
+    }else{
+      if(pass.confirmPass !== "")
+      setconfirmError("Passwords do not match.")
     }
   },[pass.pass,pass.confirmPass])
 
