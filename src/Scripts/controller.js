@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { wrapStore } from "webext-redux";
+import { wrapStore } from "./webext-redux/dist/webext-redux";
 import Browser from "webextension-polyfill";
 import { PORT_NAME } from "../Constants";
 import logger from "redux-logger";
@@ -150,6 +150,7 @@ export class Controller {
     const isEthReq =
       data?.method === "eth_requestAccounts" ||
       data?.method === "eth_accounts";
+
     const isExist = state.auth.connectedSites.find(
       (st) => st.origin === data.message?.origin
     );

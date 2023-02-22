@@ -5,7 +5,7 @@ import App from "./App";
 // import reportWebVitals from "./reportWebVitals";
 import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
-import { Store } from "webext-redux";
+import { Store } from "./Scripts/webext-redux/dist/webext-redux";
 import { CONNECTION_NAME, PORT_NAME } from "./Constants";
 import reduxStore from "./Store/store";
 import browser from "webextension-polyfill";
