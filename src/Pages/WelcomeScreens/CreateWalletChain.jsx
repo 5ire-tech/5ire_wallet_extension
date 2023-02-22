@@ -57,7 +57,7 @@ function CreateWalletChain() {
   return (
     <div className={style.cardWhite}>
       <div className={style.cardWhite__beginText}>
-        <h1>Create New Wallet</h1>
+        <h1>Create a New Wallet</h1>
       </div>
       <div className={style.cardWhite__addressInput}>
         <label>EVM Chain Address:</label>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import style from "./style.module.scss";
 import { toast } from "react-toastify";
 import useAuth from "../../Hooks/useAuth";
@@ -20,6 +20,16 @@ export default function SetPasswordScreen() {
   const [confirmError, setconfirmError] = useState("");
   const { isLogin } = useSelector((state) => state.auth);
   const [pass, setPass] = useState({ pass: "", confirmPass: "" });
+
+  useEffect(()=>{
+    console.log(pass.confirmPass === pass.pass);
+    if (pass.confirmPass === pass.pass) {
+      setconfirmError("");
+    }else{
+      if(pass.confirmPass !== "")
+      setconfirmError("Passwords do not match.")
+    }
+  },[pass.pass,pass.confirmPass])
 
   const validatePass = () => {
     const uppercaseRegExp = /(?=.*?[A-Z])/;

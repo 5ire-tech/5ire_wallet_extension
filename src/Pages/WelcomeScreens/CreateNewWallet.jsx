@@ -57,7 +57,7 @@ function CreateNewWallet() {
       <MenuRestofHeaders logosilver={true} title="5irechain Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
-          <h1>Create New Wallet</h1>
+          <h1>Create a New Wallet</h1>
           {/* <p>The Decentralized Wallet</p> */}
         </div>
         <div className={style.cardWhite__linkOuter}>
