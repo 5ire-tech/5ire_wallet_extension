@@ -50,6 +50,8 @@ injectedStream.on("data", (data) => {
 
       if (fireProvider.conntectMethods.find(item => item === handler?.method)) {
         fireProvider.injectSelectedAccount(data?.response?.evmAddress || data?.response?.result[0])
+      } else if (handler.method === "disconnect") {
+        fireProvider.injectSelectedAccount(null);
       }
       if (handler?.isFull) {
         const res = {

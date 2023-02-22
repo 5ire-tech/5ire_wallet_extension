@@ -23,6 +23,7 @@ contentStream.on("data", async (data) => {
       case "connect":
       case "eth_requestAccounts":
       case "eth_accounts":
+      case "disconnect":
         Browser.runtime.sendMessage(data);
         break;
 

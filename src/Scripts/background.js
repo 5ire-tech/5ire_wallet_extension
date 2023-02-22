@@ -77,6 +77,9 @@ try {
       case "eth_accounts":
         await controller.handleConnect(data);
         break;
+      case "disconnect":
+        await controller.handleDisconnect(data);
+        break;
       case "eth_sendTransaction":
         await controller.handleEthTransaction(data);
         break;

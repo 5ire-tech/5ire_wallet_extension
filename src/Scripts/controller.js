@@ -8,7 +8,8 @@ import authReducer, {
   setUIdata,
   setLogin,
   toggleLoader,
-  updateTxHistory
+  updateTxHistory,
+  toggleSite
 } from "../Store/reducer/auth";
 import NotificationManager from "./platform";
 import { isManifestV3 } from "./utils";
@@ -174,6 +175,15 @@ export class Controller {
       await this.notificationManager.showPopup("loginApprove");
 
     }
+  }
+
+  async handleDisconnect(data) {
+    this.store.dispatch(toggleSite({ origin: data.message?.origin, isConnected: false }))
+    Browser.tabs.sendMessage(data.tabId, {
+      id: data.id,
+      response: "Disconnected successfully",
+      error: null,
+    });
   }
 
 

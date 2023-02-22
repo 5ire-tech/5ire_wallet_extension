@@ -50,6 +50,7 @@ export class FireProvider {
     this.restricted = [
       "get_endPoint",
       "eth_sendTransaction",
+      "disconnect",
       ...this.conntectMethods,
       ...this.stakingMethods
     ];
@@ -62,6 +63,13 @@ export class FireProvider {
   connect() {
     return this.passReq("connect", null);
   }
+
+  disconnect() {
+    return this.passReq("disconnect", null);
+  }
+
+
+
 
   //for sending some payload with json rpc request
   async send(method, payload) {
@@ -106,7 +114,6 @@ export class FireProvider {
   //inject accounts into provider
   injectSelectedAccount(address) {
     this.selectedAddress = address
-
   }
 
 
@@ -184,8 +191,8 @@ export class FireProvider {
           origin,
         };
 
-        if (method === "eth_requestAccounts" || method === "eth_accounts") {
-          message.origin = origin;
+        if (method === "eth_requestAccounts" || method === "eth_accounts" || method === "disconnect") {
+          message = { origin, method };
         }
         const transportRequestMessage = {
           id,
