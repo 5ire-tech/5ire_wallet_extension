@@ -1,6 +1,7 @@
 import Browser from "webextension-polyfill";
 import { WindowPostMessageStream } from "./stream";
 import { CONTENT_SCRIPT, INPAGE } from "./constants";
+import { isManifestV3 } from "./utils"
 const contentStream = new WindowPostMessageStream({
   name: CONTENT_SCRIPT,
   target: INPAGE,
@@ -106,4 +107,6 @@ function injectScript() {
   }
 }
 
-injectScript()
+if (!isManifestV3) {
+  injectScript()
+}

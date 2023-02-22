@@ -7,6 +7,7 @@ import {
 } from "./controller";
 // import { setApiReady } from "../Store/reducer/auth";
 import Browser from "webextension-polyfill";
+import { isManifestV3 } from "./utils";
 
 try {
 
@@ -34,12 +35,14 @@ try {
     //on install of extension
     // console.log("[background.js] onInstalled", details);
     // store.dispatch(setApiReady(false));
-    for (const cs of Browser.runtime.getManifest().content_scripts) {
-      for (const tab of await Browser.tabs.query({ url: cs.matches })) {
-        Browser.scripting.executeScript({
-          target: { tabId: tab.id },
-          files: cs.js,
-        });
+    if (isManifestV3) {
+      for (const cs of Browser.runtime.getManifest().content_scripts) {
+        for (const tab of await Browser.tabs.query({ url: cs.matches })) {
+          Browser.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: cs.js,
+          });
+        }
       }
     }
   });
