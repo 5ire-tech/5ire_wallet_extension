@@ -104,9 +104,9 @@ export class FireProvider {
 
 
   //inject accounts into provider
-  injectSelectedAccount(res) {
-    if (res?.result && res?.result?.length) this.selectedAddress = res.result[0]
-    else if (!res?.result) this.selectedAddress = null;
+  injectSelectedAccount(address) {
+    this.selectedAddress = address
+
   }
 
 
@@ -132,6 +132,11 @@ export class FireProvider {
         // if (method === "net_version") {
         //   return resolve({ result: 0x3e5, method });
         // }
+
+        if (!this.selectedAddress && !this.conntectMethods.includes(method)) {
+          isCb && cb('Unauthorized: Please connnect 5ire provider.');
+          return reject("Unauthorized: Please connnect 5ire provider.");
+        }
 
 
         if (this.restricted.indexOf(method) < 0) {

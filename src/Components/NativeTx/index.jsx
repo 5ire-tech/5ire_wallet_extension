@@ -11,6 +11,7 @@ import UseWallet from "../../Hooks/useWallet";
 import { useState } from "react";
 import { connectionObj } from "../../Helper/connection.helper";
 import { STATUS, TX_TYPE } from "../../Constants";
+import { toast } from "react-toastify";
 
 
 function NativeTx() {
@@ -118,6 +119,9 @@ function NativeTx() {
     }
     function handleClick(isApproved) {
         if (isApproved) {
+            if (+auth?.balance?.nativeBalance < +fee) {
+                return toast.error("Insufficient Funds")
+            }
             dispatch(toggleLoader(true));
             connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.currentNetwork, false).then(async (apiRes) => {
 

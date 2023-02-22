@@ -45,6 +45,12 @@ injectedStream.on("data", (data) => {
       handler?.isCb && handler.cb(data.error);
       handler?.reject(data.error);
     } else {
+      console.log("Data.responmse", data, handler)
+
+
+      if (fireProvider.conntectMethods.find(item => item === handler?.method)) {
+        fireProvider.injectSelectedAccount(data?.response?.evmAddress || data?.response?.result[0])
+      }
       if (handler?.isFull) {
         const res = {
           jsonrpc: "2.0",
@@ -53,10 +59,8 @@ injectedStream.on("data", (data) => {
         };
         handler?.isCb && handler.cb(res);
         handler?.resolve(res);
-      } else if(fireProvider.conntectMethods.find(item => item === data?.response?.method)) {
-        fireProvider.injectSelectedAccount(data.response)
-        handler?.resolve(data.response.result);
-      } else {
+      }
+      else {
         handler?.isCb && handler.cb(data.response);
         handler?.resolve(data.response);
       }
