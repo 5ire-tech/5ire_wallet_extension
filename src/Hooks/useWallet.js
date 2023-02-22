@@ -569,7 +569,7 @@ export default function UseWallet() {
               },
               index: getAccId(currentAccount.id),
             };
-            if(signRes){
+            if(signRes.toHex()){
               dataToDispatch.data.status=STATUS.SUCCESS
             }
 
