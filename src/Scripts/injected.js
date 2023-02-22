@@ -45,12 +45,11 @@ injectedStream.on("data", (data) => {
       handler?.isCb && handler.cb(data.error);
       handler?.reject(data.error);
     } else {
-      console.log("Data.responmse", data, handler)
 
 
       if (fireProvider.conntectMethods.find(item => item === handler?.method)) {
         fireProvider.injectSelectedAccount(data?.response?.evmAddress || data?.response?.result[0])
-      } else if (handler.method === "disconnect") {
+      } else if (handler?.method === "disconnect") {
         fireProvider.injectSelectedAccount(null);
       }
       if (handler?.isFull) {
