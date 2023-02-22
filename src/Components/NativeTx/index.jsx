@@ -91,7 +91,10 @@ function NativeTx() {
                     feeData = await bondMoreFunds(apiRes.nativeApi, auth?.uiData?.message, true);
                     methodName = "Validator Bond More";
                     break;
-
+                case "native_nominator_bondmore":
+                    feeData = await bondMoreFunds(apiRes.nativeApi, auth?.uiData?.message, true);
+                    methodName = "Nominator Bond More";
+                    break;
                 case "native_restart_validator":
                     feeData = await restartValidator(apiRes.nativeApi, auth?.uiData?.message, true);
                     methodName = "Restart Validator";
@@ -179,6 +182,10 @@ function NativeTx() {
 
                     case "native_restart_validator":
                         res = await restartValidator(apiRes.nativeApi, auth?.uiData?.message);
+                        break;
+
+                    case "native_nominator_bondmore":
+                        feeData = await bondMoreFunds(apiRes.nativeApi, auth?.uiData?.message);
                         break;
                     default:
 

@@ -45,6 +45,7 @@ export class FireProvider {
       "native_add_validator",
       "native_validator_bondmore",
       "native_restart_validator",
+      "native_nominator_bondmore"
     ]
 
     this.restricted = [

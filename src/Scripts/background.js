@@ -101,6 +101,7 @@ try {
       case "native_add_validator":
       case "native_validator_bondmore":
       case "native_restart_validator":
+      case "native_nominator_bondmore":
         await controller.handleValidatorNominatorTransactions(data);
         break;
       default:
