@@ -9,7 +9,7 @@ import Browser from "webextension-polyfill";
 import ButtonComp from "../ButtonComp/ButtonComp";
 import UseWallet from "../../Hooks/useWallet";
 import { useState } from "react";
-import { connectionObj } from "../../Helper/connection.helper";
+import { connectionObj, Connection } from "../../Helper/connection.helper";
 import { STATUS, TX_TYPE } from "../../Constants";
 import { toast } from "react-toastify";
 
@@ -29,7 +29,9 @@ function NativeTx() {
         dispatch(toggleLoader(true));
 
         connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.currentNetwork, false).then(async (apiRes) => {
-
+            if (!apiRes?.value) {
+                Connection.isExecuting.value = false;
+            }
             let feeData, methodName = '';
             switch (auth?.uiData?.method) {
                 case "native_add_nominator":
@@ -124,6 +126,9 @@ function NativeTx() {
             }
             dispatch(toggleLoader(true));
             connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.currentNetwork, false).then(async (apiRes) => {
+                if (!apiRes?.value) {
+                    Connection.isExecuting.value = false;
+                }
 
                 let res
                 switch (auth?.uiData?.method) {
@@ -178,6 +183,7 @@ function NativeTx() {
                     default:
 
                 }
+                console.log("HERE RES", res)
                 if (res.error) {
                     Browser.tabs.sendMessage(auth.uiData.tabId, {
                         id: auth.uiData.id,
@@ -211,9 +217,9 @@ function NativeTx() {
                 dispatch(setUIdata({}));
                 dispatch(toggleLoader(false));
 
-                setTimeout(() => {
-                    window.close();
-                }, 300);
+                // setTimeout(() => {
+                //     window.close();
+                // }, 300);
             })
 
         } else {

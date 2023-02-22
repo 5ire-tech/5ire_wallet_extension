@@ -805,10 +805,10 @@ export default function UseWallet() {
         }
       }
 
-      const txHash = batchAll.signAndSend(getKeyring())
+      const txHash = await batchAll.signAndSend(getKeyring())
 
       const data = {
-        txHash,
+        txHash: txHash.toHex(),
         stakeAmount,
         points,
       };
@@ -845,10 +845,10 @@ export default function UseWallet() {
           data: fee
         }
       }
-      const txHash = batchAll.signAndSend(getKeyring())
+      const txHash = await batchAll.signAndSend(getKeyring())
       return {
         error: false,
-        data: { txHash, points },
+        data: { txHash: txHash.toHex(), points },
       };
     } catch (err) {
       return { error: true, message: err?.message };
@@ -886,10 +886,10 @@ export default function UseWallet() {
           data: fee
         }
       }
-      const txHash = payout.signAndSend(getKeyring())
+      const txHash = await payout.signAndSend(getKeyring())
       return {
         error: false,
-        data: { txHash }
+        data: { txHash: txHash.toHex() }
       }
 
     } catch (err) {
@@ -909,10 +909,10 @@ export default function UseWallet() {
           data: fee
         }
       }
-      const txHash = stopValidator.signAndSend(getKeyring())
+      const txHash = await stopValidator.signAndSend(getKeyring())
       return {
         error: false,
-        data: { txHash }
+        data: { txHash: txHash.toHex() }
       }
     } catch (err) {
       return { error: true, message: err?.message };
@@ -942,10 +942,10 @@ export default function UseWallet() {
           data: fee
         }
       }
-      const txHash = unbound.signAndSend(getKeyring())
+      const txHash = await unbound.signAndSend(getKeyring())
       return {
         error: false,
-        data: { txHash }
+        data: { txHash: txHash.toHex() }
       }
     } catch (err) {
       return { error: true, message: err?.message };
@@ -975,10 +975,10 @@ export default function UseWallet() {
           data: fee
         }
       }
-      const txHash = sendAmt.signAndSend(getKeyring())
+      const txHash = await sendAmt.signAndSend(getKeyring())
       return {
         error: false,
-        data: { txHash }
+        data: { txHash: txHash.toHex() }
       }
     } catch (err) {
       return { error: true, message: err?.message };
@@ -1004,10 +1004,10 @@ export default function UseWallet() {
           data: fee
         }
       }
-      const txHash = unbond.signAndSend(getKeyring())
+      const txHash = await unbond.signAndSend(getKeyring())
       return {
         error: false,
-        data: { txHash }
+        data: { txHash: txHash.toHex() }
       }
     } catch (err) {
       return { error: true, message: err?.message };
@@ -1056,10 +1056,10 @@ export default function UseWallet() {
         }
       }
 
-      const txHash = validationTransfer.signAndSend(getKeyring())
+      const txHash = await validationTransfer.signAndSend(getKeyring())
       return {
         error: false,
-        data: { txHash }
+        data: { txHash: txHash.toHex() }
       }
     } catch (err) {
       return { error: true, message: err?.message };
@@ -1089,10 +1089,10 @@ export default function UseWallet() {
           data: fee
         }
       }
-      const txHash = bondExtraTx.signAndSend(getKeyring())
+      const txHash = await bondExtraTx.signAndSend(getKeyring())
       return {
         error: false,
-        data: { txHash }
+        data: { txHash: txHash.toHex() }
       }
     } catch (err) {
       return { error: true, message: err?.message };
@@ -1127,10 +1127,10 @@ export default function UseWallet() {
           data: fee
         }
       }
-      const txHash = validationTransfer.signAndSend(getKeyring())
+      const txHash = await validationTransfer.signAndSend(getKeyring())
       return {
         error: false,
-        data: { txHash }
+        data: { txHash: txHash.toHex() }
       }
     } catch (err) {
       return { error: true, message: err?.message };
