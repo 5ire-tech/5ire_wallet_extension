@@ -233,7 +233,7 @@ export default function UseWallet() {
                 type: data.to ? TX_TYPE?.SEND : "Contract Deployement",
                 amount: data.to ? data?.amount : 0,
                 txHash: hash,
-                status: STATUS.PENDING
+                status: STATUS.SUCCESS
               },
               index: getAccId(currentAccount.id),
             };
@@ -565,7 +565,7 @@ export default function UseWallet() {
                 type: TX_TYPE?.SWAP,
                 amount: amount,
                 txHash: { mainHash: signHash, hash: signRes.toHex() },
-                status: STATUS.PENDING
+                status: STATUS.SUCCESS
               },
               index: getAccId(currentAccount.id),
             };
