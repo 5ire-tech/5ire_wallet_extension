@@ -129,7 +129,7 @@ function NativeTx() {
                 return toast.error("Insufficient Funds")
             }
             dispatch(toggleLoader(true));
-            connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.currentNetwork, false).then(async (apiRes) => {
+            connectionObj.initializeApi(auth.httpEndPoints.testnet, auth.httpEndPoints.qa, auth.currentNetwork, false).then(async (apiRes) => {
                 if (!apiRes?.value) {
                     Connection.isExecuting.value = false;
                 }

@@ -866,7 +866,7 @@ export default function UseWallet() {
       }
       const { stakeAmount, validatorsAccounts } = payload;
 
-      const bondedAmount = (new BigNumber(stakeAmount).multipliedBy(10 ** 18)).toString()
+      const bondedAmount = (new BigNumber(stakeAmount).multipliedBy(10 ** 18)).toFixed().toString()
 
       const stashId = encodeAddress(currentAccount?.nativeAddress);
       const nominateTx = nativeApi.tx.staking.nominate(validatorsAccounts);
@@ -1010,7 +1010,7 @@ export default function UseWallet() {
       }
 
 
-      const amt = (new BigNumber(payload.amount).multipliedBy(10 ** 18)).toString()
+      const amt = (new BigNumber(payload.amount).multipliedBy(10 ** 18)).toFixed().toString()
       const unbound = await nativeApi.tx.staking.unbond(amt);
       if (isFee) {
         const info = await unbound?.paymentInfo(getKeyring());
@@ -1042,7 +1042,7 @@ export default function UseWallet() {
       }
 
       const { amount, address } = payload
-      const sendAmounts = (new BigNumber(amount).multipliedBy(10 ** 18)).toString()
+      const sendAmounts = (new BigNumber(amount).multipliedBy(10 ** 18)).toFixed().toString()
       const sendAmt = nativeApi.tx.balances.transferKeepAlive(address, sendAmounts);
 
       if (isFee) {
@@ -1104,7 +1104,7 @@ export default function UseWallet() {
         }
       }
       const rotateKey = await nativeApi.rpc.author.rotateKeys();
-      const bondAmt = (new BigNumber(payload.bondedAmount).multipliedBy(10 ** 18)).toString()
+      const bondAmt = (new BigNumber(payload.bondedAmount).multipliedBy(10 ** 18)).toFixed().toString()
 
       const stashId = encodeAddress(decodeAddress(currentAccount?.nativeAddress));
       const commission = payload.commission === 0 ? 1 : payload.commission * 10 ** 7;
@@ -1155,7 +1155,7 @@ export default function UseWallet() {
           data: "Invalid Params: Amount is required"
         }
       }
-      const amt = (new BigNumber(payload.amount).multipliedBy(10 ** 18)).toString()
+      const amt = (new BigNumber(payload.amount).multipliedBy(10 ** 18)).toFixed().toString()
       const bondExtraTx = await nativeApi.tx.staking.bondExtra(amt);
 
       if (isFee) {
