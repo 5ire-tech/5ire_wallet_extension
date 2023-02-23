@@ -102,6 +102,7 @@ function NativeTx() {
                 default:
 
             }
+
             if (!feeData.error && methodName) {
                 setFee(feeData.data);
                 setFormattedMethod(methodName)

@@ -929,7 +929,7 @@ export default function UseWallet() {
         data: { txHash: txHash.toHex(), points },
       };
     } catch (err) {
-      return { error: true, message: err?.message };
+      return { error: true, data: err?.message };
     }
 
   };
@@ -971,7 +971,7 @@ export default function UseWallet() {
       }
 
     } catch (err) {
-      return { error: true, message: err?.message };
+      return { error: true, data: err?.message };
     }
   };
 
@@ -993,7 +993,7 @@ export default function UseWallet() {
         data: { txHash: txHash.toHex() }
       }
     } catch (err) {
-      return { error: true, message: err?.message };
+      return { error: true, data: err?.message };
     }
   };
 
@@ -1026,7 +1026,7 @@ export default function UseWallet() {
         data: { txHash: txHash.toHex() }
       }
     } catch (err) {
-      return { error: true, message: err?.message };
+      return { error: true, data: err?.message };
     }
   };
 
@@ -1059,7 +1059,7 @@ export default function UseWallet() {
         data: { txHash: txHash.toHex() }
       }
     } catch (err) {
-      return { error: true, message: err?.message };
+      return { error: true, data: err?.message };
     }
   };
 
@@ -1088,7 +1088,7 @@ export default function UseWallet() {
         data: { txHash: txHash.toHex() }
       }
     } catch (err) {
-      return { error: true, message: err?.message };
+      return { error: true, data: err?.message };
     }
   };
 
@@ -1103,12 +1103,11 @@ export default function UseWallet() {
           data: "Invalid Params: Commission and Bonded Amount are required"
         }
       }
-      const { commission, bondedAmount } = payload;
       const rotateKey = await nativeApi.rpc.author.rotateKeys();
-      const bondAmt = (new BigNumber(bondedAmount).multipliedBy(10 ** 18)).toString()
+      const bondAmt = (new BigNumber(payload.bondedAmount).multipliedBy(10 ** 18)).toString()
 
       const stashId = encodeAddress(decodeAddress(currentAccount?.nativeAddress));
-      commission = commission === 0 ? 1 : commission * 10 ** 7;
+      const commission = payload.commission === 0 ? 1 : payload.commission * 10 ** 7;
 
       const validatorInfo = {
         bondTx: nativeApi.tx.staking.bond(stashId, bondAmt, 'Staked'),
@@ -1140,7 +1139,7 @@ export default function UseWallet() {
         data: { txHash: txHash.toHex() }
       }
     } catch (err) {
-      return { error: true, message: err?.message };
+      return { error: true, data: err?.message };
 
     }
 
@@ -1173,7 +1172,7 @@ export default function UseWallet() {
         data: { txHash: txHash.toHex() }
       }
     } catch (err) {
-      return { error: true, message: err?.message };
+      return { error: true, data: err?.message };
 
     }
   };
@@ -1211,7 +1210,7 @@ export default function UseWallet() {
         data: { txHash: txHash.toHex() }
       }
     } catch (err) {
-      return { error: true, message: err?.message };
+      return { error: true, data: err?.message };
 
     }
   };
