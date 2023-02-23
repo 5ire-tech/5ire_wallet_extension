@@ -26,7 +26,7 @@ function Wallet() {
               }
             `}
             >
-              Send
+              Transfer
             </button>
             <button
               onClick={activeSwap}

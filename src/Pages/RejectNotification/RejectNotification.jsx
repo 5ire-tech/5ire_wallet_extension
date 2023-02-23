@@ -29,7 +29,7 @@ function ApproveTx() {
 
   const getFee = () => {
 
-    connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.currentNetwork, false).then((apiRes) => {
+    connectionObj.initializeApi(auth.httpEndPoints.testnet, auth.httpEndPoints.qa, auth.currentNetwork, false).then((apiRes) => {
 
       // console.log("Api Response : ", apiRes);
 
@@ -43,7 +43,7 @@ function ApproveTx() {
           auth?.uiData?.message?.data
         )
           .then((res) => {
-            console.log("Fee res : ", res);
+    
             if (!res.error) {
               setFee(res.data);
             }

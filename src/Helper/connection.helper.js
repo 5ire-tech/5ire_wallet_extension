@@ -45,8 +45,8 @@ export class Connection {
             Connection.isExecuting.value = true;
             //create the Testnet Connection
             if (networkMode === "Testnet" || bothInit) {
-                if (!Connection.nativeApiTestnet) Connection.nativeApiTestnet = await this.createNativeConnection(networkTest)
-                if (!Connection.evmApiTestnet) Connection.evmApiTestnet = this.createEvmConnection(networkTest)
+                if (!Connection.nativeApiTestnet) Connection.nativeApiTestnet = await this.createNativeConnection(networkTest);
+                if (!Connection.evmApiTestnet) Connection.evmApiTestnet = this.createEvmConnection(networkTest);
 
                 //set the execution true
                 // Connection.isExecuting.value = true;
@@ -80,23 +80,35 @@ export class Connection {
             }
 
         } catch (err) {
-            // console.log("Error while making connection with socket api's : ", err);
+            console.log("Error while making connection with socket api's : ", err);
             return { error: err, value: true }
         }
     }
 
     //create native connection
     createNativeConnection = async (networkEndpoint) => {
+        let connection;
+
+        console.log("networkEndpoint.startsWith(http)", networkEndpoint.startsWith("http"));
 
         //connection with native (Polkadot)
-        const connection = await ApiPromise.create({ provider: new WsProvider(networkEndpoint) });
+        if (networkEndpoint.startsWith("ws")) {
+            connection = await ApiPromise.create({ provider: new WsProvider(networkEndpoint),
+                noInitWarn: true
+            });
+        }
+        else if (networkEndpoint.startsWith("http")) {
+            connection = await ApiPromise.create({ provider: new HttpProvider(networkEndpoint),
+            noInitWarn: true
+            });
+        }
 
         //bind events for failure and reconnection
         connection.on("disconnected", async () => {
             connection.connect();
         });
         connection.on("error", async (err) => {
-            // console.log("error occued while making connection with native : ", err);
+            console.log("error occued while making connection with native : ", err);
             connection.connect();
         });
 
@@ -107,28 +119,37 @@ export class Connection {
     //create evm connection
     createEvmConnection = (networkEndpoint) => {
 
-        //connection with evm (web3)
-        const web3Provider = new Web3.providers.WebsocketProvider(networkEndpoint, {
+        let web3Provider;
+        let options = {
             reconnect: {
                 auto: true,
                 delay: 5000, //ms
                 maxAttempts: 10,
                 onTimeout: false
             }
-        });
+        };
+
+        if (networkEndpoint.startsWith("http")) {
+            //Http connection Web3 (evm)
+            web3Provider = new Web3.providers.HttpProvider(networkEndpoint, options);
+
+        } else if (networkEndpoint.startsWith("ws")) {
+            //WebSocket connection Web3 (evm)
+            web3Provider = new Web3.providers.WebsocketProvider(networkEndpoint, options);
+
+            //bind event for failure for reconnect
+            web3Provider.on('end', async () => {
+                // console.log("Trying to reconnect with Evm api");
+                web3Provider.connect();
+            });
+            web3Provider.on('error', async (err) => {
+                // console.log("error while making connection with evm: ", err);
+                web3Provider.connect();
+            });
+        }
+
 
         const connection = new Web3(web3Provider);
-
-
-        //bind event for failure for reconnect
-        web3Provider.on('end', async () => {
-            // console.log("Trying to reconnect with Evm api");
-            web3Provider.connect();
-        });
-        web3Provider.on('error', async (err) => {
-            // console.log("error while making connection with evm: ", err);
-            web3Provider.connect();
-        });
 
         return connection;
 

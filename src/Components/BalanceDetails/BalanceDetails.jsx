@@ -6,9 +6,9 @@ import useWallet from "../../Hooks/useWallet";
 import { useLocation } from "react-router-dom";
 import { shortner } from "../../Helper/helper";
 import CopyIcon from "../../Assets/CopyIcon.svg";
-import WalletQr from "../../Assets/walletqr.png";
+import WalletQr from "../../Assets/QRicon.svg";
 import DarkLogo from "../../Assets/DarkLogo.svg";
-import ModelLogo from "../../Assets/modalLogo.svg";
+// import ModelLogo from "../../Assets/modalLogo.svg";
 import React, { useEffect, useState } from "react";
 import GrayCircle from "../../Assets/graycircle.svg";
 import ModalCustom from "../ModalCustom/ModalCustom";
@@ -39,12 +39,11 @@ function BalanceDetails({ className, textLeft, mt0 }) {
     currentNetwork,
     balance,
     connectedSites,
-    wsEndPoints
+    httpEndPoints
   } = useSelector((state) => state.auth);
 
   useEffect(() => {
     getCurrentTabUrl((cv) => {
-      // console.log(cv);
       const isExist = connectedSites.find((ct) => ct?.origin === cv);
       if (isExist) {
         setIsConnected(isExist.isConnected);
@@ -54,22 +53,17 @@ function BalanceDetails({ className, textLeft, mt0 }) {
     if (currentAccount.evmAddress && currentAccount?.nativeAddress) {
       setAddresses({ evmAddress: shortner(currentAccount?.evmAddress), nativeAddress: shortner(currentAccount?.nativeAddress) });
     }
-    // console.log("wsEndPoints.testnet : ", wsEndPoints.testnet);
 
-    //todo
-    connectionObj.initializeApi(wsEndPoints.testnet, wsEndPoints.qa, currentNetwork, false).then((res) => {
-
-      // console.log("here is the response: ", res);
+    connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then((res) => {
       
       if (!res?.value) {
         Connection.isExecuting.value = false;
-        getBalance(res.evmApi, res.nativeApi);
+        getBalance(res.evmApi, res.nativeApi, true);
       }
     })
       .catch((err) => {
         console.log("Error while getting the balance of Testnet network: ", err.message)
       });
-
 
 
   }, [currentNetwork, currentAccount]);
@@ -85,7 +79,6 @@ function BalanceDetails({ className, textLeft, mt0 }) {
 
 
   const handleNetworkChange = (network) => {
-    // console.log("hadndle change called for : ", network);
     dispatch(setCurrentNetwork(network));
     dispatch(resetBalance());
   };
@@ -183,10 +176,10 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                         value: NETWORK.TEST_NETWORK,
                         label: <span className="flexedItemSelect">Testnet</span>,
                       },
-                      {
-                        value: NETWORK.QA_NETWORK,
-                        label: <span className="flexedItemSelect">QA</span>,
-                      },
+                      // {
+                      //   value: NETWORK.QA_NETWORK,
+                      //   label: <span className="flexedItemSelect">QA</span>,
+                      // },
                     ]}
                   />
                 </div>
@@ -225,7 +218,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                       </h3>
                     </div>
                     <div className={style.balanceDetails__innerBalance__walletQa}>
-                      <img onClick={showModal} src={WalletQr} />
+                      <img onClick={showModal} src={WalletQr} width={30} height={30} />
                     </div>
                   </div>
                   <div
@@ -241,7 +234,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                       </h3>
                     </div>
                     <div className={style.balanceDetails__innerBalance__walletQa}>
-                      <img onClick={evmModal} src={WalletQr} />
+                      <img onClick={evmModal} src={WalletQr} width={30} height={30} />
                     </div>
                   </div>
                 </div>
@@ -254,7 +247,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
             >
               <div className={style.balanceDetails__nativemodal}>
                 <div className={style.balanceDetails__nativemodal__innerContact}>
-                  <img src={ModelLogo} alt="logo" />
+                  <img src={DarkLogo} alt="logo" width={55} height={55} />
                   <p className={style.balanceDetails__nativemodal__title}>
                     5ire Native Chain
                   </p>
@@ -297,7 +290,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
             >
               <div className={style.balanceDetails__nativemodal}>
                 <div className={style.balanceDetails__nativemodal__innerContact}>
-                  <img src={ModelLogo} />
+                  <img src={DarkLogo} width={55} height={55} />
                   <p className={style.balanceDetails__nativemodal__title}>
                     5ire EVM Chain
                   </p>

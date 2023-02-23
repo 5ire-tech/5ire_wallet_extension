@@ -8,14 +8,14 @@ import useWallet from "../../Hooks/useWallet";
 import { shortner } from "../../Helper/helper";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import CopyIcon from "../../Assets/CopyIcon.svg";
-import ComplSwap from "../../Assets/tranCompl.svg";
-import FaildSwap from "../../Assets/tranReject.svg";
+import ComplSwap from "../../Assets/DarkLogo.svg";
+import FaildSwap from "../../Assets/DarkLogo.svg";
 import { NATIVE, EVM } from "../../Constants/index";
-import { connectionObj, Connection } from "../../Helper/connection.helper";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import { InputField } from "../../Components/InputField/InputFieldSimple";
+import { connectionObj, Connection } from "../../Helper/connection.helper";
 
 function Swap() {
 
@@ -24,12 +24,13 @@ function Swap() {
   const [amount, setAmount] = useState("");
   const [gassFee, setGassFee] = useState("");
   const [swapErr, setSwapError] = useState("");
-  const [activeTab, setActiveTab] = useState("one");
+  const [disableBtn, setDisable] = useState(true);
+  // const [activeTab, setActiveTab] = useState("one");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [toFrom, setToFrom] = useState({ from: "Native", to: "Evm" });
   const [address, setAddress] = useState({ fromAddress: "", toAddress: "" });
-  const { currentAccount, balance, wsEndPoints, currentNetwork } = useSelector((state) => state.auth);
+  const { currentAccount, balance, httpEndPoints, currentNetwork } = useSelector((state) => state.auth);
   const {
     evmToNativeSwap,
     nativeToEvmSwap,
@@ -55,16 +56,45 @@ function Swap() {
   useEffect(() => {
     if (amount) {
       getFee();
+    }else{
+      setGassFee("");
+      setDisable(true);
     }
   }, [amount, toFrom]);
 
   const validateAmount = () => {
-    if (!amount || isNaN(amount) || Number(amount) <= 0) {
-      setError("Please enter amount correctly!");
+    if (amount.length === 0) {
+      setError("Please enter amount.");
       return { error: true };
-    } else {
-      setError("");
-      return { error: false };
+    } else if (isNaN(amount)) {
+      setError("Please enter amount correctly.");
+      return { error: true };
+    } else if (Number(amount) <= 0) {
+      setError("Amount can't be 0 or less then 0");
+      return { error: true };
+    }
+    else if (toFrom.from.toLowerCase() === EVM.toLowerCase() &&
+      toFrom.to.toLowerCase() === NATIVE.toLowerCase()) {
+
+      if (Number(amount) >= Number(balance.evmBalance)) {
+        setError("Insufficent balance.");
+        return { error: true };
+      } else {
+        setError("");
+        return { error: false };
+      }
+
+    } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase() &&
+      toFrom.to.toLowerCase() === EVM.toLowerCase()) {
+
+      if (Number(amount) >= Number(balance.nativeBalance)) {
+        setError("Insufficent balance.");
+        return { error: true };
+      } else {
+        setError("");
+        return { error: false };
+      }
+
     }
   };
 
@@ -73,7 +103,7 @@ function Swap() {
       let amtRes = validateAmount();
       if (!amtRes.error) {
 
-        connectionObj.initializeApi(wsEndPoints.testnet, wsEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
+        connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
 
           if (!apiRes?.value) {
 
@@ -85,9 +115,8 @@ function Swap() {
               toFrom.to.toLowerCase() === NATIVE.toLowerCase()
             ) {
               if (Number(amount) >= Number(balance.evmBalance)) {
-                toast.error("Insufficent Balance.")
-                // setIsFaildOpen(true);
-                // setSwapError("Insufficent Balance!");
+                toast.error("Insufficent Balance.");
+
               } else {
                 let res = await evmToNativeSwap(apiRes.evmApi, apiRes.nativeApi, amount);
                 if (res.error) {
@@ -97,8 +126,8 @@ function Swap() {
                   setIsModalOpen(true);
                   setTxHash(res.data);
                   setTimeout(() => {
-                    getBalance(apiRes.evmApi, apiRes.nativeApi);
-                  }, 60000);
+                    getBalance(apiRes.evmApi, apiRes.nativeApi, true);
+                  }, 40000);
                 }
               }
             } else if (
@@ -107,8 +136,6 @@ function Swap() {
             ) {
               if (Number(amount) >= Number(balance.nativeBalance)) {
                 toast.error("Insufficent Balance.")
-                // setIsFaildOpen(true);
-                // setSwapError("Insufficent Balance.");
               } else {
                 let res = await nativeToEvmSwap(apiRes.evmApi, apiRes.nativeApi, amount);
                 if (res.error) {
@@ -118,7 +145,7 @@ function Swap() {
                   setIsModalOpen(true);
                   setTxHash(res.data);
                   setTimeout(() => {
-                    getBalance(apiRes.evmApi, apiRes.nativeApi);
+                    getBalance(apiRes.evmApi, apiRes.nativeApi, true);
                   }, 60000);
                 }
               }
@@ -135,17 +162,14 @@ function Swap() {
 
   const getFee = async () => {
     let amtRes = validateAmount();
-    // console.log("AMOUNT VALIDATION RESPONSE : ",amtRes);
+
     if (!amtRes.error) {
-
-      // console.log("GETTING FEE FOR SWAP");
-
-      connectionObj.initializeApi(wsEndPoints.testnet, wsEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
+      setDisable(false);
+      connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
 
         if (!apiRes?.value) {
 
           // console.log("API RES ::: ", apiRes);
-
           Connection.isExecuting.value = false;
 
           if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase() && amount) {
@@ -155,7 +179,7 @@ function Swap() {
               if (feeRes.data) {
                 setError(feeRes.error);
               } else {
-                toast.error("Error while getting fee!");
+                toast.error("Error while getting fee.");
               }
             } else {
               setGassFee(feeRes.data);
@@ -164,12 +188,11 @@ function Swap() {
             toFrom.from.toLocaleLowerCase() === EVM.toLowerCase()
           ) {
             let feeRes = await retriveEvmFee(apiRes.evmApi, "", amount);
-            // console.log("Fee Res : ", feeRes);
             if (feeRes.error) {
               if (feeRes.data) {
                 setError(feeRes.error);
               } else {
-                toast.error("Error while getting fee!");
+                toast.error("Error while getting fee.");
               }
             } else {
               setGassFee(feeRes.data);
@@ -177,38 +200,53 @@ function Swap() {
           }
         }
       });
+    } else {
+      setDisable(true);
     }
   };
 
   const handleChange = (e) => {
     setAmount(e.target.value.trim());
     setGassFee("");
-    // setError("");
   };
 
   const handleOk = () => {
     setIsModalOpen(false);
+    setDisable(true);
     setAmount("");
+    setGassFee("");
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
+    setDisable(true);
     setAmount("");
+    setGassFee("");
+
   };
 
   const faildOk = () => {
     setIsFaildOpen(false);
+    setDisable(true);
+    setAmount("");
+    setGassFee("");
+
   };
 
   const faildCancel = () => {
     setIsFaildOpen(false);
+    setDisable(true);
     setAmount("");
+    setGassFee("");
+
   };
 
   const handleSwapAgain = () => {
     setIsFaildOpen(false);
     setIsModalOpen(false);
+    setDisable(true);
     setAmount("");
+    setGassFee("");
   };
 
   const handleClick = () => {
@@ -218,7 +256,8 @@ function Swap() {
       setToFrom({ from: "Evm", to: "Native" });
 
     setAmount("");
-    setGassFee("0");
+    setGassFee("");
+    
   };
 
   const handleCopy = (e) => {
@@ -272,7 +311,6 @@ function Swap() {
         </div>
         <div className={style.swap__swapAccount}>
           <div>
-            <p style={{ color: "red" }}>{error}</p>
             <InputField
               coloredBg={true}
               placeholderBaseColor={true}
@@ -286,6 +324,8 @@ function Swap() {
                 </span>
               }
             />
+            <p className="errorText">{error}</p>
+
             {/* <span className={style.swap__spanbalanceText}>
               Balance 00.0000 5IRE
             </span> */}
@@ -332,10 +372,10 @@ function Swap() {
           </div> */}
         </div>
         <div className={style.swap__transactionFee}>
-          <p>Transaction Fee : {gassFee ? gassFee + "5IRE" : ""}</p>
+          <p>{gassFee ? `Transaction Fee : ${gassFee} 5IRE` : ""}</p>
         </div>
       </div>
-      <Approve onClick={handleApprove} text="Swap" />
+      <Approve onClick={handleApprove} text="Swap" isDisable={disableBtn} />
       <ModalCustom
         isModalOpen={isModalOpen}
         handleOk={handleOk}
@@ -343,7 +383,7 @@ function Swap() {
       >
         <div className="swapsendModel">
           <div className="innerContact">
-            <img src={ComplSwap} alt="swapIcon" />
+            <img src={ComplSwap} alt="swapIcon"  width={127} height={127} />
             <h2 className="title">Swap Completed</h2>
             <p className="transId">Your Swapped Transaction ID</p>
             <span className="address">
@@ -371,7 +411,7 @@ function Swap() {
       >
         <div className="swapsendModel">
           <div className="innerContact">
-            <img src={FaildSwap} alt="swapFaild" />
+            <img src={FaildSwap} alt="swapFaild" width={127} height={127} />
             <h2 className="title">Swap Failed!</h2>
             <p className="transId">{swapErr}</p>
 

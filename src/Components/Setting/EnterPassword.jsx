@@ -1,13 +1,12 @@
-import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
-import InputFieldSimple, { InputFieldOnly } from "../InputField/InputFieldSimple.jsx";
-import ButtonComp from "../ButtonComp/ButtonComp";
-import style from "./style.module.scss";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import useAuth from "../../Hooks/useAuth";
-import {useDispatch, useSelector } from "react-redux";
 import {toast} from "react-toastify";
-
+import style from "./style.module.scss";
+import useAuth from "../../Hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import ButtonComp from "../ButtonComp/ButtonComp";
+import InputFieldSimple from "../InputField/InputFieldSimple.jsx";
+import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+// import {useSelector } from "react-redux";
 
 
 function EnterPassword() {
@@ -15,7 +14,7 @@ function EnterPassword() {
   const navigate = useNavigate();
   // const dispatch = useDispatch();
   const {verifyPass} = useAuth();
-  const {pass} = useSelector(state => state.auth); 
+  // const {pass} = useSelector(state => state.auth); 
   const [data,setData] = useState("");
 
   const handleChange = (e) => {

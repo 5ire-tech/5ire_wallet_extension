@@ -36,19 +36,20 @@ function CreateWalletChain() {
     }
   }, [authData, newAccount]);
 
+
   const handleCopy = (e) => {
-    if (e.target.name === NATIVE)
-      navigator.clipboard.writeText(data?.nativeAddress);
+    if (e.target.name === NATIVE) navigator.clipboard.writeText(data?.nativeAddress);
 
     if (e.target.name === EVM) navigator.clipboard.writeText(data?.evmAddress);
 
-    if (e.target.name === TEMP1M)
-      //todo
-      navigator.clipboard.writeText(data?.temp1m);
+    if (e.target.name === TEMP1M) navigator.clipboard.writeText(data?.temp1m);
 
-    if (e.target.name === TEMP2P)
-      //todo
-      navigator.clipboard.writeText(data?.temp2p);
+    if (e.target.name === TEMP2P) navigator.clipboard.writeText(data?.temp2p);
+    
+    if (e.target.name === "all") {
+      let string = `Mnemonic: ${data?.temp1m}\nEVM Private key: ${data?.temp2p}\nEvm Address: ${data?.evmAddress}\nNative Address: ${data?.nativeAddress}`;
+      navigator.clipboard.writeText(string);
+    }
 
     toast.success("Copied!");
   };
@@ -56,7 +57,7 @@ function CreateWalletChain() {
   return (
     <div className={style.cardWhite}>
       <div className={style.cardWhite__beginText}>
-        <h1>Create New Wallet</h1>
+        <h1>Create a New Wallet</h1>
       </div>
       <div className={style.cardWhite__addressInput}>
         <label>EVM Chain Address:</label>
@@ -106,7 +107,8 @@ function CreateWalletChain() {
           />{" "}
         </p>
       </div>
-      <div className={style.cardWhite__noteSec}>
+      <div className={style.copyButton}><button className={style.cardWhite__addressInput__copyAll} name={"all"} onClick={handleCopy}>Copy All</button></div>
+      {/* <div className={style.cardWhite__noteSec}>
         <h4>Note:</h4>
         <ul>
           <li>
@@ -114,7 +116,7 @@ function CreateWalletChain() {
           </li>
           <li> Please store it securely.</li>
         </ul>
-      </div>
+      </div >*/}
     </div>
   );
 }

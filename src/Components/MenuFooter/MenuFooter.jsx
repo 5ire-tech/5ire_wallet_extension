@@ -6,7 +6,7 @@ import useAuth from "../../Hooks/useAuth";
 import { TX_TYPE } from "../../Constants/index";
 import Logout from "../../Assets/PNG/logout.png";
 import Import from "../../Assets/PNG/import.png";
-import Wallet from "../../Assets/PNG/wallet.png";
+import Wallet from "../../Assets/WalletIcon.svg";
 import Setting from "../../Assets/PNG/setting.png";
 import Sendhistry from "../../Assets/sendhistry.svg";
 import HistoryIcon from "../../Assets/PNG/histry.png";
@@ -107,7 +107,7 @@ function MenuFooter() {
 
   return (
     <div className={`${style.menuItems} welcomeFooter`}>
-      {path === "wallet" && (
+      {/* {path === "wallet" && (
         <Link
           to="/wallet"
           // onClick={() => setactiveLink("wallet")}
@@ -119,7 +119,7 @@ function MenuFooter() {
           </div>
           <span className={style.menuItems__items__title}>Wallet</span>
         </Link>
-      )}
+      )} */}
       {path === "wallet" && (
         <Link
           to="#"
@@ -202,7 +202,7 @@ function MenuFooter() {
         ))}
         <AccountSetting
           img={Createaccount}
-          title="Create New Account"
+          title="Create a New Account"
           onClick={hanldeCreateNewAcc}
         />
         <AccountSetting
@@ -229,7 +229,7 @@ function MenuFooter() {
       <Drawer
         title={
           <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            Setting
+            Settings
           </span>
         }
         placement="bottom"
@@ -240,7 +240,7 @@ function MenuFooter() {
         <Link to="/manageWallet">
           <div className={style.sttings}>
             <div className={style.sttings__left}>
-              <img src={Wallet} width={30} height={30} alt="walletIcon"/>
+              <div className={style.walletIconBorder}><img src={Wallet} width={30} height={30} alt="walletIcon"/></div>
               <div className={style.sttings__left__texts}>
                 <div className={style.sttings__left__textsTop}>
                   Manage Wallet

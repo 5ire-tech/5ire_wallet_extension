@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 
 export const userState = {
   pass: null,
@@ -34,8 +34,7 @@ export const userState = {
     totalBalance: ""
   },
 
-  currentNetwork: "QA",
-  // currentNetwork: "QA",
+  currentNetwork: "Testnet",
 
   accountName: "",
 
@@ -43,12 +42,9 @@ export const userState = {
 
   isLogin: false,
 
-  // passError: false,
-
   connectedSites: [],
-  isLoading: false,
   
-  // isApiReady:false,
+  isLoading: false,
   
 };
 
@@ -85,6 +81,7 @@ export const userSlice = createSlice({
     },
 
     setNewAccount: (state, action) => {
+      // console.log(current(state));
       state.newAccount = action.payload;
     },
     

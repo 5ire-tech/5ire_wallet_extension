@@ -2,7 +2,7 @@ import Web3 from "web3";
 import { ethers } from "ethers";
 import { BigNumber } from "bignumber.js";
 import { Keyring } from "@polkadot/keyring";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Browser from "webextension-polyfill";
 import { TX_TYPE, STATUS } from "../Constants/index";
 import { setAccountName } from "../Store/reducer/auth";
@@ -116,8 +116,9 @@ export default function UseWallet() {
     }
   };
 
-  const getBalance = async (evm_api, native_api) => {
+  const getBalance = async (evm_api, native_api, isHttp = true) => {
     try {
+      let nbalance = 0;
 
       // Evm Balance
       const w3balance = await evm_api?.eth?.getBalance(
@@ -125,16 +126,23 @@ export default function UseWallet() {
       );
 
       //Native Balance
-      const nbalance = await native_api?.derive.balances.all(
-        currentAccount?.nativeAddress
-      );
+      if (isHttp) {
+        let balance_ = await native_api?._query.system.account(currentAccount?.nativeAddress);
+        nbalance = balance_.data.free;
+        nbalance = parseFloat(`${balance_.data.free}`);
+      } else {
+        let balance_ = await native_api?.derive.balances.all(
+          currentAccount?.nativeAddress
+        );
+        nbalance = balance_.availableBalance;
+      }
 
       let evmBalance = new BigNumber(w3balance).dividedBy(10 ** 18).toString();
-      let nativeBalance = new BigNumber(nbalance.availableBalance).dividedBy(10 ** 18).toString();
+      let nativeBalance = new BigNumber(nbalance).dividedBy(10 ** 18).toString();
 
 
       if (Number(nativeBalance) % 1 !== 0)
-        nativeBalance = new BigNumber(nbalance.availableBalance).dividedBy(10 ** 18).toFixed(6, 8).toString();
+        nativeBalance = new BigNumber(nbalance).dividedBy(10 ** 18).toFixed(6, 8).toString();
 
 
       if (Number(evmBalance) % 1 !== 0)
@@ -158,7 +166,7 @@ export default function UseWallet() {
       // }
 
     } catch (error) {
-      // console.log("Error while geting balance : ", error);
+      console.log("Error while geting balance : ", error);
     }
   }
 
@@ -256,8 +264,20 @@ export default function UseWallet() {
 
   };
 
-  const nativeTransfer = async (nativeApi, data) => {
+  const nativeTransfer = async (nativeApi, data, isHttp = true) => {
     return new Promise(async (resolve, reject) => {
+      let dataToDispatch = {
+        data: {
+          chain: currentNetwork.toLowerCase(),
+          isEvm: false,
+          dateTime: new Date(),
+          to: data.to,
+          type: TX_TYPE?.SEND,
+          amount: data.amount,
+        },
+        index: getAccId(currentAccount.id)
+      };
+
       try {
         if (Number(data.amount) >= Number(balance.nativeBalance)) {
           resolve({
@@ -267,17 +287,6 @@ export default function UseWallet() {
         } else {
           let hash, err;
           dispatch(toggleLoader(true));
-          let dataToDispatch = {
-            data: {
-              chain: currentNetwork.toLowerCase(),
-              isEvm: false,
-              dateTime: new Date(),
-              to: data.to,
-              type: TX_TYPE?.SEND,
-              amount: data.amount,
-            },
-            index: getAccId(currentAccount.id)
-          };
 
           const seedAlice = mnemonicToMiniSecret(
             decryptor(currentAccount?.temp1m, pass)
@@ -290,50 +299,85 @@ export default function UseWallet() {
             (new BigNumber(data.amount).multipliedBy(10 ** 18)).toString()
           );
 
-          //Send and sign txn
-          transfer.signAndSend(alice, ({ status, events, txHash }) => {
+          if (isHttp) {
+            transfer.signAndSend(alice, (txHash) => {
+              if (txHash) {
 
-            if (status.isInBlock) {
+                let hash = txHash.toHex();
+                dataToDispatch.data.txHash = hash;
+                dataToDispatch.data.status = STATUS.SUCCESS;
+                dispatch(setTxHistory(dataToDispatch));
+                dispatch(toggleLoader(false));
 
-              if (hash !== txHash.toHex()) {
-                hash = txHash.toHex();
-                // console.log("Hash : ", hash);
-                let phase = events.filter(({ phase }) => phase.isApplyExtrinsic);
-
-                //Matching Extrinsic Events for get the status
-                phase.forEach(({ event }) => {
-
-                  if (nativeApi.events.system.ExtrinsicSuccess.is(event)) {
-                    err = false;
-                    // console.log("Extrinsic Success !! ");
-                    dataToDispatch.data.status = STATUS.SUCCESS;
-                  } else if (nativeApi.events.system.ExtrinsicFailed.is(event)) {
-                    err = false;
-                    // console.log("Extrinsic Failed");
-                    dataToDispatch.data.status = STATUS.FAILED;
-                  }
-                  dispatch(toggleLoader(false));
+                resolve({
+                  error: false,
+                  data: hash
                 });
 
-                dataToDispatch.data.txHash = hash;
+              } else {
+
+                dataToDispatch.data.txHash = "";
+                dataToDispatch.data.status = STATUS.FAILED;
                 dispatch(setTxHistory(dataToDispatch));
-                if (err) {
-                  resolve({
-                    error: true,
-                    data: "Error while sending!"
-                  })
-                } else {
-                  resolve({
-                    error: false,
-                    data: hash
-                  })
+                dispatch(toggleLoader(false));
+
+                resolve({
+                  error: true,
+                  data: "error while sending!"
+                });
+
+              }
+            });
+
+          } else {
+            //Send and sign txn
+            transfer.signAndSend(alice, ({ status, events, txHash }) => {
+              if (status.isInBlock) {
+
+                if (hash !== txHash.toHex()) {
+                  hash = txHash.toHex();
+                  let phase = events.filter(({ phase }) => phase.isApplyExtrinsic);
+
+                  //Matching Extrinsic Events for get the status
+                  phase.forEach(({ event }) => {
+
+                    if (nativeApi.events.system.ExtrinsicSuccess.is(event)) {
+
+                      err = false;
+                      dataToDispatch.data.status = STATUS.SUCCESS;
+
+                    } else if (nativeApi.events.system.ExtrinsicFailed.is(event)) {
+
+                      err = false;
+                      dataToDispatch.data.status = STATUS.FAILED;
+
+                    }
+                    dispatch(toggleLoader(false));
+                  });
+
+                  dataToDispatch.data.txHash = hash ? hash : "";
+                  dispatch(setTxHistory(dataToDispatch));
+                  if (err) {
+                    resolve({
+                      error: true,
+                      data: "Error while sending!"
+                    })
+                  } else {
+                    resolve({
+                      error: false,
+                      data: hash
+                    })
+                  }
                 }
               }
-            }
-          });
+            });
+          }
         }
       } catch (error) {
-        // console.log("Error while native transfer : ", error);
+        console.log("Error while native transfer : ", error);
+        dataToDispatch.data.txHash = "";
+        dataToDispatch.data.status = STATUS.FAILED;
+        dispatch(setTxHistory(dataToDispatch));
         dispatch(toggleLoader(false));
         resolve({
           error: true,
@@ -343,8 +387,20 @@ export default function UseWallet() {
     })
   };
 
-  const nativeToEvmSwap = async (evmApi, nativeApi, amount) => {
+  const nativeToEvmSwap = async (evmApi, nativeApi, amount, isHttp = true) => {
     return new Promise(async (resolve) => {
+      let dataToDispatch = {
+        data: {
+          chain: currentNetwork.toLowerCase(),
+          isEvm: false,
+          dateTime: new Date(),
+          to: "Native to Evm",
+          type: TX_TYPE?.SWAP,
+          amount: amount,
+        },
+        index: getAccId(currentAccount.id)
+      };
+
       try {
         if (Number(amount) >= Number(balance.nativeBalance) || Number(amount) <= 0) {
           resolve({
@@ -354,17 +410,6 @@ export default function UseWallet() {
         } else {
           let err, evmDepositeHash, signedHash;
           dispatch(toggleLoader(true));
-          let dataToDispatch = {
-            data: {
-              chain: currentNetwork.toLowerCase(),
-              isEvm: false,
-              dateTime: new Date(),
-              to: "Native to Evm",
-              type: TX_TYPE?.SWAP,
-              amount: amount,
-            },
-            index: getAccId(currentAccount.id)
-          };
 
           const seedAlice = mnemonicToMiniSecret(
             decryptor(currentAccount?.temp1m, pass)
@@ -378,52 +423,86 @@ export default function UseWallet() {
             (new BigNumber(amount).multipliedBy(10 ** 18)).toString()
           );
           evmDepositeHash = deposit.hash.toHex();
-          console.log("evmDepositHash", evmDepositeHash)
 
-          //Sign and Send txn
-          deposit.signAndSend(alice, ({ status, events, txHash }) => {
-            if (status.isInBlock) {
+          if (isHttp) {
 
-              if (signedHash !== txHash) {
-                signedHash = txHash.toHex();
-                // console.log("Hash : ", signedHash);
-                let phase = events.filter(({ phase }) => phase.isApplyExtrinsic);
+            deposit.signAndSend(alice, (txHash) => {
+              if (txHash) {
 
-                //Matching Extrinsic Events for get the status
-                phase.forEach(({ event }) => {
+                let hash = txHash.toHex();
+                dataToDispatch.data.txHash = { hash: evmDepositeHash, mainHash: hash };
+                dataToDispatch.data.status = STATUS.SUCCESS;
+                dispatch(setTxHistory(dataToDispatch));
+                dispatch(toggleLoader(false));
 
-                  if (nativeApi.events.system.ExtrinsicSuccess.is(event)) {
-                    err = false;
-                    // console.log("Extrinsic Success !! ");
-                    dataToDispatch.data.status = STATUS.SUCCESS;
-                  } else if (nativeApi.events.system.ExtrinsicFailed.is(event)) {
-                    err = true;
-                    // console.log("Extrinsic Failed !!");
-                    dataToDispatch.data.status = STATUS.FAILED;
-                  }
-                  dispatch(toggleLoader(false));
+                resolve({
+                  error: false,
+                  data: hash
                 });
 
-                dataToDispatch.data.txHash = { hash: evmDepositeHash, mainHash: signedHash };
-                // console.log("Data to dispatch : ", dataToDispatch);
+              } else {
+
+                dataToDispatch.data.txHash = { hash: evmDepositeHash, mainHash: "" };
+                dataToDispatch.data.status = STATUS.FAILED;
                 dispatch(setTxHistory(dataToDispatch));
-                if (err) {
-                  resolve({
-                    error: true,
-                    data: "Error while sending!"
-                  })
-                } else {
-                  resolve({
-                    error: false,
-                    data: signedHash
-                  })
+                dispatch(toggleLoader(false));
+
+                resolve({
+                  error: true,
+                  data: "error while swapping!"
+                });
+              }
+            });
+
+          } else {
+
+            //Sign and Send txn
+            deposit.signAndSend(alice, ({ status, events, txHash }) => {
+              if (status.isInBlock) {
+
+                if (signedHash !== txHash) {
+                  signedHash = txHash.toHex();
+                  let phase = events.filter(({ phase }) => phase.isApplyExtrinsic);
+
+                  //Matching Extrinsic Events for get the status
+                  phase.forEach(({ event }) => {
+
+                    if (nativeApi.events.system.ExtrinsicSuccess.is(event)) {
+                      err = false;
+                      // console.log("Extrinsic Success !! ");
+                      dataToDispatch.data.status = STATUS.SUCCESS;
+                    } else if (nativeApi.events.system.ExtrinsicFailed.is(event)) {
+                      err = true;
+                      // console.log("Extrinsic Failed !!");
+                      dataToDispatch.data.status = STATUS.FAILED;
+                    }
+                    dispatch(toggleLoader(false));
+                  });
+
+                  dataToDispatch.data.txHash = { hash: evmDepositeHash, mainHash: signedHash };
+                  dispatch(setTxHistory(dataToDispatch));
+                  if (err) {
+                    resolve({
+                      error: true,
+                      data: "Error while swapping!"
+                    })
+                  } else {
+                    resolve({
+                      error: false,
+                      data: signedHash
+                    })
+                  }
                 }
               }
-            }
-          });
+            });
+          }
+
         }
       } catch (error) {
-        // console.log("Error occured while swapping native to evm : ", error);
+        console.log("Error occured while swapping native to evm : ", error);
+        dataToDispatch.data.txHash = { hash: "", mainHash: "" };
+        dataToDispatch.data.status = STATUS.FAILED;
+        dispatch(setTxHistory(dataToDispatch));
         dispatch(toggleLoader(false));
         resolve({
           error: true,
@@ -506,7 +585,7 @@ export default function UseWallet() {
           else throw new Error("Error occured! ");
         }
       } catch (error) {
-        // console.log("Error occured while swapping evm to native: ", error);
+        console.log("Error occured while swapping evm to native: ", error);
         dispatch(toggleLoader(false));
         resolve({
           error: true,
@@ -560,7 +639,7 @@ export default function UseWallet() {
         data: "Invalid mnemonics!",
       };
     } catch (error) {
-      // console.log("Error while importing : ", error);
+      console.log("Error while importing : ", error);
       return {
         error: true,
         data: "Error Occured!",
@@ -584,7 +663,7 @@ export default function UseWallet() {
           dispatch(toggleLoader(false));
           return ({
             error: true,
-            data: "Invalid 'To' address."
+            data: "Invalid 'Recipient' address."
           });
         }
       }
@@ -632,13 +711,12 @@ export default function UseWallet() {
       if (toAddress.startsWith("0x")) {
         const amt = new BigNumber(amount).multipliedBy(10 ** 18).toFixed().toString();
         try {
-          // console.log("Amount after ", amt);
           Web3.utils.toChecksumAddress(toAddress);
         } catch (error) {
           dispatch(toggleLoader(false));
           return ({
             error: true,
-            data: "Invalid 'to' address."
+            data: "Invalid 'Recipient' address."
           });
         }
         transferTx = await nativeApi.tx.evm.deposit(toAddress, amt);
@@ -657,7 +735,7 @@ export default function UseWallet() {
 
           return ({
             error: true,
-            data: "Invalid 'to' address!"
+            data: "Invalid 'Recipient' address!"
           });
         }
         transferTx = nativeApi.tx.balances.transferKeepAlive(toAddress, amt);

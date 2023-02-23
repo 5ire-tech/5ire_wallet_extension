@@ -5,7 +5,7 @@ import {
   loadStore,
   checkTransactions
 } from "./controller";
-// import { setApiReady } from "../Store/reducer/auth";
+// import { setNewAccount } from "../Store/reducer/auth";
 import Browser from "webextension-polyfill";
 import { isManifestV3 } from "./utils";
 
@@ -22,7 +22,7 @@ try {
 
       port.onDisconnect.addListener(function () {
         //handle popup close actions
-        // store.dispatch(setApiReady(false));
+        // store.dispatch(setNewAccount(null));
       });
 
     }
@@ -52,7 +52,6 @@ try {
     // store.dispatch(setApiReady(false));
     // console.log("[background.js] onStartup");
   });
-
 
   Browser.runtime.onMessage.addListener(async function (message, sender, cb) {
 

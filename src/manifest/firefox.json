@@ -2,7 +2,7 @@
     "name": "5ire Wallet",
     "description": "EVM and Substrate combined wallet",
     "version": "1.0",
-    "manifest_version": 2,
+    "manifest_version": 3,
     "browser_action": {
         "default_popup": "index.html",
         "default_title": "5ire Wallet"
@@ -14,12 +14,10 @@
     },
     "permissions": [
         "activeTab",
-        "alarms",
         "clipboardWrite",
         "notifications",
         "scripting",
         "storage",
-        "unlimitedStorage",
         "webRequest",
         "tabs",
         "<all_urls>"

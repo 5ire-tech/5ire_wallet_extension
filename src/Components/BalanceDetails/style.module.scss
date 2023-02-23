@@ -34,7 +34,8 @@
     &__totalBalnce {
       p {
         color: $white;
-        font-size: 14px;
+        font-size: 18px;
+        font-weight: 600;
         display: flex;
         align-items: center;
         gap: 8px;
@@ -48,8 +49,8 @@
       gap: 20px;
       padding-top: 8px;
     }
-    &__walletQa{
-      img{
+    &__walletQa {
+      img {
         cursor: pointer;
       }
     }
@@ -77,12 +78,17 @@
       padding: 10px;
       gap: 8px;
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       border-radius: 6px;
     }
   }
   &__nativemodal {
     padding: 25px 14px;
+    &__scanner {
+      background: $white;
+      padding: 15px;
+      border-radius: 8px;
+    }
     &__innerContact {
       display: flex;
       flex-direction: column;
