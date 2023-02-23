@@ -206,7 +206,7 @@ function Send() {
                 setIsModalOpen(true);
                 setTimeout(() => {
                   getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-                }, 60000);
+                }, 1000);
               }
 
             } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
@@ -220,7 +220,7 @@ function Send() {
                 setIsModalOpen(true);
                 setTimeout(() => {
                   getBalance(apiRes.evmApi, apiRes.nativeApi, true)
-                }, 40000);
+                }, 1000);
               }
             }
           }

@@ -129,7 +129,7 @@ function Swap() {
                     setTxHash(res.data);
                     setTimeout(() => {
                       getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-                    }, 40000);
+                    }, 1000);
                   }
                 }
               } else if (
@@ -148,7 +148,7 @@ function Swap() {
                     setTxHash(res.data);
                     setTimeout(() => {
                       getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-                    }, 60000);
+                    }, 1000);
                   }
                 }
               }
