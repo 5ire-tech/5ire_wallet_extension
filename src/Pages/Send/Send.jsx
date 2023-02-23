@@ -128,7 +128,7 @@ function Send() {
     let addressRes = validateToAddress();
     if (!(amtRes.error) && !(addressRes.error)) {
 
-      setDisable(false);
+      // setDisable(false);
       connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
 
         if (!apiRes?.value) {
@@ -138,15 +138,18 @@ function Send() {
           if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
 
             let feeRes = await retriveNativeFee(apiRes.nativeApi, data.to, data.amount);
-            // console.log("Fee Res : ", feeRes);
+            
             if (feeRes.error) {
               if (feeRes.data) {
                 setErr(p => ({ ...p, to: feeRes.data }));
+                setDisable(true);
               } else {
                 toast.error("Error while getting fee!");
+                setDisable(true);
               }
             } else {
               setGassFee(feeRes.data);
+              setDisable(false);
             }
           }
           else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
@@ -186,7 +189,7 @@ function Send() {
         
       let amtRes = validateAmount();
       let addressRes = validateToAddress();
-      if (!(amtRes.error) && !(addressRes.error)) {
+      if (!(amtRes.error) && !(addressRes.error) && !err.to && !err.amount) {
 
         connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
 
@@ -206,7 +209,7 @@ function Send() {
                 setIsModalOpen(true);
                 setTimeout(() => {
                   getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-                }, 60000);
+                }, 1000);
               }
 
             } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
