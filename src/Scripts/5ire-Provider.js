@@ -141,10 +141,10 @@ export class FireProvider {
         //   return resolve({ result: 0x3e5, method });
         // }
 
-        if (!this.selectedAddress && !this.conntectMethods.includes(method)) {
-          isCb && cb('Unauthorized: Please connnect 5ire provider.');
-          return reject("Unauthorized: Please connnect 5ire provider.");
-        }
+        // if (!this.selectedAddress && !this.conntectMethods.includes(method)) {
+        //   isCb && cb('Unauthorized: Please connnect 5ire provider.');
+        //   return reject("Unauthorized: Please connnect 5ire provider.");
+        // }
 
 
         if (this.restricted.indexOf(method) < 0) {
