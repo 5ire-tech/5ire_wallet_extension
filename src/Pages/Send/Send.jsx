@@ -223,7 +223,7 @@ function Send() {
                 setIsModalOpen(true);
                 setTimeout(() => {
                   getBalance(apiRes.evmApi, apiRes.nativeApi, true)
-                }, 40000);
+                }, 1000);
               }
             }
           }
