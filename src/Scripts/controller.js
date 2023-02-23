@@ -229,7 +229,7 @@ export async function checkTransactions(txData) {
 
       // console.log("data is here: ", txData.chain, txHash, state.auth.httpEndPoints[txData.chain]);
 
-      const isSwap = txData.type === "swap";
+      const isSwap = txData.type.toLowerCase() === "swap";
       const rpcUrl = state.auth.httpEndPoints[txData.chain] || "https://rpc-testnet.5ire.network";
       const txRecipt = await httpRequest(rpcUrl, JSON.stringify({jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [txHash], id: 1}));
 

@@ -151,7 +151,7 @@ function MenuFooter() {
               dateTime={formatDate(data.dateTime)}
               type={data?.type}
               to={
-                data.type.toLowerCase() === TX_TYPE?.SEND
+                data.type.toLowerCase() === TX_TYPE?.SEND.toLowerCase()
                   ? `To: ${data?.to ? shortner(data.to) : ""}`
                   : data.to
               }
