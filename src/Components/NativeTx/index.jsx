@@ -149,11 +149,11 @@ function NativeTx() {
                         res = await nominatorValidatorPayout(apiRes.nativeApi, auth?.uiData?.message);
                         break;
                     case "native_stop_validator":
-                        res = await stopValidatorNominator(apiRes.nativeApi, auth?.uiData?.message);
+                        res = await stopValidatorNominator(apiRes.nativeApi);
                         break;
 
                     case "native_stop_nominator":
-                        res = await stopValidatorNominator(apiRes.nativeApi, auth?.uiData?.message);
+                        res = await stopValidatorNominator(apiRes.nativeApi);
                         break;
                     case "native_unbond_validator":
                         res = await unbondNominatorValidator(apiRes.nativeApi, auth?.uiData?.message);
@@ -225,9 +225,9 @@ function NativeTx() {
                 dispatch(setUIdata({}));
                 dispatch(toggleLoader(false));
 
-                setTimeout(() => {
-                    window.close();
-                }, 300);
+                // setTimeout(() => {
+                //     window.close();
+                // }, 300);
             })
 
         } else {

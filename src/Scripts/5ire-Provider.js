@@ -84,7 +84,13 @@ export class FireProvider {
       .catch((err) => cb(null, err))
   }
 
-
+  // subscribe(cb) {
+  //   if (cb) {
+  //     setInterval(() => {
+  //       cb("Hello")
+  //     }, 2000)
+  //   }
+  // }
   //requesting some data from chain
   async request(method, payload) {
     // console.log("here it is inside injected script: ", method, payload);
