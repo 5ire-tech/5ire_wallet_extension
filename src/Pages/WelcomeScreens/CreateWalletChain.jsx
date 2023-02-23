@@ -20,13 +20,12 @@ function CreateWalletChain() {
 
   useEffect(() => {
     let res;
-    if ((newAccount === null || newAccount === undefined) && !isLogin)
+    if (((newAccount === null || !newAccount) && !isLogin) || isLogin)
       res = walletSignUp();
-    if (isLogin) res = walletSignUp();
-
     console.log("res: ", res);
 
     if (res?.error) toast.error(res.data);
+    
   }, []);
 
   useEffect(() => {
@@ -57,7 +56,7 @@ function CreateWalletChain() {
   return (
     <div className={style.cardWhite}>
       <div className={style.cardWhite__beginText}>
-        <h1>Create a New Wallet</h1>
+        <h1>New Wallet Details</h1>
       </div>
       <div className={style.cardWhite__addressInput}>
         <label>EVM Chain Address:</label>
