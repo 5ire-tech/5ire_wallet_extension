@@ -185,7 +185,7 @@ function NativeTx() {
                         break;
 
                     case "native_nominator_bondmore":
-                        feeData = await bondMoreFunds(apiRes.nativeApi, auth?.uiData?.message);
+                        res = await bondMoreFunds(apiRes.nativeApi, auth?.uiData?.message);
                         break;
                     default:
 
