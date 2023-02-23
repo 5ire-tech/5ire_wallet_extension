@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -13,31 +13,35 @@ function EnterPassword() {
 
   const navigate = useNavigate();
   // const dispatch = useDispatch();
-  const {verifyPass} = useAuth();
+  const { verifyPass } = useAuth();
   // const {pass} = useSelector(state => state.auth); 
-  const [data,setData] = useState("");
+  const [data, setData] = useState("");
 
   const handleChange = (e) => {
     setData(e.target.value);
   }
 
-  const handleClick = async() => { 
-    let res = await verifyPass(data);
+  const handleClick = async (e) => {
+    console.log("e.key : ", e.key);
+    if ((e.key === "Enter") || (e.key === undefined)) {
 
-    if (!res.error) {
-      // navigate(location.state?.redirectRoute || "/wallet");
-      navigate("/privateKey");
+      let res = await verifyPass(data);
 
-    } else {
-      toast.error(res.data);
-      console.log("Error : ", res.data);
-    } 
+      if (!res.error) {
+        // navigate(location.state?.redirectRoute || "/wallet");
+        navigate("/privateKey");
+
+      } else {
+        toast.error(res.data);
+        console.log("Error : ", res.data);
+      }
+    }
 
   }
 
   return (
     <>
-      <div className={`scrollableCont`}>
+      <div className={`scrollableCont`} onKeyDown={handleClick}>
         <MenuRestofHeaders backTo={"/manageWallet"} title={""} />
         <div className={`flexedContent`}>
           <div className={style.enterPassword}>

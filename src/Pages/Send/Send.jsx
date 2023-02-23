@@ -179,8 +179,11 @@ function Send() {
     setGassFee("");
   };
 
-  const handleApprove = async () => {
+  const handleApprove = async (e) => {
     try {
+
+      if ((e.key === "Enter") || (e.key === undefined)) {
+        
       let amtRes = validateAmount();
       let addressRes = validateToAddress();
       if (!(amtRes.error) && !(addressRes.error)) {
@@ -224,6 +227,8 @@ function Send() {
           setGassFee("");
         });
       }
+    }
+    
 
     } catch (error) {
       console.error("Error : ", error);
@@ -282,7 +287,7 @@ function Send() {
 
   return (
     <>
-      <div className={style.sendSec}>
+      <div className={style.sendSec} onKeyDown={handleApprove}>
         <div className={`scrollableCont ${style.sendSec__sourceLabel}`}>
           <label>Source Chain :</label>
           <div className={style.sendSec__sendSwapbtn}>

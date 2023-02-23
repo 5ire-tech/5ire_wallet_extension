@@ -56,7 +56,7 @@ function Swap() {
   useEffect(() => {
     if (amount) {
       getFee();
-    }else{
+    } else {
       setGassFee("");
       setDisable(true);
     }
@@ -98,61 +98,63 @@ function Swap() {
     }
   };
 
-  const handleApprove = async () => {
+  const handleApprove = async (e) => {
     try {
-      let amtRes = validateAmount();
-      if (!amtRes.error) {
+    
+      if ((e.key === "Enter") || (e.key === undefined)) {
+        let amtRes = validateAmount();
+        if (!amtRes.error) {
 
-        connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
+          connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
 
-          if (!apiRes?.value) {
+            if (!apiRes?.value) {
 
-            // console.log("API RES ::: ", apiRes);
-            Connection.isExecuting.value = false;
+              // console.log("API RES ::: ", apiRes);
+              Connection.isExecuting.value = false;
 
-            if (
-              toFrom.from.toLowerCase() === EVM.toLowerCase() &&
-              toFrom.to.toLowerCase() === NATIVE.toLowerCase()
-            ) {
-              if (Number(amount) >= Number(balance.evmBalance)) {
-                toast.error("Insufficent Balance.");
+              if (
+                toFrom.from.toLowerCase() === EVM.toLowerCase() &&
+                toFrom.to.toLowerCase() === NATIVE.toLowerCase()
+              ) {
+                if (Number(amount) >= Number(balance.evmBalance)) {
+                  toast.error("Insufficent Balance.");
 
-              } else {
-                let res = await evmToNativeSwap(apiRes.evmApi, apiRes.nativeApi, amount);
-                if (res.error) {
-                  setIsFaildOpen(true);
-                  setSwapError(res.data);
                 } else {
-                  setIsModalOpen(true);
-                  setTxHash(res.data);
-                  setTimeout(() => {
-                    getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-                  }, 40000);
+                  let res = await evmToNativeSwap(apiRes.evmApi, apiRes.nativeApi, amount);
+                  if (res.error) {
+                    setIsFaildOpen(true);
+                    setSwapError(res.data);
+                  } else {
+                    setIsModalOpen(true);
+                    setTxHash(res.data);
+                    setTimeout(() => {
+                      getBalance(apiRes.evmApi, apiRes.nativeApi, true);
+                    }, 40000);
+                  }
                 }
-              }
-            } else if (
-              toFrom.from.toLowerCase() === NATIVE.toLowerCase() &&
-              toFrom.to.toLowerCase() === EVM.toLowerCase()
-            ) {
-              if (Number(amount) >= Number(balance.nativeBalance)) {
-                toast.error("Insufficent Balance.")
-              } else {
-                let res = await nativeToEvmSwap(apiRes.evmApi, apiRes.nativeApi, amount);
-                if (res.error) {
-                  setIsFaildOpen(true);
-                  setSwapError(res.data);
+              } else if (
+                toFrom.from.toLowerCase() === NATIVE.toLowerCase() &&
+                toFrom.to.toLowerCase() === EVM.toLowerCase()
+              ) {
+                if (Number(amount) >= Number(balance.nativeBalance)) {
+                  toast.error("Insufficent Balance.")
                 } else {
-                  setIsModalOpen(true);
-                  setTxHash(res.data);
-                  setTimeout(() => {
-                    getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-                  }, 60000);
+                  let res = await nativeToEvmSwap(apiRes.evmApi, apiRes.nativeApi, amount);
+                  if (res.error) {
+                    setIsFaildOpen(true);
+                    setSwapError(res.data);
+                  } else {
+                    setIsModalOpen(true);
+                    setTxHash(res.data);
+                    setTimeout(() => {
+                      getBalance(apiRes.evmApi, apiRes.nativeApi, true);
+                    }, 60000);
+                  }
                 }
               }
             }
-          }
-        });
-
+          });
+        }
       }
     } catch (error) {
       // console.log("Error while swapping : ", error);
@@ -257,7 +259,7 @@ function Swap() {
 
     setAmount("");
     setGassFee("");
-    
+
   };
 
   const handleCopy = (e) => {
@@ -275,7 +277,7 @@ function Swap() {
 
   return (
     <>
-      <div className={style.swap}>
+      <div className={style.swap} onKeyDown={handleApprove}>
         <div className={style.swap__swapCopy}>
           <div className={style.swap__swapSec}>
             <h3>From {toFrom.from}</h3>
@@ -383,7 +385,7 @@ function Swap() {
       >
         <div className="swapsendModel">
           <div className="innerContact">
-            <img src={ComplSwap} alt="swapIcon"  width={127} height={127} />
+            <img src={ComplSwap} alt="swapIcon" width={127} height={127} />
             <h2 className="title">Swap Completed</h2>
             <p className="transId">Your Swapped Transaction ID</p>
             <span className="address">
