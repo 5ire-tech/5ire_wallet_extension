@@ -54,7 +54,7 @@ function Swap() {
   }, [currentAccount?.evmAddress, currentAccount?.nativeAddress, toFrom]);
 
   useEffect(() => {
-    if (amount === "") setError("")
+    if (amount === "") setError("");
     if (amount) {
       getFee();
     } else {
@@ -62,6 +62,13 @@ function Swap() {
       setDisable(true);
     }
   }, [amount, toFrom]);
+
+  useEffect(()=>{
+    console.log("gass fee : ",gassFee);
+    if(gassFee === "" || !gassFee){
+      setDisable(true);
+    }
+  },[gassFee]);
 
   const validateAmount = () => {
     if (amount.length === 0) {
@@ -130,7 +137,7 @@ function Swap() {
                   setTxHash(res.data);
                   setTimeout(() => {
                     getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-                  }, 1000);
+                  }, 3000);
                 }
               }
             } else if (
@@ -150,12 +157,14 @@ function Swap() {
                   setTxHash(res.data);
                   setTimeout(() => {
                     getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-                  }, 1000);
+                  }, 3000);
                 }
               }
             }
           }
+          setGassFee("");
         });
+
         // }
       }
     } catch (error) {
@@ -168,7 +177,7 @@ function Swap() {
     let amtRes = validateAmount();
 
     if (!amtRes.error) {
-      setDisable(false);
+     
       connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
 
         if (!apiRes?.value) {
@@ -182,11 +191,14 @@ function Swap() {
             if (feeRes.error) {
               if (feeRes.data) {
                 setError(feeRes.error);
+                setDisable(false);
               } else {
                 toast.error("Error while getting fee.");
+                setDisable(false);
               }
             } else {
               setGassFee(feeRes.data);
+              setDisable(false);
             }
           } else if (
             toFrom.from.toLocaleLowerCase() === EVM.toLowerCase()
@@ -200,6 +212,7 @@ function Swap() {
               }
             } else {
               setGassFee(feeRes.data);
+              setDisable(false);
             }
           }
         }

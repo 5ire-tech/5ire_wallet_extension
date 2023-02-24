@@ -40,8 +40,9 @@ function Send() {
   const [gassFee, setGassFee] = useState("");
 
   useEffect(() => {
-    if(data.to === "") setErr(p => ({...p, to:""}));
-    if(data.amount === "") setErr(p => ({...p, amount:""}));
+    if (data.to === "") setErr(p => ({ ...p, to: "" }));
+    if (data.amount === "") setErr(p => ({ ...p, amount: "" }));
+
     if ((data.to) && (data.amount)) {
       getFee();
     } else {
@@ -49,6 +50,12 @@ function Send() {
       setDisable(true);
     }
   }, [data.to, data.amount]);
+
+  useEffect(()=>{
+    if(gassFee === "" || !gassFee){
+      setDisable(true);
+    }
+  },[gassFee]);
 
   const validateAmount = () => {
 
@@ -112,6 +119,7 @@ function Send() {
         }
       }
     }
+
     else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
 
       if (!data.to) {
@@ -199,21 +207,19 @@ function Send() {
 
       let amtRes = validateAmount();
       let addressRes = validateToAddress();
+
       if (!(amtRes.error) && !(addressRes.error)) {
 
         connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
 
           if (!apiRes?.value) {
-
             Connection.isExecuting.value = false;
 
             if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-              console.log("(Number(data.amount) + Number(gassFee)) > Number(balance.evmBalance) : ", (Number(data.amount) + Number(gassFee)) > Number(balance.evmBalance));
 
               if ((Number(data.amount) + Number(gassFee)) > Number(balance.evmBalance)) {
                 setErr((p) => ({ ...p, amount: "Insufficent balance." }))
               } else {
-
                 const res = await evmTransfer(apiRes.evmApi, data);
                 if (res.error) {
                   setSendError(res.data);
@@ -224,16 +230,23 @@ function Send() {
                   setIsModalOpen(true);
                   setTimeout(() => {
                     getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-                  }, 1000);
+                  }, 3000);
                 }
               }
 
 
             } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
+
               console.log("(Number(data.amount) + Number(gassFee)) > Number(balance.nativeBalance) : ", (Number(data.amount) + Number(gassFee)) > Number(balance.nativeBalance));
 
+              console.log("Number(data.amount) : ",Number(data.amount));
+              console.log(" Number(gassFee) : ", Number(gassFee));
+              console.log(" balance.nativeBalance : ", Number(balance.nativeBalance));
+
               if ((Number(data.amount) + Number(gassFee)) > Number(balance.nativeBalance)) {
-                setErr((p) => ({ ...p, amount: "Insufficent balance." }))
+
+                setErr((p) => ({ ...p, amount: "Insufficent balance." }));
+
               } else {
                 const res = await nativeTransfer(apiRes.nativeApi, data);
                 if (res.error) {
@@ -245,7 +258,7 @@ function Send() {
                   setIsModalOpen(true);
                   setTimeout(() => {
                     getBalance(apiRes.evmApi, apiRes.nativeApi, true)
-                  }, 1000);
+                  }, 3000);
                 }
               }
             }
@@ -253,6 +266,8 @@ function Send() {
           setGassFee("");
         });
         // }
+      }else {
+        setDisable(true);
       }
 
 
