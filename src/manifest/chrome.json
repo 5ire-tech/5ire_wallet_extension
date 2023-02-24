@@ -1,6 +1,6 @@
 {
-    "name": "5ire Wallet",
-    "description": "EVM and Substrate combined wallet",
+    "name": "5irechain Wallet",
+    "description": "5irechain wallet in your browser compatible with both Native and EVM chains.",
     "version": "0.1.2",
     "manifest_version": 3,
     "action": {

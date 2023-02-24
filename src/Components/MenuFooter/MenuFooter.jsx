@@ -44,9 +44,9 @@ function MenuFooter() {
   const [history, setHistory] = useState([]);
   // const [accData, setAccData] = useState([]);
   const path = getLocation.pathname.replace("/", "");
-  const { accounts, 
-    currentAccount, 
-    currentNetwork 
+  const { accounts,
+    currentAccount,
+    currentNetwork
   } = useSelector((state) => state.auth);
 
 
@@ -129,7 +129,7 @@ function MenuFooter() {
             }`}
         >
           <div className={style.menuItems__items__img}>
-            <img src={HistoryIcon} alt="HistoryIcon"/>
+            <img src={HistoryIcon} alt="HistoryIcon" />
           </div>
           <span className={style.menuItems__items__title}>History</span>
         </Link>
@@ -150,6 +150,8 @@ function MenuFooter() {
             <TransectionHistry
               dateTime={formatDate(data.dateTime)}
               type={data?.type}
+              txHash={data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase() ?
+                data.txHash.mainHash : data.txHash}
               to={
                 data.type.toLowerCase() === TX_TYPE?.SEND.toLowerCase()
                   ? `To: ${data?.to ? shortner(data.to) : ""}`
@@ -188,7 +190,7 @@ function MenuFooter() {
         placement="bottom"
         onClose={onClose}
         open={open}
-        closeIcon={<img src={ModalCloseIcon} alt="ModalCloseIcon"/>}
+        closeIcon={<img src={ModalCloseIcon} alt="ModalCloseIcon" />}
       >
         {accounts?.map((data, index) => (
           <ManageCustom
@@ -221,7 +223,7 @@ function MenuFooter() {
             }`}
         >
           <div className={style.menuItems__items__img}>
-            <img src={Setting} alt="Setting"/>
+            <img src={Setting} alt="Setting" />
           </div>
           <span className={style.menuItems__items__title}>Settings</span>
         </Link>
@@ -235,12 +237,12 @@ function MenuFooter() {
         placement="bottom"
         onClose={onClose2}
         open={open2}
-        closeIcon={<img src={ModalCloseIcon} alt="ModalCloseIcon"/>}
+        closeIcon={<img src={ModalCloseIcon} alt="ModalCloseIcon" />}
       >
         <Link to="/manageWallet">
           <div className={style.sttings}>
             <div className={style.sttings__left}>
-              <div className={style.walletIconBorder}><img src={Wallet} width={30} height={30} alt="walletIcon"/></div>
+              <div className={style.walletIconBorder}><img src={Wallet} width={30} height={30} alt="walletIcon" /></div>
               <div className={style.sttings__left__texts}>
                 <div className={style.sttings__left__textsTop}>
                   Manage Wallet
@@ -249,7 +251,7 @@ function MenuFooter() {
             </div>
 
             <div className={style.sttings__right}>
-              <img src={BackArrow} width={8} height={15} alt="backArrow"/>
+              <img src={BackArrow} width={8} height={15} alt="backArrow" />
             </div>
           </div>
         </Link>
