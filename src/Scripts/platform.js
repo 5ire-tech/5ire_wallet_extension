@@ -198,8 +198,8 @@ export default class NotificationManager {
 
     //false the current popup if the close button is clicked
     // this.store.dispatch(setTxPopup(false))
-    const dataHere = await Browser.storage.local.get("popupStatus");
-    console.log("here is your data inside local: ", dataHere);
+    // const dataHere = await Browser.storage.local.get("popupStatus");
+    // console.log("here is your data inside local: ", dataHere);
     await Browser.storage.local.set({popupStatus: false});
     // const hereOutput = await Browser.storage.local.get("popupStatus");
 

@@ -104,7 +104,7 @@ try {
 
   //send the Notification if transaction is confirmed
   function txNotification(txData) {
-    checkTransactions(txData.data);
+    checkTransactions({...txData.data, statusCheck: txData.statusCheck});
   }
  
 } catch (err) {

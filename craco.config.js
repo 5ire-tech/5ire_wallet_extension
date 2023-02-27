@@ -24,7 +24,7 @@ module.exports = {
         optimization: {
           ...webpackConfig.optimization,
           runtimeChunk: false,
-          minimize: false
+          // minimize: false
         },
         resolve: {
           ...webpackConfig.resolve,

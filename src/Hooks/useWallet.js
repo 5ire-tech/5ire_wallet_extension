@@ -43,6 +43,7 @@ export default function UseWallet() {
     accountName,
     accounts,
     isLogin,
+    httpEndPoints
   } = useSelector((state) => state?.auth);
 
 
@@ -170,6 +171,21 @@ export default function UseWallet() {
     }
   }
 
+
+  //for http-requests
+ async function httpRequest(url, payload) {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: payload
+  });
+  const data = await res.json();
+  return data;
+}
+
+
   const evmTransfer = async (evmApi, data, isBig = false) => {
     // console.log("EVM APIIII : ", evmApi);
     return (new Promise(async (resolve, reject) => {
@@ -224,6 +240,14 @@ export default function UseWallet() {
 
           if (hash) {
 
+
+            const txRecipt = await httpRequest(httpEndPoints[currentNetwork.toLowerCase()], JSON.stringify({jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [hash], id: 1}));
+
+            let txStatus = STATUS.PENDING;
+            if(txRecipt.result) {
+              txStatus = Boolean(Number(txRecipt.result.status)) ? STATUS.SUCCESS : STATUS.PENDING
+            }
+
             let dataToDispatch = {
               data: {
                 chain: currentNetwork.toLowerCase(),
@@ -233,7 +257,7 @@ export default function UseWallet() {
                 type: data.to ? TX_TYPE?.SEND : "Contract Deployement",
                 amount: data.to ? data?.amount : 0,
                 txHash: hash,
-                status: STATUS.PENDING
+                status: txStatus
               },
               index: getAccId(currentAccount.id),
             };
@@ -243,7 +267,7 @@ export default function UseWallet() {
             dispatch(toggleLoader(false));
 
             //send the tx notification
-            Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch });
+            Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: {isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase()}});
 
             resolve({
               error: false,

@@ -147,6 +147,15 @@ export class Controller {
   async handleConnect(data) {
     const state = this.store.getState();
 
+    // if(!state.auth.isLogin) {
+    //   Browser.tabs.sendMessage(data.tabId, {
+    //     id: data.id,
+    //     response: null,
+    //     error: "5ire extension is not locked, unlock the extension",
+    //   });
+    //   return;
+    // }
+
     const hereOutput = await Browser.storage.local.get("popupStatus");
 
     if(hereOutput.popupStatus) {
@@ -194,6 +203,17 @@ export class Controller {
   //for transaction from connected website
   async handleEthTransaction(data) {
 
+    // const state = this.store.getState();
+
+    // if(!state.auth.isLogin) {
+    //   Browser.tabs.sendMessage(data.tabId, {
+    //     id: data.id,
+    //     response: null,
+    //     error: "5ire extension is locked, unlock the extension",
+    //   });
+    //   return;
+    // }
+
     const hereOutput = await Browser.storage.local.get("popupStatus");
 
     if(hereOutput.popupStatus) {
@@ -232,13 +252,22 @@ export async function httpRequest(url, payload) {
 }
 
 
+
 // check if transaction is success or failed and update it into storage
 export async function checkTransactions(txData) {
   try {
-    const store = await loadStore(false);
-    const state = await store.getState();
 
+    const store = await loadStore(false);
     const noti = new Controller(store)
+
+
+
+    if(txData.statusCheck.isFound) {
+      noti.showNotification(`Transaction ${txData.statusCheck.status} ${txData.txHash.slice(0, 30)} ...`)
+      return;
+    }
+
+    const state = await store.getState();
     const accountName = state.auth.currentAccount.accountName;
 
     // console.log("Here is the Transaction state: ", txData);
@@ -253,6 +282,7 @@ export async function checkTransactions(txData) {
       // console.log("data is here: ", txData.chain, txHash, state.auth.httpEndPoints[txData.chain]);
 
       const isSwap = txData.type.toLowerCase() === "swap";
+
       const rpcUrl = state.auth.httpEndPoints[txData.chain] || "https://rpc-testnet.5ire.network";
       const txRecipt = await httpRequest(rpcUrl, JSON.stringify({jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [txHash], id: 1}));
 
@@ -266,7 +296,7 @@ export async function checkTransactions(txData) {
 
 
   } catch (err) {
-    // console.log("Error while updating the transaction: ", err);
+    console.log("Error while updating the transaction: ", err);
   }
 }
 
