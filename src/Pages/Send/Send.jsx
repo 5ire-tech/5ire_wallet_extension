@@ -27,6 +27,7 @@ function Send() {
     getBalance,
     retriveEvmFee,
     retriveNativeFee,
+    validateAddress
   } = useWallet();
   const { balance, currentAccount, httpEndPoints, currentNetwork } = useSelector(state => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,6 +40,9 @@ function Send() {
   const [gassFee, setGassFee] = useState("");
 
   useEffect(() => {
+    if (data.to === "") setErr(p => ({ ...p, to: "" }));
+    if (data.amount === "") setErr(p => ({ ...p, amount: "" }));
+
     if ((data.to) && (data.amount)) {
       getFee();
     } else {
@@ -46,6 +50,12 @@ function Send() {
       setDisable(true);
     }
   }, [data.to, data.amount]);
+
+  useEffect(()=>{
+    if(gassFee === "" || !gassFee){
+      setDisable(true);
+    }
+  },[gassFee]);
 
   const validateAmount = () => {
 
@@ -94,14 +104,22 @@ function Send() {
         return { error: true }
 
       } else if (data.to === currentAccount.evmAddress) {
-        setErr((p) => ({ ...p, to: "'Recipient' can't be same as your current address!" }));
+        setErr((p) => ({ ...p, to: "'Recipient' can not be same as your current address!" }));
         return { error: true }
 
       } else {
-        setErr((p) => ({ ...p, to: "" }));
-        return { error: false }
+        let res = validateAddress(data.to);
+
+        if (res.error) {
+          setErr((p) => ({ ...p, to: res.data }));
+          return { error: true }
+        } else {
+          setErr((p) => ({ ...p, to: "" }));
+          return { error: false };
+        }
       }
     }
+
     else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
 
       if (!data.to) {
@@ -128,7 +146,7 @@ function Send() {
     let addressRes = validateToAddress();
     if (!(amtRes.error) && !(addressRes.error)) {
 
-      setDisable(false);
+      // setDisable(false);
       connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
 
         if (!apiRes?.value) {
@@ -138,19 +156,21 @@ function Send() {
           if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
 
             let feeRes = await retriveNativeFee(apiRes.nativeApi, data.to, data.amount);
-            // console.log("Fee Res : ", feeRes);
+
             if (feeRes.error) {
               if (feeRes.data) {
                 setErr(p => ({ ...p, to: feeRes.data }));
+                setDisable(true);
               } else {
                 toast.error("Error while getting fee!");
+                setDisable(true);
               }
             } else {
               setGassFee(feeRes.data);
+              setDisable(false);
             }
           }
           else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-
 
             let feeRes = await retriveEvmFee(apiRes.evmApi, data.to, data.amount);
             // console.log("Fee Res : ", feeRes);
@@ -162,6 +182,7 @@ function Send() {
               }
             } else {
               setGassFee(feeRes.data);
+              setDisable(false);
             }
           }
         }
@@ -182,53 +203,73 @@ function Send() {
   const handleApprove = async (e) => {
     try {
 
-      if ((e.key === "Enter") || (e.key === undefined)) {
-        
+      // if ((e.key === "Enter") || (e.key === undefined)) {
+
       let amtRes = validateAmount();
       let addressRes = validateToAddress();
+
       if (!(amtRes.error) && !(addressRes.error)) {
 
         connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
 
           if (!apiRes?.value) {
-
             Connection.isExecuting.value = false;
 
-
             if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-              const res = await evmTransfer(apiRes.evmApi, data);
-              if (res.error) {
-                setSendError(res.data);
-                setIsFaildOpen(true);
+
+              if ((Number(data.amount) + Number(gassFee)) > Number(balance.evmBalance)) {
+                setErr((p) => ({ ...p, amount: "Insufficent balance." }))
+              } else {
+                const res = await evmTransfer(apiRes.evmApi, data);
+                if (res.error) {
+                  setSendError(res.data);
+                  setIsFaildOpen(true);
+                }
+                else {
+                  setTxHash(res.data);
+                  setIsModalOpen(true);
+                  setTimeout(() => {
+                    getBalance(apiRes.evmApi, apiRes.nativeApi, true);
+                  }, 3000);
+                }
               }
-              else {
-                setTxHash(res.data);
-                setIsModalOpen(true);
-                setTimeout(() => {
-                  getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-                }, 1000);
-              }
+
 
             } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
-              const res = await nativeTransfer(apiRes.nativeApi, data);
-              if (res.error) {
-                setSendError(res.data);
-                setIsFaildOpen(true);
-              }
-              else {
-                setTxHash(res.data);
-                setIsModalOpen(true);
-                setTimeout(() => {
-                  getBalance(apiRes.evmApi, apiRes.nativeApi, true)
-                }, 1000);
+
+              console.log("(Number(data.amount) + Number(gassFee)) > Number(balance.nativeBalance) : ", (Number(data.amount) + Number(gassFee)) > Number(balance.nativeBalance));
+
+              console.log("Number(data.amount) : ",Number(data.amount));
+              console.log(" Number(gassFee) : ", Number(gassFee));
+              console.log(" balance.nativeBalance : ", Number(balance.nativeBalance));
+
+              if ((Number(data.amount) + Number(gassFee)) > Number(balance.nativeBalance)) {
+
+                setErr((p) => ({ ...p, amount: "Insufficent balance." }));
+
+              } else {
+                const res = await nativeTransfer(apiRes.nativeApi, data);
+                if (res.error) {
+                  setSendError(res.data);
+                  setIsFaildOpen(true);
+                }
+                else {
+                  setTxHash(res.data);
+                  setIsModalOpen(true);
+                  setTimeout(() => {
+                    getBalance(apiRes.evmApi, apiRes.nativeApi, true)
+                  }, 3000);
+                }
               }
             }
           }
           setGassFee("");
         });
+        // }
+      }else {
+        setDisable(true);
       }
-    }
-    
+
 
     } catch (error) {
       console.error("Error : ", error);
@@ -287,7 +328,7 @@ function Send() {
 
   return (
     <>
-      <div className={style.sendSec} onKeyDown={handleApprove}>
+      <div className={style.sendSec} /*onKeyDown={handleApprove} */>
         <div className={`scrollableCont ${style.sendSec__sourceLabel}`}>
           <label>Source Chain :</label>
           <div className={style.sendSec__sendSwapbtn}>
@@ -368,7 +409,7 @@ function Send() {
       >
         <div className="swapsendModel">
           <div className="innerContact">
-            <img src={ComplSwap} alt="swapImage"  width={127} height={127} />
+            <img src={ComplSwap} alt="swapImage" width={127} height={127} />
             <h2 className="title">Transfer Completed</h2>
             <p className="transId">Your Transaction ID</p>
             <span className="address">{shortner(txHash)}</span>
@@ -393,7 +434,7 @@ function Send() {
       >
         <div className="swapsendModel">
           <div className="innerContact">
-            <img src={FaildSwap} alt="swapFaild"  width={127} height={127} />
+            <img src={FaildSwap} alt="swapFaild" width={127} height={127} />
             <h2 className="title">Transfer Failed!</h2>
             <p className="transId">{sendError}</p>
 

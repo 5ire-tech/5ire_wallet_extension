@@ -721,6 +721,45 @@ export default function UseWallet() {
     }
   };
 
+  const validateAddress = async (address) => {
+    if (address.startsWith("0x")) {
+      try {
+        Web3.utils.toChecksumAddress(address);
+        return ({
+          error: false,
+          data: "Address is correct."
+        });
+      } catch (error) {
+        dispatch(toggleLoader(false));
+        return ({
+          error: true,
+          data: "Incorrect 'Recipient' address."
+        });
+      }
+    } else if (address.startsWith("5")) {
+
+      try {
+        encodeAddress(
+          isHex(address)
+            ? hexToU8a(address)
+            : decodeAddress(address)
+        );
+        return ({
+          error: false,
+          data: "Address is correct."
+        });
+      } catch (error) {
+        dispatch(toggleLoader(false));
+
+        return ({
+          error: true,
+          data: "Incorrect 'Recipient' address"
+        });
+      }
+
+    }
+  }
+
   const retriveNativeFee = async (nativeApi, toAddress, amount) => {
     try {
       dispatch(toggleLoader(true));
@@ -794,6 +833,7 @@ export default function UseWallet() {
     retriveEvmFee,
     retriveNativeFee,
     getKey,
-    getBalance
+    getBalance,
+    validateAddress
   };
 }

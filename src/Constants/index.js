@@ -6,8 +6,8 @@ export const EVM = "evm";
 export const TEMP1M = "temp1m";
 export const TEMP2P = "temp2p";
 export const TX_TYPE = {
-    SEND: "send",
-    SWAP: "swap"
+    SEND: "Transfer",
+    SWAP: "Swap"
 }
 export const NETWORK = {
     QA_NETWORK: "QA",
