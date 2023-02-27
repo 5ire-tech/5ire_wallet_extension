@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import style from "./style.module.scss";
 import browser from "webextension-polyfill";
 import useWallet from "../../Hooks/useWallet";
@@ -140,6 +140,7 @@ export const FooterStepTwo = () => {
 export const ApproveLogin = () => {
   const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+ 
 
   function handleClick(isApproved) {
     dispatch(toggleLoader(true));
@@ -185,12 +186,15 @@ export const ApproveLogin = () => {
       });
     }
 
+    browser.storage.local.set({popupStatus: false});
     dispatch(setUIdata({}));
     dispatch(toggleLoader(false));
     setTimeout(() => {
       window.close();
     }, 1000);
   }
+
+
   return (
     <>
       <div className={style.menuItems__cancleContinue}>
@@ -269,6 +273,8 @@ export const ApproveTx = () => {
       dispatch(setUIdata({}));
       window.close();
     }
+
+    browser.storage.local.set({popupStatus: false});
   }
 
   return (

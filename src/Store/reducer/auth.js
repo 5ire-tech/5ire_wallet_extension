@@ -1,9 +1,13 @@
-import { createSlice, current } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 export const userState = {
   pass: null,
 
   accounts: [],
+
+  popupChecks: {
+    txApprove: false
+  },
 
   currentAccount: {
     accountName: "",
@@ -52,6 +56,11 @@ export const userSlice = createSlice({
   name: "auth",
   initialState: userState,
   reducers: {
+
+    setTxPopup: (state, action) => {
+      state.popupChecks.txApprove = action.payload
+    },
+
     setPassword: (state, action) => {
       state.pass = action.payload;
     },
@@ -175,6 +184,7 @@ export const {
   resetBalance,
   updateTxHistory,
   // setApiReady
+  setTxPopup
 } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -22,7 +22,7 @@ function init(preloadedState) {
     const store = configureStore({
       reducer: { auth: authReducer },
       preloadedState,
-      // middleware: [logger],
+      middleware: [logger],
     });
 
     wrapStore(store, { portName: PORT_NAME });
@@ -147,6 +147,18 @@ export class Controller {
   async handleConnect(data) {
     const state = this.store.getState();
 
+    const hereOutput = await Browser.storage.local.get("popupStatus");
+
+    if(hereOutput.popupStatus) {
+      Browser.tabs.sendMessage(data.tabId, {
+        id: data.id,
+        response: null,
+        error: "5ire extension transaction approve popup session is already active",
+      });
+      return;
+    }
+
+
     const isEthReq =
       data?.method === "eth_requestAccounts" ||
       data?.method === "eth_accounts";
@@ -181,6 +193,17 @@ export class Controller {
 
   //for transaction from connected website
   async handleEthTransaction(data) {
+
+    const hereOutput = await Browser.storage.local.get("popupStatus");
+
+    if(hereOutput.popupStatus) {
+      Browser.tabs.sendMessage(data.tabId, {
+        id: data.id,
+        response: null,
+        error: "5ire extension transaction approve popup session is already active",
+      });
+      return;
+    }
 
     this.store.dispatch(
       setUIdata({
@@ -229,7 +252,7 @@ export async function checkTransactions(txData) {
 
       // console.log("data is here: ", txData.chain, txHash, state.auth.httpEndPoints[txData.chain]);
 
-      const isSwap = txData.type === "swap";
+      const isSwap = txData.type.toLowerCase() === "swap";
       const rpcUrl = state.auth.httpEndPoints[txData.chain] || "https://rpc-testnet.5ire.network";
       const txRecipt = await httpRequest(rpcUrl, JSON.stringify({jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [txHash], id: 1}));
 
