@@ -259,28 +259,19 @@ export async function checkTransactions(txData) {
 
     const store = await loadStore(false);
     const noti = new Controller(store)
-
+    const txHash = typeof(txData.txHash) === "object" ? txData.txHash.mainHash : txData.txHash;
 
 
     if(txData.statusCheck.isFound) {
-      noti.showNotification(`Transaction ${txData.statusCheck.status} ${txData.txHash.slice(0, 30)} ...`)
+      noti.showNotification(`Transaction ${txData.statusCheck.status} ${txHash.slice(0, 30)} ...`)
       return;
     }
 
     const state = await store.getState();
     const accountName = state.auth.currentAccount.accountName;
-
-    // console.log("Here is the Transaction state: ", txData);
-  
-    /*
-    check for every pending transactions and if they success or fail update it into storage
-    and send the success notification
-    */ 
-      const txHash = typeof(txData.txHash) === "object" ? txData.txHash.mainHash : txData.txHash;
+      
+      
       //check if transaction is swap or not
-
-      // console.log("data is here: ", txData.chain, txHash, state.auth.httpEndPoints[txData.chain]);
-
       const isSwap = txData.type.toLowerCase() === "swap";
       const rpcUrl = state.auth.httpEndPoints[txData.chain] || "https://rpc-testnet.5ire.network";
       const txRecipt = await httpRequest(rpcUrl, JSON.stringify({jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [txHash], id: 1}));

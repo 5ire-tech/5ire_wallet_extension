@@ -580,6 +580,16 @@ export default function UseWallet() {
 
             // console.log("Sign Res : ", signRes.toHex());
 
+
+
+            const txRecipt = await httpRequest(httpEndPoints[currentNetwork.toLowerCase()], JSON.stringify({jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [signHash], id: 1}));
+
+            let txStatus = STATUS.PENDING;
+            if(txRecipt.result) {
+              txStatus = Boolean(Number(txRecipt.result.status)) ? STATUS.SUCCESS : STATUS.PENDING
+            }
+
+
             let dataToDispatch = {
               data: {
                 chain: currentNetwork.toLowerCase(),
@@ -589,7 +599,7 @@ export default function UseWallet() {
                 type: TX_TYPE?.SWAP,
                 amount: amount,
                 txHash: { mainHash: signHash, hash: signRes.toHex() },
-                status: STATUS.PENDING
+                status: txStatus
               },
               index: getAccId(currentAccount.id),
             };
@@ -599,7 +609,9 @@ export default function UseWallet() {
             // console.log("data to dispatch : ",dataToDispatch);
             dispatch(setTxHistory(dataToDispatch));
             dispatch(toggleLoader(false));
-            Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch });
+
+            //send the tx notification
+            Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: {isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase()}});
 
             resolve({
               error: false,
