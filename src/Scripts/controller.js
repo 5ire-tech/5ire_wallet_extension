@@ -280,7 +280,7 @@ export async function checkTransactions(txData) {
 
       if(txRecipt && txRecipt?.result) {
         store.dispatch(updateTxHistory({txHash, accountName, status: Boolean(parseInt(txRecipt.result.status)), isSwap}));
-        noti.showNotification(`Transaction ${Boolean(parseInt(txRecipt.result.status)) ? "Success" : "Failed"} ${txHash.slice(0, 30)} ...`)
+        noti.showNotification(`Transaction ${Boolean(parseInt(txRecipt.result.status)) ? "success" : "failed"} ${txHash.slice(0, 30)} ...`)
     } else checkTransactions(txData)
 
 
