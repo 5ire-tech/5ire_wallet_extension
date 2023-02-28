@@ -48,7 +48,7 @@ injectedStream.on("data", (data) => {
     } else {
 
       if (fireProvider.conntectMethods.find(item => item === handler?.method)) {
-        fireProvider.injectSelectedAccount(data?.response?.evmAddress || (data?.response?.result.length && data?.response?.result[0]))
+        fireProvider.injectSelectedAccount(data?.response?.evmAddress || (data?.response?.result?.length && data?.response?.result[0]))
         handler?.resolve(data?.response?.result)
         delete fireProvider.handlers[data.id];
         return;
