@@ -19,10 +19,10 @@ function ApproveTx() {
     dispatch(resetBalance());
 
     if (!isReady) {
-      setTimeout(()=>{
+      setTimeout(() => {
         getFee();
-      },5000)
-    }else{
+      }, 2000)
+    } else {
       getFee();
     }
   }, [isReady]);
@@ -40,10 +40,11 @@ function ApproveTx() {
           apiRes.evmApi,
           auth?.uiData?.message?.to,
           auth?.uiData?.message?.value,
-          auth?.uiData?.message?.data
+          auth?.uiData?.message?.data,
+          false
         )
           .then((res) => {
-    
+
             if (!res.error) {
               setFee(res.data);
             }
@@ -51,7 +52,7 @@ function ApproveTx() {
           .catch((e) => {
             console.log("Error : ", e);
           });
-      }else{
+      } else {
         setReady(false);
       }
     });

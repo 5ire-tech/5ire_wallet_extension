@@ -58,9 +58,9 @@ function BalanceDetails({ className, textLeft, mt0 }) {
 
       if (!res?.value) {
         Connection.isExecuting.value = false;
-        setInterval(() => {
-          getBalance(res.evmApi, res.nativeApi, true);
-        }, 5000);
+        //setInterval(() => {
+        getBalance(res.evmApi, res.nativeApi, true);
+        //}, 5000);
       }
     })
       .catch((err) => {

@@ -193,7 +193,7 @@ export default function UseWallet() {
       // console.log("Condition Here: ", (Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0);
       // console.log("Here are individual conditions: ", data.amount !== '0x0', (Number(data.amount) > Number(balance.evmBalance), Number(balance.evmBalance) <= 0));
       // console.log("individual balance: ", Number(data.amount), Number(balance.evmBalance), data.amount);
-
+      console.log("HERE evmTransfer LOGS", balance.evmBalance, data.amount, (Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0)
       try {
         if ((Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0) {
           resolve({
@@ -255,7 +255,7 @@ export default function UseWallet() {
                 dateTime: new Date(),
                 to: data.to ? data.to : "",
                 type: data.to ? (data.amount !== "0x0" ? TX_TYPE.SEND : "Contract Execution") : "Contract Deployement",
-                amount: data.amount !== "0x0" ? data.amount : 0 ,
+                amount: data.amount !== "0x0" ? data.amount : 0,
                 txHash: hash,
                 status: txStatus
               },
@@ -689,9 +689,9 @@ export default function UseWallet() {
     }
   };
 
-  const retriveEvmFee = async (evmApi, toAddress, amount, data = "") => {
+  const retriveEvmFee = async (evmApi, toAddress, amount, data = "", isLoading = true) => {
     try {
-      dispatch(toggleLoader(true));
+      isLoading && dispatch(toggleLoader(true));
       toAddress = toAddress ? toAddress : currentAccount?.nativeAddress;
 
       if (toAddress.startsWith("5"))
