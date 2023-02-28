@@ -55,6 +55,7 @@ function PrivateKey() {
                 <p className={style.wallet__addressInput__copyText}>
                   <span>{key}</span>
                   <img
+                    draggable={false}
                     src={CopyIcon}
                     alt="copyIcon"
                     name="key"
@@ -74,6 +75,7 @@ function PrivateKey() {
                 <p className={style.wallet__addressInput__copyText}>
                   <span>{seed}</span>
                   <img
+                    draggable={false}
                     src={CopyIcon}
                     alt="copyIcon"
                     name="seed"

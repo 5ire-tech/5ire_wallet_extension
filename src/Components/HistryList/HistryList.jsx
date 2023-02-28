@@ -9,7 +9,7 @@ function HistryList(props) {
     <>
       <div className={style.histryList}>
         <div className={style.histryList__Status}>
-          <img src={TickIcon}></img>
+          <img src={TickIcon} draggable={false} alt="tickIcon"></img>
           <div className={style.histryList__Status__Send}>
             <p>{sendRecieve}<span>/{coinname}</span></p>
             <p>{address}</p>

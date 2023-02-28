@@ -22,7 +22,7 @@ export default function SetPasswordScreen() {
   const [pass, setPass] = useState({ pass: "", confirmPass: "" });
 
   useEffect(() => {
-    console.log(pass.confirmPass === pass.pass);
+  
     if (pass.confirmPass === pass.pass || pass.pass === "") {
       setconfirmError("");
     } else {

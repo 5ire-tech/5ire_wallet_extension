@@ -18,7 +18,7 @@ function CoinsTable({ dataArray }) {
         <div className={style.coinsTable} key={index}>
           <div className={style.coinsTable__left}>
             <div className={style.coinsTable__left__icon}>
-              <img src={ele.coinIcon} height={30} width={30} />
+              <img src={ele.coinIcon} height={30} width={30} alt="coinIcon" draggable={false}/>
             </div>
             <div className={style.coinsTable__left__textSec}>
               <div

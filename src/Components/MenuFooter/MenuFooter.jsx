@@ -21,8 +21,8 @@ import ManageCustom from "../ManageCustomtocken/ManageCustom";
 import Createaccount from "../../Assets/PNG/createaccount.png";
 import AccountSetting from "../AccountSetting/AccountSetting.jsx";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { resetBalance, setCurrentAcc } from "../../Store/reducer/auth";
 import TransectionHistry from "../TransectionHistry/TransectionHistry";
+import { setCurrentAcc } from "../../Store/reducer/auth";
 // import { Moment } from "moment";
 // import DefiIcon from "../../Assets/DefiIcon.svg";
 // import SettignIcon from "../../Assets/SettignIcon.svg";
@@ -129,7 +129,7 @@ function MenuFooter() {
             }`}
         >
           <div className={style.menuItems__items__img}>
-            <img src={HistoryIcon} alt="HistoryIcon" />
+            <img src={HistoryIcon} alt="HistoryIcon" draggable={false} />
           </div>
           <span className={style.menuItems__items__title}>History</span>
         </Link>
@@ -143,7 +143,7 @@ function MenuFooter() {
         placement="bottom"
         onClose={onClose1}
         open={open1}
-        closeIcon={<img src={ModalCloseIcon} alt="close" />}
+        closeIcon={<img src={ModalCloseIcon} alt="close" draggable={false} />}
       >
         {history?.length > 0 ? (
           history?.map((data) => (
@@ -153,9 +153,9 @@ function MenuFooter() {
               txHash={data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase() ?
                 data.txHash.mainHash : data.txHash}
               to={
-                data.type.toLowerCase() === TX_TYPE?.SEND.toLowerCase()
-                  ? `To: ${data?.to ? shortner(data.to) : ""}`
-                  : data.to
+                data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase()
+                  ? data.to
+                  : `${data?.to ? `To: `+shortner(data.to) : ""}`
               }
               amount={`${data?.amount} 5ire`}
               status={data?.status}
@@ -176,7 +176,7 @@ function MenuFooter() {
             }`}
         >
           <div className={style.menuItems__items__img}>
-            <img src={Myaccount} alt="Myaccount" />
+            <img src={Myaccount} alt="Myaccount" draggable={false} />
           </div>
           <span className={style.menuItems__items__title}>My Accounts</span>
         </Link>
@@ -190,7 +190,7 @@ function MenuFooter() {
         placement="bottom"
         onClose={onClose}
         open={open}
-        closeIcon={<img src={ModalCloseIcon} alt="ModalCloseIcon" />}
+        closeIcon={<img src={ModalCloseIcon} alt="ModalCloseIcon" draggable={false} />}
       >
         {accounts?.map((data, index) => (
           <ManageCustom
@@ -223,7 +223,7 @@ function MenuFooter() {
             }`}
         >
           <div className={style.menuItems__items__img}>
-            <img src={Setting} alt="Setting" />
+            <img src={Setting} alt="Setting" draggable={false} />
           </div>
           <span className={style.menuItems__items__title}>Settings</span>
         </Link>
@@ -237,12 +237,12 @@ function MenuFooter() {
         placement="bottom"
         onClose={onClose2}
         open={open2}
-        closeIcon={<img src={ModalCloseIcon} alt="ModalCloseIcon" />}
+        closeIcon={<img src={ModalCloseIcon} alt="ModalCloseIcon" draggable={false} />}
       >
         <Link to="/manageWallet">
           <div className={style.sttings}>
             <div className={style.sttings__left}>
-              <div className={style.walletIconBorder}><img src={Wallet} width={30} height={30} alt="walletIcon" /></div>
+              <div className={style.walletIconBorder}><img draggable={false} src={Wallet} width={30} height={30} alt="walletIcon" /></div>
               <div className={style.sttings__left__texts}>
                 <div className={style.sttings__left__textsTop}>
                   Manage Wallet
@@ -251,7 +251,7 @@ function MenuFooter() {
             </div>
 
             <div className={style.sttings__right}>
-              <img src={BackArrow} width={8} height={15} alt="backArrow" />
+              <img src={BackArrow} width={8} height={15} alt="backArrow" draggable={false} />
             </div>
           </div>
         </Link>

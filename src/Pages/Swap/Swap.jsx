@@ -17,6 +17,7 @@ import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import { InputField } from "../../Components/InputField/InputFieldSimple";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
 
+
 function Swap() {
 
   const [error, setError] = useState("");
@@ -25,12 +26,16 @@ function Swap() {
   const [gassFee, setGassFee] = useState("");
   const [swapErr, setSwapError] = useState("");
   const [disableBtn, setDisable] = useState(true);
-  // const [activeTab, setActiveTab] = useState("one");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [toFrom, setToFrom] = useState({ from: "Native", to: "Evm" });
   const [address, setAddress] = useState({ fromAddress: "", toAddress: "" });
-  const { currentAccount, balance, httpEndPoints, currentNetwork } = useSelector((state) => state.auth);
+  const {
+    currentAccount,
+    balance,
+    httpEndPoints,
+    currentNetwork
+  } = useSelector((state) => state.auth);
   const {
     evmToNativeSwap,
     nativeToEvmSwap,
@@ -63,27 +68,34 @@ function Swap() {
     }
   }, [amount, toFrom]);
 
-  useEffect(()=>{
-    console.log("gass fee : ",gassFee);
-    if(gassFee === "" || !gassFee){
+  useEffect(() => {
+
+    if (gassFee === "" || !gassFee) {
       setDisable(true);
     }
-  },[gassFee]);
+  }, [gassFee]);
 
   const validateAmount = () => {
+
     if (amount.length === 0) {
       setError("Please enter amount.");
       return { error: true };
-    } else if (isNaN(amount)) {
+    }
+
+    else if (isNaN(amount)) {
       setError("Please enter amount correctly.");
       return { error: true };
-    } else if (Number(amount) <= 0) {
+    }
+
+    else if (Number(amount) <= 0) {
       setError("Amount can't be 0 or less then 0");
       return { error: true };
     }
-    else if (toFrom.from.toLowerCase() === EVM.toLowerCase() &&
-      toFrom.to.toLowerCase() === NATIVE.toLowerCase()) {
 
+    else if (
+      toFrom.from.toLowerCase() === EVM.toLowerCase() &&
+      toFrom.to.toLowerCase() === NATIVE.toLowerCase()
+    ) {
       if (Number(amount) >= Number(balance.evmBalance)) {
         setError("Insufficent balance.");
         return { error: true };
@@ -91,8 +103,9 @@ function Swap() {
         setError("");
         return { error: false };
       }
+    }
 
-    } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase() &&
+    else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase() &&
       toFrom.to.toLowerCase() === EVM.toLowerCase()) {
 
       if (Number(amount) >= Number(balance.nativeBalance)) {
@@ -117,16 +130,20 @@ function Swap() {
 
           if (!apiRes?.value) {
 
-            // console.log("API RES ::: ", apiRes);
             Connection.isExecuting.value = false;
 
             if (
               toFrom.from.toLowerCase() === EVM.toLowerCase() &&
               toFrom.to.toLowerCase() === NATIVE.toLowerCase()
             ) {
-              if (Number(amount) >= Number(balance.evmBalance) || (Number(amount) + Number(gassFee) > Number(balance.evmBalance))) {
-                // toast.error("Insufficent Balance.");
+
+              if (
+                Number(amount) >= Number(balance.evmBalance) ||
+                (Number(amount) + Number(gassFee) > Number(balance.evmBalance))
+              ) {
+
                 setError("Insufficent balance.");
+
               } else {
                 let res = await evmToNativeSwap(apiRes.evmApi, apiRes.nativeApi, amount);
                 if (res.error) {
@@ -144,11 +161,17 @@ function Swap() {
               toFrom.from.toLowerCase() === NATIVE.toLowerCase() &&
               toFrom.to.toLowerCase() === EVM.toLowerCase()
             ) {
-              if (Number(amount) >= Number(balance.nativeBalance) || (Number(amount) + Number(gassFee) > Number(balance.nativeBalance))) {
-                // toast.error("Insufficent Balance.");
+
+              if (
+                Number(amount) >= Number(balance.nativeBalance) ||
+                (Number(amount) + Number(gassFee) > Number(balance.nativeBalance))
+              ) {
+
                 setError("Insufficent balance.");
+
               } else {
-                let res = await nativeToEvmSwap(apiRes.evmApi, apiRes.nativeApi, amount);
+
+                let res = await nativeToEvmSwap(apiRes.nativeApi, amount);
                 if (res.error) {
                   setIsFaildOpen(true);
                   setSwapError(res.data);
@@ -168,8 +191,7 @@ function Swap() {
         // }
       }
     } catch (error) {
-      // console.log("Error while swapping : ", error);
-      toast.error("Error occured!");
+      toast.error("Error occured.");
     }
   };
 
@@ -177,17 +199,19 @@ function Swap() {
     let amtRes = validateAmount();
 
     if (!amtRes.error) {
-     
+
       connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
 
         if (!apiRes?.value) {
 
-          // console.log("API RES ::: ", apiRes);
           Connection.isExecuting.value = false;
 
-          if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase() && amount) {
+          if (
+            toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase() &&
+            amount
+          ) {
+
             let feeRes = await retriveNativeFee(apiRes.nativeApi, "", amount);
-            // console.log("Fee Res : ", feeRes);
             if (feeRes.error) {
               if (feeRes.data) {
                 setError(feeRes.error);
@@ -200,9 +224,11 @@ function Swap() {
               setGassFee(feeRes.data);
               setDisable(false);
             }
+
           } else if (
             toFrom.from.toLocaleLowerCase() === EVM.toLowerCase()
           ) {
+
             let feeRes = await retriveEvmFee(apiRes.evmApi, "", amount);
             if (feeRes.error) {
               if (feeRes.data) {
@@ -214,6 +240,7 @@ function Swap() {
               setGassFee(feeRes.data);
               setDisable(false);
             }
+
           }
         }
       });
@@ -227,46 +254,24 @@ function Swap() {
     setGassFee("");
   };
 
-  const handleOk = () => {
-    setIsModalOpen(false);
-    setDisable(true);
+  const handleOkCancle = () => {
     setAmount("");
     setGassFee("");
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
     setDisable(true);
-    setAmount("");
-    setGassFee("");
-
+    setIsFaildOpen(false);
+    setIsModalOpen(false);
   };
 
-  const faildOk = () => {
+  const faildOkCancle = () => {
     setIsFaildOpen(false);
     setDisable(true);
     setAmount("");
     setGassFee("");
 
-  };
-
-  const faildCancel = () => {
-    setIsFaildOpen(false);
-    setDisable(true);
-    setAmount("");
-    setGassFee("");
-
-  };
-
-  const handleSwapAgain = () => {
-    setIsFaildOpen(false);
-    setIsModalOpen(false);
-    setDisable(true);
-    setAmount("");
-    setGassFee("");
   };
 
   const handleClick = () => {
+
     if (toFrom.from.toLowerCase() === EVM.toLowerCase())
       setToFrom({ from: "Native", to: "Evm" });
     if (toFrom.from.toLowerCase() === NATIVE.toLowerCase())
@@ -299,6 +304,7 @@ function Swap() {
             <span>
               {shortner(address.fromAddress)}
               <img
+                draggable={false}
                 name={toFrom.from}
                 alt="copyIcon"
                 onClick={handleCopy}
@@ -309,13 +315,14 @@ function Swap() {
             </span>
           </div>
           <div className={style.swap__icon} onClick={handleClick}>
-            <img src={SwapIcon} alt="swapIcon" />
+            <img src={SwapIcon} alt="swapIcon" draggable={false} />
           </div>
           <div className={style.swap__swapSec}>
             <h3>To {toFrom.to}</h3>
             <span>
               {shortner(address.toAddress)}{" "}
               <img
+                draggable={false}
                 name={toFrom.to}
                 src={CopyIcon}
                 onClick={handleCopy}
@@ -336,10 +343,11 @@ function Swap() {
               value={amount}
               addonAfter={
                 <span className={style.swap__pasteText}>
-                  <img src={WalletCardLogo} alt="walletLogo" />
+                  <img src={WalletCardLogo} alt="walletLogo" draggable={false} />
                   5ire
                 </span>
               }
+
             />
             <p className="errorText">{error}</p>
 
@@ -389,23 +397,24 @@ function Swap() {
           </div> */}
         </div>
         <div className={style.swap__transactionFee}>
-          <p>{gassFee ? `Transaction Fee : ${gassFee} 5IRE` : ""}</p>
+          <p>{gassFee ? `Estimated gas fee : ${gassFee} 5IRE` : ""}</p>
         </div>
       </div>
       <Approve onClick={handleApprove} text="Swap" isDisable={disableBtn} />
       <ModalCustom
         isModalOpen={isModalOpen}
-        handleOk={handleOk}
-        handleCancel={handleCancel}
+        handleOk={handleOkCancle}
+        handleCancel={handleOkCancle}
       >
         <div className="swapsendModel">
           <div className="innerContact">
-            <img src={ComplSwap} alt="swapIcon" width={127} height={127} />
+            <img src={ComplSwap} alt="swapIcon" width={127} height={127} draggable={false} />
             <h2 className="title">Swap Completed</h2>
             <p className="transId">Your Swapped Transaction ID</p>
             <span className="address">
               {txHash ? shortner(txHash) : ""}
               <img
+                draggable={false}
                 name={"hash"}
                 src={CopyIcon}
                 onClick={handleCopy}
@@ -416,24 +425,24 @@ function Swap() {
             </span>
 
             <div className="footerbuttons">
-              <ButtonComp text={"Swap Again"} onClick={handleSwapAgain} />
+              <ButtonComp text={"Swap Again"} onClick={handleOkCancle} />
             </div>
           </div>
         </div>
       </ModalCustom>
       <ModalCustom
         isModalOpen={isFaildOpen}
-        handleOk={faildOk}
-        handleCancel={faildCancel}
+        handleOk={faildOkCancle}
+        handleCancel={faildOkCancle}
       >
         <div className="swapsendModel">
           <div className="innerContact">
-            <img src={FaildSwap} alt="swapFaild" width={127} height={127} />
+            <img src={FaildSwap} alt="swapFaild" width={127} height={127} draggable={false} />
             <h2 className="title">Swap Failed!</h2>
             <p className="transId">{swapErr}</p>
 
             <div className="footerbuttons">
-              <ButtonComp text={"Swap Again"} onClick={handleSwapAgain} />
+              <ButtonComp text={"Swap Again"} onClick={handleOkCancle} />
             </div>
           </div>
         </div>

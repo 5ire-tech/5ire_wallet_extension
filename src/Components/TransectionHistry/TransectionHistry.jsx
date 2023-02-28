@@ -16,7 +16,7 @@ function TransectionHistry({ dateTime, img, type, to, amount, status, txHash }) 
       </p>
       <div className={style.transectionHistry__histry}>
         <div className={style.transectionHistry__histry__status}>
-          <img alt="currency" src={img} />
+          <img alt="currency" src={img} draggable={false} />
           <div>
             <p>{type}</p>
             <p>{to}</p>

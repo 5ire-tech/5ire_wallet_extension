@@ -13,19 +13,32 @@ import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders
 
 function UnlockWelcome() {
   const navigate = useNavigate();
-  const { verifyPass } = useAuth();
-  const { isLogin } = useSelector(state => state.auth)
   const dispatch = useDispatch();
-  const [data, setData] = useState("");
-
   const location = useLocation();
+  const { verifyPass } = useAuth();
+  const [data, setData] = useState("");
+  const [errMsg, setErrorMsg] = useState("");
+  const [isDisable, setDisable] = useState(true);
+  const { isLogin } = useSelector(state => state.auth);
+
 
   const handleChange = (e) => {
     setData(e.target.value);
+    setDisable(false);
+    setErrorMsg("");
   };
 
+  const validateInput = () => {
+    if (data.length === 0) {
+      setErrorMsg("This field is required.");
+      setDisable(true);
+    } else {
+      setDisable(false);
+    }
+  }
+
   const handleClick = async (e) => {
-  
+
     if ((e.key === "Enter") || (e.key === undefined)) {
       dispatch(toggleLoader(true));
 
@@ -33,13 +46,15 @@ function UnlockWelcome() {
       dispatch(toggleLoader(false));
 
       if (!res.error) {
-
         if (isLogin !== true)
           dispatch(setLogin(true));
         navigate(location.state?.redirectRoute || "/wallet");
-      } else {
-        toast.error(res.data);
-        // console.log("Error", res.data);
+      }
+
+      else {
+        // toast.error(res.data);
+        setErrorMsg(res.data);
+        setDisable(true);
       }
     }
   };
@@ -50,7 +65,7 @@ function UnlockWelcome() {
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__centerLogo}>
           <div className={style.cardWhite__cardInner__innerLogocontact}>
-            <img src={PlaceLogo} alt="placeLogo" />
+            <img src={PlaceLogo} alt="placeLogo" draggable={false} />
             <div className={style.cardWhite__cardInner__innercontact}>
               <h1>Welcome Back!</h1>
               {/* <span>The Decentralized Web Awaits</span> */}
@@ -64,11 +79,13 @@ function UnlockWelcome() {
             onChange={handleChange}
             placeholder={"Enter Password"}
             placeholderBaseColor={true}
+            keyUp={validateInput}
             coloredBg={true}
           />
+          <p className={style.errorText}>{errMsg ? errMsg : ""}</p>
         </div>
         <div className={style.setPassword__footerbuttons}>
-          <ButtonComp onClick={handleClick} text={"Unlock"} />
+          <ButtonComp onClick={handleClick} text={"Unlock"} isDisable={isDisable} />
         </div>
         {/* <div className={style.forgotLink}>
           <Link to="">Forgot password?</Link>

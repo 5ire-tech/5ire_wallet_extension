@@ -31,11 +31,11 @@ function SocialAccount() {
       <h1>Social Accounts</h1>
       <div className={style.social}>
 
-        <img src={Facebook} alt="facebook" name="facebook" onClick={handleClick} />
+        <img src={Facebook} alt="facebook" name="facebook" onClick={handleClick} draggable={false}/>
 
-        <img src={Linkdin} alt="linkdin" name="linkdin" onClick={handleClick} />
+        <img src={Linkdin} alt="linkdin" name="linkdin" onClick={handleClick} draggable={false}/>
 
-        <img src={Instagram} alt="instagram" name="instagram" onClick={handleClick} />
+        <img src={Instagram} alt="instagram" name="instagram" onClick={handleClick} draggable={false}/>
 
         {/* <img src={Facebook} alt="website" name="website" onClick={handleClick} /> */}
 

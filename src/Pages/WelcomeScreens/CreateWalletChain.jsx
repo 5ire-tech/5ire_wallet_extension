@@ -22,10 +22,9 @@ function CreateWalletChain() {
     let res;
     if (((newAccount === null || !newAccount) && !isLogin) || isLogin)
       res = walletSignUp();
-    console.log("res: ", res);
 
     if (res?.error) toast.error(res.data);
-    
+
   }, []);
 
   useEffect(() => {
@@ -63,6 +62,7 @@ function CreateWalletChain() {
         <p className={style.cardWhite__addressInput__copyText}>
           <span>{data?.evmAddress}</span>
           <img
+            draggable={false}
             src={CopyIcon}
             alt="copyIcon"
             name={EVM}
@@ -75,6 +75,7 @@ function CreateWalletChain() {
         <p className={style.cardWhite__addressInput__copyText}>
           <span>{data?.nativeAddress}</span>
           <img
+            draggable={false}
             src={CopyIcon}
             alt="copyIcon"
             name={NATIVE}
@@ -87,6 +88,7 @@ function CreateWalletChain() {
         <p className={style.cardWhite__addressInput__copyText}>
           <span>{data?.temp1m}</span>
           <img
+            draggable={false}
             src={CopyIcon}
             alt="copyIcon"
             name={TEMP1M}
@@ -99,6 +101,7 @@ function CreateWalletChain() {
         <p className={style.cardWhite__addressInput__copyText}>
           <span>{data.temp2p}</span>
           <img
+            draggable={false}
             src={CopyIcon}
             alt="copyIcon"
             name={TEMP2P}

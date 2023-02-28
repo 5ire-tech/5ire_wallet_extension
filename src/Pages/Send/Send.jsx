@@ -237,11 +237,7 @@ function Send() {
 
             } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
 
-              console.log("(Number(data.amount) + Number(gassFee)) > Number(balance.nativeBalance) : ", (Number(data.amount) + Number(gassFee)) > Number(balance.nativeBalance));
-
-              console.log("Number(data.amount) : ",Number(data.amount));
-              console.log(" Number(gassFee) : ", Number(gassFee));
-              console.log(" balance.nativeBalance : ", Number(balance.nativeBalance));
+              // console.log("(Number(data.amount) + Number(gassFee)) > Number(balance.nativeBalance) : ", (Number(data.amount) + Number(gassFee)) > Number(balance.nativeBalance));
 
               if ((Number(data.amount) + Number(gassFee)) > Number(balance.nativeBalance)) {
 
@@ -377,7 +373,7 @@ function Send() {
               // keyUp={validateAmount}
               addonAfter={
                 <span className={style.sendSec__pasteText}>
-                  <img src={WalletCardLogo} alt="logo" />
+                  <img src={WalletCardLogo} alt="logo" draggable={false}/>
                   5ire
                 </span>
               }
@@ -409,11 +405,12 @@ function Send() {
       >
         <div className="swapsendModel">
           <div className="innerContact">
-            <img src={ComplSwap} alt="swapImage" width={127} height={127} />
+            <img src={ComplSwap} alt="swapImage" width={127} height={127} draggable={false} />
             <h2 className="title">Transfer Completed</h2>
             <p className="transId">Your Transaction ID</p>
             <span className="address">{shortner(txHash)}</span>
             <img
+              draggable={false}
               src={CopyIcon}
               alt="copyIcon"
               name="naiveAddress"
@@ -434,7 +431,7 @@ function Send() {
       >
         <div className="swapsendModel">
           <div className="innerContact">
-            <img src={FaildSwap} alt="swapFaild" width={127} height={127} />
+            <img src={FaildSwap} alt="swapFaild" width={127} height={127} draggable={false}/>
             <h2 className="title">Transfer Failed!</h2>
             <p className="transId">{sendError}</p>
 

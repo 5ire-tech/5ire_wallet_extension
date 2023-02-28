@@ -17,7 +17,7 @@ function ManageCustom({
     <>
       <div className={style.manageList} onClick={()=>onSelectAcc(data?.id)} >
         <div className={style.manageList__imgcurrency} >
-          <img src={img} />
+          <img src={img} alt="" draggable={false}/>
           <div className={style.manageList__imgcurrency_Name}>
             <p>
               {data?.accountName}

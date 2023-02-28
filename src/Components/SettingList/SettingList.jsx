@@ -12,10 +12,10 @@ function SettingList(props) {
         <Link to={to}>
           <div className={style.settingList} onClick={onClick}>
             <div className={style.settingList__imgValue}>
-              <img src={ticketcheck} />
+              <img src={ticketcheck} draggable={false} alt="ticketCheck" />
               <p>{setinglist}</p>
             </div>
-            <img src={ticketcheck1} />
+            <img src={ticketcheck1} heckdraggable={false} alt="ticketCheck" draggable={false}/>
           </div>
         </Link>
       </div>

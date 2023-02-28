@@ -55,14 +55,16 @@ function BalanceDetails({ className, textLeft, mt0 }) {
     }
 
     connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then((res) => {
-      
+
       if (!res?.value) {
         Connection.isExecuting.value = false;
-        getBalance(res.evmApi, res.nativeApi, true);
+        setInterval(() => {
+          getBalance(res.evmApi, res.nativeApi, true);
+        }, 5000);
       }
     })
       .catch((err) => {
-        console.log("Error while getting the balance of Testnet network: ", err.message)
+        // console.log("Error while getting the balance of Testnet network: ", err.message)
       });
 
 
@@ -122,7 +124,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
           <div className={`${style.balanceDetails} ${mt0 ? mt0 : ""}`}>
             <div className={style.balanceDetails__decoratedSec}>
               <>
-                <img src={DarkLogo} alt="logo" />
+                <img src={DarkLogo} alt="logo" draggable={false} />
 
                 {path === "wallet" && (
 
@@ -131,12 +133,13 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                       isConnected ?
                         <>
                           <p>
-                            <img src={GreenCircle} alt="connectionLogo" />
+                            <img src={GreenCircle} alt="connectionLogo" draggable={false} />
                             {currentAccount?.accountName}
                           </p>
                           <span>{addresses.evmAddress}
                             {" "}
                             <img
+                              draggable={false}
                               src={CopyIcon}
                               alt="copyIcon"
                               name={EVM}
@@ -146,7 +149,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                         </>
                         :
                         <p>
-                          <img src={GrayCircle} alt="connectionLogo" />
+                          <img src={GrayCircle} alt="connectionLogo" draggable={false} />
                           {currentAccount?.accountName}
 
                         </p>
@@ -157,7 +160,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                 <div className={style.balanceDetails__selectStyle}>
                   <Select
                     onChange={handleNetworkChange}
-                    suffixIcon={<img src={DownArrowSuffix} />}
+                    suffixIcon={<img src={DownArrowSuffix} alt="DownArrow" draggable={false} />}
                     defaultValue={[
                       {
                         value: currentNetwork,
@@ -213,12 +216,12 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                     >
                       <p>Native Chain Balance</p>
                       <h3>
-                        <img src={WalletCardLogo} />
+                        <img src={WalletCardLogo} draggable={false} alt="walletLogo" />
                         {balance?.nativeBalance}
                       </h3>
                     </div>
                     <div className={style.balanceDetails__innerBalance__walletQa}>
-                      <img onClick={showModal} src={WalletQr} width={30} height={30} />
+                      <img onClick={showModal} alt="walletQR" src={WalletQr} width={30} height={30} draggable={false} />
                     </div>
                   </div>
                   <div
@@ -229,12 +232,12 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                     >
                       <p>EVM Chain Balance</p>
                       <h3>
-                        <img src={WalletCardLogo} />
+                        <img src={WalletCardLogo} draggable={false} alt="balanceLogo" />
                         {balance?.evmBalance}
                       </h3>
                     </div>
                     <div className={style.balanceDetails__innerBalance__walletQa}>
-                      <img onClick={evmModal} src={WalletQr} width={30} height={30} />
+                      <img onClick={evmModal} alt="balance" src={WalletQr} width={30} height={30} draggable={false} />
                     </div>
                   </div>
                 </div>
@@ -247,7 +250,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
             >
               <div className={style.balanceDetails__nativemodal}>
                 <div className={style.balanceDetails__nativemodal__innerContact}>
-                  <img src={DarkLogo} alt="logo" width={55} height={55} />
+                  <img src={DarkLogo} alt="logo" width={55} height={55} draggable={false} />
                   <p className={style.balanceDetails__nativemodal__title}>
                     5ire Native Chain
                   </p>
@@ -269,6 +272,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                     <p>
                       {addresses.nativeAddress}
                       <img
+                        draggable={false}
                         src={CopyIcon}
                         alt="copyIcon"
                         name={NATIVE}
@@ -290,7 +294,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
             >
               <div className={style.balanceDetails__nativemodal}>
                 <div className={style.balanceDetails__nativemodal__innerContact}>
-                  <img src={DarkLogo} width={55} height={55} />
+                  <img src={DarkLogo} width={55} height={55} alt="darkLogo" draggable={false} />
                   <p className={style.balanceDetails__nativemodal__title}>
                     5ire EVM Chain
                   </p>
@@ -312,6 +316,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                     <p>
                       {addresses.evmAddress}
                       <img
+                        draggable={false}
                         src={CopyIcon}
                         alt="copyIcon"
                         name={EVM}

@@ -14,7 +14,7 @@ function SwapApprove() {
             <p>0xs3...5486s</p>
           </div>
           <div className={style.swapApprove__approveCard__icon}>
-            <img src={SwapIcon} />
+            <img src={SwapIcon} draggable={false} alt="swapIcon"/>
           </div>
           <div className={style.swapApprove__approveCard__swapSec}>
             <h3>
