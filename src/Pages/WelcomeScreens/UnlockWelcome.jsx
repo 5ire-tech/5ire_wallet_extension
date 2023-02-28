@@ -24,29 +24,33 @@ function UnlockWelcome() {
     setData(e.target.value);
   };
 
-  const handleClick = async () => {
-    dispatch(toggleLoader(true));
+  const handleClick = async (e) => {
+  
+    if ((e.key === "Enter") || (e.key === undefined)) {
+      dispatch(toggleLoader(true));
 
-    let res = await verifyPass(data);
-    dispatch(toggleLoader(false));
+      let res = await verifyPass(data);
+      dispatch(toggleLoader(false));
 
-    if (!res.error) {
+      if (!res.error) {
 
-      if (isLogin !== true)
-        dispatch(setLogin(true));
-      navigate(location.state?.redirectRoute || "/wallet");
-    } else {
-      toast.error(res.data);
-      // console.log("Error", res.data);
+        if (isLogin !== true)
+          dispatch(setLogin(true));
+        navigate(location.state?.redirectRoute || "/wallet");
+      } else {
+        toast.error(res.data);
+        // console.log("Error", res.data);
+      }
     }
   };
+
   return (
-    <div className={style.cardWhite}>
+    <div className={style.cardWhite} onKeyDown={handleClick}>
       <MenuRestofHeaders logosilver={false} title="5irechain Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__centerLogo}>
           <div className={style.cardWhite__cardInner__innerLogocontact}>
-            <img src={PlaceLogo} alt= "placeLogo"/>
+            <img src={PlaceLogo} alt="placeLogo" />
             <div className={style.cardWhite__cardInner__innercontact}>
               <h1>Welcome Back!</h1>
               {/* <span>The Decentralized Web Awaits</span> */}

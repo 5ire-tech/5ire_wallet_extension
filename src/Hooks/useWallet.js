@@ -43,6 +43,7 @@ export default function UseWallet() {
     accountName,
     accounts,
     isLogin,
+    httpEndPoints
   } = useSelector((state) => state?.auth);
 
 
@@ -170,6 +171,21 @@ export default function UseWallet() {
     }
   }
 
+
+  //for http-requests
+  async function httpRequest(url, payload) {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: payload
+    });
+    const data = await res.json();
+    return data;
+  }
+
+
   const evmTransfer = async (evmApi, data, isBig = false) => {
     // console.log("EVM APIIII : ", evmApi);
     return (new Promise(async (resolve, reject) => {
@@ -224,6 +240,14 @@ export default function UseWallet() {
 
           if (hash) {
 
+
+            const txRecipt = await httpRequest(httpEndPoints[currentNetwork.toLowerCase()], JSON.stringify({ jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [hash], id: 1 }));
+
+            let txStatus = STATUS.PENDING;
+            if (txRecipt.result) {
+              txStatus = Boolean(Number(txRecipt.result.status)) ? STATUS.SUCCESS : STATUS.PENDING
+            }
+
             let dataToDispatch = {
               data: {
                 chain: currentNetwork.toLowerCase(),
@@ -233,7 +257,7 @@ export default function UseWallet() {
                 type: data.to ? TX_TYPE?.SEND : "Contract Deployement",
                 amount: data.to ? data?.amount : 0,
                 txHash: hash,
-                status: STATUS.PENDING
+                status: txStatus
               },
               index: getAccId(currentAccount.id),
             };
@@ -243,7 +267,7 @@ export default function UseWallet() {
             dispatch(toggleLoader(false));
 
             //send the tx notification
-            Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch });
+            Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase() } });
 
             resolve({
               error: false,
@@ -556,6 +580,16 @@ export default function UseWallet() {
 
             // console.log("Sign Res : ", signRes.toHex());
 
+
+
+            const txRecipt = await httpRequest(httpEndPoints[currentNetwork.toLowerCase()], JSON.stringify({ jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [signHash], id: 1 }));
+
+            let txStatus = STATUS.PENDING;
+            if (txRecipt.result) {
+              txStatus = Boolean(Number(txRecipt.result.status)) ? STATUS.SUCCESS : STATUS.PENDING
+            }
+
+
             let dataToDispatch = {
               data: {
                 chain: currentNetwork.toLowerCase(),
@@ -565,7 +599,7 @@ export default function UseWallet() {
                 type: TX_TYPE?.SWAP,
                 amount: amount,
                 txHash: { mainHash: signHash, hash: signRes.toHex() },
-                status: STATUS.PENDING
+                status: txStatus
               },
               index: getAccId(currentAccount.id),
             };
@@ -575,7 +609,9 @@ export default function UseWallet() {
             // console.log("data to dispatch : ",dataToDispatch);
             dispatch(setTxHistory(dataToDispatch));
             dispatch(toggleLoader(false));
-            Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch });
+
+            //send the tx notification
+            Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase() } });
 
             resolve({
               error: false,
@@ -696,6 +732,45 @@ export default function UseWallet() {
       }
     }
   };
+
+  const validateAddress = async (address) => {
+    if (address.startsWith("0x")) {
+      try {
+        Web3.utils.toChecksumAddress(address);
+        return ({
+          error: false,
+          data: "Address is correct."
+        });
+      } catch (error) {
+        dispatch(toggleLoader(false));
+        return ({
+          error: true,
+          data: "Incorrect 'Recipient' address."
+        });
+      }
+    } else if (address.startsWith("5")) {
+
+      try {
+        encodeAddress(
+          isHex(address)
+            ? hexToU8a(address)
+            : decodeAddress(address)
+        );
+        return ({
+          error: false,
+          data: "Address is correct."
+        });
+      } catch (error) {
+        dispatch(toggleLoader(false));
+
+        return ({
+          error: true,
+          data: "Incorrect 'Recipient' address"
+        });
+      }
+
+    }
+  }
 
   const retriveNativeFee = async (nativeApi, toAddress, amount) => {
     try {

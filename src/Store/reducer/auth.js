@@ -1,9 +1,13 @@
-import { createSlice, current } from "@reduxjs/toolkit";
+import { createSlice,current } from "@reduxjs/toolkit";
 
 export const userState = {
   pass: null,
 
   accounts: [],
+
+  popupChecks: {
+    txApprove: false
+  },
 
   currentAccount: {
     accountName: "",
@@ -52,6 +56,11 @@ export const userSlice = createSlice({
   name: "auth",
   initialState: userState,
   reducers: {
+
+    setTxPopup: (state, action) => {
+      state.popupChecks.txApprove = action.payload
+    },
+
     setPassword: (state, action) => {
       state.pass = action.payload;
     },
@@ -120,14 +129,18 @@ export const userSlice = createSlice({
       if(action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash && item.isEvm;
       return item.txHash === action.payload.txHash && item.isEvm
      });
-     const otherAcc = state.accounts.find(item => item.accountName === action.payload.accountName)
+
+     const otherAcc = state.accounts.find(item => item.accountName === action.payload.accountName);
+
      const otherTx = otherAcc.txHistory.find((item) => {
       if(action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash && item.isEvm;
       return item.txHash === action.payload.txHash && item.isEvm
      })
+      
+      if(currentTx) currentTx.status = action.payload.status ? "Success": "Failed";
+      if(otherTx) otherTx.status = action.payload.status ? "Success": "Failed";
 
-     if(currentTx) currentTx.status = action.payload.status ? "Success": "Failed";
-     if(otherTx) otherTx.status = action.payload.status ? "Success": "Failed";
+      // console.log("type is here: ", action, current(currentTx), current(otherTx));
 
     },
 
@@ -175,6 +188,7 @@ export const {
   resetBalance,
   updateTxHistory,
   // setApiReady
+  setTxPopup
 } = userSlice.actions;
 
 export default userSlice.reducer;

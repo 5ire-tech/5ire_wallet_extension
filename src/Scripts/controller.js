@@ -23,7 +23,7 @@ function init(preloadedState) {
     const store = configureStore({
       reducer: { auth: authReducer },
       preloadedState,
-      // middleware: [logger],
+      middleware: [logger],
     });
 
     wrapStore(store, { portName: PORT_NAME });
@@ -148,6 +148,27 @@ export class Controller {
   async handleConnect(data) {
     const state = this.store.getState();
 
+    // if(!state.auth.isLogin) {
+    //   Browser.tabs.sendMessage(data.tabId, {
+    //     id: data.id,
+    //     response: null,
+    //     error: "5ire extension is not locked, unlock the extension",
+    //   });
+    //   return;
+    // }
+
+    const hereOutput = await Browser.storage.local.get("popupStatus");
+
+    if (hereOutput.popupStatus) {
+      Browser.tabs.sendMessage(data.tabId, {
+        id: data.id,
+        response: null,
+        error: "5ire extension transaction approve popup session is already active",
+      });
+      return;
+    }
+
+
     const isEthReq =
       data?.method === "eth_requestAccounts" ||
       data?.method === "eth_accounts";
@@ -192,6 +213,28 @@ export class Controller {
   //for transaction from connected website
   async handleEthTransaction(data) {
 
+    // const state = this.store.getState();
+
+    // if(!state.auth.isLogin) {
+    //   Browser.tabs.sendMessage(data.tabId, {
+    //     id: data.id,
+    //     response: null,
+    //     error: "5ire extension is locked, unlock the extension",
+    //   });
+    //   return;
+    // }
+
+    const hereOutput = await Browser.storage.local.get("popupStatus");
+
+    if (hereOutput.popupStatus) {
+      Browser.tabs.sendMessage(data.tabId, {
+        id: data.id,
+        response: null,
+        error: "5ire extension transaction approve popup session is already active",
+      });
+      return;
+    }
+
     this.store.dispatch(
       setUIdata({
         ...data,
@@ -226,27 +269,27 @@ export async function httpRequest(url, payload) {
 }
 
 
+
 // check if transaction is success or failed and update it into storage
 export async function checkTransactions(txData) {
   try {
-    const store = await loadStore(false);
-    const state = await store.getState();
 
+    const store = await loadStore(false);
     const noti = new Controller(store)
+    const txHash = typeof (txData.txHash) === "object" ? txData.txHash.mainHash : txData.txHash;
+
+
+    if (txData.statusCheck.isFound) {
+      noti.showNotification(`Transaction ${txData.statusCheck.status} ${txHash.slice(0, 30)} ...`)
+      return;
+    }
+
+    const state = await store.getState();
     const accountName = state.auth.currentAccount.accountName;
 
-    // console.log("Here is the Transaction state: ", txData);
 
-    /*
-    check for every pending transactions and if they success or fail update it into storage
-    and send the success notification
-    */
-    const txHash = typeof (txData.txHash) === "object" ? txData.txHash.mainHash : txData.txHash;
     //check if transaction is swap or not
-
-    // console.log("data is here: ", txData.chain, txHash, state.auth.httpEndPoints[txData.chain]);
-
-    const isSwap = txData.type === "swap";
+    const isSwap = txData.type.toLowerCase() === "swap";
     const rpcUrl = state.auth.httpEndPoints[txData.chain] || "https://rpc-testnet.5ire.network";
     const txRecipt = await httpRequest(rpcUrl, JSON.stringify({ jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [txHash], id: 1 }));
 
@@ -254,13 +297,13 @@ export async function checkTransactions(txData) {
 
     if (txRecipt && txRecipt?.result) {
       store.dispatch(updateTxHistory({ txHash, accountName, status: Boolean(parseInt(txRecipt.result.status)), isSwap }));
-      noti.showNotification(`Transaction ${Boolean(parseInt(txRecipt.result.status)) ? "Success" : "Failed"} ${txHash.slice(0, 30)} ...`)
+      noti.showNotification(`Transaction ${Boolean(parseInt(txRecipt.result.status)) ? "success" : "failed"} ${txHash.slice(0, 30)} ...`)
     } else checkTransactions(txData)
 
 
 
   } catch (err) {
-    // console.log("Error while updating the transaction: ", err);
+    console.log("Error while updating the transaction: ", err);
   }
 }
 

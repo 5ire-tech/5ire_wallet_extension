@@ -21,15 +21,15 @@ export default function SetPasswordScreen() {
   const { isLogin } = useSelector((state) => state.auth);
   const [pass, setPass] = useState({ pass: "", confirmPass: "" });
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(pass.confirmPass === pass.pass);
-    if (pass.confirmPass === pass.pass) {
+    if (pass.confirmPass === pass.pass || pass.pass === "") {
       setconfirmError("");
-    }else{
-      if(pass.confirmPass !== "")
-      setconfirmError("Passwords do not match.")
+    } else {
+      if (pass.confirmPass !== "")
+        setconfirmError("Passwords do not match.")
     }
-  },[pass.pass,pass.confirmPass])
+  }, [pass.pass, pass.confirmPass])
 
   const validatePass = () => {
     const uppercaseRegExp = /(?=.*?[A-Z])/;
@@ -80,38 +80,42 @@ export default function SetPasswordScreen() {
     }
   };
 
-  const handleSubmit = async () => {
-    if (pass.pass.length === 0 && pass.confirmPass.length === 0) {
-      setError("This field is required.");
-      setconfirmError("This field is required.");
-    }
-    else if (pass.pass.length === 0) {
-      setError("This field is required.");
-    }
-    else if (pass.confirmPass.length === 0) {
-      setconfirmError("This field is required.");
-    }
-    else {
-      // let confirmRes = validateConfirmPass();
-      // console.log("Confirm Res : ",confirmRes);
-      // console.log("error : ",error);
-      if (!error && !confirmError) {
-        dispatch(toggleLoader(true));
-        let res = await setUserPass(pass.pass);
-        if (res.error) {
-          dispatch(toggleLoader(false));
-          toast.error(res.data);
-        } else {
-          dispatch(toggleLoader(false));
-          setShow(true);
-          setTimeout(() => {
-            //look
-            if (isLogin !== true) dispatch(setLogin(true));
-            setShow(false);
+  const handleSubmit = async (e) => {
+    
+    if ((e.key === "Enter") || (e.key === undefined)) {
+
+      if (pass.pass.length === 0 && pass.confirmPass.length === 0) {
+        setError("This field is required.");
+        setconfirmError("This field is required.");
+      }
+      else if (pass.pass.length === 0) {
+        setError("This field is required.");
+      }
+      else if (pass.confirmPass.length === 0) {
+        setconfirmError("This field is required.");
+      }
+      else {
+        // let confirmRes = validateConfirmPass();
+        // console.log("Confirm Res : ",confirmRes);
+        // console.log("error : ",error);
+        if (!error && !confirmError) {
+          dispatch(toggleLoader(true));
+          let res = await setUserPass(pass.pass);
+          if (res.error) {
+            dispatch(toggleLoader(false));
+            toast.error(res.data);
+          } else {
+            dispatch(toggleLoader(false));
+            setShow(true);
             setTimeout(() => {
-              navigate("/wallet");
-            }, 500);
-          }, 2000);
+              //look
+              if (isLogin !== true) dispatch(setLogin(true));
+              setShow(false);
+              setTimeout(() => {
+                navigate("/wallet");
+              }, 500);
+            }, 2000);
+          }
         }
       }
     }
@@ -128,7 +132,7 @@ export default function SetPasswordScreen() {
 
   return (
     <>
-      <div className={`${style.cardWhite}`}>
+      <div onKeyDown={handleSubmit} className={`${style.cardWhite}`}>
         <div className={style.cardWhite__beginText}>
           <h1>Create Password</h1>
           <p>

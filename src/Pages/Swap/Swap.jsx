@@ -54,13 +54,21 @@ function Swap() {
   }, [currentAccount?.evmAddress, currentAccount?.nativeAddress, toFrom]);
 
   useEffect(() => {
+    if (amount === "") setError("");
     if (amount) {
       getFee();
-    }else{
+    } else {
       setGassFee("");
       setDisable(true);
     }
   }, [amount, toFrom]);
+
+  useEffect(()=>{
+    console.log("gass fee : ",gassFee);
+    if(gassFee === "" || !gassFee){
+      setDisable(true);
+    }
+  },[gassFee]);
 
   const validateAmount = () => {
     if (amount.length === 0) {
@@ -98,8 +106,10 @@ function Swap() {
     }
   };
 
-  const handleApprove = async () => {
+  const handleApprove = async (e) => {
     try {
+
+      // if ((e.key === "Enter") || (e.key === undefined)) {
       let amtRes = validateAmount();
       if (!amtRes.error) {
 
@@ -114,9 +124,9 @@ function Swap() {
               toFrom.from.toLowerCase() === EVM.toLowerCase() &&
               toFrom.to.toLowerCase() === NATIVE.toLowerCase()
             ) {
-              if (Number(amount) >= Number(balance.evmBalance)) {
-                toast.error("Insufficent Balance.");
-
+              if (Number(amount) >= Number(balance.evmBalance) || (Number(amount) + Number(gassFee) > Number(balance.evmBalance))) {
+                // toast.error("Insufficent Balance.");
+                setError("Insufficent balance.");
               } else {
                 let res = await evmToNativeSwap(apiRes.evmApi, apiRes.nativeApi, amount);
                 if (res.error) {
@@ -127,15 +137,16 @@ function Swap() {
                   setTxHash(res.data);
                   setTimeout(() => {
                     getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-                  }, 40000);
+                  }, 3000);
                 }
               }
             } else if (
               toFrom.from.toLowerCase() === NATIVE.toLowerCase() &&
               toFrom.to.toLowerCase() === EVM.toLowerCase()
             ) {
-              if (Number(amount) >= Number(balance.nativeBalance)) {
-                toast.error("Insufficent Balance.")
+              if (Number(amount) >= Number(balance.nativeBalance) || (Number(amount) + Number(gassFee) > Number(balance.nativeBalance))) {
+                // toast.error("Insufficent Balance.");
+                setError("Insufficent balance.");
               } else {
                 let res = await nativeToEvmSwap(apiRes.evmApi, apiRes.nativeApi, amount);
                 if (res.error) {
@@ -146,13 +157,15 @@ function Swap() {
                   setTxHash(res.data);
                   setTimeout(() => {
                     getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-                  }, 60000);
+                  }, 3000);
                 }
               }
             }
           }
+          setGassFee("");
         });
 
+        // }
       }
     } catch (error) {
       // console.log("Error while swapping : ", error);
@@ -164,7 +177,7 @@ function Swap() {
     let amtRes = validateAmount();
 
     if (!amtRes.error) {
-      setDisable(false);
+     
       connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
 
         if (!apiRes?.value) {
@@ -178,11 +191,14 @@ function Swap() {
             if (feeRes.error) {
               if (feeRes.data) {
                 setError(feeRes.error);
+                setDisable(false);
               } else {
                 toast.error("Error while getting fee.");
+                setDisable(false);
               }
             } else {
               setGassFee(feeRes.data);
+              setDisable(false);
             }
           } else if (
             toFrom.from.toLocaleLowerCase() === EVM.toLowerCase()
@@ -196,6 +212,7 @@ function Swap() {
               }
             } else {
               setGassFee(feeRes.data);
+              setDisable(false);
             }
           }
         }
@@ -257,7 +274,7 @@ function Swap() {
 
     setAmount("");
     setGassFee("");
-    
+
   };
 
   const handleCopy = (e) => {
@@ -275,7 +292,7 @@ function Swap() {
 
   return (
     <>
-      <div className={style.swap}>
+      <div className={style.swap} /*onKeyDown={handleApprove} */>
         <div className={style.swap__swapCopy}>
           <div className={style.swap__swapSec}>
             <h3>From {toFrom.from}</h3>
@@ -383,7 +400,7 @@ function Swap() {
       >
         <div className="swapsendModel">
           <div className="innerContact">
-            <img src={ComplSwap} alt="swapIcon"  width={127} height={127} />
+            <img src={ComplSwap} alt="swapIcon" width={127} height={127} />
             <h2 className="title">Swap Completed</h2>
             <p className="transId">Your Swapped Transaction ID</p>
             <span className="address">

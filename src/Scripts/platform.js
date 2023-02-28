@@ -1,5 +1,4 @@
 import Browser from "webextension-polyfill";
-import browser from "webextension-polyfill";
 import { setUIdata } from "../Store/reducer/auth";
 
 export class ExtensionPlatform {
@@ -7,40 +6,40 @@ export class ExtensionPlatform {
   // Public
   //
   reload() {
-    browser.runtime.reload();
+    Browser.runtime.reload();
   }
 
   async openTab(options) {
-    const newTab = await browser.tabs.create(options);
+    const newTab = await Browser.tabs.create(options);
     return newTab;
   }
 
   async openWindow(options) {
-    const newWindow = await browser.windows.create(options);
+    const newWindow = await Browser.windows.create(options);
     return newWindow;
   }
 
   async focusWindow(windowId) {
-    await browser.windows.update(windowId, { focused: true });
+    await Browser.windows.update(windowId, { focused: true });
   }
 
   async updateWindowPosition(windowId, left, top) {
-    await browser.windows.update(windowId, { left, top });
+    await Browser.windows.update(windowId, { left, top });
   }
 
   async getLastFocusedWindow() {
-    const windowObject = await browser.windows.getLastFocused();
+    const windowObject = await Browser.windows.getLastFocused();
     return windowObject;
   }
 
   async closeCurrentWindow() {
-    const windowDetails = await browser.windows.getCurrent();
-    browser.windows.remove(windowDetails.id);
+    const windowDetails = await Browser.windows.getCurrent();
+    Browser.windows.remove(windowDetails.id);
   }
 
   getVersion() {
     const { version, version_name: versionName } =
-      browser.runtime.getManifest();
+      Browser.runtime.getManifest();
 
     const versionParts = version.split(".");
     if (versionName) {
@@ -74,7 +73,7 @@ export class ExtensionPlatform {
 
   getPlatformInfo(cb) {
     try {
-      const platformInfo = browser.runtime.getPlatformInfo();
+      const platformInfo = Browser.runtime.getPlatformInfo();
       cb(platformInfo);
       return;
     } catch (e) {
@@ -85,31 +84,31 @@ export class ExtensionPlatform {
   }
 
   addOnRemovedListener(listener) {
-    browser.windows.onRemoved.addListener(listener);
+    Browser.windows.onRemoved.addListener(listener);
   }
 
   async getAllWindows() {
-    const windows = await browser.windows.getAll();
+    const windows = await Browser.windows.getAll();
     return windows;
   }
 
   async getActiveTabs() {
-    const tabs = await browser.tabs.query({ active: true });
+    const tabs = await Browser.tabs.query({ active: true });
     return tabs;
   }
 
   async currentTab() {
-    const tab = await browser.tabs.getCurrent();
+    const tab = await Browser.tabs.getCurrent();
     return tab;
   }
 
   async switchToTab(tabId) {
-    const tab = await browser.tabs.update(tabId, { highlighted: true });
+    const tab = await Browser.tabs.update(tabId, { highlighted: true });
     return tab;
   }
 
   async closeTab(tabId) {
-    await browser.tabs.remove(tabId);
+    await Browser.tabs.remove(tabId);
   }
 }
 
@@ -149,6 +148,10 @@ export default class NotificationManager {
 
     const popup = await this._getPopup();
 
+    //ensure only 1 instance of popup is opened
+    // this.store.dispatch(setTxPopup(true))
+    await Browser.storage.local.set({popupStatus: true});
+
     // Bring focus to chrome popup
     if (popup) {
       // bring focus to existing chrome popup
@@ -169,7 +172,7 @@ export default class NotificationManager {
         top = Math.max(screenY, 0);
         left = Math.max(screenX + (outerWidth - NOTIFICATION_WIDTH), 0);
       }
-      const extensionURL = browser.runtime.getURL("index.html");
+      const extensionURL = Browser.runtime.getURL("index.html");
 
       // create new notification popup
       const popupWindow = await this.platform.openWindow({
@@ -189,16 +192,23 @@ export default class NotificationManager {
     }
   }
 
-  _onWindowClosed(windowId) {
+  async _onWindowClosed(windowId) {
     // console.log("Yyyyyyyy", windowId, this._popupId)
     if (windowId === this._popupId) {
+
+    //false the current popup if the close button is clicked
+    // this.store.dispatch(setTxPopup(false))
+    // const dataHere = await Browser.storage.local.get("popupStatus");
+    // console.log("here is your data inside local: ", dataHere);
+    await Browser.storage.local.set({popupStatus: false});
+    // const hereOutput = await Browser.storage.local.get("popupStatus");
+
       this._popupId = undefined;
       // this.emit("POPUP_CLOSED", {
       //   automaticallyClosed: this._popupAutomaticallyClosed,
       // });
       this._popupAutomaticallyClosed = undefined;
       this.handleClose()
-
 
     }
   }

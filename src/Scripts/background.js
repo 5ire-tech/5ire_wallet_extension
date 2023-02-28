@@ -53,8 +53,8 @@ try {
     // console.log("[background.js] onStartup");
   });
 
-  Browser.runtime.onMessage.addListener(async function (message, sender, cb) {
 
+  Browser.runtime.onMessage.addListener(async function (message, sender, cb) {
 
     //check if the current event is transactions
     if (message?.type === "tx") txNotification(message);
@@ -128,7 +128,7 @@ try {
 
   //send the Notification if transaction is confirmed
   function txNotification(txData) {
-    checkTransactions(txData.data);
+    checkTransactions({...txData.data, statusCheck: txData.statusCheck});
   }
 
 } catch (err) {
