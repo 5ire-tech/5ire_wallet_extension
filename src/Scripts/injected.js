@@ -19,6 +19,9 @@ window.fire = fireProvider;
 //data streams from injected script throught the window messaging api
 injectedStream.on("data", (data) => {
 
+
+  console.log("response in injected script: ", data);
+
   if (data?.method === "keepAlive") {
     setTimeout(() => {
       injectedStream.write({ method: "keepAlive" });
@@ -45,12 +48,16 @@ injectedStream.on("data", (data) => {
       handler?.reject(data.error);
     } else {
 
-
       if (fireProvider.conntectMethods.find(item => item === handler?.method)) {
-        fireProvider.injectSelectedAccount(data?.response?.evmAddress || data?.response?.result[0])
+        fireProvider.injectSelectedAccount(data?.response?.evmAddress || (data?.response && data?.response?.result[0]))
+        handler?.resolve(data?.response?.result)
+        delete fireProvider.handlers[data.id];
+        return;
       } else if (handler?.method === "disconnect") {
         fireProvider.injectSelectedAccount(null);
       }
+
+
       if (handler?.isFull) {
         const res = {
           jsonrpc: "2.0",
@@ -59,8 +66,7 @@ injectedStream.on("data", (data) => {
         };
         handler?.isCb && handler.cb(res);
         handler?.resolve(res);
-      }
-      else {
+      } else {
         handler?.isCb && handler.cb(data.response);
         handler?.resolve(data.response);
       }
