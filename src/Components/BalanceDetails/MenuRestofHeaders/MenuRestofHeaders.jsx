@@ -15,10 +15,10 @@ function MenuRestofHeaders({
   return (
     <div className={`${style.restOfHeaders} stickyHeader`}>
       <div>
-        {logosilver && <img src={SilverLogo} />}
+        {logosilver && <img src={SilverLogo} alt="Silver logo" draggable={false} />}
         {backTo && (
           <Link to={backTo}>
-            <img src={BackArrowIcon} className={style.backarow} />
+            <img src={BackArrowIcon} alt="backArrow" className={style.backarow} draggable={false} />
           </Link>
         )}
       </div>

@@ -15,9 +15,8 @@ function InputFieldSimple({
 }) {
   return (
     <Input.Password
-      className={`${style.inputSimple} ${style.inputPassword} ${
-        placeholderBaseColor ? "placeholderBaseColor" : ""
-      } ${coloredBg ? style.inputField__coloredBg : ""}`}
+      className={`${style.inputSimple} ${style.inputPassword} ${placeholderBaseColor ? "placeholderBaseColor" : ""
+        } ${coloredBg ? style.inputField__coloredBg : ""}`}
       placeholder={placeholder}
       style={{ minHeight: minHeight }}
       onChange={onChange}
@@ -27,9 +26,9 @@ function InputFieldSimple({
       // placeholder={placeholder}
       iconRender={(visible) =>
         visible ? (
-          <img src={EyeOpenIcon} width={19} height={12} />
+          <img src={EyeOpenIcon} width={19} height={12} draggable={false} alt="eyeOpen" />
         ) : (
-          <img src={EyeCloseIcon} width={19} height={16} />
+          <img src={EyeCloseIcon} width={19} height={16} draggable={false} alt="eyeClose" />
         )
       }
     />
@@ -39,19 +38,20 @@ function InputFieldSimple({
 export default InputFieldSimple;
 
 export const InputField = ({
-  placeholder,
-  defaultValue,
-  label,
-  addonAfter,
-  inputSelect,
   mb0,
-  placeholderBaseColor,
-  coloredBg,
-  onChange,
+  type,
   name,
   value,
-  type,
+  label,
   keyUp,
+  keyDown,
+  onChange,
+  coloredBg,
+  addonAfter,
+  inputSelect,
+  placeholder,
+  defaultValue,
+  placeholderBaseColor,
 }) => {
   return (
     <div className={`${style.boxStyle} inputField ${mb0 ? style.mb0 : ""}`}>
@@ -64,11 +64,10 @@ export const InputField = ({
         value={value}
         onChange={onChange}
         onKeyUp={keyUp}
-        className={`${style.inputField__input} ${
-          inputSelect ? style.inputField__inputSelect : ""
-        }  ${placeholderBaseColor ? "placeholderBaseColor" : ""} ${
-          coloredBg ? style.inputField__coloredBg : ""
-        }`}
+        onKeyDown={keyDown}
+        className={`${style.inputField__input} ${inputSelect ? style.inputField__inputSelect : ""
+          }  ${placeholderBaseColor ? "placeholderBaseColor" : ""} ${coloredBg ? style.inputField__coloredBg : ""
+          }`}
         addonAfter={addonAfter}
         defaultValue={defaultValue}
         placeholder={placeholder}
@@ -95,9 +94,8 @@ export const InputFieldOnly = ({
       <Input
         value={value}
         type={type ? type : "text"}
-        className={`${style.inputSimple} ${
-          placeholderBaseColor ? "placeholderBaseColor" : ""
-        } ${coloredBg ? style.inputField__coloredBg : ""}`}
+        className={`${style.inputSimple} ${placeholderBaseColor ? "placeholderBaseColor" : ""
+          } ${coloredBg ? style.inputField__coloredBg : ""}`}
         placeholder={placeholder}
         style={{ minHeight: minHeight }}
         onChange={onChange}

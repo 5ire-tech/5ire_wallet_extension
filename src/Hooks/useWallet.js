@@ -254,8 +254,8 @@ export default function UseWallet() {
                 isEvm: true,
                 dateTime: new Date(),
                 to: data.to ? data.to : "",
-                type: data.to ? TX_TYPE?.SEND : "Contract Deployement",
-                amount: data.to ? data?.amount : 0,
+                type: data.to ? (data.amount !== "0x0" ? TX_TYPE.SEND : "Contract Execution") : "Contract Deployement",
+                amount: data.amount !== "0x0" ? data.amount : 0 ,
                 txHash: hash,
                 status: txStatus
               },
@@ -289,7 +289,8 @@ export default function UseWallet() {
   };
 
   const nativeTransfer = async (nativeApi, data, isHttp = true) => {
-    return new Promise(async (resolve, reject) => {
+
+    return new Promise(async (resolve) => {
       let dataToDispatch = {
         data: {
           chain: currentNetwork.toLowerCase(),
@@ -309,6 +310,7 @@ export default function UseWallet() {
             data: "Insufficent Balance!"
           })
         } else {
+
           let hash, err;
           dispatch(toggleLoader(true));
 
@@ -317,10 +319,11 @@ export default function UseWallet() {
           );
           const keyring = new Keyring({ type: "ed25519" });
           const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
+          const amt = new BigNumber(data.amount).multipliedBy(10 ** 18).toString();
 
           const transfer = nativeApi.tx.balances.transferKeepAlive(
             data.to,
-            (new BigNumber(data.amount).multipliedBy(10 ** 18)).toString()
+            (Number(amt).noExponents()).toString()
           );
 
           if (isHttp) {
@@ -411,7 +414,7 @@ export default function UseWallet() {
     })
   };
 
-  const nativeToEvmSwap = async (evmApi, nativeApi, amount, isHttp = true) => {
+  const nativeToEvmSwap = async (nativeApi, amount, isHttp = true) => {
     return new Promise(async (resolve) => {
       let dataToDispatch = {
         data: {
@@ -440,16 +443,18 @@ export default function UseWallet() {
           );
           const keyring = new Keyring({ type: "ed25519" });
           const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
+          const amt = (new BigNumber(amount).multipliedBy(10 ** 18)).toString();
 
           //Deposite amount
           let deposit = await nativeApi.tx.evm.deposit(
             currentAccount?.evmAddress,
-            (new BigNumber(amount).multipliedBy(10 ** 18)).toString()
+            (Number(amt).noExponents()).toString()
           );
           evmDepositeHash = deposit.hash.toHex();
 
           if (isHttp) {
 
+            //Sign and Send txn for http provider
             deposit.signAndSend(alice, (txHash) => {
               if (txHash) {
 
@@ -480,11 +485,12 @@ export default function UseWallet() {
 
           } else {
 
-            //Sign and Send txn
+            //Sign and Send txn for websocket provider
             deposit.signAndSend(alice, ({ status, events, txHash }) => {
               if (status.isInBlock) {
 
                 if (signedHash !== txHash) {
+
                   signedHash = txHash.toHex();
                   let phase = events.filter(({ phase }) => phase.isApplyExtrinsic);
 
@@ -493,18 +499,18 @@ export default function UseWallet() {
 
                     if (nativeApi.events.system.ExtrinsicSuccess.is(event)) {
                       err = false;
-                      // console.log("Extrinsic Success !! ");
                       dataToDispatch.data.status = STATUS.SUCCESS;
                     } else if (nativeApi.events.system.ExtrinsicFailed.is(event)) {
                       err = true;
-                      // console.log("Extrinsic Failed !!");
                       dataToDispatch.data.status = STATUS.FAILED;
                     }
                     dispatch(toggleLoader(false));
+
                   });
 
                   dataToDispatch.data.txHash = { hash: evmDepositeHash, mainHash: signedHash };
                   dispatch(setTxHistory(dataToDispatch));
+
                   if (err) {
                     resolve({
                       error: true,
@@ -733,6 +739,46 @@ export default function UseWallet() {
     }
   };
 
+  const retriveNativeFee = async (nativeApi, toAddress, amount) => {
+    try {
+      dispatch(toggleLoader(true));
+      toAddress = toAddress ? toAddress : currentAccount?.evmAddress;
+      let transferTx;
+      const keyring = new Keyring({ type: "ed25519" });
+      const seedAlice = mnemonicToMiniSecret(
+        decryptor(currentAccount?.temp1m, pass)
+      );
+      const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
+
+      if (toAddress.startsWith("0x")) {
+
+        const amt = BigNumber(amount).multipliedBy(10 ** 18).toString();
+        transferTx = await nativeApi.tx.evm.deposit(toAddress, (Number(amt).noExponents()).toString());
+      }
+      else if (toAddress.startsWith("5")) {
+        const amt = new BigNumber(amount).multipliedBy(10 ** 18).toString();
+        transferTx = nativeApi.tx.balances.transferKeepAlive(toAddress, (Number(amt).noExponents()).toString());
+
+      }
+      const info = await transferTx?.paymentInfo(alice);
+      const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+
+      dispatch(toggleLoader(false));
+
+      return {
+        error: false,
+        data: fee,
+      };
+    } catch (error) {
+      dispatch(toggleLoader(false));
+      // console.log("Error while getting native fee: ", error);
+      return {
+        error: true,
+        data: "Error while getting fee"
+      }
+    }
+  };
+
   const validateAddress = async (address) => {
     if (address.startsWith("0x")) {
       try {
@@ -772,67 +818,67 @@ export default function UseWallet() {
     }
   }
 
-  const retriveNativeFee = async (nativeApi, toAddress, amount) => {
-    try {
-      dispatch(toggleLoader(true));
-      toAddress = toAddress ? toAddress : currentAccount?.evmAddress;
-      let transferTx;
-      const keyring = new Keyring({ type: "ed25519" });
-      const seedAlice = mnemonicToMiniSecret(
-        decryptor(currentAccount?.temp1m, pass)
-      );
-      const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
+  // const retriveNativeFee = async (nativeApi, toAddress, amount) => {
+  //   try {
+  //     dispatch(toggleLoader(true));
+  //     toAddress = toAddress ? toAddress : currentAccount?.evmAddress;
+  //     let transferTx;
+  //     const keyring = new Keyring({ type: "ed25519" });
+  //     const seedAlice = mnemonicToMiniSecret(
+  //       decryptor(currentAccount?.temp1m, pass)
+  //     );
+  //     const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
 
-      if (toAddress.startsWith("0x")) {
-        const amt = new BigNumber(amount).multipliedBy(10 ** 18).toFixed().toString();
-        try {
-          Web3.utils.toChecksumAddress(toAddress);
-        } catch (error) {
-          dispatch(toggleLoader(false));
-          return ({
-            error: true,
-            data: "Invalid 'Recipient' address."
-          });
-        }
-        transferTx = await nativeApi.tx.evm.deposit(toAddress, amt);
-      }
+  //     if (toAddress.startsWith("0x")) {
+  //       const amt = new BigNumber(amount).multipliedBy(10 ** 18).toFixed().toString();
+  //       try {
+  //         Web3.utils.toChecksumAddress(toAddress);
+  //       } catch (error) {
+  //         dispatch(toggleLoader(false));
+  //         return ({
+  //           error: true,
+  //           data: "Invalid 'Recipient' address."
+  //         });
+  //       }
+  //       transferTx = await nativeApi.tx.evm.deposit(toAddress, amt);
+  //     }
 
-      if (toAddress.startsWith("5")) {
-        const amt = new BigNumber(amount).multipliedBy(10 ** 18).toString();
-        try {
-          encodeAddress(
-            isHex(toAddress)
-              ? hexToU8a(toAddress)
-              : decodeAddress(toAddress)
-          );
-        } catch (error) {
-          dispatch(toggleLoader(false));
+  //     if (toAddress.startsWith("5")) {
+  //       const amt = new BigNumber(amount).multipliedBy(10 ** 18).toString();
+  //       try {
+  //         encodeAddress(
+  //           isHex(toAddress)
+  //             ? hexToU8a(toAddress)
+  //             : decodeAddress(toAddress)
+  //         );
+  //       } catch (error) {
+  //         dispatch(toggleLoader(false));
 
-          return ({
-            error: true,
-            data: "Invalid 'Recipient' address!"
-          });
-        }
-        transferTx = nativeApi.tx.balances.transferKeepAlive(toAddress, amt);
+  //         return ({
+  //           error: true,
+  //           data: "Invalid 'Recipient' address!"
+  //         });
+  //       }
+  //       transferTx = nativeApi.tx.balances.transferKeepAlive(toAddress, amt);
 
-      }
-      const info = await transferTx?.paymentInfo(alice);
-      const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+  //     }
+  //     const info = await transferTx?.paymentInfo(alice);
+  //     const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
 
-      dispatch(toggleLoader(false));
+  //     dispatch(toggleLoader(false));
 
-      return {
-        error: false,
-        data: fee,
-      };
-    } catch (error) {
-      dispatch(toggleLoader(false));
-      // console.log("Error while getting native fee: ", error);
-      return {
-        error: true,
-      }
-    }
-  };
+  //     return {
+  //       error: false,
+  //       data: fee,
+  //     };
+  //   } catch (error) {
+  //     dispatch(toggleLoader(false));
+  //     // console.log("Error while getting native fee: ", error);
+  //     return {
+  //       error: true,
+  //     }
+  //   }
+  // };
 
   // const initializeNativeApi = async (network) => {
   //   try {

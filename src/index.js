@@ -12,6 +12,29 @@ import browser from "webextension-polyfill";
 import { ToastContainer } from "react-toastify";
 const isDev = process.env.NODE_ENV === "development";
 
+// eslint-disable-next-line no-extend-native
+Number.prototype.noExponents = function () {
+  try {
+    var data = String(this).split(/[eE]/);
+    if (data.length === 1) return data[0];
+    var z = "",
+      sign = this < 0 ? "-" : "",
+      str = data[0].replace(".", ""),
+      mag = Number(data[1]) + 1;
+    if (mag < 0) {
+      z = sign + "0.";
+      while (mag++) z += "0";
+      // eslint-disable-next-line no-useless-escape
+      return z + str.replace(/^\-/, "");
+    }
+    mag -= str.length;
+    while (mag--) z += "0";
+    return str + z;
+  } catch (error) {
+  
+  }
+};
+
 const initApp = () => {
   const store = new Store({ portName: PORT_NAME });
 

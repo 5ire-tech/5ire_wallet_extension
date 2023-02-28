@@ -98,12 +98,6 @@ export const userSlice = createSlice({
       state.currentNetwork = action.payload;
     },
   
-    // setBalance: (state, action) => {
-    //   if (action.payload.of === "evm")
-    //     state.balance.evmBalance = action.payload.balance;
-    //   else if (action.payload.of === "native")
-    //     state.balance.nativeBalance = action.payload.balance;
-    // },
     
     setBalance: (state, action) => {
       state.balance.evmBalance = action.payload.evmBalance;

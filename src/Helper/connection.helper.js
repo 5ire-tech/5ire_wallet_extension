@@ -89,8 +89,6 @@ export class Connection {
     createNativeConnection = async (networkEndpoint) => {
         let connection;
 
-        console.log("networkEndpoint.startsWith(http)", networkEndpoint.startsWith("http"));
-
         //connection with native (Polkadot)
         if (networkEndpoint.startsWith("ws")) {
             connection = await ApiPromise.create({ provider: new WsProvider(networkEndpoint),

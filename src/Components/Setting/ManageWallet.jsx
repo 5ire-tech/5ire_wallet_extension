@@ -43,7 +43,7 @@ function ManageWallet() {
               <label>Account Name:</label>
               <p className={style.wallet__addressInput__copyText}>
                 <span>{currentAccount?.accountName}</span>
-                <img src={CopyIcon} alt="copyIcon" name="name" onClick={handleCopy} />{" "}
+                <img src={CopyIcon} alt="copyIcon" name="name" onClick={handleCopy} draggable={false}/>{" "}
               </p>
             </div>
           </div>
@@ -52,7 +52,7 @@ function ManageWallet() {
               <label>Native Chain Address:</label>
               <p className={style.wallet__addressInput__copyText}>
                 <span>{currentAccount.nativeAddress}</span>
-                <img src={CopyIcon} alt="copyIcon" name={NATIVE} onClick={handleCopy} />{" "}
+                <img src={CopyIcon} alt="copyIcon" name={NATIVE} onClick={handleCopy} draggable={false}/>{" "}
               </p>
             </div>
           </div>
@@ -61,7 +61,7 @@ function ManageWallet() {
               <label>Evm Chain Address:</label>
               <p className={style.wallet__addressInput__copyText}>
                 <span>{currentAccount.evmAddress}</span>
-                <img src={CopyIcon} alt="copyIcon" name={EVM} onClick={handleCopy} />{" "}
+                <img src={CopyIcon} alt="copyIcon" name={EVM} onClick={handleCopy} draggable={false} />{" "}
               </p>
             </div>
           </div>

@@ -1,28 +1,37 @@
 import { useState } from "react";
-import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import ButtonComp from "../ButtonComp/ButtonComp";
 import InputFieldSimple from "../InputField/InputFieldSimple.jsx";
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
-// import {useSelector } from "react-redux";
 
 
 function EnterPassword() {
 
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
   const { verifyPass } = useAuth();
-  // const {pass} = useSelector(state => state.auth); 
   const [data, setData] = useState("");
+  const [errMsg, setErrorMsg] = useState("");
+  const [isDisable, setDisable] = useState(true);
 
   const handleChange = (e) => {
     setData(e.target.value);
+    setDisable(false);
+    setErrorMsg("");
+  }
+
+  const validateInput = () => {
+    if (data.length === 0) {
+      setErrorMsg("This field is required.");
+      setDisable(true);
+    }else{
+      setDisable(false);
+    }
   }
 
   const handleClick = async (e) => {
-    console.log("e.key : ", e.key);
+  
     if ((e.key === "Enter") || (e.key === undefined)) {
 
       let res = await verifyPass(data);
@@ -32,8 +41,9 @@ function EnterPassword() {
         navigate("/privateKey");
 
       } else {
-        toast.error(res.data);
-        console.log("Error : ", res.data);
+        // toast.error(res.data);
+        setErrorMsg(res.data);
+        setDisable(true);
       }
     }
 
@@ -55,15 +65,18 @@ function EnterPassword() {
             <InputFieldSimple
               placeholder={"Enter Password"}
               placeholderBaseColor={true}
-              coloredBg={true}
               onChange={handleChange}
+              keyUp={validateInput}
+              coloredBg={true}
               type="password"
               name="pass"
             />
+            <p className={style.errorText}>{errMsg ? errMsg : ""}</p>
             <div>
               <ButtonComp
                 onClick={handleClick}
                 text="Continue"
+                isDisable={isDisable}
               ></ButtonComp>
             </div>
           </div>
