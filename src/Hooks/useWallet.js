@@ -1315,7 +1315,8 @@ export default function UseWallet() {
     withdrawNominatorUnbonded,
     addValidator,
     bondMoreFunds,
-    restartValidator
+    restartValidator,
+    validateAddress
     // setAuthData,
     // getEvmBalance,
     // getNativeBalance,

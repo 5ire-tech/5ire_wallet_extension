@@ -128,6 +128,14 @@ function NativeTx() {
             if (+auth?.balance?.nativeBalance < +fee) {
                 return toast.error("Insufficient Funds")
             }
+            const method = auth?.uiData?.method;
+            const validationMethods = ["native_validator_bondmore", "native_nominator_bondmore", "native_withdraw_nominator", "native_withdraw_validator"]
+            if (validationMethods.includes(method)) {
+                const totalAmount = +fee + +auth?.uiData?.message?.amount;
+                if (+auth?.balance?.nativeBalance < totalAmount) {
+                    return toast.error("Insufficient Funds: Fee + Amount is more than available balance,")
+                }
+            }
             dispatch(toggleLoader(true));
             connectionObj.initializeApi(auth.httpEndPoints.testnet, auth.httpEndPoints.qa, auth.currentNetwork, false).then(async (apiRes) => {
                 if (!apiRes?.value) {
@@ -135,7 +143,7 @@ function NativeTx() {
                 }
 
                 let res
-                switch (auth?.uiData?.method) {
+                switch (method) {
                     case "native_add_nominator":
                         res = await addNominator(apiRes.nativeApi, auth?.uiData?.message);
                         break;
@@ -209,7 +217,7 @@ function NativeTx() {
                             type: TX_TYPE?.SEND,
                             amount: 0,
                             txHash: res?.data?.txHash,
-                            status: STATUS.PENDING
+                            status: STATUS.SUCCESS
                         },
                         index: auth?.accounts.findIndex((obj) => obj.id === auth?.currentAccount?.id),
                     };
