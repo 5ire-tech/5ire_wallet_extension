@@ -21,7 +21,7 @@ function ApproveTx() {
     if (!isReady) {
       setTimeout(()=>{
         getFee();
-      },5000)
+      },2000)
     }else{
       getFee();
     }
@@ -40,7 +40,8 @@ function ApproveTx() {
           apiRes.evmApi,
           auth?.uiData?.message?.to,
           auth?.uiData?.message?.value,
-          auth?.uiData?.message?.data
+          auth?.uiData?.message?.data,
+          false
         )
           .then((res) => {
     

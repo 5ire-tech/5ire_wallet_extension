@@ -255,7 +255,7 @@ export default function UseWallet() {
                 dateTime: new Date(),
                 to: data.to ? data.to : "",
                 type: data.to ? (data.amount !== "0x0" ? TX_TYPE.SEND : "Contract Execution") : "Contract Deployement",
-                amount: data.amount !== "0x0" ? data.amount : 0 ,
+                amount: data.amount !== "0x0" ? data.amount : 0,
                 txHash: hash,
                 status: txStatus
               },
@@ -689,9 +689,10 @@ export default function UseWallet() {
     }
   };
 
-  const retriveEvmFee = async (evmApi, toAddress, amount, data = "") => {
+  const retriveEvmFee = async (evmApi, toAddress, amount, data = "", loader = true) => {
     try {
-      dispatch(toggleLoader(true));
+      if (loader) dispatch(toggleLoader(true));
+
       toAddress = toAddress ? toAddress : currentAccount?.nativeAddress;
 
       if (toAddress.startsWith("5"))
@@ -702,7 +703,8 @@ export default function UseWallet() {
           amount = Math.round(Number(amount));
           Web3.utils.toChecksumAddress(toAddress);
         } catch (error) {
-          dispatch(toggleLoader(false));
+          if (loader) dispatch(toggleLoader(false));
+
           return ({
             error: true,
             data: "Invalid 'Recipient' address."

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -15,9 +15,16 @@ function EnterPassword() {
   const [errMsg, setErrorMsg] = useState("");
   const [isDisable, setDisable] = useState(true);
 
+  useEffect(()=>{
+    if (errMsg || !data) {
+      setDisable(true);
+    }else{
+      setDisable(false);
+    }
+  },[errMsg, data]);
+
   const handleChange = (e) => {
     setData(e.target.value);
-    setDisable(false);
     setErrorMsg("");
   }
 
@@ -25,8 +32,6 @@ function EnterPassword() {
     if (data.length === 0) {
       setErrorMsg("This field is required.");
       setDisable(true);
-    }else{
-      setDisable(false);
     }
   }
 

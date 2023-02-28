@@ -64,7 +64,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
       }
     })
       .catch((err) => {
-        // console.log("Error while getting the balance of Testnet network: ", err.message)
+        console.log("Error while getting the balance of Testnet network: ", err.message)
       });
 
 
