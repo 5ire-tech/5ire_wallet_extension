@@ -20,7 +20,6 @@ window.fire = fireProvider;
 injectedStream.on("data", (data) => {
 
 
-  console.log("response in injected script: ", data);
 
   if (data?.method === "keepAlive") {
     setTimeout(() => {
