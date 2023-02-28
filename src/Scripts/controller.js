@@ -22,7 +22,7 @@ function init(preloadedState) {
     const store = configureStore({
       reducer: { auth: authReducer },
       preloadedState,
-      middleware: [logger],
+      // middleware: [logger],
     });
 
     wrapStore(store, { portName: PORT_NAME });
@@ -85,7 +85,7 @@ export async function initScript() {
     await Browser.scripting.registerContentScripts([
       {
         id: "inpage",
-        matches: ["file://*/*", "http://*/*", "https://*/*"],
+        matches: ["file://*/*", "http://*/*", "https://*/*", "chrome://*/*"],
         js: ["./static/js/injected.js"],
         runAt: "document_start",
         world: "MAIN",
@@ -286,7 +286,7 @@ export async function checkTransactions(txData) {
 
 
   } catch (err) {
-    console.log("Error while updating the transaction: ", err);
+    // console.log("Error while updating the transaction: ", err);
   }
 }
 
