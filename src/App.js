@@ -15,6 +15,7 @@ import Beforebegin from "./Pages/WelcomeScreens/Beforebegin";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import EnterPassword from "./Components/Setting/EnterPassword";
 import LoginApprove from "./Pages/WelcomeScreens/LoginApprove";
+import NativeTx from "./Components/NativeTx";
 import SwapApprove from "./Pages/Swap/SwapApprove/SwapApprove";
 import ImportWallet from "./Pages/WelcomeScreens/ImportWallet";
 import UnlockWelcome from "./Pages/WelcomeScreens/UnlockWelcome";
@@ -135,6 +136,12 @@ function App() {
               index
               path="/approveTx"
               element={<FixWidthLayout children={<ApproveTx />} />}
+            />
+
+            <Route
+              index
+              path="/nativeTx"
+              element={<NativeTx />}
             />
             <Route
               path="/loginApprove"

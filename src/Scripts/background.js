@@ -7,6 +7,7 @@ import {
 } from "./controller";
 // import { setNewAccount } from "../Store/reducer/auth";
 import Browser from "webextension-polyfill";
+import { isManifestV3 } from "./utils";
 
 try {
 
@@ -34,12 +35,14 @@ try {
     //on install of extension
     // console.log("[background.js] onInstalled", details);
     // store.dispatch(setApiReady(false));
-    for (const cs of Browser.runtime.getManifest().content_scripts) {
-      for (const tab of await Browser.tabs.query({ url: cs.matches })) {
-        Browser.scripting.executeScript({
-          target: { tabId: tab.id },
-          files: cs.js,
-        });
+    if (isManifestV3) {
+      for (const cs of Browser.runtime.getManifest().content_scripts) {
+        for (const tab of await Browser.tabs.query({ url: cs.matches })) {
+          Browser.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: cs.js,
+          });
+        }
       }
     }
   });
@@ -54,7 +57,7 @@ try {
   Browser.runtime.onMessage.addListener(async function (message, sender, cb) {
 
     //check if the current event is transactions
-    if(message?.type === "tx") txNotification(message);
+    if (message?.type === "tx") txNotification(message);
 
 
     if (!isInitialized) {
@@ -73,11 +76,32 @@ try {
       case "eth_accounts":
         await controller.handleConnect(data);
         break;
+      case "disconnect":
+        await controller.handleDisconnect(data);
+        break;
       case "eth_sendTransaction":
         await controller.handleEthTransaction(data);
         break;
       case "get_endPoint":
         await controller.sendEndPoint(data);
+        break;
+
+      case "native_add_nominator":
+      case "native_renominate":
+      case "native_nominator_payout":
+      case "native_validator_payout":
+      case "native_stop_validator":
+      case "native_stop_nominator":
+      case "native_unbond_validator":
+      case "native_unbond_nominator":
+      case "native_withdraw_nominator":
+      case "native_withdraw_validator":
+      case "native_withdraw_nominator_unbonded":
+      case "native_add_validator":
+      case "native_validator_bondmore":
+      case "native_restart_validator":
+      case "native_nominator_bondmore":
+        await controller.handleValidatorNominatorTransactions(data);
         break;
       default:
     }
@@ -106,7 +130,7 @@ try {
   function txNotification(txData) {
     checkTransactions({...txData.data, statusCheck: txData.statusCheck});
   }
- 
+
 } catch (err) {
   console.log("Error: ", err)
 }

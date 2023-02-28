@@ -1,7 +1,7 @@
 import Browser from "webextension-polyfill";
 import { WindowPostMessageStream } from "./stream";
 import { CONTENT_SCRIPT, INPAGE } from "./constants";
-
+import { isManifestV3 } from "./utils"
 const contentStream = new WindowPostMessageStream({
   name: CONTENT_SCRIPT,
   target: INPAGE,
@@ -23,6 +23,7 @@ contentStream.on("data", async (data) => {
       case "connect":
       case "eth_requestAccounts":
       case "eth_accounts":
+      case "disconnect":
         Browser.runtime.sendMessage(data);
         break;
 
@@ -39,9 +40,24 @@ contentStream.on("data", async (data) => {
           Browser.runtime.sendMessage(data);
         }
         break;
-      case "get_endPoint": 
-      Browser.runtime.sendMessage(data);
-      break;
+      case "get_endPoint":
+      case "native_add_nominator":
+      case "native_renominate":
+      case "native_nominator_payout":
+      case "native_validator_payout":
+      case "native_stop_validator":
+      case "native_stop_nominator":
+      case "native_unbond_validator":
+      case "native_unbond_nominator":
+      case "native_withdraw_nominator":
+      case "native_withdraw_validator":
+      case "native_withdraw_nominator_unbonded":
+      case "native_add_validator":
+      case "native_validator_bondmore":
+      case "native_restart_validator":
+      case "native_nominator_bondmore":
+        Browser.runtime.sendMessage(data);
+        break;
       case "keepAlive":
         setTimeout(() => {
           contentStream.write({
@@ -72,3 +88,27 @@ const messageFromExtensionUI = (message, sender, cb) => {
  * Fired when a message is sent from either an extension process or a content script.
  */
 Browser.runtime.onMessage.addListener(messageFromExtensionUI);
+
+
+
+// These require calls need to use require to be statically recognized by browserify
+// const path = require('path');
+
+function injectScript() {
+  try {
+    const container = document.head || document.documentElement;
+    const scriptTag = document.createElement('script');
+    scriptTag.setAttribute('async', 'false');
+    // scriptTag.textContent = content;
+    scriptTag.setAttribute('src', Browser.runtime.getURL('static/js/injected.js'));
+
+    container.insertBefore(scriptTag, container.children[0]);
+    container.removeChild(scriptTag);
+  } catch (error) {
+    console.error('MetaMask: Provider injection failed.', error);
+  }
+}
+
+if (!isManifestV3) {
+  injectScript()
+}

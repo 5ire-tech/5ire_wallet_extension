@@ -23,8 +23,9 @@ const initApp = () => {
     getState: store.getState.bind(store),
     subscribe: store.subscribe.bind(store),
   });
+  const unsubscribe = store.subscribe(() => {
+    unsubscribe()
 
-  store.ready().then(() => {
     // The store implements the same interface as Redux's store
     // so you can use tools like `react-redux` no problem!
     root.render(
