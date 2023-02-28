@@ -100,7 +100,7 @@ export async function initScript() {
      * 2. await chrome.scripting.getRegisteredContentScripts() to check for an existing
      *    inpage script before registering - The provider is not loaded on time.
      */
-    console.log(`Dropped attempt to register inpage content script. ${err}`);
+    // console.log(`Dropped attempt to register inpage content script. ${err}`);
   }
 }
 
