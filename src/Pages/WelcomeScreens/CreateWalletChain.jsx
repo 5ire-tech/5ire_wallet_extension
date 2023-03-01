@@ -22,6 +22,12 @@ function CreateWalletChain() {
     let res;
     if (((newAccount === null || !newAccount) && !isLogin) || isLogin)
       res = walletSignUp();
+<<<<<<< Updated upstream
+=======
+    if (isLogin) res = walletSignUp();
+
+    // console.log("res: ", res);
+>>>>>>> Stashed changes
 
     if (res?.error) toast.error(res.data);
 
