@@ -50,12 +50,18 @@ function Send() {
       setGassFee("");
     }
 
-    if ((data.to) && (data.amount)) {
-      getFee();
-    } else {
-      setGassFee("");
-      setDisable(true);
-    }
+    const getData = setTimeout(() => {
+      if ((data.to) && (data.amount)) {
+        getFee();
+      } else {
+        setGassFee("");
+        setDisable(true);
+      }
+    }, 600)
+
+    return () => clearTimeout(getData);
+
+  
   }, [data.to, data.amount]);
 
   useEffect(() => {
