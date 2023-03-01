@@ -41,8 +41,6 @@ function Send() {
 
   useEffect(() => {
 
-    // console.log("data. amount :::: ", data.amount);
-
     if (data.to === "" || !data.amount) {
       setErr(p => ({ ...p, to: "" }));
       setGassFee("");
@@ -104,7 +102,19 @@ function Send() {
       setErr((p) => ({ ...p, amount: "Amount can't be 0 or less then 0" }));
       return { error: true };
 
-    } else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
+    }
+    else if (data.amount.split(".").length > 1) {
+      let arr = data.amount.split(".");
+      if (arr[1].length > 18) {
+        setErr((p) => ({ ...p, amount: "Enter decimal value upto 0-18 decimal places." }));
+        return { error: true };
+      } else {
+        setErr((p) => ({ ...p, amount: "" }));
+        return { error: false };
+      }
+    }
+
+    else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
       if (Number(data.amount) >= Number(balance.evmBalance)) {
         setErr((p) => ({ ...p, amount: "Insufficent balance." }));
@@ -400,6 +410,8 @@ function Send() {
               coloredBg={true}
               placeholderBaseColor={true}
               name="amount"
+              type={"number"}
+              min={"0"}
               value={data.amount}
               placeholder={"Enter Amount"}
               onChange={handleChange}

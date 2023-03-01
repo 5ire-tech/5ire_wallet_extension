@@ -122,6 +122,17 @@ function Swap() {
       return { error: true };
     }
 
+    else if (amount.split(".").length > 1) {
+      let arr = amount.split(".");
+      if (arr[1].length > 18) {
+        setError("Enter decimal value upto 0-18 decimal places.");
+        return { error: true };
+      } else {
+        setError("");
+        return { error: false };
+      }
+    }
+
     else if (
       toFrom.from.toLowerCase() === EVM.toLowerCase() &&
       toFrom.to.toLowerCase() === NATIVE.toLowerCase()
@@ -370,6 +381,8 @@ function Swap() {
               placeholderBaseColor={true}
               placeholder={"Enter Swap Amount "}
               onChange={handleChange}
+              type="number"
+              min={"0"}
               value={amount}
               addonAfter={
                 <span className={style.swap__pasteText}>

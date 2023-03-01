@@ -197,7 +197,6 @@ export default function UseWallet() {
       // console.log("Condition Here: ", (Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0);
       // console.log("Here are individual conditions: ", data.amount !== '0x0', (Number(data.amount) > Number(balance.evmBalance), Number(balance.evmBalance) <= 0));
       // console.log("individual balance: ", Number(data.amount), Number(balance.evmBalance), data.amount);
-      console.log("HERE evmTransfer LOGS", balance.evmBalance, data.amount, (Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0)
       try {
         if ((Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0) {
           resolve({
@@ -727,9 +726,10 @@ export default function UseWallet() {
     }
   };
 
-  const retriveEvmFee = async (evmApi, toAddress, amount, data = "", loader = true) => {
+  const retriveEvmFee = async (evmApi, toAddress, amount, data = "") => {
     try {
-      if (loader) dispatch(toggleLoader(true));
+  
+      dispatch(toggleLoader(true));
 
       toAddress = toAddress ? toAddress : currentAccount?.nativeAddress;
 
@@ -741,7 +741,7 @@ export default function UseWallet() {
           amount = Math.round(Number(amount));
           Web3.utils.toChecksumAddress(toAddress);
         } catch (error) {
-          if (loader) dispatch(toggleLoader(false));
+          dispatch(toggleLoader(false));
 
           return ({
             error: true,

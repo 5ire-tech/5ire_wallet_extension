@@ -2,66 +2,68 @@ import style from "./style.module.scss";
 import useWallet from "../../Hooks/useWallet";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { resetBalance } from "../../Store/reducer/auth";
+import { toggleLoader } from "../../Store/reducer/auth";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
 
 function ApproveTx() {
 
   const dispatch = useDispatch();
   const [fee, setFee] = useState("");
-  const [isReady, setReady] = useState("");
+  const [evmApi, setEvmApi] = useState(null);
   const { retriveEvmFee } = useWallet();
   const [activeTab, setActiveTab] = useState("detail");
   const auth = useSelector((state) => state.auth);
 
   useEffect(() => {
 
-    dispatch(resetBalance());
+    if (evmApi) {
+      retriveEvmFee(
+        evmApi,
+        auth?.uiData?.message?.to,
+        auth?.uiData?.message?.value,
+        auth?.uiData?.message?.data,
+      )
+        .then((res) => {
 
-    if (!isReady) {
-      setTimeout(() => {
-        getFee();
-      },4000)
-    }else{
-      getFee();
+          if (!res.error) {
+            setFee(res.data);
+          }
+        })
+        .catch((e) => {
+          console.log("Error : ", e);
+        });
+    } else {
+      getApi();
     }
-  }, [isReady]);
+  }, [evmApi]);
 
-  const getFee = () => {
 
+  useEffect(() => {
+    if (fee) {
+      dispatch(toggleLoader(false));
+    } else {
+      dispatch(toggleLoader(true));
+    }
+  }, [fee])
+
+
+  const getApi = () => {
     connectionObj.initializeApi(auth.httpEndPoints.testnet, auth.httpEndPoints.qa, auth.currentNetwork, false).then((apiRes) => {
-
-
       if (!apiRes?.value) {
-        setReady(true);
+        setEvmApi(apiRes.evmApi);
         Connection.isExecuting.value = false;
-
-        retriveEvmFee(
-          apiRes.evmApi,
-          auth?.uiData?.message?.to,
-          auth?.uiData?.message?.value,
-          auth?.uiData?.message?.data,
-          false
-        )
-          .then((res) => {
-
-            if (!res.error) {
-              setFee(res.data);
-            }
-          })
-          .catch((e) => {
-            console.log("Error : ", e);
-          });
       } else {
-        setReady(false);
+        setTimeout(() => {
+          getApi();
+        }, 3000)
       }
     });
-
   }
 
   const activeDetail = () => {
     setActiveTab("detail");
   };
+
   const activeData = () => {
     setActiveTab("data");
   };
@@ -123,5 +125,6 @@ function ApproveTx() {
     </div>
   );
 }
+
 
 export default ApproveTx;
