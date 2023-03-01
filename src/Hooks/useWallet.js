@@ -43,7 +43,8 @@ export default function UseWallet() {
     accountName,
     accounts,
     isLogin,
-    httpEndPoints
+    httpEndPoints,
+    api
   } = useSelector((state) => state?.auth);
 
 
@@ -173,14 +174,17 @@ export default function UseWallet() {
 
 
   //for http-requests
-  async function httpRequest(url, payload) {
-    const res = await fetch(url, {
-      method: "POST",
+  async function httpRequest(url, method, payload) {
+
+    const reqHeader = {
+      method,
       headers: {
-        "Content-Type": "application/json"
-      },
-      body: payload
-    });
+      "Content-Type": "application/json"
+    }}
+
+    if(method === "POST") reqHeader.body = typeof(payload) === "string" ? payload : JSON.stringify(payload)
+
+    const res = await fetch(url, reqHeader);
     const data = await res.json();
     return data;
   }
@@ -241,7 +245,7 @@ export default function UseWallet() {
           if (hash) {
 
 
-            const txRecipt = await httpRequest(httpEndPoints[currentNetwork.toLowerCase()], JSON.stringify({ jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [hash], id: 1 }));
+            const txRecipt = await httpRequest(httpEndPoints[currentNetwork.toLowerCase()], "POST", JSON.stringify({ jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [hash], id: 1 }));
 
             let txStatus = STATUS.PENDING;
             if (txRecipt.result) {
@@ -291,6 +295,7 @@ export default function UseWallet() {
   const nativeTransfer = async (nativeApi, data, isHttp = true) => {
 
     return new Promise(async (resolve) => {
+
       let dataToDispatch = {
         data: {
           chain: currentNetwork.toLowerCase(),
@@ -302,6 +307,7 @@ export default function UseWallet() {
         },
         index: getAccId(currentAccount.id)
       };
+
 
       try {
         if (Number(data.amount) >= Number(balance.nativeBalance)) {
@@ -327,14 +333,30 @@ export default function UseWallet() {
           );
 
           if (isHttp) {
-            transfer.signAndSend(alice, (txHash) => {
+            transfer.signAndSend(alice, async (txHash) => {
               if (txHash) {
 
-                let hash = txHash.toHex();
+
+                const hash = txHash.toHex();
                 dataToDispatch.data.txHash = hash;
-                dataToDispatch.data.status = STATUS.SUCCESS;
+                const txRecipt = await httpRequest(api.native + hash, "GET");
+
+                console.log("tx Recipt: ", txRecipt);
+
+                let txStatus = STATUS.PENDING.toLowerCase();
+                if (txRecipt?.data?.transaction) {
+                  txStatus = txRecipt.data.transaction.status;
+                }
+    
+                //set the transaction status
+                dataToDispatch.data.status = txStatus;
+
+
                 dispatch(setTxHistory(dataToDispatch));
                 dispatch(toggleLoader(false));
+
+                // send the tx notification
+                Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING.toLowerCase(), status: txStatus} });
 
                 resolve({
                   error: false,
@@ -455,14 +477,30 @@ export default function UseWallet() {
           if (isHttp) {
 
             //Sign and Send txn for http provider
-            deposit.signAndSend(alice, (txHash) => {
+            deposit.signAndSend(alice, async (txHash) => {
               if (txHash) {
-
-                let hash = txHash.toHex();
+                
+                const hash = txHash.toHex();
                 dataToDispatch.data.txHash = { hash: evmDepositeHash, mainHash: hash };
-                dataToDispatch.data.status = STATUS.SUCCESS;
+                const txRecipt = await httpRequest(api.native + hash, "GET");
+
+                console.log("tx Recipt Swap: ", txRecipt);
+
+                let txStatus = STATUS.PENDING.toLowerCase();
+                if (txRecipt?.data?.transaction) {
+                  txStatus = txRecipt.data.transaction.status;
+                }
+    
+                //set the transaction status
+                dataToDispatch.data.status = txStatus;
+
+
                 dispatch(setTxHistory(dataToDispatch));
                 dispatch(toggleLoader(false));
+
+                // send the tx notification
+                Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING.toLowerCase(), status: txStatus} });
+
 
                 resolve({
                   error: false,
@@ -588,7 +626,7 @@ export default function UseWallet() {
 
 
 
-            const txRecipt = await httpRequest(httpEndPoints[currentNetwork.toLowerCase()], JSON.stringify({ jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [signHash], id: 1 }));
+            const txRecipt = await httpRequest(httpEndPoints[currentNetwork.toLowerCase()], "POST", JSON.stringify({ jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [signHash], id: 1 }));
 
             let txStatus = STATUS.PENDING;
             if (txRecipt.result) {

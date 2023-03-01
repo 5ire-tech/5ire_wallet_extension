@@ -41,7 +41,7 @@ function Send() {
 
   useEffect(() => {
 
-    console.log("data. amount :::: ", data.amount);
+    // console.log("data. amount :::: ", data.amount);
 
     if (data.to === "" || !data.amount) {
       setErr(p => ({ ...p, to: "" }));

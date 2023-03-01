@@ -158,7 +158,7 @@ function MenuFooter() {
                   : `${data?.to ? `To: `+shortner(data.to) : ""}`
               }
               amount={`${data?.amount} 5ire`}
-              status={data?.status}
+              status={data?.status.charAt(0).toUpperCase() + data?.status.slice(1)}
               img={Sendhistry}
             />
           ))
