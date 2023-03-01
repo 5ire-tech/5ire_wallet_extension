@@ -21,7 +21,7 @@ function ApproveTx() {
     if (!isReady) {
       setTimeout(()=>{
         getFee();
-      },2000)
+      },4000)
     }else{
       getFee();
     }
@@ -31,11 +31,11 @@ function ApproveTx() {
 
     connectionObj.initializeApi(auth.httpEndPoints.testnet, auth.httpEndPoints.qa, auth.currentNetwork, false).then((apiRes) => {
 
-      // console.log("Api Response : ", apiRes);
 
       if (!apiRes?.value) {
         setReady(true);
         Connection.isExecuting.value = false;
+
         retriveEvmFee(
           apiRes.evmApi,
           auth?.uiData?.message?.to,

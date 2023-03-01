@@ -40,8 +40,17 @@ function Send() {
   const [gassFee, setGassFee] = useState("");
 
   useEffect(() => {
-    if (data.to === "") setErr(p => ({ ...p, to: "" }));
-    if (data.amount === "") setErr(p => ({ ...p, amount: "" }));
+
+    console.log("data. amount :::: ", data.amount);
+
+    if (data.to === "" || !data.amount) {
+      setErr(p => ({ ...p, to: "" }));
+      setGassFee("");
+    }
+    if (data.amount === "" || !data.amount) {
+      setErr(p => ({ ...p, amount: "" }));
+      setGassFee("");
+    }
 
     if ((data.to) && (data.amount)) {
       getFee();
@@ -51,11 +60,35 @@ function Send() {
     }
   }, [data.to, data.amount]);
 
-  useEffect(()=>{
-    if(gassFee === "" || !gassFee){
+  useEffect(() => {
+    if (gassFee === "" || !gassFee) {
       setDisable(true);
+    } else {
+      if (activeTab.toLowerCase() === EVM.toLowerCase()) {
+        if ((Number(data.amount) + Number(gassFee)) >= Number(balance.evmBalance)) {
+          setGassFee("");
+          setDisable(true);
+          setErr((p) => ({ ...p, amount: "Insufficent balance." }));
+
+        } else {
+          setDisable(false);
+          setErr((p) => ({ ...p, amount: "" }))
+
+        }
+      } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
+
+        if ((Number(data.amount) + Number(gassFee)) >= Number(balance.nativeBalance)) {
+          setGassFee("");
+          setDisable(true);
+          setErr((p) => ({ ...p, amount: "Insufficent balance." }));
+
+        } else {
+          setDisable(false);
+          setErr((p) => ({ ...p, amount: "" }))
+        }
+      }
     }
-  },[gassFee]);
+  }, [gassFee]);
 
   const validateAmount = () => {
 
@@ -208,7 +241,7 @@ function Send() {
       let amtRes = validateAmount();
       let addressRes = validateToAddress();
 
-      if (!(amtRes.error) && !(addressRes.error)) {
+      if (!(amtRes.error) && !(addressRes.error) && !err.amount && !err.to) {
 
         connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
 
@@ -217,7 +250,7 @@ function Send() {
 
             if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
-              if ((Number(data.amount) + Number(gassFee)) > Number(balance.evmBalance)) {
+              if ((Number(data.amount) + Number(gassFee)) >= Number(balance.evmBalance)) {
                 setErr((p) => ({ ...p, amount: "Insufficent balance." }))
               } else {
                 const res = await evmTransfer(apiRes.evmApi, data);
@@ -239,7 +272,7 @@ function Send() {
 
               // console.log("(Number(data.amount) + Number(gassFee)) > Number(balance.nativeBalance) : ", (Number(data.amount) + Number(gassFee)) > Number(balance.nativeBalance));
 
-              if ((Number(data.amount) + Number(gassFee)) > Number(balance.nativeBalance)) {
+              if ((Number(data.amount) + Number(gassFee)) >= Number(balance.nativeBalance)) {
 
                 setErr((p) => ({ ...p, amount: "Insufficent balance." }));
 
@@ -262,7 +295,7 @@ function Send() {
           setGassFee("");
         });
         // }
-      }else {
+      } else {
         setDisable(true);
       }
 
@@ -373,7 +406,7 @@ function Send() {
               // keyUp={validateAmount}
               addonAfter={
                 <span className={style.sendSec__pasteText}>
-                  <img src={WalletCardLogo} alt="logo" draggable={false}/>
+                  <img src={WalletCardLogo} alt="logo" draggable={false} />
                   5ire
                 </span>
               }
@@ -393,7 +426,7 @@ function Send() {
           /> */}
         </div>
         <div className={style.sendSec__transactionFee}>
-          <p>{gassFee ? `Transaction Fee : ${gassFee} 5IRE` : ""}</p>
+          <p>{gassFee ? `Estimated fee : ${gassFee} 5IRE` : ""}</p>
         </div>
       </div>
       <Approve onClick={handleApprove} text="Transfer" isDisable={disableBtn} />
@@ -406,7 +439,7 @@ function Send() {
         <div className="swapsendModel">
           <div className="innerContact">
             <img src={ComplSwap} alt="swapImage" width={127} height={127} draggable={false} />
-            <h2 className="title">Transfer Completed</h2>
+            <h2 className="title">Transfer Processed</h2>
             <p className="transId">Your Transaction ID</p>
             <span className="address">{shortner(txHash)}</span>
             <img
@@ -431,7 +464,7 @@ function Send() {
       >
         <div className="swapsendModel">
           <div className="innerContact">
-            <img src={FaildSwap} alt="swapFaild" width={127} height={127} draggable={false}/>
+            <img src={FaildSwap} alt="swapFaild" width={127} height={127} draggable={false} />
             <h2 className="title">Transfer Failed!</h2>
             <p className="transId">{sendError}</p>
 

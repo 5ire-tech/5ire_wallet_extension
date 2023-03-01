@@ -187,7 +187,7 @@ export default function UseWallet() {
 
 
   const evmTransfer = async (evmApi, data, isBig = false) => {
-    // console.log("EVM APIIII : ", evmApi);
+
     return (new Promise(async (resolve, reject) => {
 
       // console.log("Condition Here: ", (Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0);
@@ -763,7 +763,7 @@ export default function UseWallet() {
 
       }
       const info = await transferTx?.paymentInfo(alice);
-      const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+      const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18)).toString();
 
       dispatch(toggleLoader(false));
 
