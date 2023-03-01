@@ -59,14 +59,21 @@ function Swap() {
   }, [currentAccount?.evmAddress, currentAccount?.nativeAddress, toFrom]);
 
   useEffect(() => {
+
     if (amount === "") setError("");
-    if (amount) {
-      getFee();
-    } else {
-      setGassFee("");
-      setDisable(true);
-    }
-  }, [amount, toFrom]);
+
+    const getData = setTimeout(() => {
+      if (amount) {
+        getFee();
+      } else {
+        setGassFee("");
+        setDisable(true);
+      }
+    }, 600)
+
+    return () => clearTimeout(getData);
+
+  }, [amount]);
 
 
   useEffect(() => {
@@ -99,7 +106,7 @@ function Swap() {
 
         } else {
           setDisable(false);
-          setError("")
+          setError("");
         }
       }
     }
@@ -313,8 +320,9 @@ function Swap() {
 
   const handleClick = () => {
 
-    if (toFrom.from.toLowerCase() === EVM.toLowerCase())
-      setToFrom({ from: "Native", to: "Evm" });
+    if (toFrom.from.toLowerCase() === EVM.toLowerCase()) { }
+    setToFrom({ from: "Native", to: "Evm" });
+
     if (toFrom.from.toLowerCase() === NATIVE.toLowerCase())
       setToFrom({ from: "Evm", to: "Native" });
 
