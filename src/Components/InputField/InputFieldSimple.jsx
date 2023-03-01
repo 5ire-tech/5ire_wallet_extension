@@ -52,6 +52,7 @@ export const InputField = ({
   placeholder,
   defaultValue,
   placeholderBaseColor,
+  min,
 }) => {
   return (
     <div className={`${style.boxStyle} inputField ${mb0 ? style.mb0 : ""}`}>
@@ -61,6 +62,8 @@ export const InputField = ({
       <Input
         name={name}
         type={type ? type : "text"}
+        min = {min}
+        // max = {max}
         value={value}
         onChange={onChange}
         onKeyUp={keyUp}
