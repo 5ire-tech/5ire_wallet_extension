@@ -19,9 +19,9 @@ function ApproveTx() {
     dispatch(resetBalance());
 
     if (!isReady) {
-      setTimeout(()=>{
+      setTimeout(() => {
         getFee();
-      },5000)
+      },4000)
     }else{
       getFee();
     }
@@ -31,19 +31,20 @@ function ApproveTx() {
 
     connectionObj.initializeApi(auth.httpEndPoints.testnet, auth.httpEndPoints.qa, auth.currentNetwork, false).then((apiRes) => {
 
-      // console.log("Api Response : ", apiRes);
 
       if (!apiRes?.value) {
         setReady(true);
         Connection.isExecuting.value = false;
+
         retriveEvmFee(
           apiRes.evmApi,
           auth?.uiData?.message?.to,
           auth?.uiData?.message?.value,
-          auth?.uiData?.message?.data
+          auth?.uiData?.message?.data,
+          false
         )
           .then((res) => {
-    
+
             if (!res.error) {
               setFee(res.data);
             }
@@ -51,7 +52,7 @@ function ApproveTx() {
           .catch((e) => {
             console.log("Error : ", e);
           });
-      }else{
+      } else {
         setReady(false);
       }
     });

@@ -68,10 +68,40 @@ function Swap() {
     }
   }, [amount, toFrom]);
 
-  useEffect(() => {
 
+  useEffect(() => {
     if (gassFee === "" || !gassFee) {
       setDisable(true);
+    } else {
+      if (
+        toFrom.from.toLowerCase() === EVM.toLowerCase() &&
+        toFrom.to.toLowerCase() === NATIVE.toLowerCase()
+      ) {
+        if ((Number(amount) + Number(gassFee)) >= Number(balance.evmBalance)) {
+          setGassFee("");
+          setDisable(true);
+          setError("Insufficent balance.");
+
+        } else {
+          setDisable(false);
+          setError("");
+
+        }
+      } else if (
+        Number(amount) >= Number(balance.nativeBalance) ||
+        (Number(amount) + Number(gassFee) > Number(balance.nativeBalance))
+      ) {
+
+        if ((Number(amount) + Number(gassFee)) >= Number(balance.nativeBalance)) {
+          setGassFee("");
+          setDisable(true);
+          setError("Insufficent balance.");
+
+        } else {
+          setDisable(false);
+          setError("")
+        }
+      }
     }
   }, [gassFee]);
 
@@ -139,7 +169,7 @@ function Swap() {
 
               if (
                 Number(amount) >= Number(balance.evmBalance) ||
-                (Number(amount) + Number(gassFee) > Number(balance.evmBalance))
+                (Number(amount) + Number(gassFee) >= Number(balance.evmBalance))
               ) {
 
                 setError("Insufficent balance.");
@@ -397,7 +427,7 @@ function Swap() {
           </div> */}
         </div>
         <div className={style.swap__transactionFee}>
-          <p>{gassFee ? `Estimated gas fee : ${gassFee} 5IRE` : ""}</p>
+          <p>{gassFee ? `Estimated fee : ${gassFee} 5IRE` : ""}</p>
         </div>
       </div>
       <Approve onClick={handleApprove} text="Swap" isDisable={disableBtn} />
@@ -409,7 +439,7 @@ function Swap() {
         <div className="swapsendModel">
           <div className="innerContact">
             <img src={ComplSwap} alt="swapIcon" width={127} height={127} draggable={false} />
-            <h2 className="title">Swap Completed</h2>
+            <h2 className="title">Swap Processed</h2>
             <p className="transId">Your Swapped Transaction ID</p>
             <span className="address">
               {txHash ? shortner(txHash) : ""}
