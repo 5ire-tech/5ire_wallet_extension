@@ -82,17 +82,21 @@ export function loadStore(sendStoreMessage = true) {
 
 //inject the script on current webpage
 export async function initScript() {
-  try {
-    await Browser.scripting.registerContentScripts([
+  try {  
+
+
+        await Browser.scripting.registerContentScripts([
       {
         id: "inpage",
-        matches: ["file://*/*", "http://*/*", "https://*/*"],
+        matches: ["http://*/", "https://*/"],
         js: ["./static/js/injected.js"],
         runAt: "document_start",
         world: "MAIN",
       },
-    ]);
+    ])
+
   } catch (err) {
+
     /**
      * An error occurs when app-init.js is reloaded. Attempts to avoid the duplicate script error:
      * 1. registeringContentScripts inside runtime.onInstalled - This caused a race condition
