@@ -19,7 +19,7 @@ function ApproveTx() {
     dispatch(resetBalance());
 
     if (!isReady) {
-      setTimeout(()=>{
+      setTimeout(() => {
         getFee();
       },4000)
     }else{
@@ -44,7 +44,7 @@ function ApproveTx() {
           false
         )
           .then((res) => {
-    
+
             if (!res.error) {
               setFee(res.data);
             }
@@ -52,7 +52,7 @@ function ApproveTx() {
           .catch((e) => {
             console.log("Error : ", e);
           });
-      }else{
+      } else {
         setReady(false);
       }
     });
