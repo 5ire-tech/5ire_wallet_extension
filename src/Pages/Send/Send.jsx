@@ -473,7 +473,7 @@ function Send() {
           /> */}
         </div>
         <div className={style.sendSec__transactionFee}>
-          <p>{gassFee ? `Estimated fee : ${gassFee} 5IRE` : ""}</p>
+          <p>{gassFee ? `Estimated fee : ${gassFee} 5ire` : ""}</p>
         </div>
       </div>
       <Approve onClick={handleApprove} text="Transfer" isDisable={disableBtn} />

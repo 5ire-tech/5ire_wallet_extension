@@ -471,7 +471,7 @@ function Swap() {
           </div> */}
         </div>
         <div className={style.swap__transactionFee}>
-          <p>{gassFee ? `Estimated fee : ${gassFee} 5IRE` : ""}</p>
+          <p>{gassFee ? `Estimated fee : ${gassFee} 5ire` : ""}</p>
         </div>
       </div>
       <Approve onClick={handleApprove} text="Swap" isDisable={disableBtn} />

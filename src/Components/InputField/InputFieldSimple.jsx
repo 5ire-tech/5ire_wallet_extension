@@ -68,6 +68,7 @@ export const InputField = ({
         onChange={onChange}
         onKeyUp={keyUp}
         onKeyDown={keyDown}
+        onWheel={(e) => e.target.blur()}
         className={`${style.inputField__input} ${inputSelect ? style.inputField__inputSelect : ""
           }  ${placeholderBaseColor ? "placeholderBaseColor" : ""} ${coloredBg ? style.inputField__coloredBg : ""
           }`}
