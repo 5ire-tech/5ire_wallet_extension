@@ -8,7 +8,7 @@ const contentStream = new WindowPostMessageStream({
 });
 
 
-console.log("here is window object: ", window);
+// console.log("here is window object: ", window);
 
 contentStream.on("data", async (data) => {
 
