@@ -305,9 +305,7 @@ export async function checkTransactions(txData) {
     else txRecipt = await httpRequest(rpcUrl + txHash, "GET")
 
 
-    console.log("here is the recipt in background: ", txRecipt);
-
-    // console.log("Here is the Transaction Result: ", txRecipt);
+    // console.log("here is the recipt in background: ", txRecipt);
 
     if (txRecipt?.result) {
       store.dispatch(updateTxHistory({ txHash, accountName, status: Boolean(parseInt(txRecipt.result.status)), isSwap }));

@@ -7,6 +7,9 @@ const contentStream = new WindowPostMessageStream({
   target: INPAGE,
 });
 
+
+// console.log("here is window object: ", window);
+
 contentStream.on("data", async (data) => {
 
   // console.log("here is data in content: ", data);

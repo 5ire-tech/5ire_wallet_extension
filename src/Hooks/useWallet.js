@@ -340,7 +340,7 @@ export default function UseWallet() {
                 dataToDispatch.data.txHash = hash;
                 const txRecipt = await httpRequest(api.native + hash, "GET");
 
-                console.log("tx Recipt: ", txRecipt);
+                // console.log("tx Recipt: ", txRecipt);
 
                 let txStatus = STATUS.PENDING.toLowerCase();
                 if (txRecipt?.data?.transaction) {
@@ -483,7 +483,7 @@ export default function UseWallet() {
                 dataToDispatch.data.txHash = { hash: evmDepositeHash, mainHash: hash };
                 const txRecipt = await httpRequest(api.native + hash, "GET");
 
-                console.log("tx Recipt Swap: ", txRecipt);
+                // console.log("tx Recipt Swap: ", txRecipt);
 
                 let txStatus = STATUS.PENDING.toLowerCase();
                 if (txRecipt?.data?.transaction) {

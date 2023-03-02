@@ -116,12 +116,12 @@ try {
    *  If more activity for the event page occurs before it gets
    *  unloaded the onSuspendCanceled event will
    *  be sent and the page won't be unloaded. */
-  Browser.runtime.onSuspend.addListener(() => {
+  Browser.runtime.onSuspend.addListener(async () => {
     //event called when extension is suspended or closed
     // console.log("[background.js] onSuspend");
+    await Browser.scripting.unregisterContentScripts({ids: ["inpage"]})
     isInitialized = false;
   });
-
 
   //init the scripts (inject the script into current webpage)
   initScript();
