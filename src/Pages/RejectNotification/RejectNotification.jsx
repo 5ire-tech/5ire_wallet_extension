@@ -22,6 +22,7 @@ function ApproveTx() {
         auth?.uiData?.message?.to,
         auth?.uiData?.message?.value,
         auth?.uiData?.message?.data,
+        false
       )
         .then((res) => {
 
@@ -55,7 +56,7 @@ function ApproveTx() {
       } else {
         setTimeout(() => {
           getApi();
-        }, 3000)
+        }, 4000)
       }
     });
   }

@@ -57,7 +57,7 @@ function Send() {
         setGassFee("");
         setDisable(true);
       }
-    }, 600)
+    }, 600);
 
     return () => clearTimeout(getData);
 

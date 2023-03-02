@@ -686,10 +686,10 @@ export default function UseWallet() {
     }
   };
 
-  const retriveEvmFee = async (evmApi, toAddress, amount, data = "") => {
+  const retriveEvmFee = async (evmApi, toAddress, amount, data = "", isLoading = true) => {
     try {
   
-      dispatch(toggleLoader(true));
+      if(isLoading) dispatch(toggleLoader(true));
 
       toAddress = toAddress ? toAddress : currentAccount?.nativeAddress;
 
@@ -701,7 +701,8 @@ export default function UseWallet() {
           amount = Math.round(Number(amount));
           Web3.utils.toChecksumAddress(toAddress);
         } catch (error) {
-          dispatch(toggleLoader(false));
+          
+          if(isLoading) dispatch(toggleLoader(false));
 
           return ({
             error: true,
