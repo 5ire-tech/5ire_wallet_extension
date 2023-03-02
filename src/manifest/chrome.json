@@ -22,7 +22,8 @@
       "tabs"
     ],
     "host_permissions": [
-      "<all_urls>"
+      "http://*/",
+      "https://*/"
     ],
     "background": {
       "service_worker": "./static/js/background.js"
@@ -31,9 +32,8 @@
     "content_scripts": [
       {
         "matches": [
-          "http://*/*",
-          "https://*/*",
-          "file://*/*"
+          "http://*/",
+          "https://*/"
         ],
         "js": [
           "./static/js/content.js"

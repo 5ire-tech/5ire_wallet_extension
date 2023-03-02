@@ -23,7 +23,7 @@ function init(preloadedState) {
     const store = configureStore({
       reducer: { auth: authReducer },
       preloadedState,
-      // middleware: [logger],
+      middleware: [logger],
     });
 
     wrapStore(store, { portName: PORT_NAME });
@@ -82,17 +82,21 @@ export function loadStore(sendStoreMessage = true) {
 
 //inject the script on current webpage
 export async function initScript() {
-  try {
-    await Browser.scripting.registerContentScripts([
+  try {  
+
+
+        await Browser.scripting.registerContentScripts([
       {
         id: "inpage",
-        matches: ["file://*/*", "http://*/*", "https://*/*"],
+        matches: ["http://*/", "https://*/"],
         js: ["./static/js/injected.js"],
         runAt: "document_start",
         world: "MAIN",
       },
-    ]);
+    ])
+
   } catch (err) {
+
     /**
      * An error occurs when app-init.js is reloaded. Attempts to avoid the duplicate script error:
      * 1. registeringContentScripts inside runtime.onInstalled - This caused a race condition
@@ -255,15 +259,17 @@ export class Controller {
 }
 
 
-//for http-requests
-export async function httpRequest(url, payload) {
-  const res = await fetch(url, {
-    method: "POST",
+async function httpRequest(url, method, payload) {
+
+  const reqHeader = {
+    method,
     headers: {
-      "Content-Type": "application/json"
-    },
-    body: payload
-  });
+    "Content-Type": "application/json"
+  }}
+
+  if(method === "POST") reqHeader.body = typeof(payload) === "string" ? payload : JSON.stringify(payload)
+
+  const res = await fetch(url, reqHeader);
   const data = await res.json();
   return data;
 }
@@ -290,15 +296,27 @@ export async function checkTransactions(txData) {
 
     //check if transaction is swap or not
     const isSwap = txData.type.toLowerCase() === "swap";
-    const rpcUrl = state.auth.httpEndPoints[txData.chain] || "https://rpc-testnet.5ire.network";
-    const txRecipt = await httpRequest(rpcUrl, JSON.stringify({ jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [txHash], id: 1 }));
+
+    //check if the current tx is evm tx or native tx
+    const rpcUrl = txData.isEVM ? state.auth.httpEndPoints[txData.chain] || "https://rpc-testnet.5ire.network" : state.auth.api.native;
+
+    let txRecipt;
+    if(txData.isEVM) txRecipt = await httpRequest(rpcUrl, "POST", JSON.stringify({ jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [txHash], id: 1 }));
+    else txRecipt = await httpRequest(rpcUrl + txHash, "GET")
+
+
+    console.log("here is the recipt in background: ", txRecipt);
 
     // console.log("Here is the Transaction Result: ", txRecipt);
 
-    if (txRecipt && txRecipt?.result) {
+    if (txRecipt?.result) {
       store.dispatch(updateTxHistory({ txHash, accountName, status: Boolean(parseInt(txRecipt.result.status)), isSwap }));
       noti.showNotification(`Transaction ${Boolean(parseInt(txRecipt.result.status)) ? "success" : "failed"} ${txHash.slice(0, 30)} ...`)
-    } else checkTransactions(txData)
+    } else if(txRecipt?.data && txRecipt?.data?.transaction.status !== "pending") {
+      store.dispatch(updateTxHistory({ txHash, accountName, status: txRecipt?.data?.transaction.status, isSwap }));
+      noti.showNotification(`Transaction ${txRecipt?.data?.transaction.status} ${txHash.slice(0, 30)} ...`)
+    }
+    else checkTransactions(txData)
 
 
 

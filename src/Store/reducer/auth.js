@@ -26,6 +26,10 @@ export const userState = {
     // testnet: "http://52.15.41.233:9933"
   },
 
+  api: {
+    native: "https://explorer-api.5ire.network/api/firechain/explorer/get-transaction-by-hash/"
+  },
+
   wsEndPoints: {
     qa: "wss://qa-wss-nodes.5ire.network",
     testnet: "wss://wss-testnet.5ire.network"
@@ -120,19 +124,19 @@ export const userSlice = createSlice({
     updateTxHistory: (state, action) => {
 
      const currentTx =  state.currentAccount.txHistory.find((item) => {
-      if(action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash && item.isEvm;
-      return item.txHash === action.payload.txHash && item.isEvm
+      if(action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash;
+      return item.txHash === action.payload.txHash
      });
 
      const otherAcc = state.accounts.find(item => item.accountName === action.payload.accountName);
 
      const otherTx = otherAcc.txHistory.find((item) => {
-      if(action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash && item.isEvm;
-      return item.txHash === action.payload.txHash && item.isEvm
+      if(action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash
+      return item.txHash === action.payload.txHash
      })
       
-      if(currentTx) currentTx.status = action.payload.status ? "Success": "Failed";
-      if(otherTx) otherTx.status = action.payload.status ? "Success": "Failed";
+      if(currentTx) currentTx.status = typeof(action.payload.status) === "string" ? action.payload.status: action.payload.status ? "success" : "failed";
+      if(otherTx) otherTx.status = typeof(action.payload.status) === "string" ? action.payload.status: action.payload.status ? "success" : "failed";
 
       // console.log("type is here: ", action, current(currentTx), current(otherTx));
 
