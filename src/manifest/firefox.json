@@ -31,8 +31,7 @@
         {
             "matches": [
                 "http://*/*",
-                "https://*/*",
-                "file://*/*"
+                "https://*/*"
             ],
             "js": [
                 "./static/js/content.js"
