@@ -51,11 +51,15 @@ function Swap() {
         toAddress: currentAccount?.evmAddress,
         fromAddress: currentAccount?.nativeAddress,
       });
-    if (toFrom.from.toLowerCase() === EVM.toLowerCase())
+
+    else if (toFrom.from.toLowerCase() === EVM.toLowerCase())
       setAddress({
         toAddress: currentAccount?.nativeAddress,
         fromAddress: currentAccount?.evmAddress,
       });
+    setAmount("");
+    setError("");
+
   }, [currentAccount?.evmAddress, currentAccount?.nativeAddress, toFrom]);
 
   useEffect(() => {
@@ -69,7 +73,7 @@ function Swap() {
         setGassFee("");
         setDisable(true);
       }
-    }, 600)
+    }, 1000)
 
     return () => clearTimeout(getData);
 
@@ -132,6 +136,8 @@ function Swap() {
     else if (amount.split(".").length > 1) {
       let arr = amount.split(".");
       if (arr[1].length > 18) {
+        let slice = arr[1].slice(0, 19);
+        setAmount(arr[0] + "." + slice);
         setError("Enter decimal value upto 0-18 decimal places.");
         return { error: true };
       } else {
@@ -298,9 +304,26 @@ function Swap() {
   };
 
   const handleChange = (e) => {
-    setAmount(e.target.value.trim());
-    setGassFee("");
-  };
+
+    let arr = e.target.value.split(".");
+
+    if (arr.length > 1) {
+
+      if (arr[1].length > 18) {
+        let slice = arr[1].slice(0, 18);
+        setAmount(arr[0] + "." + slice);
+      } else {
+        setAmount(e.target.value);
+        setGassFee("");
+
+      }
+    }
+    else {
+      setAmount(e.target.value);
+      setGassFee("");
+
+    }
+  }
 
   const handleOkCancle = () => {
     setAmount("");
@@ -493,7 +516,7 @@ function Swap() {
             <p className="transId">{swapErr}</p>
 
             <div className="footerbuttons">
-              <ButtonComp text={"Swap Again"} onClick={handleOkCancle} />
+              <ButtonComp text={"Try Again"} onClick={handleOkCancle} />
             </div>
           </div>
         </div>

@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
-import WalletCardLogo from "../../Assets/walletcardLogo.svg";
+import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
-import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import ModalCustom from "../../Components/ModalCustom/ModalCustom";
-import ComplSwap from "../../Assets/DarkLogo.svg";
+import { useSelector } from "react-redux";
 import useWallet from "../../Hooks/useWallet";
+import CopyIcon from "../../Assets/CopyIcon.svg";
+import ComplSwap from "../../Assets/DarkLogo.svg";
+import React, { useState, useEffect } from "react";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import { shortner } from "../../Helper/helper";
-import CopyIcon from "../../Assets/CopyIcon.svg";
-import { toast } from "react-toastify";
 import { NATIVE, EVM } from "../../Constants/index";
-import { useSelector } from "react-redux";
+import WalletCardLogo from "../../Assets/walletcardLogo.svg";
+import ButtonComp from "../../Components/ButtonComp/ButtonComp";
+import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import { connectionObj, Connection } from "../../Helper/connection.helper"
 import {
   InputField,
@@ -39,6 +39,12 @@ function Send() {
   const [sendError, setSendError] = useState("");
   const [gassFee, setGassFee] = useState("");
 
+
+  useEffect(() => {
+    setData({ to: "", amount: "" });
+    setErr({ to: "", amount: "" });
+  }, [currentAccount?.evmAddress, currentAccount?.nativeAddress]);
+
   useEffect(() => {
 
     if (data.to === "" || !data.amount) {
@@ -57,11 +63,11 @@ function Send() {
         setGassFee("");
         setDisable(true);
       }
-    }, 600);
+    }, 1000);
 
     return () => clearTimeout(getData);
 
-  
+
   }, [data.to, data.amount]);
 
   useEffect(() => {
@@ -242,11 +248,34 @@ function Send() {
   };
 
   const handleChange = (e) => {
-    setData((p) => ({
-      ...p,
-      [e.target.name]: (e.target.value).trim(),
-    }));
-    setGassFee("");
+
+    if (e.target.name === "amount") {
+      let arr = e.target.value.split(".");
+
+      if (arr.length > 1) {
+
+        if (arr[1].length > 18) {
+          let slice = arr[1].slice(0, 18);
+          setData(p => ({ ...p, amount: arr[0] + "." + slice }))
+        } else {
+          setData(p => ({ ...p, amount: e.target.value }))
+          setGassFee("");
+
+        }
+      }
+      else {
+        setData(p => ({ ...p, amount: e.target.value }))
+        setGassFee("");
+
+      }
+    } else {
+
+      setData((p) => ({
+        ...p,
+        [e.target.name]: (e.target.value).trim(),
+      }));
+      setGassFee("");
+    }
   };
 
   const handleApprove = async (e) => {
@@ -487,7 +516,7 @@ function Send() {
             <p className="transId">{sendError}</p>
 
             <div className="footerbuttons">
-              <ButtonComp text={"Swap Again"} onClick={handleSwapAgain} />
+              <ButtonComp text={"Try Again"} onClick={handleSwapAgain} />
             </div>
           </div>
         </div>

@@ -47,7 +47,7 @@ export default function useAuth() {
           } else throw new Error("Error while setting up password for user!");
         } else throw new Error("Error while setting up password for user!");
       } catch (error) {
-        console.log("Error : ", error);
+        // console.log("Error : ", error);
         resolve({
           error: true,
           data: "Error occured!",
@@ -78,7 +78,7 @@ export default function useAuth() {
         };
       }
     } catch (error) {
-      console.log("Error : ", error);
+      // console.log("Error : ", error);
       return {
         error: true,
         data: "Error Occured!",
