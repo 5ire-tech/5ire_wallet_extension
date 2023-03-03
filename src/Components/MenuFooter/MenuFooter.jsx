@@ -204,12 +204,12 @@ function MenuFooter() {
         ))}
         <AccountSetting
           img={Createaccount}
-          title="Create a New Account"
+          title="Create a New Wallet"
           onClick={hanldeCreateNewAcc}
         />
         <AccountSetting
           img={Import}
-          title="Import Account"
+          title="Import Wallet"
           onClick={handleImportAcc}
         />
         <AccountSetting img={Logout} title="Logout" onClick={handleLogout} />

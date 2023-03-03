@@ -141,24 +141,33 @@ export default function UseWallet() {
         nbalance = balance_.availableBalance;
       }
 
+
       let evmBalance = new BigNumber(w3balance).dividedBy(10 ** 18).toString();
       let nativeBalance = new BigNumber(nbalance).dividedBy(10 ** 18).toString();
+      
+
+      if (Number(nativeBalance) % 1 !== 0) {
+        let tempBalance = new BigNumber(nbalance).dividedBy(10 ** 18).toFixed(6, 8).toString();
+        if (Number(tempBalance) % 1 === 0)
+          nativeBalance = parseInt(tempBalance)
+        else
+          nativeBalance = tempBalance;
+      }
 
 
-      if (Number(nativeBalance) % 1 !== 0)
-        nativeBalance = new BigNumber(nbalance).dividedBy(10 ** 18).toFixed(6, 8).toString();
-
-
-      if (Number(evmBalance) % 1 !== 0)
-        evmBalance = new BigNumber(w3balance).dividedBy(10 ** 18).toFixed(6, 8).toString();
+      if (Number(evmBalance) % 1 !== 0) {
+        let tempBalance = new BigNumber(w3balance).dividedBy(10 ** 18).toFixed(6, 8).toString();
+        if (Number(tempBalance) % 1 === 0)
+          evmBalance = parseInt(tempBalance)
+        else
+          evmBalance = tempBalance;
+      }
 
 
       let totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toString();
       if (Number(totalBalance) % 1 !== 0)
         totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toFixed(6, 8).toString()
 
-      // console.log("balance.nativeBalance : ", balance.nativeBalance, " && now ", nativeBalance);
-      // console.log("balance.nativeBalance : ", balance.evmBalance, " && now ", evmBalance);
 
       // if ((balance.nativeBalance !== nativeBalance && balance.evmBalance !== evmBalance) && (!isNaN(evmBalance) && !(isNaN(nativeBalance)))) {
       const payload = {
@@ -326,7 +335,7 @@ export default function UseWallet() {
                 if (txRecipt?.data?.transaction) {
                   txStatus = txRecipt.data.transaction.status;
                 }
-    
+
                 //set the transaction status
                 dataToDispatch.data.status = txStatus;
 
@@ -335,7 +344,7 @@ export default function UseWallet() {
                 dispatch(toggleLoader(false));
 
                 // send the tx notification
-                Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING.toLowerCase(), status: txStatus} });
+                Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING.toLowerCase(), status: txStatus } });
 
                 resolve({
                   error: false,
@@ -458,7 +467,7 @@ export default function UseWallet() {
             //Sign and Send txn for http provider
             deposit.signAndSend(alice, async (txHash) => {
               if (txHash) {
-                
+
                 const hash = txHash.toHex();
                 dataToDispatch.data.txHash = { hash: evmDepositeHash, mainHash: hash };
                 const txRecipt = await httpRequest(api.native + hash, HTTP_METHODS.GET);
@@ -469,7 +478,7 @@ export default function UseWallet() {
                 if (txRecipt?.data?.transaction) {
                   txStatus = txRecipt.data.transaction.status;
                 }
-    
+
                 //set the transaction status
                 dataToDispatch.data.status = txStatus;
 
@@ -478,7 +487,7 @@ export default function UseWallet() {
                 dispatch(toggleLoader(false));
 
                 // send the tx notification
-                Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING.toLowerCase(), status: txStatus} });
+                Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING.toLowerCase(), status: txStatus } });
 
 
                 resolve({
@@ -704,8 +713,8 @@ export default function UseWallet() {
 
   const retriveEvmFee = async (evmApi, toAddress, amount, data = "", isLoading = true) => {
     try {
-  
-      if(isLoading) dispatch(toggleLoader(true));
+
+      if (isLoading) dispatch(toggleLoader(true));
 
       toAddress = toAddress ? toAddress : currentAccount?.nativeAddress;
 
@@ -717,8 +726,8 @@ export default function UseWallet() {
           amount = Math.round(Number(amount));
           Web3.utils.toChecksumAddress(toAddress);
         } catch (error) {
-          
-          if(isLoading) dispatch(toggleLoader(false));
+
+          if (isLoading) dispatch(toggleLoader(false));
 
           return ({
             error: true,

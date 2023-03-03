@@ -2,7 +2,8 @@ import React from "react";
 import style from "./style.module.scss";
 import PlaceLogo from "../../Assets/PlaceLog.svg";
 import { Link } from "react-router-dom";
-import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+// import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+
 function WelcomeScreen() {
   return (
     <div className={`${style.cardWhite} ${style.cardWhiteCenterd}`}>

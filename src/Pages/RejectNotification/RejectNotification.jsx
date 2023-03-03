@@ -112,7 +112,7 @@ function ApproveTx() {
 
                 <div className={style.rejectedSec__listReject__innerList}>
                   <h4>Fee: </h4>
-                  <h4>{fee} 5IRE</h4>
+                  <h4>{fee ? `${fee} 5ire`: ""}</h4>
                 </div>
               </>
             ) : (

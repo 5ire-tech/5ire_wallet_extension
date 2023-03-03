@@ -2,7 +2,7 @@ import React from "react";
 import style from "./style.module.scss";
 import { Player } from "@lottiefiles/react-lottie-player";
 
-function CongratulationsScreen({ children }) {
+function CongratulationsScreen({ children, text}) {
   return (
     <div className={style.setPassword__secretPharse}>
       <div className={`${style.cardWhite__beginText} ${style.congratScreen}`}>
@@ -13,10 +13,12 @@ function CongratulationsScreen({ children }) {
             controls={true}
             src={"https://assets3.lottiefiles.com/packages/lf20_4chtroo0.json"}
             style={{ height: "190px", width: "190px" }}
-          ></Player>
+          >
+            
+          </Player>
         </div>
         <h1>Congratulations!</h1>
-        <p>Your Wallet is Created.</p>
+        <p>{text}</p>
         {children}
       </div>
     </div>

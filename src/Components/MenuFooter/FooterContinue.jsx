@@ -1,11 +1,11 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import style from "./style.module.scss";
 import browser from "webextension-polyfill";
 import useWallet from "../../Hooks/useWallet";
 import { useNavigate } from "react-router-dom";
 import ButtonComp from "../ButtonComp/ButtonComp";
 import { useDispatch, useSelector } from "react-redux";
-import { connectionObj, Connection} from "../../Helper/connection.helper";
+import { connectionObj, Connection } from "../../Helper/connection.helper";
 import {
   // setLogin,
   setSite,
@@ -54,7 +54,7 @@ export const FooterStepTwo = () => {
 
   const handleClick = () => {
     if (isLogin) navigate("/wallet");
-    else navigate("/setPassword");
+    else navigate("/setPassword/create");
   };
   return (
     <>
@@ -140,7 +140,7 @@ export const FooterStepTwo = () => {
 export const ApproveLogin = () => {
   const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
- 
+
 
   function handleClick(isApproved) {
     dispatch(toggleLoader(true));
@@ -186,7 +186,7 @@ export const ApproveLogin = () => {
       });
     }
 
-    browser.storage.local.set({popupStatus: false});
+    browser.storage.local.set({ popupStatus: false });
     dispatch(setUIdata({}));
     dispatch(toggleLoader(false));
     setTimeout(() => {
@@ -229,36 +229,36 @@ export const ApproveTx = () => {
         if (!apiRes?.value) {
           Connection.isExecuting.value = false;
 
-        evmTransfer(
-          apiRes.evmApi,
-          {
-            to: auth?.uiData?.message?.to,
-            amount: auth?.uiData?.message?.value,
-            data: auth?.uiData?.message?.data,
-          },
-          true
-        ).then((rs) => {
-          if (rs.error) {
-            browser.tabs.sendMessage(auth.uiData.tabId, {
-              id: auth.uiData.id,
-              response: null,
-              error: rs.data,
-            });
-          } else {
-            browser.tabs.sendMessage(auth.uiData.tabId, {
-              id: auth.uiData.id,
-              response: rs.data,
-              error: null,
-            });
-          }
+          evmTransfer(
+            apiRes.evmApi,
+            {
+              to: auth?.uiData?.message?.to,
+              amount: auth?.uiData?.message?.value,
+              data: auth?.uiData?.message?.data,
+            },
+            true
+          ).then((rs) => {
+            if (rs.error) {
+              browser.tabs.sendMessage(auth.uiData.tabId, {
+                id: auth.uiData.id,
+                response: null,
+                error: rs.data,
+              });
+            } else {
+              browser.tabs.sendMessage(auth.uiData.tabId, {
+                id: auth.uiData.id,
+                response: rs.data,
+                error: null,
+              });
+            }
 
-          dispatch(setUIdata({}));
-          dispatch(toggleLoader(false));
+            dispatch(setUIdata({}));
+            dispatch(toggleLoader(false));
 
-          setTimeout(() => {
-            window.close();
-          }, 300);
-        });
+            setTimeout(() => {
+              window.close();
+            }, 300);
+          });
         }
       });
 
@@ -267,14 +267,14 @@ export const ApproveTx = () => {
       browser.tabs.sendMessage(auth.uiData.tabId, {
         id: auth.uiData.id,
         response: null,
-        error: "User rejected  transactoin.",
+        error: "User rejected  transaction.",
       });
 
       dispatch(setUIdata({}));
       window.close();
     }
 
-    browser.storage.local.set({popupStatus: false});
+    browser.storage.local.set({ popupStatus: false });
   }
 
   return (
