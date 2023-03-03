@@ -18,3 +18,24 @@ export const STATUS = {
     FAILED:"Failed",
     SUCCESS:"Success",
 }
+
+export const HTTP_METHODS = {
+    POST: "POST",
+    GET: "GET",
+    PUT: "PUT",
+    PATCH: "PATCH",
+    DELETE: "DELETE"
+}
+
+export const  HTTP_CONTENT_TYPE = {
+    JSON: "application/json"
+}
+
+export const EVM_JSON_RPC_METHODS = {
+    GET_TX_RECIPT: "eth_getTransactionReceipt"
+}
+
+export const ERROR_MESSAGES = {
+    NOT_VALID_JSON_RPC_METHOD: "JSON-RPC method is not valid.",
+    INSUFFICENT_BALANCE: "Insufficent Balance!"
+}

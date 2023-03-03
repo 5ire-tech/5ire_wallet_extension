@@ -47,6 +47,7 @@ try {
     }
   });
 
+  
   Browser.runtime.onStartup.addListener(() => {
     //on background script startup
     // store.dispatch(setApiReady(false));
@@ -65,11 +66,13 @@ try {
       isInitialized = true;
     }
 
-    const controller = new Controller(store);
+    const controller = Controller.getInstance(store);
+
     const data = {
       ...message,
       tabId: sender?.tab?.id,
     };
+
     switch (data?.method) {
       case "connect":
       case "eth_requestAccounts":

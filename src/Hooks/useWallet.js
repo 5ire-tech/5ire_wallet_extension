@@ -25,6 +25,8 @@ import {
   toggleLoader,
 } from "../Store/reducer/auth";
 
+import { httpRequest, EVMRPCPayload } from "../Utility/network_calls";
+import { HTTP_METHODS, EVM_JSON_RPC_METHODS, ERROR_MESSAGES } from "../Constants/index";
 
 export default function UseWallet() {
 
@@ -173,35 +175,14 @@ export default function UseWallet() {
   }
 
 
-  //for http-requests
-  async function httpRequest(url, method, payload) {
-
-    const reqHeader = {
-      method,
-      headers: {
-      "Content-Type": "application/json"
-    }}
-
-    if(method === "POST") reqHeader.body = typeof(payload) === "string" ? payload : JSON.stringify(payload)
-
-    const res = await fetch(url, reqHeader);
-    const data = await res.json();
-    return data;
-  }
-
-
   const evmTransfer = async (evmApi, data, isBig = false) => {
 
     return (new Promise(async (resolve, reject) => {
-
-      // console.log("Condition Here: ", (Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0);
-      // console.log("Here are individual conditions: ", data.amount !== '0x0', (Number(data.amount) > Number(balance.evmBalance), Number(balance.evmBalance) <= 0));
-      // console.log("individual balance: ", Number(data.amount), Number(balance.evmBalance), data.amount);
       try {
         if ((Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0) {
           resolve({
             error: true,
-            data: "Insufficent Balance!"
+            data: ERROR_MESSAGES.INSUFFICENT_BALANCE
           })
         } else {
           dispatch(toggleLoader(true));
@@ -243,8 +224,7 @@ export default function UseWallet() {
 
           if (hash) {
 
-
-            const txRecipt = await httpRequest(httpEndPoints[currentNetwork.toLowerCase()], "POST", JSON.stringify({ jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [hash], id: 1 }));
+            const txRecipt = await httpRequest(httpEndPoints[currentNetwork.toLowerCase()], HTTP_METHODS.POST, JSON.stringify(new EVMRPCPayload(EVM_JSON_RPC_METHODS.GET_TX_RECIPT, [hash])));
 
             let txStatus = STATUS.PENDING;
             if (txRecipt.result) {
@@ -312,7 +292,7 @@ export default function UseWallet() {
         if (Number(data.amount) >= Number(balance.nativeBalance)) {
           resolve({
             error: true,
-            data: "Insufficent Balance!"
+            data: ERROR_MESSAGES.INSUFFICENT_BALANCE
           })
         } else {
 
@@ -338,7 +318,7 @@ export default function UseWallet() {
 
                 const hash = txHash.toHex();
                 dataToDispatch.data.txHash = hash;
-                const txRecipt = await httpRequest(api.native + hash, "GET");
+                const txRecipt = await httpRequest(api.native + hash, HTTP_METHODS.GET);
 
                 // console.log("tx Recipt: ", txRecipt);
 
@@ -453,7 +433,7 @@ export default function UseWallet() {
         if (Number(amount) >= Number(balance.nativeBalance) || Number(amount) <= 0) {
           resolve({
             error: true,
-            data: "Insufficent Balance!"
+            data: ERROR_MESSAGES.INSUFFICENT_BALANCE
           })
         } else {
           let err, evmDepositeHash, signedHash;
@@ -481,7 +461,7 @@ export default function UseWallet() {
                 
                 const hash = txHash.toHex();
                 dataToDispatch.data.txHash = { hash: evmDepositeHash, mainHash: hash };
-                const txRecipt = await httpRequest(api.native + hash, "GET");
+                const txRecipt = await httpRequest(api.native + hash, HTTP_METHODS.GET);
 
                 // console.log("tx Recipt Swap: ", txRecipt);
 
@@ -585,7 +565,7 @@ export default function UseWallet() {
         if (Number(amount) >= Number(balance.evmBalance) || Number(amount) <= 0) {
           resolve({
             error: true,
-            data: "Insufficent Balance!"
+            data: ERROR_MESSAGES.INSUFFICENT_BALANCE
           })
         } else {
           dispatch(toggleLoader(true));
@@ -621,11 +601,7 @@ export default function UseWallet() {
             );
             let signRes = await withdraw.signAndSend(alice);
 
-            // console.log("Sign Res : ", signRes.toHex());
-
-
-
-            const txRecipt = await httpRequest(httpEndPoints[currentNetwork.toLowerCase()], "POST", JSON.stringify({ jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [signHash], id: 1 }));
+            const txRecipt = await httpRequest(httpEndPoints[currentNetwork.toLowerCase()], HTTP_METHODS.POST, JSON.stringify(new EVMRPCPayload(EVM_JSON_RPC_METHODS.GET_TX_RECIPT, [signHash])));
 
             let txStatus = STATUS.PENDING;
             if (txRecipt.result) {
@@ -859,153 +835,6 @@ export default function UseWallet() {
     }
   }
 
-  // const retriveNativeFee = async (nativeApi, toAddress, amount) => {
-  //   try {
-  //     dispatch(toggleLoader(true));
-  //     toAddress = toAddress ? toAddress : currentAccount?.evmAddress;
-  //     let transferTx;
-  //     const keyring = new Keyring({ type: "ed25519" });
-  //     const seedAlice = mnemonicToMiniSecret(
-  //       decryptor(currentAccount?.temp1m, pass)
-  //     );
-  //     const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
-
-  //     if (toAddress.startsWith("0x")) {
-  //       const amt = new BigNumber(amount).multipliedBy(10 ** 18).toFixed().toString();
-  //       try {
-  //         Web3.utils.toChecksumAddress(toAddress);
-  //       } catch (error) {
-  //         dispatch(toggleLoader(false));
-  //         return ({
-  //           error: true,
-  //           data: "Invalid 'Recipient' address."
-  //         });
-  //       }
-  //       transferTx = await nativeApi.tx.evm.deposit(toAddress, amt);
-  //     }
-
-  //     if (toAddress.startsWith("5")) {
-  //       const amt = new BigNumber(amount).multipliedBy(10 ** 18).toString();
-  //       try {
-  //         encodeAddress(
-  //           isHex(toAddress)
-  //             ? hexToU8a(toAddress)
-  //             : decodeAddress(toAddress)
-  //         );
-  //       } catch (error) {
-  //         dispatch(toggleLoader(false));
-
-  //         return ({
-  //           error: true,
-  //           data: "Invalid 'Recipient' address!"
-  //         });
-  //       }
-  //       transferTx = nativeApi.tx.balances.transferKeepAlive(toAddress, amt);
-
-  //     }
-  //     const info = await transferTx?.paymentInfo(alice);
-  //     const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
-
-  //     dispatch(toggleLoader(false));
-
-  //     return {
-  //       error: false,
-  //       data: fee,
-  //     };
-  //   } catch (error) {
-  //     dispatch(toggleLoader(false));
-  //     // console.log("Error while getting native fee: ", error);
-  //     return {
-  //       error: true,
-  //     }
-  //   }
-  // };
-
-  // const initializeNativeApi = async (network) => {
-  //   try {
-  //     let provider = new WsProvider(network);
-  //     nativeApi = await ApiPromise.create({ provider: provider });
-  //     nativeApi.on("disconnected", async () => {
-  //       nativeApi.connect();
-  //     });
-  //     console.log("native Api : ", nativeApi);
-  //   } catch (error) {
-  //     console.log("Error while making connection with Native Api");
-  //   }
-  // };
-
-  // const initializeEvmApi = async (network) => {
-  //   try {
-  //     let options = {
-  //       reconnect: {
-  //         auto: true,
-  //         delay: 5000, // ms
-  //         maxAttempts: 10,
-  //         onTimeout: false
-  //       }
-  //     };
-  //     web3Provider = new Web3.providers.WebsocketProvider(network, options);
-  //     evmApi = new Web3(web3Provider);
-
-  //     web3Provider.on('end', async () => {
-  //       console.log("Trying to reconnect with Evm api");
-  //       initializeEvmApi();
-  //     });
-  //     web3Provider.on('error', async (e) => {
-  //       console.log("error occued while making connection with web3 : ", e);
-  //       initializeEvmApi();
-  //     });
-
-  //     console.log("evmApi : ", evmApi);
-  //   } catch (error) {
-  //     console.log("Error while making connection with Native Api");
-  //   }
-  // };
-
-
-  // const getEvmBalance = async () => {
-  //   try {
-
-  //     const w3balance = await evmApi?.eth.getBalance(
-  //       currentAccount?.evmAddress
-  //     );
-  //     let payload = {
-  //       of: EVM,
-  //       balance: new BigNumber(w3balance).dividedBy(10 ** 18).toFixed(6, 8),
-  //     };
-
-  //     console.log("balance.evmBalance : " + balance.evmBalance, "payload.balance : ", payload.balance);
-
-  //     if ((balance.evmBalance !== payload.balance) && !isNaN(payload.balance)) {
-  //       dispatch(setBalance(payload));
-  //     }
-
-  //   } catch (error) {
-  //     console.log("Error while geting balance of evm : ", error);
-  //   }
-  // };
-
-  // const getNativeBalance = async () => {
-  //   try {
-  //     const nbalance = await nativeApi?.derive.balances.all(
-  //       currentAccount?.nativeAddress
-  //     );
-  //     let payload = {
-  //       of: NATIVE,
-  //       balance: new BigNumber(nbalance.availableBalance).dividedBy(10 ** 18).toFixed(6, 8).toString(),
-  //     };
-  //     console.log("balance.nativeBalance : " + balance.nativeBalance, "payload.balance : ", payload.balance);
-
-  //     if ((balance.nativeBalance !== payload.balance) && !isNaN(payload.balance)) {
-  //       dispatch(setBalance(payload));
-  //     }
-
-  //   } catch (error) {
-  //     console.log("Error while getting balance of native : ", error);
-  //   }
-  // };
-
-
   const getKeyring = () => {
     const seedAccount = mnemonicToMiniSecret(
       decryptor(currentAccount?.temp1m, pass)
@@ -1016,7 +845,6 @@ export default function UseWallet() {
   }
 
   //Nominator methods
-
   const addNominator = async (nativeApi, payload, isFee = false) => {
 
     try {

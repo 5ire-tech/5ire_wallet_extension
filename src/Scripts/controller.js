@@ -1,8 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { wrapStore } from "./webext-redux/dist/webext-redux";
 import Browser from "webextension-polyfill";
-import { PORT_NAME } from "../Constants";
-import logger from "redux-logger";
+// import logger from "redux-logger";
 import authReducer, {
   userState,
   setUIdata,
@@ -13,6 +12,11 @@ import authReducer, {
 } from "../Store/reducer/auth";
 import NotificationManager from "./platform";
 import { isManifestV3 } from "./utils";
+
+import { httpRequest, EVMRPCPayload } from "../Utility/network_calls";
+import {isObject, isNullorUndef, isHasLength} from "../Utility/utility"
+import {HTTP_METHODS, PORT_NAME, EVM_JSON_RPC_METHODS } from "../Constants";
+
 
 
 // Initializes the Redux store
@@ -58,7 +62,6 @@ function init(preloadedState) {
   });
 }
 
-
 //Load the redux store
 export function loadStore(sendStoreMessage = true) {
   return new Promise(async (resolve) => {
@@ -85,10 +88,10 @@ export async function initScript() {
   try {  
 
 
-        await Browser.scripting.registerContentScripts([
+      await Browser.scripting.registerContentScripts([
       {
         id: "inpage",
-        matches: ["http://*/", "https://*/"],
+        matches: ["http://*/*", "https://*/*"],
         js: ["./static/js/injected.js"],
         runAt: "document_start",
         world: "MAIN",
@@ -114,6 +117,14 @@ export class Controller {
   constructor(store) {
     this.store = store;
     this.notificationManager = new NotificationManager(store);
+    
+    //maintain only single instance
+    this.instance = null
+  }
+
+  static getInstance(store) {
+    if(isNullorUndef(this.instance)) this.instance = new Controller(store)
+    return this.instance
   }
 
   //show extension notifications
@@ -130,6 +141,7 @@ export class Controller {
     });
   }
 
+  //inject the current net endpoint to injected global
   async sendEndPoint(data) {
     try {
       const storage = this.store.getState();
@@ -148,18 +160,10 @@ export class Controller {
     }
   }
 
+
   //for connecting the accounts to a specfic webpage
   async handleConnect(data) {
     const state = this.store.getState();
-
-    // if(!state.auth.isLogin) {
-    //   Browser.tabs.sendMessage(data.tabId, {
-    //     id: data.id,
-    //     response: null,
-    //     error: "5ire extension is not locked, unlock the extension",
-    //   });
-    //   return;
-    // }
 
     const hereOutput = await Browser.storage.local.get("popupStatus");
 
@@ -203,6 +207,7 @@ export class Controller {
     }
   }
 
+  //handle the Disconnection
   async handleDisconnect(data) {
     this.store.dispatch(toggleSite({ origin: data.message?.origin, isConnected: false }))
     Browser.tabs.sendMessage(data.tabId, {
@@ -213,20 +218,8 @@ export class Controller {
   }
 
 
-
   //for transaction from connected website
   async handleEthTransaction(data) {
-
-    // const state = this.store.getState();
-
-    // if(!state.auth.isLogin) {
-    //   Browser.tabs.sendMessage(data.tabId, {
-    //     id: data.id,
-    //     response: null,
-    //     error: "5ire extension is locked, unlock the extension",
-    //   });
-    //   return;
-    // }
 
     const hereOutput = await Browser.storage.local.get("popupStatus");
 
@@ -249,47 +242,36 @@ export class Controller {
     await this.notificationManager.showPopup("approveTx");
   }
 
+
   //Handle Validator nominator methods
   async handleValidatorNominatorTransactions(data) {
-    console.log("Here i got native message", data)
+    // console.log("Here i got native message", data)
     this.store.dispatch(setUIdata(data));
     await this.notificationManager.showPopup("nativeTx");
   }
 
 }
 
-
-async function httpRequest(url, method, payload) {
-
-  const reqHeader = {
-    method,
-    headers: {
-    "Content-Type": "application/json"
-  }}
-
-  if(method === "POST") reqHeader.body = typeof(payload) === "string" ? payload : JSON.stringify(payload)
-
-  const res = await fetch(url, reqHeader);
-  const data = await res.json();
-  return data;
+//show browser notification from extension
+function showNotification(controller, message) {
+  if(!isNullorUndef(controller) && isHasLength(message)) controller.showNotification(message)
 }
 
-
-
-// check if transaction is success or failed and update it into storage
+// check if transaction status and inform user using browser notification
 export async function checkTransactions(txData) {
-  try {
 
+  try {
     const store = await loadStore(false);
-    const noti = new Controller(store)
-    const txHash = typeof (txData.txHash) === "object" ? txData.txHash.mainHash : txData.txHash;
+    const controller = Controller.getInstance(store);
+    const txHash = isObject(txData.txHash) ? txData.txHash.mainHash : txData.txHash;
 
 
     if (txData.statusCheck.isFound) {
-      noti.showNotification(`Transaction ${txData.statusCheck.status} ${txHash.slice(0, 30)} ...`)
+      showNotification(controller, `Transaction ${txData.statusCheck.status} ${txHash.slice(0, 30)} ...`)
       return;
     }
 
+    //get the current redux state of application
     const state = await store.getState();
     const accountName = state.auth.currentAccount.accountName;
 
@@ -300,26 +282,25 @@ export async function checkTransactions(txData) {
     //check if the current tx is evm tx or native tx
     const rpcUrl = txData.isEVM ? state.auth.httpEndPoints[txData.chain] || "https://rpc-testnet.5ire.network" : state.auth.api.native;
 
+
+    //check if the transaction is still pending or not
     let txRecipt;
-    if(txData.isEVM) txRecipt = await httpRequest(rpcUrl, "POST", JSON.stringify({ jsonrpc: "2.0", method: "eth_getTransactionReceipt", params: [txHash], id: 1 }));
-    else txRecipt = await httpRequest(rpcUrl + txHash, "GET")
+    if(txData.isEVM) txRecipt = await httpRequest(rpcUrl, HTTP_METHODS.POST, JSON.stringify(new EVMRPCPayload( EVM_JSON_RPC_METHODS.GET_TX_RECIPT, [txHash])));
+    else txRecipt = await httpRequest(rpcUrl + txHash, HTTP_METHODS.GET)
 
 
-    // console.log("here is the recipt in background: ", txRecipt);
-
+    //check if the tx is native or evm based
     if (txRecipt?.result) {
       store.dispatch(updateTxHistory({ txHash, accountName, status: Boolean(parseInt(txRecipt.result.status)), isSwap }));
-      noti.showNotification(`Transaction ${Boolean(parseInt(txRecipt.result.status)) ? "success" : "failed"} ${txHash.slice(0, 30)} ...`)
+      showNotification(controller ,`Transaction ${Boolean(parseInt(txRecipt.result.status)) ? "success" : "failed"} ${txHash.slice(0, 30)} ...`);
     } else if(txRecipt?.data && txRecipt?.data?.transaction.status !== "pending") {
       store.dispatch(updateTxHistory({ txHash, accountName, status: txRecipt?.data?.transaction.status, isSwap }));
-      noti.showNotification(`Transaction ${txRecipt?.data?.transaction.status} ${txHash.slice(0, 30)} ...`)
+      showNotification(controller ,`Transaction ${txRecipt?.data?.transaction.status} ${txHash.slice(0, 30)} ...`);
     }
     else checkTransactions(txData)
 
-
-
   } catch (err) {
-    // console.log("Error while updating the transaction: ", err);
+    console.log("Error while checking transaction status: ", err);
   }
 }
 
