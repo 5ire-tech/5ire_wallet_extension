@@ -242,7 +242,7 @@ function NativeTx() {
             Browser.tabs.sendMessage(auth.uiData.tabId, {
                 id: auth.uiData.id,
                 response: null,
-                error: "User rejected  transactoin.",
+                error: "User rejected  transaction.",
             });
             dispatch(setUIdata({}));
             window.close();

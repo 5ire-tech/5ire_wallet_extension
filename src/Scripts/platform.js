@@ -150,7 +150,7 @@ export default class NotificationManager {
 
     //ensure only 1 instance of popup is opened
     // this.store.dispatch(setTxPopup(true))
-    await Browser.storage.local.set({popupStatus: true});
+    await Browser.storage.local.set({ popupStatus: true });
 
     // Bring focus to chrome popup
     if (popup) {
@@ -196,12 +196,12 @@ export default class NotificationManager {
     // console.log("Yyyyyyyy", windowId, this._popupId)
     if (windowId === this._popupId) {
 
-    //false the current popup if the close button is clicked
-    // this.store.dispatch(setTxPopup(false))
-    // const dataHere = await Browser.storage.local.get("popupStatus");
-    // console.log("here is your data inside local: ", dataHere);
-    await Browser.storage.local.set({popupStatus: false});
-    // const hereOutput = await Browser.storage.local.get("popupStatus");
+      //false the current popup if the close button is clicked
+      // this.store.dispatch(setTxPopup(false))
+      // const dataHere = await Browser.storage.local.get("popupStatus");
+      // console.log("here is your data inside local: ", dataHere);
+      await Browser.storage.local.set({ popupStatus: false });
+      // const hereOutput = await Browser.storage.local.get("popupStatus");
 
       this._popupId = undefined;
       // this.emit("POPUP_CLOSED", {
@@ -233,7 +233,7 @@ export default class NotificationManager {
       Browser.tabs.sendMessage(state?.auth?.uiData?.tabId, {
         id: state?.auth?.uiData?.id,
         response: null,
-        error: "User rejected  transactoin.",
+        error: "User rejected  transaction.",
       });
 
     }
