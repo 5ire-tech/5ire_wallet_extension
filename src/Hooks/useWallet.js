@@ -142,10 +142,7 @@ export default function UseWallet() {
 
       let evmBalance = new BigNumber(w3balance).dividedBy(10 ** 18).toString();
       let nativeBalance = new BigNumber(nbalance).dividedBy(10 ** 18).toString();
-
-      console.log("evm Balance : ", Number(evmBalance) % 1);
-      console.log("native Balance : ", nativeBalance);
-
+      
 
       if (Number(nativeBalance) % 1 !== 0) {
         let tempBalance = new BigNumber(nbalance).dividedBy(10 ** 18).toFixed(6, 8).toString();

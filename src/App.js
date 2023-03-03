@@ -86,7 +86,7 @@ function App() {
               element={<WelcomeLayout children={<WelcomeScreen />} />}
             />
             <Route
-              path="/setPassword"
+              path="/setPassword/:id"
               element={<WelcomeLayout children={<SetPasswordScreen />} />}
             />
 

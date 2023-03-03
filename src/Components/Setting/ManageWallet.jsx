@@ -40,7 +40,7 @@ function ManageWallet() {
           /> */}
           <div className={style.wallet}>
             <div className={style.wallet__addressInput}>
-              <label>Account Name:</label>
+              <label>Wallet Name:</label>
               <p className={style.wallet__addressInput__copyText}>
                 <span>{currentAccount?.accountName}</span>
                 <img src={CopyIcon} alt="copyIcon" name="name" onClick={handleCopy} draggable={false}/>{" "}

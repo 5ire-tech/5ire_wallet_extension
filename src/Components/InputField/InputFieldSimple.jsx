@@ -5,13 +5,13 @@ import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
 import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
 
 function InputFieldSimple({
-  placeholder,
-  onChange,
   name,
-  placeholderBaseColor,
-  coloredBg,
-  minHeight,
   keyUp,
+  onChange,
+  minHeight,
+  coloredBg,
+  placeholder,
+  placeholderBaseColor,
 }) {
   return (
     <Input.Password
@@ -38,6 +38,7 @@ function InputFieldSimple({
 export default InputFieldSimple;
 
 export const InputField = ({
+  min,
   mb0,
   type,
   name,
@@ -52,7 +53,6 @@ export const InputField = ({
   placeholder,
   defaultValue,
   placeholderBaseColor,
-  min,
 }) => {
   return (
     <div className={`${style.boxStyle} inputField ${mb0 ? style.mb0 : ""}`}>
@@ -81,16 +81,16 @@ export const InputField = ({
 };
 
 export const InputFieldOnly = ({
-  placeholder,
-  label,
-  minHeight,
-  placeholderBaseColor,
-  coloredBg,
-  onChange,
   name,
   value,
   type,
   keyUp,
+  label,
+  onChange,
+  minHeight,
+  coloredBg,
+  placeholder,
+  placeholderBaseColor,
 }) => {
   return (
     <div className={`${style.boxStyle} inputFieldOnly `}>

@@ -10,9 +10,10 @@ import { useDispatch, useSelector } from "react-redux";
 function CreateNewWallet() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isLogin, accounts } = useSelector((state) => state.auth);
   const [data, setData] = useState("");
   const [warrning, setWarrning] = useState("");
+  const [isDisable, setDisable] = useState(true);
+  const { isLogin, accounts } = useSelector((state) => state.auth);
 
   const handleChange = (e) => {
     setData(e.target.value);
@@ -20,14 +21,24 @@ function CreateNewWallet() {
   };
 
   const validateAccName = () => {
+    let regex = /^[a-z0-9]+$/i;
+
     if (data.trim().length < 2 || data.trim().length >= 19) {
-      setWarrning(
-        "Please input account name between " + 2 + " and " + 18 + " characters."
-      );
-    } else {
+      setWarrning("Please input account name between " + 2 + " and " + 18 + " characters.");
+      setDisable(true);
+    } 
+
+    else if (! regex.test(data)) {
+      setWarrning("Please enter only alphanumeric characters.");
+      setDisable(true);
+    }
+
+    else {
       setWarrning("");
+      setDisable(false);
     }
   };
+
   const handleClick = () => {
     if (data.trim().length === 0) {
       setWarrning("This field is required.");
@@ -35,7 +46,7 @@ function CreateNewWallet() {
       if (!warrning) {
         const match = accounts.find((e) => {
           if (e.accountName === data) {
-            setWarrning("Account with this name is allready exists!");
+            setWarrning("Wallet with this name is already exists.");
             return true;
           } else return false;
         });
@@ -64,19 +75,19 @@ function CreateNewWallet() {
           <div>
             <InputFieldOnly
               value={data}
-              placeholder={"Enter Wallet Name"}
-              placeholderBaseColor={true}
               coloredBg={true}
               name="accountName"
+              placeholderBaseColor={true}
               onChange={handleChange}
               keyUp={validateAccName}
+              placeholder={"Enter Wallet Name"}
             />
             <p className="errorText">{warrning}</p>
           </div>
         </div>
         <div className={style.setPassword__footerbuttons}>
           <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancle} />
-          <ButtonComp onClick={handleClick} text={"Create"} />
+          <ButtonComp onClick={handleClick} text={"Create"} isDisable = {isDisable}/>
         </div>
       </div>
     </div>

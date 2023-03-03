@@ -1,27 +1,45 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
-import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import style from "./style.module.scss";
 import { useSelector } from "react-redux";
 import useWallet from "../../Hooks/useWallet";
+import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import { decryptor } from "../../Helper/CryptoHelper";
-// import { toast } from "react-toastify";
+import ButtonComp from "../../Components/ButtonComp/ButtonComp";
+import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
+import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+
+
 
 function ImportWallet() {
   const navigate = useNavigate();
-  const { accounts, pass } = useSelector((state) => state.auth);
   const { importAccount } = useWallet();
-  const [data, setData] = useState({ accName: "", key: "" });
-  const [warrning, setWarrning] = useState({ acc: "", key: "" });
+  const [isDisable, setDisable] = useState(true);
   const { isLogin } = useSelector((state) => state.auth);
+  const [data, setData] = useState({ accName: "", key: "" });
+  const { accounts, pass } = useSelector((state) => state.auth);
+  const [warrning, setWarrning] = useState({ acc: "", key: "" });
+
+  useEffect(() => {
+
+    if ((!data.accName.length || !data.key || data.accName.length < 2)) {
+      setDisable(true);
+    } else {
+      if (!warrning.acc && !warrning.key) {
+        setDisable(false);
+      } else {
+        setDisable(true);
+      }
+    }
+
+  }, [data.accName, data.key, warrning])
 
   const handleChange = (e) => {
     setData((p) => ({ ...p, [e.target.name]: e.target.value }));
   };
 
   const validateAccName = () => {
+    let regex = /^[a-z0-9]+$/i; 
+
     if (data.accName.trim().length < 2 || data.accName.trim().length >= 16) {
       setWarrning((p) => ({
         ...p,
@@ -32,14 +50,25 @@ function ImportWallet() {
           15 +
           " characters.",
       }));
-    } else {
+      setDisable(true);
+    }
+
+    else if (!regex.test(data.accName)) {
+      // setWarrning("Please enter only alphanumeric characters.");
+      setWarrning(p => ({ ...p, acc: "Please enter only alphanumeric characters." }))
+      setDisable(true);
+    }
+
+    else {
       setWarrning((p) => ({ ...p, acc: "" }));
+      // setDisable(false);
     }
   };
 
   const validateKey = () => {
     if (data.key.length === 0) {
       setWarrning((p) => ({ ...p, key: "This field is required." }));
+      setDisable(true)
     } else {
       setWarrning((p) => ({ ...p, key: "" }));
     }
@@ -48,21 +77,23 @@ function ImportWallet() {
   const handleClick = async () => {
     if (data.key.length === 0) {
       setWarrning((p) => ({ ...p, key: "This field is required." }));
+      setDisable(true);
     } else if (data.accName.trim().length === 0) {
       setWarrning((p) => ({ ...p, acc: "This field is required." }));
+      setDisable(true);
     } else {
       if (!warrning.key && !warrning.acc) {
         const match = accounts.find((e) => {
           if (e.accountName === data.accName) {
             setWarrning((p) => ({
               ...p,
-              acc: "Account with this name allready exists.",
+              acc: "Wallet with this name already exists.",
             }));
             return true;
           } else if (decryptor(e.temp1m, pass) === data.key) {
             setWarrning((p) => ({
               ...p,
-              key: "Account with this mnemonic allready exists.",
+              key: "Wallet with this mnemonic already exists.",
             }));
             return true;
           } else return false;
@@ -74,7 +105,7 @@ function ImportWallet() {
           else {
             setWarrning({ acc: "", key: "" });
             if (isLogin) navigate("/wallet");
-            else navigate("/setPassword");
+            else navigate("/setPassword/import");
           }
         }
       }
@@ -91,36 +122,36 @@ function ImportWallet() {
       <MenuRestofHeaders logosilver={true} title="5irechain Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
-          <h1>Import Account </h1>
+          <h1>Import Wallet </h1>
         </div>
         <div className={style.cardWhite__linkOuter}>
           <div>
-          <InputFieldOnly
-            placeholder={"Enter Account name"}
-            placeholderBaseColor={true}
-            coloredBg={true}
-            name="accName"
-            onChange={handleChange}
-            keyUp={validateAccName}
-          />
-          <p className="errorText">{warrning.acc}</p>
+            <InputFieldOnly
+              placeholder={"Enter wallet name"}
+              placeholderBaseColor={true}
+              coloredBg={true}
+              name="accName"
+              onChange={handleChange}
+              keyUp={validateAccName}
+            />
+            <p className="errorText">{warrning.acc}</p>
           </div>
           <div>
-          <InputFieldOnly
-            type="password"
-            placeholder={"Enter mnemonic here"}
-            placeholderBaseColor={true}
-            coloredBg={true}
-            name="key"
-            onChange={handleChange}
-            keyUp={validateKey}
-          />
-          <p className="errorText">{warrning.key}</p>
+            <InputFieldOnly
+              type="password"
+              placeholder={"Enter mnemonic here"}
+              placeholderBaseColor={true}
+              coloredBg={true}
+              name="key"
+              onChange={handleChange}
+              keyUp={validateKey}
+            />
+            <p className="errorText">{warrning.key}</p>
           </div>
         </div>
         <div className={style.setPassword__footerbuttons}>
           <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancle} />
-          <ButtonComp onClick={handleClick} text={"Import"} />
+          <ButtonComp onClick={handleClick} text={"Import"} isDisable={isDisable} />
         </div>
       </div>
     </div>

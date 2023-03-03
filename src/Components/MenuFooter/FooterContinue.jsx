@@ -54,7 +54,7 @@ export const FooterStepTwo = () => {
 
   const handleClick = () => {
     if (isLogin) navigate("/wallet");
-    else navigate("/setPassword");
+    else navigate("/setPassword/create");
   };
   return (
     <>
