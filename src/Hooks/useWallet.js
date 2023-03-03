@@ -142,7 +142,7 @@ export default function UseWallet() {
 
       let evmBalance = new BigNumber(w3balance).dividedBy(10 ** 18).toString();
       let nativeBalance = new BigNumber(nbalance).dividedBy(10 ** 18).toString();
-      
+
 
       if (Number(nativeBalance) % 1 !== 0) {
         let tempBalance = new BigNumber(nbalance).dividedBy(10 ** 18).toFixed(6, 8).toString();
@@ -208,7 +208,8 @@ export default function UseWallet() {
       // console.log("Here are individual conditions: ", data.amount !== '0x0', (Number(data.amount) > Number(balance.evmBalance), Number(balance.evmBalance) <= 0));
       // console.log("individual balance: ", Number(data.amount), Number(balance.evmBalance), data.amount);
       try {
-        if ((Number(data.amount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0) {
+        const tempAmount = isBig ? (new BigNumber(data.amount).dividedBy(10 ** 18)).toString() : data.amount;
+        if ((Number(tempAmount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0) {
           resolve({
             error: true,
             data: "Insufficent Balance!"
