@@ -7,6 +7,7 @@ const injectedStream = new WindowPostMessageStream({
   target: CONTENT_SCRIPT,
 });
 
+
 injectedStream.write({ method: "keepAlive" });
 
 /**
