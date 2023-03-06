@@ -27,7 +27,7 @@ import {
 
 import { httpRequest, EVMRPCPayload } from "../Utility/network_calls";
 import { HTTP_METHODS, EVM_JSON_RPC_METHODS, ERROR_MESSAGES } from "../Constants/index";
-
+const DECIMALS = 10 ** 18;
 export default function UseWallet() {
 
   const dispatch = useDispatch();
@@ -142,12 +142,12 @@ export default function UseWallet() {
       }
 
 
-      let evmBalance = new BigNumber(w3balance).dividedBy(10 ** 18).toString();
-      let nativeBalance = new BigNumber(nbalance).dividedBy(10 ** 18).toString();
+      let evmBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toString();
+      let nativeBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toString();
 
 
       if (Number(nativeBalance) % 1 !== 0) {
-        let tempBalance = new BigNumber(nbalance).dividedBy(10 ** 18).toFixed(6, 8).toString();
+        let tempBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toFixed(6, 8).toString();
         if (Number(tempBalance) % 1 === 0)
           nativeBalance = parseInt(tempBalance)
         else
@@ -156,7 +156,7 @@ export default function UseWallet() {
 
 
       if (Number(evmBalance) % 1 !== 0) {
-        let tempBalance = new BigNumber(w3balance).dividedBy(10 ** 18).toFixed(6, 8).toString();
+        let tempBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toFixed(6, 8).toString();
         if (Number(tempBalance) % 1 === 0)
           evmBalance = parseInt(tempBalance)
         else
@@ -188,7 +188,7 @@ export default function UseWallet() {
 
     return (new Promise(async (resolve, reject) => {
       try {
-        const tempAmount = isBig ? (new BigNumber(data.amount).dividedBy(10 ** 18)).toString() : data.amount;
+        const tempAmount = isBig ? (new BigNumber(data.amount).dividedBy(DECIMALS)).toString() : data.amount;
         if ((Number(tempAmount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0) {
           resolve({
             error: true,
@@ -200,7 +200,7 @@ export default function UseWallet() {
             from: currentAccount?.evmAddress,
             value: isBig
               ? data.amount
-              : (new BigNumber(data.amount).multipliedBy(10 ** 18)).toString(),
+              : (new BigNumber(data.amount).multipliedBy(DECIMALS)).toString(),
             gas: 21000, //wei
             data: data?.data,
             nonce: await evmApi.eth.getTransactionCount(
@@ -314,7 +314,7 @@ export default function UseWallet() {
           );
           const keyring = new Keyring({ type: "ed25519" });
           const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
-          const amt = new BigNumber(data.amount).multipliedBy(10 ** 18).toString();
+          const amt = new BigNumber(data.amount).multipliedBy(DECIMALS).toString();
 
           const transfer = nativeApi.tx.balances.transferKeepAlive(
             data.to,
@@ -454,7 +454,7 @@ export default function UseWallet() {
           );
           const keyring = new Keyring({ type: "ed25519" });
           const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
-          const amt = (new BigNumber(amount).multipliedBy(10 ** 18)).toString();
+          const amt = (new BigNumber(amount).multipliedBy(DECIMALS)).toString();
 
           //Deposite amount
           let deposit = await nativeApi.tx.evm.deposit(
@@ -588,7 +588,7 @@ export default function UseWallet() {
 
           const transaction = {
             to: publicKey.slice(0, 42),
-            value: (new BigNumber(amount).multipliedBy(10 ** 18)).toString(),
+            value: (new BigNumber(amount).multipliedBy(DECIMALS)).toString(),
             gas: 21000,
             nonce: await evmApi.eth.getTransactionCount(currentAccount?.evmAddress),
           };
@@ -607,7 +607,7 @@ export default function UseWallet() {
             //withdraw amount
             const withdraw = await nativeApi.tx.evm.withdraw(
               publicKey.slice(0, 42),
-              (new BigNumber(amount).multipliedBy(10 ** 18)).toString()
+              (new BigNumber(amount).multipliedBy(DECIMALS)).toString()
             );
             let signRes = await withdraw.signAndSend(alice);
 
@@ -749,7 +749,7 @@ export default function UseWallet() {
 
       const gasAmount = await evmApi.eth.estimateGas(tx);
       const gasPrice = await evmApi.eth.getGasPrice();
-      let fee = (new BigNumber(gasPrice * gasAmount)).dividedBy(10 ** 18).toString();
+      let fee = (new BigNumber(gasPrice * gasAmount)).dividedBy(DECIMALS).toString();
 
       dispatch(toggleLoader(false));
       return {
@@ -779,16 +779,16 @@ export default function UseWallet() {
 
       if (toAddress.startsWith("0x")) {
 
-        const amt = BigNumber(amount).multipliedBy(10 ** 18).toString();
+        const amt = BigNumber(amount).multipliedBy(DECIMALS).toString();
         transferTx = await nativeApi.tx.evm.deposit(toAddress, (Number(amt).noExponents()).toString());
       }
       else if (toAddress.startsWith("5")) {
-        const amt = new BigNumber(amount).multipliedBy(10 ** 18).toString();
+        const amt = new BigNumber(amount).multipliedBy(DECIMALS).toString();
         transferTx = nativeApi.tx.balances.transferKeepAlive(toAddress, (Number(amt).noExponents()).toString());
 
       }
       const info = await transferTx?.paymentInfo(alice);
-      const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18)).toString();
+      const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS)).toString();
 
       dispatch(toggleLoader(false));
 
@@ -866,7 +866,7 @@ export default function UseWallet() {
       }
       const { stakeAmount, validatorsAccounts } = payload;
 
-      const bondedAmount = (new BigNumber(stakeAmount).multipliedBy(10 ** 18)).toFixed().toString()
+      const bondedAmount = (new BigNumber(stakeAmount).multipliedBy(DECIMALS)).toFixed().toString()
 
       const stashId = encodeAddress(currentAccount?.nativeAddress);
       const nominateTx = nativeApi.tx.staking.nominate(validatorsAccounts);
@@ -876,7 +876,7 @@ export default function UseWallet() {
 
       if (isFee) {
         const info = await batchAll?.paymentInfo(getKeyring());
-        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
         return {
           error: false,
           data: fee
@@ -917,7 +917,7 @@ export default function UseWallet() {
       const batchAll = await nativeApi.tx.utility.batchAll([nominateTx]);
       if (isFee) {
         const info = await batchAll?.paymentInfo(getKeyring());
-        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
         return {
           error: false,
           data: fee
@@ -958,7 +958,7 @@ export default function UseWallet() {
 
       if (isFee) {
         const info = await payout?.paymentInfo(getKeyring());
-        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
         return {
           error: false,
           data: fee
@@ -981,7 +981,7 @@ export default function UseWallet() {
 
       if (isFee) {
         const info = await stopValidator?.paymentInfo(getKeyring());
-        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
         return {
           error: false,
           data: fee
@@ -1010,11 +1010,11 @@ export default function UseWallet() {
       }
 
 
-      const amt = (new BigNumber(payload.amount).multipliedBy(10 ** 18)).toFixed().toString()
+      const amt = (new BigNumber(payload.amount).multipliedBy(DECIMALS)).toFixed().toString()
       const unbound = await nativeApi.tx.staking.unbond(amt);
       if (isFee) {
         const info = await unbound?.paymentInfo(getKeyring());
-        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
         return {
           error: false,
           data: fee
@@ -1042,12 +1042,12 @@ export default function UseWallet() {
       }
 
       const { amount, address } = payload
-      const sendAmounts = (new BigNumber(amount).multipliedBy(10 ** 18)).toFixed().toString()
+      const sendAmounts = (new BigNumber(amount).multipliedBy(DECIMALS)).toFixed().toString()
       const sendAmt = nativeApi.tx.balances.transferKeepAlive(address, sendAmounts);
 
       if (isFee) {
         const info = await sendAmt?.paymentInfo(getKeyring());
-        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
         return {
           error: false,
           data: fee
@@ -1076,7 +1076,7 @@ export default function UseWallet() {
 
       if (isFee) {
         const info = await unbond?.paymentInfo(getKeyring());
-        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
         return {
           error: false,
           data: fee
@@ -1104,7 +1104,7 @@ export default function UseWallet() {
         }
       }
       const rotateKey = await nativeApi.rpc.author.rotateKeys();
-      const bondAmt = (new BigNumber(payload.bondedAmount).multipliedBy(10 ** 18)).toFixed().toString()
+      const bondAmt = (new BigNumber(payload.bondedAmount).multipliedBy(DECIMALS)).toFixed().toString()
 
       const stashId = encodeAddress(decodeAddress(currentAccount?.nativeAddress));
       const commission = payload.commission === 0 ? 1 : payload.commission * 10 ** 7;
@@ -1126,7 +1126,7 @@ export default function UseWallet() {
 
       if (isFee) {
         const info = await validationTransfer?.paymentInfo(getKeyring());
-        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
         return {
           error: false,
           data: fee
@@ -1155,12 +1155,12 @@ export default function UseWallet() {
           data: "Invalid Params: Amount is required"
         }
       }
-      const amt = (new BigNumber(payload.amount).multipliedBy(10 ** 18)).toFixed().toString()
+      const amt = (new BigNumber(payload.amount).multipliedBy(DECIMALS)).toFixed().toString()
       const bondExtraTx = await nativeApi.tx.staking.bondExtra(amt);
 
       if (isFee) {
         const info = await bondExtraTx?.paymentInfo(getKeyring());
-        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
         return {
           error: false,
           data: fee
@@ -1198,7 +1198,7 @@ export default function UseWallet() {
 
       if (isFee) {
         const info = await validationTransfer?.paymentInfo(getKeyring());
-        const fee = (new BigNumber(info.partialFee.toString()).div(10 ** 18).toFixed(6, 8)).toString();
+        const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
         return {
           error: false,
           data: fee
