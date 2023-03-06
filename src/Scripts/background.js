@@ -5,7 +5,7 @@ import {
   loadStore,
   checkTransactions
 } from "./controller";
-// import { setNewAccount } from "../Store/reducer/auth";
+import { setNewAccount } from "../Store/reducer/auth";
 import Browser from "webextension-polyfill";
 import { isManifestV3 } from "./utils";
 
@@ -20,9 +20,12 @@ try {
       store = await loadStore();
       isInitialized = true;
 
+      //set the current newAccount state to null
+      const currState = await store.getState();
+      currState.auth.newAccount && store.dispatch(setNewAccount(null));
+
       port.onDisconnect.addListener(function () {
         //handle popup close actions
-        // store.dispatch(setNewAccount(null));
       });
 
     }

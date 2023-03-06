@@ -32,8 +32,8 @@
     "content_scripts": [
       {
         "matches": [
-          "http://*/",
-          "https://*/"
+          "http://*/*",
+          "https://*/*"
         ],
         "js": [
           "./static/js/content.js"

@@ -191,9 +191,12 @@ export class Controller {
       const res = isEthReq
         ? { method: data?.method, result: [state.auth.currentAccount.evmAddress] }
         : {
-          evmAddress: state.auth.currentAccount.evmAddress,
-          nativeAddress: state.auth.currentAccount.nativeAddress,
+          result: {
+            evmAddress: state.auth.currentAccount.evmAddress,
+            nativeAddress: state.auth.currentAccount.nativeAddress,
+          }
         };
+
       Browser.tabs.sendMessage(data.tabId, {
         id: data.id,
         response: res,

@@ -20,36 +20,25 @@ window.fire = fireProvider;
 //data streams from injected script throught the window messaging api
 injectedStream.on("data", (data) => {
 
-
-
   if (data?.method === "keepAlive") {
     setTimeout(() => {
       injectedStream.write({ method: "keepAlive" });
     }, 1000 * 30);
   }
 
-  // console.log("Here is response from extension: ", data);
-
   //get specfic handler using id and resolve or reject it
   if (data.id) {
     const handler = fireProvider.handlers[data.id];
-
-
-    if (fireProvider.conntectMethods.indexOf(handler?.method) > -1) {
-      setTimeout(() => {
-        fireProvider.isOpen = false;
-      }, 2000)
-    }
-
 
     //check if the message is related to error
     if (data.error) {
       handler?.isCb && handler.cb(data.error);
       handler?.reject(data.error);
+
     } else {
 
       if (fireProvider.conntectMethods.find(item => item === handler?.method)) {
-        fireProvider.injectSelectedAccount(data?.response?.evmAddress || (data?.response?.result?.length && data?.response?.result[0]))
+        fireProvider.injectSelectedAccount(data?.response?.evmAddress || (data?.response?.result?.length && data?.response?.result[0]));
         handler?.resolve(data?.response?.result)
         delete fireProvider.handlers[data.id];
         return;
@@ -67,6 +56,7 @@ injectedStream.on("data", (data) => {
         handler?.isCb && handler.cb(res);
         handler?.resolve(res);
       } else {
+
         handler?.isCb && handler.cb(data.response);
         handler?.resolve(data.response);
       }

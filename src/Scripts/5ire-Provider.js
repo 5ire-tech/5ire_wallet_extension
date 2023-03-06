@@ -24,9 +24,9 @@ export class FireProvider {
 
     //for handling the different Promise handlers
     this.handlers = {};
-    this.isOpen = false;
 
-    this.conntectMethods = ["eth_requestAccounts",
+    this.conntectMethods = [
+      "eth_requestAccounts",
       "eth_accounts",
       "connect"];
 
@@ -134,10 +134,6 @@ export class FireProvider {
     cb = null,
     isFull = false
   ) {
-    //false the isOpen so we can proceded with requested connection
-    if (message?.length && message[0]?.isRequested) {
-      this.isOpen = false;
-    }
 
     return new Promise(async (resolve, reject) => {
       try {
@@ -175,14 +171,7 @@ export class FireProvider {
         }
 
 
-        if (method === "eth_requestAccounts" || method === "eth_accounts" || method === 'connect') {
-          if (this.isOpen) {
-            return resolve([])
-          } else {
-            message = { origin, method };
-            this.isOpen = true;
-          }
-        }
+        if (method === "eth_requestAccounts" || method === "eth_accounts" || method === 'connect' || method === "disconnect") message = { origin, method }
 
         //get a unique if for specfic handler
         const id = getId();
@@ -198,9 +187,9 @@ export class FireProvider {
           origin,
         };
 
-        if (method === "eth_requestAccounts" || method === "eth_accounts" || method === "disconnect") {
-          message = { origin, method };
-        }
+        // if (method === "eth_requestAccounts" || method === "eth_accounts" || method === "disconnect") {
+        //   message = { origin, method };
+        // }
         const transportRequestMessage = {
           id,
           message,

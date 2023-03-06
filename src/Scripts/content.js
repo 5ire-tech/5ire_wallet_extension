@@ -81,7 +81,6 @@ contentStream.on("data", async (data) => {
 
 const messageFromExtensionUI = (message, sender, cb) => {
   if (message?.id) {
-
     contentStream.write(message);
     cb("I Recevie and ack");
   }
@@ -108,7 +107,7 @@ function injectScript() {
     container.insertBefore(scriptTag, container.children[0]);
     container.removeChild(scriptTag);
   } catch (error) {
-    console.error('MetaMask: Provider injection failed.', error);
+    console.error('5ire: Provider injection failed.', error);
   }
 }
 

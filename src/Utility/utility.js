@@ -1,3 +1,5 @@
+import { ERROR_MESSAGES } from "../Constants";
+
 //check if something is string or not
 export function isString(arg) {
     return typeof(arg) === "string";
@@ -17,4 +19,12 @@ export function isNullorUndef(arg) {
 export function isHasLength(arg) {
     if(isString(arg)) return arg.trim().length > 0;
     return arg.length > 0
+}
+
+//check if object has the given property
+export function hasProperty(arg, key) {
+    if(isObject(arg)) {
+        return arg.hasOwnProperty(key)
+    }
+    throw new Error(ERROR_MESSAGES.UNDEF_PROPERTY)
 }

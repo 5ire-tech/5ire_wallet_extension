@@ -3,7 +3,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 
 //flag checks
 const isChrome = process.env.BUILD_TYPE === 'CHROME' ? true : false;
-const noMin = Boolean(Number(process.env.MINI)) ? true : false
+const Min = Boolean(Number(process.env.MINI)) ? true : false
 
 module.exports = {
   webpack: {
@@ -28,7 +28,7 @@ module.exports = {
         optimization: {
           ...webpackConfig.optimization,
           runtimeChunk: false,
-          minimize: noMin
+          minimize: Min
         },
         resolve: {
           ...webpackConfig.resolve,
