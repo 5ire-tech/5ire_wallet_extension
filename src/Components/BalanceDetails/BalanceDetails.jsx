@@ -11,7 +11,6 @@ import DarkLogo from "../../Assets/DarkLogo.svg";
 import React, { useEffect, useState } from "react";
 import GrayCircle from "../../Assets/graycircle.svg";
 import ModalCustom from "../ModalCustom/ModalCustom";
-// import ModelLogo from "../../Assets/modalLogo.svg";
 import GreenCircle from "../../Assets/greencircle.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrentTabUrl } from "../../Scripts/utils";
@@ -44,8 +43,6 @@ function BalanceDetails({ className, textLeft, mt0 }) {
 
 
   useEffect(() => {
-
-    console.log(JSON.stringify(currentAccount));
 
     getCurrentTabUrl((cv) => {
       const isExist = connectedSites.find((ct) => ct?.origin === cv);
