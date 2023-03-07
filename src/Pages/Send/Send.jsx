@@ -12,7 +12,7 @@ import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import { connectionObj, Connection } from "../../Helper/connection.helper"
-import { NATIVE, EVM, ERR_MSG, INPUT, COPIED } from "../../Constants/index";
+import { NATIVE, EVM, ERROR_MESSAGES, INPUT, COPIED } from "../../Constants/index";
 import {
   InputField,
   InputFieldOnly,
@@ -75,7 +75,7 @@ function Send() {
         if ((Number(data.amount) + Number(gassFee)) >= Number(balance.evmBalance)) {
           setGassFee("");
           setDisable(true);
-          setErr((p) => ({ ...p, amount: ERR_MSG.INSUFFICENT_BALANCE }));
+          setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
 
         } else {
           setDisable(false);
@@ -86,7 +86,7 @@ function Send() {
         if ((Number(data.amount) + Number(gassFee)) >= Number(balance.nativeBalance)) {
           setGassFee("");
           setDisable(true);
-          setErr((p) => ({ ...p, amount: ERR_MSG.INSUFFICENT_BALANCE }));
+          setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
 
         } else {
           setDisable(false);
@@ -114,7 +114,7 @@ function Send() {
     else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
       if (Number(data.amount) >= Number(balance.evmBalance))
-        setErr((p) => ({ ...p, amount: ERR_MSG.INSUFFICENT_BALANCE }));
+        setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
 
       else
         setErr((p) => ({ ...p, amount: "" }));
@@ -124,7 +124,7 @@ function Send() {
     else if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
 
       if (Number(data.amount) >= Number(balance.nativeBalance))
-        setErr((p) => ({ ...p, amount: ERR_MSG.INSUFFICENT_BALANCE }));
+        setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
 
       else
         setErr((p) => ({ ...p, amount: "" }));

@@ -14,7 +14,7 @@ import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import { InputField } from "../../Components/InputField/InputFieldSimple";
-import { NATIVE, EVM, ERR_MSG, INPUT,COPIED } from "../../Constants/index";
+import { NATIVE, EVM, ERROR_MESSAGES, INPUT,COPIED } from "../../Constants/index";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
 
 
@@ -91,7 +91,7 @@ function Swap() {
         if ((Number(amount) + Number(gassFee)) >= Number(balance.evmBalance)) {
           setGassFee("");
           setDisable(true);
-          setError(ERR_MSG.INSUFFICENT_BALANCE);
+          setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
 
         } else {
           setDisable(false);
@@ -106,7 +106,7 @@ function Swap() {
         if ((Number(amount) + Number(gassFee)) >= Number(balance.nativeBalance)) {
           setGassFee("");
           setDisable(true);
-          setError(ERR_MSG.INSUFFICENT_BALANCE);
+          setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
 
         } else {
           setDisable(false);
@@ -138,7 +138,7 @@ function Swap() {
     ) {
 
       if (Number(amount) >= Number(balance.evmBalance))
-        setError(ERR_MSG.INSUFFICENT_BALANCE);
+        setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
 
       else
         setError("");
@@ -150,7 +150,7 @@ function Swap() {
     ) {
 
       if (Number(amount) >= Number(balance.nativeBalance))
-        setError(ERR_MSG.INSUFFICENT_BALANCE);
+        setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
 
       else
         setError("");

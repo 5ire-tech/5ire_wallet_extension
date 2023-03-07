@@ -32,6 +32,9 @@ import FooterStepOne, {
   FooterStepTwo,
   ApproveTx,
 } from "./FooterContinue";
+import Browser from "webextension-polyfill";
+import { ACCOUNT_CHANGED_EVENT } from "../../Scripts/constants";
+import { getCurrentTabUId } from "../../Scripts/utils";
 
 function MenuFooter() {
   const { logout } = useAuth();
@@ -87,6 +90,10 @@ function MenuFooter() {
     // dispatch(resetBalance());
     let acc = accounts.find(acc => acc.id === accId);
     dispatch(setCurrentAcc(acc));
+    getCurrentTabUId((id) => {
+      Browser.tabs.sendMessage(id, { id: ACCOUNT_CHANGED_EVENT, method: ACCOUNT_CHANGED_EVENT, response: { evmAddress: acc.evmAddress, nativeAddress: acc.nativeAddress } })
+
+    })
     onClose();
   };
 
@@ -155,7 +162,7 @@ function MenuFooter() {
               to={
                 data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase()
                   ? data.to
-                  : `${data?.to ? `To: `+shortner(data.to) : ""}`
+                  : `${data?.to ? `To: ` + shortner(data.to) : ""}`
               }
               amount={`${data?.amount} 5ire`}
               status={data?.status.charAt(0).toUpperCase() + data?.status.slice(1)}
