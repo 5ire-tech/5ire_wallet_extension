@@ -12,6 +12,7 @@ import { useState } from "react";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
 import { STATUS, TX_TYPE } from "../../Constants";
 import { toast } from "react-toastify";
+import { shortLongAddress } from "../../Utility/utility";
 
 
 function NativeTx() {
@@ -70,12 +71,12 @@ function NativeTx() {
                     break;
                 case "native_withdraw_nominator":
                     feeData = await withdrawNominatorValidatorData(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Withdraw Nominator";
+                    methodName = "Send Funds";
                     break;
 
                 case "native_withdraw_validator":
                     feeData = await withdrawNominatorValidatorData(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Withdraw Validator";
+                    methodName = "Send Funds";
                     break;
                 case "native_withdraw_nominator_unbonded":
                     feeData = await withdrawNominatorUnbonded(apiRes.nativeApi, auth?.uiData?.message, true);
@@ -89,11 +90,11 @@ function NativeTx() {
 
                 case "native_validator_bondmore":
                     feeData = await bondMoreFunds(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Validator Bond More";
+                    methodName = "Bond More Funds";
                     break;
                 case "native_nominator_bondmore":
                     feeData = await bondMoreFunds(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Nominator Bond More";
+                    methodName = "Bond More Funds";
                     break;
                 case "native_restart_validator":
                     feeData = await restartValidator(apiRes.nativeApi, auth?.uiData?.message, true);
@@ -249,6 +250,22 @@ function NativeTx() {
         }
     }
 
+    function formatParams(messageInfo) {
+        try {
+            const obj = JSON.parse(JSON.stringify(messageInfo));
+            const d = Object.keys(obj).map((k) => {
+                return {
+                    key: k.charAt(0).toUpperCase() + k.slice(1),
+                    value: obj[k]
+                }
+            })
+            return d;
+        } catch (er) {
+            return []
+        }
+    }
+
+
 
     return (
         <div className={`${style.fixedLayout}`}>
@@ -263,23 +280,29 @@ function NativeTx() {
                                         className={`${pageStyle.rejectedSec__sendSwapbtn__buttons}  ${pageStyle.rejectedSec__sendSwapbtn__buttons__active
                                             }`}
                                     >
-                                        Tx Detail
+                                        Txn Detail
                                     </button>
                                 </div>
                                 <div className={pageStyle.rejectedSec__listReject}>
 
                                     <div className={pageStyle.rejectedSec__listReject__innerList}>
                                         <h4>From: </h4>
-                                        <h4>{auth?.currentAccount?.nativeAddress}</h4>
+                                        <h4>{shortLongAddress(String(auth?.currentAccount?.nativeAddress))}</h4>
                                     </div>
                                     <div className={pageStyle.rejectedSec__listReject__innerList}>
                                         <h4>Method: </h4>
                                         <h4>{fomattedMethod || ""}</h4>
                                     </div>
-                                    <div className={pageStyle.rejectedSec__listReject__innerList}>
-                                        <h4>Params: </h4>
-                                        <h4>{String(JSON.stringify(auth?.uiData?.message) || '')}</h4>
-                                    </div>
+
+                                    {formatParams(auth?.uiData?.message).map((d) => {
+                                        return <div key={d.key} className={pageStyle.rejectedSec__listReject__innerList}>
+                                            <h4>{d.key}: </h4>
+
+                                            <h4>{d.value}</h4>
+                                        </div>
+                                    })}
+
+
 
                                     <div className={pageStyle.rejectedSec__listReject__innerList}>
                                         <h4>Fee: </h4>
@@ -289,8 +312,9 @@ function NativeTx() {
                             </div>
                         </div>
                     </div>
+
                 </Content>
-                <div className={footerstyle.menuItems__cancleContinue}>
+                <div className={footerstyle.menuItems__cancleContinue1}>
                     <ButtonComp
                         bordered={true}
                         text={"Reject"}
@@ -304,6 +328,7 @@ function NativeTx() {
                     />
                 </div>
             </div>
+
         </div>
     );
 }
