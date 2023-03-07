@@ -45,8 +45,6 @@ function BalanceDetails({ className, textLeft, mt0 }) {
 
   useEffect(() => {
 
-    console.log("use effect is working in BalanceDetails: ", currentNetwork, currentAccount);
-
     console.log(JSON.stringify(currentAccount));
 
     getCurrentTabUrl((cv) => {

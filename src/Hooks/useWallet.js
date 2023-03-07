@@ -174,8 +174,7 @@ export default function UseWallet() {
         nativeBalance,
         totalBalance
       }
-
-      console.log("current balance in state: ", balance);
+      
       dispatch(setBalance(payload));
 
     } catch (error) {
