@@ -1,4 +1,5 @@
 import { createSlice,current } from "@reduxjs/toolkit";
+import {STATUS} from "../../Constants/index";
 
 export const userState = {
   pass: null,
@@ -94,7 +95,6 @@ export const userSlice = createSlice({
     },
 
     setNewAccount: (state, action) => {
-      // console.log(current(state));
       state.newAccount = action.payload;
     },
     
@@ -135,10 +135,8 @@ export const userSlice = createSlice({
       return item.txHash === action.payload.txHash
      })
       
-      if(currentTx) currentTx.status = typeof(action.payload.status) === "string" ? action.payload.status: action.payload.status ? "success" : "failed";
-      if(otherTx) otherTx.status = typeof(action.payload.status) === "string" ? action.payload.status: action.payload.status ? "success" : "failed";
-
-      // console.log("type is here: ", action, current(currentTx), current(otherTx));
+      if(currentTx) currentTx.status = typeof(action.payload.status) === "string" ? action.payload.status: action.payload.status ? STATUS.SUCCESS : STATUS.FAILED;
+      if(otherTx) otherTx.status = typeof(action.payload.status) === "string" ? action.payload.status: action.payload.status ? STATUS.SUCCESS : STATUS.FAILED;
 
     },
 
@@ -160,33 +158,28 @@ export const userSlice = createSlice({
       state.isLoading = action.payload;
     },
 
-    // setApiReady : (state, action) => {
-    //   state.isApiReady = action.payload;
-    // }
   },
 });
 
 // Action creators are generated for each case reducer function
 export const {
-  setPassword,
-  setCurrentAcc,
-  setLogin,
-  setAccountName,
-  setAccounts,
-  setCurrentNetwork,
-  // setPassError,
-  setUIdata,
-  setBalance,
-  setTxHistory,
   setSite,
+  setLogin,
+  setUIdata,
+  setTxPopup,
+  setBalance,
   toggleSite,
+  setPassword,
+  setAccounts,
+  setTxHistory,
+  resetBalance,
   toggleLoader,
   pushAccounts,
+  setCurrentAcc,
   setNewAccount,
-  resetBalance,
+  setAccountName,
   updateTxHistory,
-  // setApiReady
-  setTxPopup
+  setCurrentNetwork,
 } = userSlice.actions;
 
 export default userSlice.reducer;

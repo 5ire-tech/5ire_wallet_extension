@@ -8,16 +8,16 @@ import { shortner } from "../../Helper/helper";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import WalletQr from "../../Assets/QRicon.svg";
 import DarkLogo from "../../Assets/DarkLogo.svg";
-// import ModelLogo from "../../Assets/modalLogo.svg";
 import React, { useEffect, useState } from "react";
 import GrayCircle from "../../Assets/graycircle.svg";
 import ModalCustom from "../ModalCustom/ModalCustom";
+// import ModelLogo from "../../Assets/modalLogo.svg";
 import GreenCircle from "../../Assets/greencircle.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrentTabUrl } from "../../Scripts/utils";
-import { NATIVE, EVM, NETWORK } from "../../Constants/index";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import DownArrowSuffix from "../../Assets/DownArrowSuffix.svg";
+import { NATIVE, EVM, NETWORK,COPIED } from "../../Constants/index";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
 import { resetBalance, setCurrentNetwork, toggleLoader } from "../../Store/reducer/auth";
 
@@ -90,7 +90,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
       navigator.clipboard.writeText(currentAccount.nativeAddress);
     else if (e.target.name === EVM)
       navigator.clipboard.writeText(currentAccount.evmAddress);
-    toast.success("Copied!");
+    toast.success(COPIED);
   };
 
 

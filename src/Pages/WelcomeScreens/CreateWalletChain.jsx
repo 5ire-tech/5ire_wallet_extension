@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
-import style from "./style.module.scss";
-import CopyIcon from "../../Assets/CopyIcon.svg";
-import useWallet from "../../Hooks/useWallet";
-import { useSelector } from "react-redux";
-import { TEMP1M, TEMP2P, NATIVE, EVM } from "../../Constants/index.js";
 import { toast } from "react-toastify";
+import style from "./style.module.scss";
+import { useSelector } from "react-redux";
+import useWallet from "../../Hooks/useWallet";
 import "react-toastify/dist/ReactToastify.css";
+import CopyIcon from "../../Assets/CopyIcon.svg";
+import React, { useEffect, useState } from "react";
+import { TEMP1M, TEMP2P, NATIVE, EVM, COPIED } from "../../Constants/index.js";
 
 function CreateWalletChain() {
+
   const { walletSignUp, authData } = useWallet();
   const { isLogin, newAccount } = useSelector((state) => state.auth);
 
@@ -36,6 +37,7 @@ function CreateWalletChain() {
 
 
   const handleCopy = (e) => {
+
     if (e.target.name === NATIVE) navigator.clipboard.writeText(data?.nativeAddress);
 
     if (e.target.name === EVM) navigator.clipboard.writeText(data?.evmAddress);
@@ -43,13 +45,13 @@ function CreateWalletChain() {
     if (e.target.name === TEMP1M) navigator.clipboard.writeText(data?.temp1m);
 
     if (e.target.name === TEMP2P) navigator.clipboard.writeText(data?.temp2p);
-    
+
     if (e.target.name === "all") {
-      let string = `Mnemonic: ${data?.temp1m}\nEVM Private key: ${data?.temp2p}\nEvm Address: ${data?.evmAddress}\nNative Address: ${data?.nativeAddress}`;
+      let string = `Mnemonic: ${data?.temp1m}\nEVM Private key: ${data?.temp2p}\nEVM Address: ${data?.evmAddress}\nNative Address: ${data?.nativeAddress}`;
       navigator.clipboard.writeText(string);
     }
-
-    toast.success("Copied!");
+    
+    toast.success(COPIED);
   };
 
   return (
@@ -58,14 +60,40 @@ function CreateWalletChain() {
         <h1>New Wallet Details</h1>
       </div>
       <div className={style.cardWhite__addressInput}>
+        <label>Mnemonic Phrase:</label>
+        <p className={style.cardWhite__addressInput__copyText}>
+          <span>{data?.temp1m}</span>
+          <img
+            name={TEMP1M}
+            src={CopyIcon}
+            alt="copyIcon"
+            draggable={false}
+            onClick={handleCopy}
+          />{" "}
+        </p>
+      </div>
+      <div className={style.cardWhite__addressInput}>
+        <label>EVM Private Key:</label>
+        <p className={style.cardWhite__addressInput__copyText}>
+          <span>{data.temp2p}</span>
+          <img
+            name={TEMP2P}
+            src={CopyIcon}
+            alt="copyIcon"
+            draggable={false}
+            onClick={handleCopy}
+          />{" "}
+        </p>
+      </div>
+      <div className={style.cardWhite__addressInput}>
         <label>EVM Chain Address:</label>
         <p className={style.cardWhite__addressInput__copyText}>
           <span>{data?.evmAddress}</span>
           <img
-            draggable={false}
+            name={EVM}
             src={CopyIcon}
             alt="copyIcon"
-            name={EVM}
+            draggable={false}
             onClick={handleCopy}
           />{" "}
         </p>
@@ -79,32 +107,6 @@ function CreateWalletChain() {
             src={CopyIcon}
             alt="copyIcon"
             name={NATIVE}
-            onClick={handleCopy}
-          />{" "}
-        </p>
-      </div>
-      <div className={style.cardWhite__addressInput}>
-        <label>Mnemonic Phrase:</label>
-        <p className={style.cardWhite__addressInput__copyText}>
-          <span>{data?.temp1m}</span>
-          <img
-            draggable={false}
-            src={CopyIcon}
-            alt="copyIcon"
-            name={TEMP1M}
-            onClick={handleCopy}
-          />{" "}
-        </p>
-      </div>
-      <div className={style.cardWhite__addressInput}>
-        <label>EVM Private Key:</label>
-        <p className={style.cardWhite__addressInput__copyText}>
-          <span>{data.temp2p}</span>
-          <img
-            draggable={false}
-            src={CopyIcon}
-            alt="copyIcon"
-            name={TEMP2P}
             onClick={handleCopy}
           />{" "}
         </p>

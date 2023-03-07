@@ -1,9 +1,8 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
 import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
-// import { toast } from "react-toastify";
+import { INPUT } from "../../Constants/index";
 import PlaceLogo from "../../Assets/PlaceLog.svg";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
@@ -22,13 +21,13 @@ function UnlockWelcome() {
   const { isLogin } = useSelector(state => state.auth);
 
 
-  useEffect(()=>{
+  useEffect(() => {
     if (errMsg || !data) {
       setDisable(true);
-    }else{
+    } else {
       setDisable(false);
     }
-  },[errMsg, data]);
+  }, [errMsg, data]);
 
   const handleChange = (e) => {
     setData(e.target.value);
@@ -37,7 +36,7 @@ function UnlockWelcome() {
 
   const validateInput = () => {
     if (data.length === 0) {
-      setErrorMsg("This field is required.");
+      setErrorMsg(INPUT.REQUIRED);
       setDisable(true);
     }
 
@@ -58,7 +57,6 @@ function UnlockWelcome() {
       }
 
       else {
-        // toast.error(res.data);
         setErrorMsg(res.data);
         setDisable(true);
       }
