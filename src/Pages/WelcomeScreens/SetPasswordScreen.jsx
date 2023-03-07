@@ -1,8 +1,9 @@
 import style from "./style.module.scss";
 import { toast } from "react-toastify";
 import useAuth from "../../Hooks/useAuth";
-import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
+import { INPUT } from "../../Constants/index";
+import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
@@ -40,30 +41,40 @@ export default function SetPasswordScreen() {
     const digitsRegExp = /(?=.*?[0-9])/;
     const specialCharRegExp = /(?=.*?[#?!@$%^&*-])/;
     const minLengthRegExp = /.{8,}/;
-
     let errMsg = "";
+
+
     if (pass.pass.length === 0) {
-      errMsg = "This field is required.";
-    } else if (!uppercaseRegExp.test(pass.pass) || !lowercaseRegExp.test(pass.pass) || !digitsRegExp.test(pass.pass) || !specialCharRegExp.test(pass.pass) || !minLengthRegExp.test(pass.pass)) {
+      errMsg = INPUT.REQUIRED;
+    }
+
+    else if (
+      !uppercaseRegExp.test(pass.pass) ||
+      !lowercaseRegExp.test(pass.pass) ||
+      !digitsRegExp.test(pass.pass) ||
+      !specialCharRegExp.test(pass.pass) ||
+      !minLengthRegExp.test(pass.pass)
+    ) {
       errMsg = "Password must have at least 8 characters, combination of Mixed case, 1 Special Character and 1 Number.";
-    } else {
+    }
+
+    else {
       errMsg = "";
     }
     setError(errMsg);
   };
 
   const validateConfirmPass = () => {
-    if (pass.confirmPass.length === 0) {
-      setconfirmError("This field is required.");
-    }
-    else if (pass.confirmPass !== pass.pass) {
-      // setconfirmError("Password and confirm password don't match!");
+
+    if (pass.confirmPass.length === 0)
+      setconfirmError(INPUT.REQUIRED);
+
+    else if (pass.confirmPass !== pass.pass)
       setconfirmError("Passwords do not match.");
-      // return { error: true };
-    } else {
+
+    else
       setconfirmError("");
-      // return { error: false };
-    }
+
   };
 
   const handleSubmit = async (e) => {
@@ -71,17 +82,16 @@ export default function SetPasswordScreen() {
     if ((e.key === "Enter") || (e.key === undefined)) {
 
       if (pass.pass.length === 0 && pass.confirmPass.length === 0) {
-        setError("This field is required.");
-        setconfirmError("This field is required.");
+        setError(INPUT.REQUIRED);
+        setconfirmError(INPUT.REQUIRED);
       }
       else if (pass.pass.length === 0) {
-        setError("This field is required.");
+        setError(INPUT.REQUIRED);
       }
       else if (pass.confirmPass.length === 0) {
-        setconfirmError("This field is required.");
+        setconfirmError(INPUT.REQUIRED);
       }
       else {
-        // let confirmRes = validateConfirmPass();
         if (!error && !confirmError) {
           dispatch(toggleLoader(true));
           let res = await setUserPass(pass.pass);

@@ -1,14 +1,14 @@
 import React from "react";
-import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx";
-import { InputFieldOnly } from "../InputField/InputFieldSimple.jsx";
-import CopyIcon from "../../Assets/CopyIcon.svg";
-import style from "./style.module.scss";
-import ButtonComp from "../ButtonComp/ButtonComp.jsx";
-import Exportprivate from "../../Assets/PNG/exportprivate.png";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { NATIVE, EVM } from "../../Constants/index";
 import {toast} from "react-toastify";
+import style from "./style.module.scss";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import CopyIcon from "../../Assets/CopyIcon.svg";
+import ButtonComp from "../ButtonComp/ButtonComp.jsx";
+import { NATIVE, EVM, COPIED } from "../../Constants/index";
+import Exportprivate from "../../Assets/PNG/exportprivate.png";
+// import { InputFieldOnly } from "../InputField/InputFieldSimple.jsx";
+import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx";
 
 function ManageWallet() {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ function ManageWallet() {
     if (e.target.name === "name") {
       navigator.clipboard.writeText(currentAccount.accountName);
     }
-    toast.success("Copied!")
+    toast.success(COPIED)
   }
 
   return (

@@ -1,5 +1,6 @@
 import style from "./style.module.scss";
 import { useSelector } from "react-redux";
+import {INPUT} from "../../Constants/index";
 import useWallet from "../../Hooks/useWallet";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
@@ -54,8 +55,8 @@ function ImportWallet() {
     }
 
     else if (!regex.test(data.accName)) {
-      // setWarrning("Please enter only alphanumeric characters.");
-      setWarrning(p => ({ ...p, acc: "Please enter only alphanumeric characters." }))
+
+      setWarrning(p => ({ ...p, acc: "Please enter alphanumeric characters only." }))
       setDisable(true);
     }
 
@@ -67,7 +68,7 @@ function ImportWallet() {
 
   const validateKey = () => {
     if (data.key.length === 0) {
-      setWarrning((p) => ({ ...p, key: "This field is required." }));
+      setWarrning((p) => ({ ...p, key: INPUT.REQUIRED }));
       setDisable(true)
     } else {
       setWarrning((p) => ({ ...p, key: "" }));
@@ -76,10 +77,10 @@ function ImportWallet() {
 
   const handleClick = async () => {
     if (data.key.length === 0) {
-      setWarrning((p) => ({ ...p, key: "This field is required." }));
+      setWarrning((p) => ({ ...p, key: INPUT.REQUIRED }));
       setDisable(true);
     } else if (data.accName.trim().length === 0) {
-      setWarrning((p) => ({ ...p, acc: "This field is required." }));
+      setWarrning((p) => ({ ...p, acc: INPUT.REQUIRED }));
       setDisable(true);
     } else {
       if (!warrning.key && !warrning.acc) {

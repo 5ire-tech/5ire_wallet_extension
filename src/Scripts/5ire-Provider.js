@@ -1,6 +1,6 @@
 import { CONTENT_SCRIPT, INPAGE, getId } from "./constants";
 import { WindowPostMessageStream } from "./stream";
-
+import SafeEventEmitter from "@metamask/safe-event-emitter"
 //stream for in-window communication
 const injectedStream = new WindowPostMessageStream({
   name: INPAGE,
@@ -11,9 +11,10 @@ const injectedStream = new WindowPostMessageStream({
 Custom Web3 provider for interacting with the 5ire browser extension and pass to
 5ire extension to handle the json-rpc request and send the response back
 */
-export class FireProvider {
+export class FireProvider extends SafeEventEmitter {
 
   constructor(httpHost = "https://rpc-testnet.5ire.network") {
+    super();
     this.httpHost = httpHost;
     this.selectedAddress = null;
     this.chainId = "0x3e5";

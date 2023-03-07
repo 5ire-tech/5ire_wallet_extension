@@ -1,6 +1,7 @@
-import { useState, useEffect} from "react";
 import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
+import { useState, useEffect} from "react";
+import {INPUT} from "../../Constants/index";
 import { useNavigate } from "react-router-dom";
 import ButtonComp from "../ButtonComp/ButtonComp";
 import InputFieldSimple from "../InputField/InputFieldSimple.jsx";
@@ -30,7 +31,7 @@ function EnterPassword() {
 
   const validateInput = () => {
     if (data.length === 0) {
-      setErrorMsg("This field is required.");
+      setErrorMsg(INPUT.REQUIRED);
       setDisable(true);
     }
   }
@@ -46,7 +47,6 @@ function EnterPassword() {
         navigate("/privateKey");
 
       } else {
-        // toast.error(res.data);
         setErrorMsg(res.data);
         setDisable(true);
       }

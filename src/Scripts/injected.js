@@ -1,5 +1,5 @@
 import { WindowPostMessageStream } from "./stream";
-import { CONTENT_SCRIPT, INPAGE } from "./constants";
+import { ACCOUNT_CHANGED_EVENT, CONTENT_SCRIPT, INPAGE } from "./constants";
 import { FireProvider } from "./5ire-Provider";
 
 const injectedStream = new WindowPostMessageStream({
@@ -25,6 +25,13 @@ injectedStream.on("data", (data) => {
       injectedStream.write({ method: "keepAlive" });
     }, 1000 * 30);
   }
+
+  if (data?.method === ACCOUNT_CHANGED_EVENT) {
+    fireProvider.emit(ACCOUNT_CHANGED_EVENT, data.response)
+    return
+  }
+
+  // console.log("Here is response from extension: ", data);
 
   //get specfic handler using id and resolve or reject it
   if (data.id) {
