@@ -1,5 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { hasProperty } from "../../Utility/utility";
 
+//initial state
 export const userState = {
   pass: null,
 
@@ -56,137 +57,117 @@ export const userState = {
   
 };
 
-export const userSlice = createSlice({
-  name: "auth",
-  initialState: userState,
-  reducers: {
+//all reducers methods
+const reducers = {
 
-    setTxPopup: (state, action) => {
-      state.popupChecks.txApprove = action.payload
-    },
-
-    setPassword: (state, action) => {
-      state.pass = action.payload;
-    },
-
-    setCurrentAcc: (state, action) => {
-      state.currentAccount = action.payload;
-    },
-
-    setAccounts: (state, action) => {
-      state.accounts = action.payload;
-    },
-
-    pushAccounts: (state, action) => {
-      state.accounts.push(action.payload);
-    },
-
-    setLogin: (state, action) => {
-      state.isLogin = action.payload;
-    },
-
-    setUIdata: (state, action) => {
-      state.uiData = action.payload;
-    },
-
-    setAccountName: (state, action) => {
-      state.accountName = action.payload;
-    },
-
-    setNewAccount: (state, action) => {
-      // console.log(current(state));
-      state.newAccount = action.payload;
-    },
-    
-    setCurrentNetwork: (state, action) => {
-      state.currentNetwork = action.payload;
-    },
-  
-    
-    setBalance: (state, action) => {
-      state.balance.evmBalance = action.payload.evmBalance;
-      state.balance.nativeBalance = action.payload.nativeBalance;
-      state.balance.totalBalance = action.payload.totalBalance;
-    },
-
-    resetBalance: (state) => {
-      state.balance = {
-        evmBalance: "",
-        nativeBalance: "",
-      }
-    },
-
-    setTxHistory: (state, action) => {
-      state.accounts[action.payload.index].txHistory.push(action.payload.data);
-      state.currentAccount.txHistory.push(action.payload.data);
-    },
-
-    updateTxHistory: (state, action) => {
-
-     const currentTx =  state.currentAccount.txHistory.find((item) => {
-      if(action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash;
-      return item.txHash === action.payload.txHash
-     });
-
-     const otherAcc = state.accounts.find(item => item.accountName === action.payload.accountName);
-
-     const otherTx = otherAcc.txHistory.find((item) => {
-      if(action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash
-      return item.txHash === action.payload.txHash
-     })
-      
-      if(currentTx) currentTx.status = typeof(action.payload.status) === "string" ? action.payload.status: action.payload.status ? "success" : "failed";
-      if(otherTx) otherTx.status = typeof(action.payload.status) === "string" ? action.payload.status: action.payload.status ? "success" : "failed";
-
-      // console.log("type is here: ", action, current(currentTx), current(otherTx));
-
-    },
-
-    setSite: (state, action) => {
-      state?.connectedSites.push(action.payload);
-    },
-
-    toggleSite: (state, action) => {
-      const siteIndex = state?.connectedSites.findIndex(
-        (st) => (st.origin = action.payload.origin)
-      );
-      if (siteIndex > -1) {
-        state.connectedSites[siteIndex].isConnected =
-          action.payload.isConnected;
-        // state.connectedSites.splice(siteIndex,1,action.payload)
-      }
-    },
-    toggleLoader: (state, action) => {
-      state.isLoading = action.payload;
-    },
-
-    // setApiReady : (state, action) => {
-    //   state.isApiReady = action.payload;
-    // }
+  setTxPopup: (state, action) => {
+    state.popupChecks.txApprove = action.payload
   },
-});
 
-// Action creators are generated for each case reducer function
-export const {
-  setPassword,
-  setCurrentAcc,
-  setLogin,
-  setAccountName,
-  setAccounts,
-  setCurrentNetwork,
-  // setPassError,
-  setUIdata,
-  setBalance,
-  setTxHistory,
-  setSite,
-  toggleSite,
-  toggleLoader,
-  pushAccounts,
-  setNewAccount,
-  resetBalance,
-  updateTxHistory,
-  // setApiReady
-  setTxPopup
-} = userSlice.actions;
+  setPassword: (state, action) => {
+    state.pass = action.payload;
+  },
 
-export default userSlice.reducer;
+  setCurrentAcc: (state, action) => {
+    state.currentAccount = action.payload;
+  },
+
+  setAccounts: (state, action) => {
+    state.accounts = action.payload;
+  },
+
+  pushAccounts: (state, action) => {
+    state.accounts.push(action.payload);
+  },
+
+  setLogin: (state, action) => {
+    state.isLogin = action.payload;
+  },
+
+  setUIdata: (state, action) => {
+    state.uiData = action.payload;
+  },
+
+  setAccountName: (state, action) => {
+    state.accountName = action.payload;
+  },
+
+  setNewAccount: (state, action) => {
+    // console.log(current(state));
+    state.newAccount = action.payload;
+  },
+  
+  setCurrentNetwork: (state, action) => {
+    state.currentNetwork = action.payload;
+  },
+
+  
+  setBalance: (state, action) => {
+    state.balance.evmBalance = action.payload.evmBalance;
+    state.balance.nativeBalance = action.payload.nativeBalance;
+    state.balance.totalBalance = action.payload.totalBalance;
+  },
+
+  resetBalance: (state) => {
+    state.balance = {
+      evmBalance: "",
+      nativeBalance: "",
+    }
+  },
+
+  setTxHistory: (state, action) => {
+    state.accounts[action.payload.index].txHistory.push(action.payload.data);
+    state.currentAccount.txHistory.push(action.payload.data);
+  },
+
+  updateTxHistory: (state, action) => {
+
+   const currentTx =  state.currentAccount.txHistory.find((item) => {
+    if(action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash;
+    return item.txHash === action.payload.txHash
+   });
+
+   const otherAcc = state.accounts.find(item => item.accountName === action.payload.accountName);
+
+   const otherTx = otherAcc.txHistory.find((item) => {
+    if(action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash
+    return item.txHash === action.payload.txHash
+   })
+    
+    if(currentTx) currentTx.status = typeof(action.payload.status) === "string" ? action.payload.status: action.payload.status ? "success" : "failed";
+    if(otherTx) otherTx.status = typeof(action.payload.status) === "string" ? action.payload.status: action.payload.status ? "success" : "failed";
+
+  },
+
+  setSite: (state, action) => {
+    state?.connectedSites.push(action.payload);
+  },
+
+  toggleSite: (state, action) => {
+    const siteIndex = state?.connectedSites.findIndex(
+      (st) => (st.origin = action.payload.origin)
+    );
+    if (siteIndex > -1) {
+      state.connectedSites[siteIndex].isConnected =
+        action.payload.isConnected;
+    }
+  },
+  toggleLoader: (state, action) => {
+    state.isLoading = action.payload;
+  },
+}
+
+//main reducer
+export const mainReducer = (state = userState, action) => {
+  try {
+    const isFound = hasProperty(reducers, action.type);
+    if(isFound) {
+      const copyState = {...state}
+      if(!(JSON.stringify(state.balance) === JSON.stringify(action.payload))) reducers[action.type](copyState, action);
+      return copyState;
+    } return state
+  } catch (err) {
+    console.log("Error in Reducer: ", err);
+    return state
+  }
+}

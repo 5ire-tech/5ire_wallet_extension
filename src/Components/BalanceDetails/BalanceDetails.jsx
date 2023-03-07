@@ -19,7 +19,7 @@ import { NATIVE, EVM, NETWORK } from "../../Constants/index";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import DownArrowSuffix from "../../Assets/DownArrowSuffix.svg";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
-import { resetBalance, setCurrentNetwork, toggleLoader } from "../../Store/reducer/auth";
+import { resetBalance, setCurrentNetwork, toggleLoader } from "../../Utility/redux_helper"
 
 
 function BalanceDetails({ className, textLeft, mt0 }) {
@@ -42,7 +42,13 @@ function BalanceDetails({ className, textLeft, mt0 }) {
     httpEndPoints
   } = useSelector((state) => state.auth);
 
+
   useEffect(() => {
+
+    console.log("use effect is working in BalanceDetails: ", currentNetwork, currentAccount);
+
+    console.log(JSON.stringify(currentAccount));
+
     getCurrentTabUrl((cv) => {
       const isExist = connectedSites.find((ct) => ct?.origin === cv);
       if (isExist) {
@@ -54,21 +60,28 @@ function BalanceDetails({ className, textLeft, mt0 }) {
       setAddresses({ evmAddress: shortner(currentAccount?.evmAddress), nativeAddress: shortner(currentAccount?.nativeAddress) });
     }
 
-    connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then((res) => {
+    //inverval id for unbind the interval
+    let intId = null;
 
+    connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then((res) => {
       if (!res?.value) {
         Connection.isExecuting.value = false;
-        // setInterval(() => {
         getBalance(res.evmApi, res.nativeApi, true);
-        // }, 5000);
+
+        intId = setInterval(() => {
+          getBalance(res.evmApi, res.nativeApi, true);
+        }, 5000)
+
       }
     })
       .catch((err) => {
         console.log("Error while getting the balance of Testnet network: ", err.message)
       });
 
+      return () => {intId && clearInterval(intId)}
 
-  }, [currentNetwork, currentAccount]);
+  }, [currentNetwork, currentAccount.accountName]);
+
 
 
   useEffect(() => {

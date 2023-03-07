@@ -7,7 +7,7 @@ import PlaceLogo from "../../Assets/PlaceLog.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import { setLogin, toggleLoader } from "../../Store/reducer/auth";
+import { setLogin, toggleLoader } from "../../Utility/redux_helper";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 

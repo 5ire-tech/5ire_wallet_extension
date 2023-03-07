@@ -5,7 +5,6 @@ import { Keyring } from "@polkadot/keyring";
 import { useState } from "react";
 import Browser from "webextension-polyfill";
 import { TX_TYPE, STATUS } from "../Constants/index";
-import { setAccountName } from "../Store/reducer/auth";
 import { useSelector, useDispatch } from "react-redux";
 import { u8aToHex, hexToU8a, isHex } from "@polkadot/util";
 import { decryptor, encryptor } from "../Helper/CryptoHelper";
@@ -23,7 +22,8 @@ import {
   setBalance,
   setTxHistory,
   toggleLoader,
-} from "../Store/reducer/auth";
+  setAccountName
+} from "../Utility/redux_helper";
 
 import { httpRequest, EVMRPCPayload } from "../Utility/network_calls";
 import { HTTP_METHODS, EVM_JSON_RPC_METHODS, ERROR_MESSAGES } from "../Constants/index";
@@ -168,15 +168,15 @@ export default function UseWallet() {
       if (Number(totalBalance) % 1 !== 0)
         totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toFixed(6, 8).toString()
 
-
-      // if ((balance.nativeBalance !== nativeBalance && balance.evmBalance !== evmBalance) && (!isNaN(evmBalance) && !(isNaN(nativeBalance)))) {
+      
       const payload = {
         evmBalance,
         nativeBalance,
         totalBalance
       }
+
+      console.log("current balance in state: ", balance);
       dispatch(setBalance(payload));
-      // }
 
     } catch (error) {
       console.log("Error while geting balance : ", error);

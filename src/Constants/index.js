@@ -40,3 +40,24 @@ export const ERROR_MESSAGES = {
     INSUFFICENT_BALANCE: "Insufficent Balance!",
     UNDEF_PROPERTY: "Object not has given property"
 }
+
+
+export const REDUX_ACTIONS= {
+    setTxPopup: "setTxPopup",
+    setPassword: "setPassword",
+    setCurrentAcc: "setCurrentAcc",
+    setAccounts: "setAccounts",
+    pushAccounts: "pushAccounts",
+    setLogin: "setLogin",
+    setUIdata: "setUIdata",
+    setAccountName: "setAccountName",
+    setNewAccount: "setNewAccount",
+    setCurrentNetwork: "setCurrentNetwork",
+    setBalance: "setBalance",
+    resetBalance: "resetBalance",
+    setTxHistory: "setTxHistory",
+    updateTxHistory: "updateTxHistory",
+    setSite: "setSite",
+    toggleSite: "toggleSite",
+    toggleLoader: "toggleLoader"
+}

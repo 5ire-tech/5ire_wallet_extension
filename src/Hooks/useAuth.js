@@ -6,7 +6,7 @@ import {
   setCurrentAcc,
   pushAccounts,
   setNewAccount,
-} from "../Store/reducer/auth";
+} from "../Utility/redux_helper";
 import { encryptor } from "../Helper/CryptoHelper";
 import Browser from "webextension-polyfill";
 import { isManifestV3 } from "../Scripts/utils";

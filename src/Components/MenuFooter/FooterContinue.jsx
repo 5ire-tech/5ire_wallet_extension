@@ -7,13 +7,12 @@ import ButtonComp from "../ButtonComp/ButtonComp";
 import { useDispatch, useSelector } from "react-redux";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
 import {
-  // setLogin,
   setSite,
   setUIdata,
   toggleLoader,
   toggleSite,
   setNewAccount,
-} from "../../Store/reducer/auth";
+} from "../../Utility/redux_helper";
 
 function FooterStepOne() {
   const { isLogin } = useSelector(state => state.auth);

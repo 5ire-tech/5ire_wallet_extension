@@ -1,16 +1,14 @@
 /* global chrome */
-
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import userSlice from "./reducer/auth";
-
+import { configureStore } from "@reduxjs/toolkit";
+import {mainReducer} from "./reducer/auth";
 // import logger from "redux-logger";
 
-const rootReducer = combineReducers({
-  auth: userSlice,
-});
+// export const rootReducer = combineReducers({
+//   auth: mainReducer,
+// });
 
 const store = configureStore({
-  reducer: rootReducer,
+  reducer: mainReducer,
   // middleware: [logger],
 });
 

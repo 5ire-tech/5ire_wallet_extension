@@ -1,5 +1,5 @@
 import Browser from "webextension-polyfill";
-import { setUIdata } from "../Store/reducer/auth";
+import { setUIdata } from "../Utility/redux_helper";
 
 export class ExtensionPlatform {
   //

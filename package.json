@@ -36,6 +36,7 @@
     "react-scripts": "5.0.1",
     "react-toastify": "^9.1.1",
     "readable-stream": "^4.3.0",
+    "redux": "^4.2.1",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "redux-persist-chrome-storage": "^1.0.8",

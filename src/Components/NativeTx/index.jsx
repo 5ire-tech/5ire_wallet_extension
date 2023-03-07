@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import style from "../../Layout/style.module.scss";
 import footerstyle from "../MenuFooter/style.module.scss"
 import pageStyle from "../../Pages/RejectNotification/style.module.scss"
-import { setTxHistory, setUIdata, toggleLoader } from "../../Store/reducer/auth";
+import { setTxHistory, setUIdata, toggleLoader } from "../../Utility/redux_helper";
 import { useDispatch, useSelector } from "react-redux";
 import Browser from "webextension-polyfill";
 import ButtonComp from "../ButtonComp/ButtonComp";

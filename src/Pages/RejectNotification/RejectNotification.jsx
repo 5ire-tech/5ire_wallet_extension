@@ -2,7 +2,7 @@ import style from "./style.module.scss";
 import useWallet from "../../Hooks/useWallet";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { toggleLoader } from "../../Store/reducer/auth";
+import { toggleLoader } from "../../Utility/redux_helper";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
 
 function ApproveTx() {

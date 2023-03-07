@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import { toggleLoader, setLogin } from "../../Store/reducer/auth";
+import { toggleLoader, setLogin } from "../../Utility/redux_helper";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
 import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
 

@@ -2,14 +2,15 @@ import { configureStore } from "@reduxjs/toolkit";
 import { wrapStore } from "./webext-redux/dist/webext-redux";
 import Browser from "webextension-polyfill";
 // import logger from "redux-logger";
-import authReducer, {
-  userState,
+import {
   setUIdata,
   setLogin,
   toggleLoader,
   updateTxHistory,
   toggleSite
-} from "../Store/reducer/auth";
+} from "../Utility/redux_helper";
+import { userState } from "../Store/reducer/auth";
+import {mainReducer} from "../Store/reducer/auth"
 import NotificationManager from "./platform";
 import { isManifestV3 } from "./utils";
 
@@ -25,7 +26,7 @@ function init(preloadedState) {
 
 
     const store = configureStore({
-      reducer: { auth: authReducer },
+      reducer: { auth: mainReducer },
       preloadedState,
       // middleware: [logger],
     });

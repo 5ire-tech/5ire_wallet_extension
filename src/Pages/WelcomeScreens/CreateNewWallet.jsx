@@ -4,7 +4,7 @@ import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import style from "./style.module.scss";
-import { setAccountName } from "../../Store/reducer/auth";
+import { setAccountName } from "../../Utility/redux_helper";
 import { useDispatch, useSelector } from "react-redux";
 
 function CreateNewWallet() {

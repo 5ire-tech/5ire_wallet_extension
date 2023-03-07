@@ -5,7 +5,7 @@ import {
   loadStore,
   checkTransactions
 } from "./controller";
-import { setNewAccount } from "../Store/reducer/auth";
+import { setNewAccount } from "../Utility/redux_helper";
 import Browser from "webextension-polyfill";
 import { isManifestV3 } from "./utils";
 

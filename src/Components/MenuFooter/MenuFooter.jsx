@@ -22,7 +22,7 @@ import Createaccount from "../../Assets/PNG/createaccount.png";
 import AccountSetting from "../AccountSetting/AccountSetting.jsx";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import TransectionHistry from "../TransectionHistry/TransectionHistry";
-import { setCurrentAcc } from "../../Store/reducer/auth";
+import { setCurrentAcc } from "../../Utility/redux_helper";
 // import { Moment } from "moment";
 // import DefiIcon from "../../Assets/DefiIcon.svg";
 // import SettignIcon from "../../Assets/SettignIcon.svg";
