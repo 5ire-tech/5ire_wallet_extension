@@ -140,10 +140,10 @@ function Send() {
         setErr((p) => ({ ...p, to: INPUT.REQUIRED }));
 
       else if (!data.to.startsWith("0x"))
-        setErr((p) => ({ ...p, to: "Incorrect 'Recipient' address." }));
+        setErr((p) => ({ ...p, to: "Incorrect address." }));
 
       else if (data.to === currentAccount.evmAddress)
-        setErr((p) => ({ ...p, to: "'Recipient' can not be same as your current address." }));
+        setErr((p) => ({ ...p, to: "'Recipient' address can not be same as your current address." }));
 
       else {
         let res = await validateAddress(data.to);
@@ -162,7 +162,7 @@ function Send() {
         setErr((p) => ({ ...p, to: INPUT.REQUIRED }));
 
       else if (!data.to.startsWith("5"))
-        setErr((p) => ({ ...p, to: "Incorrect 'Recipient' address." }));
+        setErr((p) => ({ ...p, to: "Incorrect address." }));
 
       else if (data.to === currentAccount.nativeAddress)
         setErr((p) => ({ ...p, to: "'Recipient' can not be same as your current address." }));

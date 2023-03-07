@@ -69,19 +69,19 @@ export default function useAuth() {
 
         return {
           error: false,
-          data: "Login successfully!",
+          data: "Login successfully.",
         };
       } else {
         return {
           error: true,
-          data: "Incorrect password!",
+          data: "Incorrect password.",
         };
       }
     } catch (error) {
       // console.log("Error : ", error);
       return {
         error: true,
-        data: "Error Occured!",
+        data: "Error Occured.",
       };
     }
   };
