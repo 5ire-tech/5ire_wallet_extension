@@ -3,7 +3,7 @@ import style from "./style.module.scss";
 import { INPUT } from "../../Constants/index";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setAccountName } from "../../Store/reducer/auth";
+import { setAccountName } from "../../Utility/redux_helper";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
