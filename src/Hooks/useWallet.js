@@ -832,7 +832,7 @@ export default function UseWallet() {
         // dispatch(toggleLoader(false));
         return ({
           error: true,
-          data: "Incorrect 'Recipient' address."
+          data: "Incorrect address."
         });
       }
     } else if (address.startsWith("5")) {
@@ -851,15 +851,14 @@ export default function UseWallet() {
         console.log("Error : ",error);
         return ({
           error: true,
-          data: "Incorrect 'Recipient' address."
+          data: "Incorrect address."
         });
       }
 
     } else {
-      console.log("INCORECT ADDRESSS");
       return ({
         error: true,
-        data: "Incorrect 'Recipient' address."
+        data: "Incorrect address."
       });
     }
   }

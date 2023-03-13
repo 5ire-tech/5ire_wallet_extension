@@ -1,4 +1,5 @@
 @import "../../styles/__vars.scss";
+
 .menuItems {
   padding: 24px 28px;
   box-shadow: 0px 3px 8px #223f7017;
@@ -8,6 +9,7 @@
   align-items: center;
   justify-content: space-around;
   gap: 20px;
+
   &__items {
     display: flex;
     flex-direction: column;
@@ -20,39 +22,57 @@
     color: $gray;
     text-decoration: none;
     transition: 0.3s all;
+
     &__active,
     &:hover {
-      > div {
+      >div {
         filter: none;
       }
+
       span {
         color: $baseText-00AEEF;
       }
     }
+
     &__img {
       // filter: grayscale(1);
     }
+
     span {
       color: #00aeef;
     }
   }
+
   &__needHelp {
     width: 100%;
     padding: 16px 37px;
+
     p {
       color: #8fa2b7;
     }
+
     a {
       cursor: pointer;
+
       &:hover {
         text-decoration: underline;
       }
     }
   }
+
   &__cancleContinue {
     display: flex;
     justify-content: space-between;
     width: 100%;
+    gap: 67px;
+    border-top: 1px solid #404058;
+    padding: 16px 37px;
+  }
+
+  &__cancleContinue1 {
+    display: flex;
+    justify-content: space-between;
+
     gap: 67px;
     border-top: 1px solid #404058;
     padding: 16px 37px;
@@ -66,10 +86,12 @@
   padding: 14px 16px;
   align-items: center;
   border-radius: 10px;
+
   &__left {
     display: flex;
     gap: 12px;
     align-items: center;
+
     &__textsTop {
       font-size: 14px;
       font-weight: 400;
@@ -77,6 +99,7 @@
       color: #fff;
     }
   }
+
   &__right {
     img {
       margin-right: 25px;
@@ -88,6 +111,7 @@
   color: white;
   text-align: center;
 }
+
 .walletIconBorder {
   background-image: url("../../Assets/PNG/wallet.png");
   background-size: contain;
@@ -99,6 +123,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
   img {
     width: 16px;
     height: 14px;

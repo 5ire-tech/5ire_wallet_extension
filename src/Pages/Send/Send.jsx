@@ -140,7 +140,7 @@ function Send() {
         setErr((p) => ({ ...p, to: INPUT.REQUIRED }));
 
       else if (!data.to.startsWith("0x"))
-        setErr((p) => ({ ...p, to: "Incorrect 'Recipient' address." }));
+        setErr((p) => ({ ...p, to: "Incorrect address." }));
 
       else if (data.to === currentAccount.evmAddress)
         setErr((p) => ({ ...p, to: "Recipient address should not your own address."}));
@@ -162,7 +162,7 @@ function Send() {
         setErr((p) => ({ ...p, to: INPUT.REQUIRED }));
 
       else if (!data.to.startsWith("5"))
-        setErr((p) => ({ ...p, to: "Incorrect 'Recipient' address." }));
+        setErr((p) => ({ ...p, to: "Incorrect address." }));
 
       else if (data.to === currentAccount.nativeAddress)
         setErr((p) => ({ ...p, to: "Recipient address should not your own address."}));

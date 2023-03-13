@@ -261,7 +261,6 @@ export class Controller {
       return;
     }
 
-    console.log("Here i got native message from browser: ", data)
     this.store.dispatch(setUIdata(data));
      await this.notificationManager.showPopup("nativeTx");
   }
