@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 import { shortLongAddress } from "../../Utility/utility";
 
 
-
+const extraFee = 0.02;
 
 function NativeTx() {
     const { Content } = Layout;
@@ -108,7 +108,7 @@ function NativeTx() {
             }
 
             if (!feeData?.error && methodName) {
-                setFee(feeData.data);
+                setFee(+feeData.data + extraFee);
                 setFormattedMethod(methodName)
             } else {
                 Browser.tabs.sendMessage(auth.uiData.tabId, {
@@ -139,6 +139,7 @@ function NativeTx() {
             const validationMethods = ["native_validator_bondmore", "native_nominator_bondmore", "native_withdraw_nominator", "native_withdraw_validator", "native_unbond_validator", "native_unbond_nominator", "native_withdraw_nominator", "native_withdraw_validator"]
             if (validationMethods.includes(method)) {
                 const totalAmount = +fee + +auth?.uiData?.message?.amount;
+                // console.log("HERE TESET", fee, auth?.balance?.nativeBalance, totalAmount)
                 if (+auth?.balance?.nativeBalance < totalAmount) {
                     return toast.error("Insufficient Funds: Fee + Amount is more than available balance,")
                 }
@@ -238,7 +239,7 @@ function NativeTx() {
                     });
                 }
                 dispatch(toggleLoader(false));
-                
+
                 setTimeout(() => {
                     dispatch(setUIdata({}));
                     window.close();
@@ -314,7 +315,7 @@ function NativeTx() {
 
 
                                     <div className={pageStyle.rejectedSec__listReject__innerList}>
-                                        <h4>Fee: </h4>
+                                        <h4>Estimated Fee: </h4>
                                         <h4>{fee} 5IRE</h4>
                                     </div>
                                 </div>

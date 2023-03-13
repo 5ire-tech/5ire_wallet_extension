@@ -109,11 +109,11 @@ export default function UseWallet() {
         //when new keypair created or imported the old key key emit the account change event
         getCurrentTabUId((id) => {
           getCurrentTabUrl((url) => {
-            if(!(url === "chrome://extensions")) {
+            if (!(url === "chrome://extensions")) {
               Browser.tabs.sendMessage(id, { id: ACCOUNT_CHANGED_EVENT, method: ACCOUNT_CHANGED_EVENT, response: { evmAddress: address, nativeAddress: nativeAddress } })
             }
           })
-          })
+        })
       }
 
       dispatch(toggleLoader(false));
@@ -144,8 +144,7 @@ export default function UseWallet() {
       //Native Balance
       if (isHttp) {
         let balance_ = await native_api?._query.system.account(currentAccount?.nativeAddress);
-        nbalance = balance_.data.free;
-        nbalance = parseFloat(`${balance_.data.free}`);
+        nbalance = parseFloat(`${balance_.data.free}`) - parseFloat(`${balance_.data.miscFrozen}`);
       } else {
         let balance_ = await native_api?.derive.balances.all(
           currentAccount?.nativeAddress
@@ -180,13 +179,13 @@ export default function UseWallet() {
       if (Number(totalBalance) % 1 !== 0)
         totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toFixed(6, 8).toString()
 
-      
+
       const payload = {
         evmBalance,
         nativeBalance,
         totalBalance
       }
-      
+
       dispatch(setBalance(payload));
 
     } catch (error) {
@@ -200,7 +199,7 @@ export default function UseWallet() {
     return (new Promise(async (resolve, reject) => {
       try {
         const tempAmount = isBig ? (new BigNumber(data.amount).dividedBy(DECIMALS)).toString() : data.amount;
-        if ((Number(tempAmount) > (Number(balance.evmBalance) ) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0) {
+        if ((Number(tempAmount) > (Number(balance.evmBalance)) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0) {
           resolve({
             error: true,
             data: ERROR_MESSAGES.INSUFFICENT_BALANCE
@@ -616,7 +615,7 @@ export default function UseWallet() {
           const signHash = txInfo.transactionHash;
 
           if (signHash) {
-            
+
             //withdraw amount
             const withdraw = await nativeApi.tx.evm.withdraw(
               publicKey.slice(0, 42),
@@ -704,15 +703,15 @@ export default function UseWallet() {
         dispatch(setAccountName(data.accName));
         dispatch(setCurrentAcc(dataToDispatch));
         if (isLogin) dispatch(pushAccounts(dataToDispatch));
-        
+
         //when new keypair created or imported the old key key emit the account change event
         getCurrentTabUId((id) => {
           getCurrentTabUrl((url) => {
-            if(!(url === "chrome://extensions")) {
+            if (!(url === "chrome://extensions")) {
               Browser.tabs.sendMessage(id, { id: ACCOUNT_CHANGED_EVENT, method: ACCOUNT_CHANGED_EVENT, response: { evmAddress: address, nativeAddress: nativeAddress } })
             }
           })
-          })
+        })
 
         return {
           error: false,
@@ -855,7 +854,7 @@ export default function UseWallet() {
         });
       } catch (error) {
         // dispatch(toggleLoader(false));
-        console.log("Error : ",error);
+        console.log("Error : ", error);
         return ({
           error: true,
           data: "Incorrect address."
