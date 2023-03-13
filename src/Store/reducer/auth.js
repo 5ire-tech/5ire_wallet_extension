@@ -1,3 +1,4 @@
+import { STATUS } from "../../Constants";
 import { hasProperty } from "../../Utility/utility";
 
 //initial state
@@ -52,9 +53,9 @@ export const userState = {
   isLogin: false,
 
   connectedSites: [],
-  
+
   isLoading: false,
-  
+
 };
 
 //all reducers methods
@@ -77,7 +78,18 @@ const reducers = {
   },
 
   pushAccounts: (state, action) => {
-    state.accounts.push(action.payload);
+    let accounts = state.accounts;
+
+    if (accounts.length > 0) {
+      let res = accounts.find(acc => acc.accountName === action.payload.accountName);
+
+      if (!res) {
+        state.accounts.push(action.payload);
+      }
+
+    } else {
+      state.accounts.push(action.payload);
+    }
   },
 
   setLogin: (state, action) => {
@@ -93,15 +105,14 @@ const reducers = {
   },
 
   setNewAccount: (state, action) => {
-    // console.log(current(state));
     state.newAccount = action.payload;
   },
-  
+
   setCurrentNetwork: (state, action) => {
     state.currentNetwork = action.payload;
   },
 
-  
+
   setBalance: (state, action) => {
     state.balance.evmBalance = action.payload.evmBalance;
     state.balance.nativeBalance = action.payload.nativeBalance;
@@ -122,20 +133,20 @@ const reducers = {
 
   updateTxHistory: (state, action) => {
 
-   const currentTx =  state.currentAccount.txHistory.find((item) => {
-    if(action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash;
-    return item.txHash === action.payload.txHash
-   });
+    const currentTx = state.currentAccount.txHistory.find((item) => {
+      if (action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash;
+      return item.txHash === action.payload.txHash
+    });
 
-   const otherAcc = state.accounts.find(item => item.accountName === action.payload.accountName);
+    const otherAcc = state.accounts.find(item => item.accountName === action.payload.accountName);
 
-   const otherTx = otherAcc.txHistory.find((item) => {
-    if(action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash
-    return item.txHash === action.payload.txHash
-   })
-    
-    if(currentTx) currentTx.status = typeof(action.payload.status) === "string" ? action.payload.status: action.payload.status ? "success" : "failed";
-    if(otherTx) otherTx.status = typeof(action.payload.status) === "string" ? action.payload.status: action.payload.status ? "success" : "failed";
+    const otherTx = otherAcc.txHistory.find((item) => {
+      if (action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash
+      return item.txHash === action.payload.txHash
+    })
+
+    if (currentTx) currentTx.status = typeof (action.payload.status) === "string" ? action.payload.status : action.payload.status ? STATUS.SUCCESS : STATUS.FAILED;
+    if (otherTx) otherTx.status = typeof (action.payload.status) === "string" ? action.payload.status : action.payload.status ? STATUS.SUCCESS : STATUS.FAILED;
 
   },
 
@@ -161,9 +172,9 @@ const reducers = {
 export const mainReducer = (state = userState, action) => {
   try {
     const isFound = hasProperty(reducers, action.type);
-    if(isFound) {
-      const copyState = {...state}
-      if(!(JSON.stringify(state.balance) === JSON.stringify(action.payload))) reducers[action.type](copyState, action);
+    if (isFound) {
+      const copyState = { ...state }
+      if (!(JSON.stringify(state.balance) === JSON.stringify(action.payload))) reducers[action.type](copyState, action);
       return copyState;
     } return state
   } catch (err) {

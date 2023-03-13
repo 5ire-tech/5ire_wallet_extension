@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { wrapStore } from "./webext-redux/dist/webext-redux";
 import Browser from "webextension-polyfill";
-// import logger from "redux-logger";
+import logger from "redux-logger";
 import {
   setUIdata,
   setLogin,
@@ -16,7 +16,7 @@ import { isManifestV3 } from "./utils";
 
 import { httpRequest, EVMRPCPayload } from "../Utility/network_calls";
 import {isObject, isNullorUndef, isHasLength} from "../Utility/utility"
-import {HTTP_METHODS, PORT_NAME, EVM_JSON_RPC_METHODS } from "../Constants";
+import {HTTP_METHODS, PORT_NAME, EVM_JSON_RPC_METHODS, STATUS } from "../Constants";
 
 
 
@@ -28,7 +28,7 @@ function init(preloadedState) {
     const store = configureStore({
       reducer: { auth: mainReducer },
       preloadedState,
-      // middleware: [logger],
+      middleware: [logger],
     });
 
     wrapStore(store, { portName: PORT_NAME });
@@ -296,8 +296,8 @@ export async function checkTransactions(txData) {
     //check if the tx is native or evm based
     if (txRecipt?.result) {
       store.dispatch(updateTxHistory({ txHash, accountName, status: Boolean(parseInt(txRecipt.result.status)), isSwap }));
-      showNotification(controller ,`Transaction ${Boolean(parseInt(txRecipt.result.status)) ? "success" : "failed"} ${txHash.slice(0, 30)} ...`);
-    } else if(txRecipt?.data && txRecipt?.data?.transaction.status !== "pending") {
+      showNotification(controller ,`Transaction ${Boolean(parseInt(txRecipt.result.status)) ? STATUS.SUCCESS.toLowerCase() : STATUS.FAILED.toLowerCase()} ${txHash.slice(0, 30)} ...`);
+    } else if(txRecipt?.data && txRecipt?.data?.transaction.status.toLowerCase() !== STATUS.PENDING.toLowerCase()) {
       store.dispatch(updateTxHistory({ txHash, accountName, status: txRecipt?.data?.transaction.status, isSwap }));
       showNotification(controller ,`Transaction ${txRecipt?.data?.transaction.status} ${txHash.slice(0, 30)} ...`);
     }

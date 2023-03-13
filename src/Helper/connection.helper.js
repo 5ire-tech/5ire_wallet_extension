@@ -2,6 +2,7 @@
 import Web3 from "web3";
 import { ApiPromise } from "@polkadot/api";
 import { HttpProvider, WsProvider } from "@polkadot/rpc-provider";
+import { NETWORK } from "../Constants";
 
 let i = 0
 export class Connection {
@@ -42,9 +43,11 @@ export class Connection {
 
             // console.log("is first init: ", bothInit);
 
+            console.log("networkMode",networkMode);
+
             Connection.isExecuting.value = true;
             //create the Testnet Connection
-            if (networkMode === "Testnet" || bothInit) {
+            if (networkMode.toLowerCase() === NETWORK.TEST_NETWORK.toLowerCase() || bothInit) {
                 if (!Connection.nativeApiTestnet) Connection.nativeApiTestnet = await this.createNativeConnection(networkTest);
                 if (!Connection.evmApiTestnet) Connection.evmApiTestnet = this.createEvmConnection(networkTest);
 
@@ -55,7 +58,7 @@ export class Connection {
 
 
             //create qa connection
-            if (networkMode === "QA" || bothInit) {
+            if (networkMode.toLowerCase() === NETWORK.QA_NETWORK.toLowerCase() || bothInit) {
                 if (!Connection.nativeApiQA) Connection.nativeApiQA = await this.createNativeConnection(networkQA)
                 if (!Connection.evmApiQA) Connection.evmApiQA = this.createEvmConnection(networkQA)
 
@@ -65,13 +68,13 @@ export class Connection {
             }
 
 
-            if (networkMode === "QA") {
+            if (networkMode.toLowerCase() === NETWORK.QA_NETWORK.toLowerCase()) {
                 // this.changeExecution();
                 return {
                     nativeApi: Connection.nativeApiQA,
                     evmApi: Connection.evmApiQA
                 }
-            } else if (networkMode === "Testnet") {
+            } else if (networkMode.toLowerCase() === NETWORK.TEST_NETWORK.toLowerCase()) {
                 // this.changeExecution();
                 return {
                     nativeApi: Connection.nativeApiTestnet,
