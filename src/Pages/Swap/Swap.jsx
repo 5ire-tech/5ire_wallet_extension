@@ -190,10 +190,14 @@ function Swap() {
           ) {
 
             let res = await nativeToEvmSwap(apiRes.nativeApi, amount);
+            // console.log("res.err : ",res.error);
             if (res.error) {
+            // console.log("error true");
+
               setIsFaildOpen(true);
               setSwapError(res.data);
             } else {
+              // console.log("error false");
               setIsModalOpen(true);
               setTxHash(res.data);
               // setTimeout(() => {

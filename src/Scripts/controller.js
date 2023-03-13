@@ -303,7 +303,6 @@ export async function checkTransactions(txData) {
     if(txData.isEVM) txRecipt = await httpRequest(rpcUrl, HTTP_METHODS.POST, JSON.stringify(new EVMRPCPayload( EVM_JSON_RPC_METHODS.GET_TX_RECIPT, [txHash])));
     else txRecipt = await httpRequest(rpcUrl + txHash, HTTP_METHODS.GET)
 
-
     //check if the tx is native or evm based
     if (txRecipt?.result) {
       store.dispatch(updateTxHistory({ txHash, accountName, status: Boolean(parseInt(txRecipt.result.status)), isSwap }));
@@ -312,7 +311,7 @@ export async function checkTransactions(txData) {
       store.dispatch(updateTxHistory({ txHash, accountName, status: txRecipt?.data?.transaction.status, isSwap }));
       showNotification(controller ,`Transaction ${txRecipt?.data?.transaction.status} ${txHash.slice(0, 30)} ...`);
     }
-    else checkTransactions(txData)
+    else if(!txRecipt?.internalServer) checkTransactions(txData)
 
   } catch (err) {
     console.log("Error while checking transaction status: ", err);
