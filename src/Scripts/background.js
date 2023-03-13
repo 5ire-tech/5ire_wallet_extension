@@ -58,6 +58,13 @@ try {
   });
 
 
+
+  //webrequest error listner
+  // Browser.webRequest.onErrorOccurred.addListener((data) => {
+  //   console.log("web request error: ", data);
+  // }) 
+
+
   Browser.runtime.onMessage.addListener(async function (message, sender, cb) {
 
     //check if the current event is transactions

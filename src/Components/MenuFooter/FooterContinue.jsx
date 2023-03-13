@@ -39,6 +39,8 @@ function FooterStepOne() {
     </>
   );
 }
+
+
 export default FooterStepOne;
 
 export const FooterStepTwo = () => {
@@ -212,6 +214,10 @@ export const ApproveLogin = () => {
     </>
   );
 };
+
+
+
+
 
 export const ApproveTx = () => {
   const auth = useSelector((state) => state.auth);

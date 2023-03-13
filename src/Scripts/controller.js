@@ -249,9 +249,21 @@ export class Controller {
 
   //Handle Validator nominator methods
   async handleValidatorNominatorTransactions(data) {
-    // console.log("Here i got native message", data)
+
+    const hereOutput = await Browser.storage.local.get("popupStatus");
+
+    if (hereOutput.popupStatus) {
+      Browser.tabs.sendMessage(data.tabId, {
+        id: data.id,
+        response: null,
+        error: "5ire extension transaction approve popup session is already active",
+      });
+      return;
+    }
+
+    console.log("Here i got native message from browser: ", data)
     this.store.dispatch(setUIdata(data));
-    await this.notificationManager.showPopup("nativeTx");
+     await this.notificationManager.showPopup("nativeTx");
   }
 
 }

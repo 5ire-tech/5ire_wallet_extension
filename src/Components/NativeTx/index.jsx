@@ -14,6 +14,8 @@ import { STATUS, TX_TYPE } from "../../Constants";
 import { toast } from "react-toastify";
 
 
+
+
 function NativeTx() {
     const { Content } = Layout;
     const auth = useSelector((state) => state.auth);
@@ -21,6 +23,7 @@ function NativeTx() {
     const { addNominator, reNominate, nominatorValidatorPayout, stopValidatorNominator, unbondNominatorValidator, withdrawNominatorValidatorData, withdrawNominatorUnbonded, addValidator, bondMoreFunds, restartValidator } = UseWallet();
     const [fee, setFee] = useState(0);
     const [fomattedMethod, setFormattedMethod] = useState('')
+
     useEffect(() => {
         getFee()
     }, [])
@@ -103,7 +106,7 @@ function NativeTx() {
 
             }
 
-            if (!feeData.error && methodName) {
+            if (!feeData?.error && methodName) {
                 setFee(feeData.data);
                 setFormattedMethod(methodName)
             } else {
@@ -112,9 +115,9 @@ function NativeTx() {
                     response: null,
                     error: feeData.data,
                 });
-                dispatch(setUIdata({}));
 
                 setTimeout(() => {
+                    dispatch(setUIdata({}));
                     window.close();
                 }, 300);
             }
@@ -123,6 +126,9 @@ function NativeTx() {
         })
 
     }
+
+
+
     function handleClick(isApproved) {
         if (isApproved) {
             if (+auth?.balance?.nativeBalance < +fee) {
@@ -230,10 +236,10 @@ function NativeTx() {
                         error: null,
                     });
                 }
-                dispatch(setUIdata({}));
                 dispatch(toggleLoader(false));
-
+                
                 setTimeout(() => {
+                    dispatch(setUIdata({}));
                     window.close();
                 }, 300);
             })
@@ -247,6 +253,9 @@ function NativeTx() {
             dispatch(setUIdata({}));
             window.close();
         }
+
+        //false the popup
+        Browser.storage.local.set({ popupStatus: false });
     }
 
 
