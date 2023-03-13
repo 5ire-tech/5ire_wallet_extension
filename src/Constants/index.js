@@ -16,13 +16,13 @@ export const NETWORK = {
     TEST_NETWORK: "Testnet"
 }
 export const STATUS = {
-    PENDING:"Pending",
-    FAILED:"Failed",
-    SUCCESS:"Success",
+    PENDING: "Pending",
+    FAILED: "Failed",
+    SUCCESS: "Success",
 }
 
 export const INPUT = {
-    REQUIRED : "This field is required.",
+    REQUIRED: "This field is required.",
 }
 
 export const HTTP_METHODS = {
@@ -33,7 +33,7 @@ export const HTTP_METHODS = {
     DELETE: "DELETE"
 }
 
-export const  HTTP_CONTENT_TYPE = {
+export const HTTP_CONTENT_TYPE = {
     JSON: "application/json"
 }
 
@@ -48,7 +48,7 @@ export const ERROR_MESSAGES = {
 }
 
 
-export const REDUX_ACTIONS= {
+export const REDUX_ACTIONS = {
     setTxPopup: "setTxPopup",
     setPassword: "setPassword",
     setCurrentAcc: "setCurrentAcc",

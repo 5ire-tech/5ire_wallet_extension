@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCurrentTabUrl } from "../../Scripts/utils";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import DownArrowSuffix from "../../Assets/DownArrowSuffix.svg";
-import { NATIVE, EVM, NETWORK,COPIED } from "../../Constants/index";
+import { NATIVE, EVM, NETWORK, COPIED } from "../../Constants/index";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
 import { resetBalance, setCurrentNetwork, toggleLoader } from "../../Utility/redux_helper"
 
@@ -73,7 +73,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
         console.log("Error while getting the balance of Testnet network: ", err.message)
       });
 
-      return () => {intId && clearInterval(intId)}
+    return () => { intId && clearInterval(intId) }
 
   }, [currentNetwork, currentAccount.accountName]);
 
