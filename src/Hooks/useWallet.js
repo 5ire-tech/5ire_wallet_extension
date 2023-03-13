@@ -617,6 +617,7 @@ export default function UseWallet() {
 
           if (signHash) {
             
+            
             //withdraw amount
             const withdraw = await nativeApi.tx.evm.withdraw(
               publicKey.slice(0, 42),
@@ -648,6 +649,7 @@ export default function UseWallet() {
 
             dispatch(setTxHistory(dataToDispatch));
             dispatch(toggleLoader(false));
+
 
             //send the tx notification
             Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase() } });
