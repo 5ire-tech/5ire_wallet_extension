@@ -130,7 +130,7 @@ function NativeTx() {
                 return toast.error("Insufficient Funds")
             }
             const method = auth?.uiData?.method;
-            const validationMethods = ["native_validator_bondmore", "native_nominator_bondmore", "native_withdraw_nominator", "native_withdraw_validator"]
+            const validationMethods = ["native_validator_bondmore", "native_nominator_bondmore", "native_withdraw_nominator", "native_withdraw_validator", "native_unbond_validator", "native_unbond_nominator", "native_withdraw_nominator", "native_withdraw_validator"]
             if (validationMethods.includes(method)) {
                 const totalAmount = +fee + +auth?.uiData?.message?.amount;
                 if (+auth?.balance?.nativeBalance < totalAmount) {
