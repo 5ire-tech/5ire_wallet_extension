@@ -1,4 +1,5 @@
-import { hasProperty } from "../../Utility/utility";
+import { hasProperty, isString } from "../../Utility/utility";
+import { LABELS } from "../../Constants";
 
 //initial state
 export const userState = {
@@ -28,7 +29,8 @@ export const userState = {
   },
 
   api: {
-    native: "https://explorer-api.5ire.network/api/firechain/explorer/get-transaction-by-hash/"
+    testnet: "https://explorer-api.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
+    qa: "https://qa-api-exp.5ire.network/api/firechain/explorer/get-transaction-by-hash/"
   },
 
   wsEndPoints: {
@@ -120,7 +122,7 @@ const reducers = {
     state.currentAccount.txHistory.push(action.payload.data);
   },
 
-  updateTxHistory: (state, action) => {
+  updateTxHistory: (state, action) => {                                                                                                            
 
    const currentTx =  state.currentAccount.txHistory.find((item) => {
     if(action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash;
@@ -134,8 +136,8 @@ const reducers = {
     return item.txHash === action.payload.txHash
    })
     
-    if(currentTx) currentTx.status = typeof(action.payload.status) === "string" ? action.payload.status: action.payload.status ? "success" : "failed";
-    if(otherTx) otherTx.status = typeof(action.payload.status) === "string" ? action.payload.status: action.payload.status ? "success" : "failed";
+    if(currentTx) currentTx.status = isString(action.payload.status) ? action.payload.status: action.payload.status ? LABELS.Success : LABELS.Failed;
+    if(otherTx) otherTx.status = isString(action.payload.status) ? action.payload.status: action.payload.status ? LABELS.Success : LABELS.Failed;
 
   },
 
@@ -162,9 +164,9 @@ export const mainReducer = (state = userState, action) => {
   try {
     const isFound = hasProperty(reducers, action.type);
     if(isFound) {
-      const copyState = {...state}
-      if(!(JSON.stringify(state.balance) === JSON.stringify(action.payload))) reducers[action.type](copyState, action);
-      return copyState;
+      const stateCopy = {...state}
+      if(!(JSON.stringify(state.balance) === JSON.stringify(action.payload))) reducers[action.type](stateCopy, action);
+      return stateCopy;
     } return state
   } catch (err) {
     console.log("Error in Reducer: ", err);

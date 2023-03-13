@@ -167,14 +167,14 @@ export const ApproveLogin = () => {
       const res = isEthReq
         ? [auth.currentAccount.evmAddress]
         : {
-          evmAddress: auth.currentAccount.evmAddress,
-          nativeAddress: auth.currentAccount.nativeAddress,
+          result: {
+            evmAddress: auth.currentAccount.evmAddress,
+            nativeAddress: auth.currentAccount.nativeAddress,
+          }
         };
       browser.tabs.sendMessage(auth.uiData.tabId, {
         id: auth.uiData.id,
-
         response: res,
-
         error: null,
       });
     } else {

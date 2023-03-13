@@ -65,7 +65,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
 
         intId = setInterval(() => {
           getBalance(res.evmApi, res.nativeApi, true);
-        }, 5000)
+        }, 8000)
 
       }
     })
@@ -185,7 +185,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                     options={[
                       {
                         value: NETWORK.TEST_NETWORK,
-                        label: <span className="flexedItemSelect">Testnet</span>,
+                        label: <span className="flexedItemSelect">{currentNetwork}</span>,
                       },
                       // {
                       //   value: NETWORK.QA_NETWORK,

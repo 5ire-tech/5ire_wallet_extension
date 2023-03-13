@@ -27,6 +27,7 @@ export class Connection {
     //get only a single instance of class
     static getConnector() {
         if (!Connection.instanceConn) Connection.instanceConn = new Connection();
+        delete Connection.constructor;
         return Connection.instanceConn;
     }
 

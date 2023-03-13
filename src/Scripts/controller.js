@@ -284,7 +284,7 @@ export async function checkTransactions(txData) {
     const isSwap = txData.type.toLowerCase() === "swap";
 
     //check if the current tx is evm tx or native tx
-    const rpcUrl = txData.isEVM ? state.auth.httpEndPoints[txData.chain] || "https://rpc-testnet.5ire.network" : state.auth.api.native;
+    const rpcUrl = txData.isEVM ? state.auth.httpEndPoints[txData.chain] || "https://rpc-testnet.5ire.network" : state.auth.api[state.auth.currentNetwork.toLowerCase()];
 
 
     //check if the transaction is still pending or not

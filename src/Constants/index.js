@@ -67,3 +67,9 @@ export const REDUX_ACTIONS= {
     toggleSite: "toggleSite",
     toggleLoader: "toggleLoader"
 }
+
+
+export const LABELS = {
+    Success: "success",
+    Failed: "failed"
+}

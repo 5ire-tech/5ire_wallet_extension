@@ -54,6 +54,7 @@ function App() {
   //   }
   // }, []);
 
+
   useEffect(() => {
     const route = getParameterByName("route");
 
@@ -73,8 +74,9 @@ function App() {
       navigate("/");
     }
     
-  }, [auth?.login]);
+  }, [auth?.isLogin]);
 
+  
   return (
     <div className="App">
       <Routes>

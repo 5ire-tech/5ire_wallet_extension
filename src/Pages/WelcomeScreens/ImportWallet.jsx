@@ -75,7 +75,8 @@ function ImportWallet() {
     }
   };
 
-  const handleClick = async () => {
+  const handleClick = async (e) => {
+    if ((e.key === "Enter") || (e.key === undefined)) {
     if (data.key.length === 0) {
       setWarrning((p) => ({ ...p, key: INPUT.REQUIRED }));
       setDisable(true);
@@ -111,7 +112,8 @@ function ImportWallet() {
         }
       }
     }
-  };
+  }
+};
 
   const handleCancle = () => {
     if (isLogin) navigate("/wallet");
@@ -119,7 +121,7 @@ function ImportWallet() {
   };
 
   return (
-    <div className={style.cardWhite}>
+    <div className={style.cardWhite} onKeyDown={handleClick}>
       <MenuRestofHeaders logosilver={true} title="5irechain Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>

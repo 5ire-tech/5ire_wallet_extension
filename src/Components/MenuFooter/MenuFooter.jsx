@@ -13,7 +13,7 @@ import HistoryIcon from "../../Assets/PNG/histry.png";
 import Myaccount from "../../Assets/PNG/myaccount.png";
 import { useSelector, useDispatch } from "react-redux";
 import BackArrow from "../../Assets/PNG/arrowright.png";
-import Walletlogo from "../../Assets/PNG/walletlogo.png";
+// import Walletlogo from "../../Assets/PNG/walletlogo.png";
 import { shortner, formatDate } from "../../Helper/helper";
 import SocialAccount from "../SocialAccount/SocialAccount";
 import ModalCloseIcon from "../../Assets/ModalCloseIcon.svg";
@@ -34,7 +34,7 @@ import FooterStepOne, {
 } from "./FooterContinue";
 import Browser from "webextension-polyfill";
 import { ACCOUNT_CHANGED_EVENT } from "../../Scripts/constants";
-import { getCurrentTabUId } from "../../Scripts/utils";
+import { getCurrentTabUId, getCurrentTabUrl } from "../../Scripts/utils";
 
 function MenuFooter() {
   const { logout } = useAuth();
@@ -90,10 +90,16 @@ function MenuFooter() {
     // dispatch(resetBalance());
     let acc = accounts.find(acc => acc.id === accId);
     dispatch(setCurrentAcc(acc));
-    getCurrentTabUId((id) => {
-      Browser.tabs.sendMessage(id, { id: ACCOUNT_CHANGED_EVENT, method: ACCOUNT_CHANGED_EVENT, response: { evmAddress: acc.evmAddress, nativeAddress: acc.nativeAddress } })
 
-    })
+            //when new keypair created or imported the old key key emit the account change event
+            getCurrentTabUId((id) => {
+              getCurrentTabUrl((url) => {
+                if(!(url === "chrome://extensions")) {
+                  Browser.tabs.sendMessage(id, { id: ACCOUNT_CHANGED_EVENT, method: ACCOUNT_CHANGED_EVENT, response: { evmAddress: acc.evmAddress, nativeAddress: acc.nativeAddress } })
+                }
+              })
+              })
+  
     onClose();
   };
 

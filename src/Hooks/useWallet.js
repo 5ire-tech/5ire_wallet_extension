@@ -27,6 +27,9 @@ import {
 
 import { httpRequest, EVMRPCPayload } from "../Utility/network_calls";
 import { HTTP_METHODS, EVM_JSON_RPC_METHODS, ERROR_MESSAGES } from "../Constants/index";
+import { getCurrentTabUId, getCurrentTabUrl } from "../Scripts/utils";
+import { ACCOUNT_CHANGED_EVENT } from "../Scripts/constants";
+
 const DECIMALS = 10 ** 18;
 export default function UseWallet() {
 
@@ -102,8 +105,17 @@ export default function UseWallet() {
         };
         dispatch(setCurrentAcc(dataToDispatch));
         dispatch(pushAccounts(dataToDispatch));
+        dispatch(toggleLoader(false));
+
+        //when new keypair created or imported the old key key emit the account change event
+        getCurrentTabUId((id) => {
+          getCurrentTabUrl((url) => {
+            if(!(url === "chrome://extensions")) {
+              Browser.tabs.sendMessage(id, { id: ACCOUNT_CHANGED_EVENT, method: ACCOUNT_CHANGED_EVENT, response: { evmAddress: address, nativeAddress: nativeAddress } })
+            }
+          })
+          })
       }
-      dispatch(toggleLoader(false));
 
       return {
         error: false,
@@ -327,7 +339,7 @@ export default function UseWallet() {
 
                 const hash = txHash.toHex();
                 dataToDispatch.data.txHash = hash;
-                const txRecipt = await httpRequest(api.native + hash, HTTP_METHODS.GET);
+                const txRecipt = await httpRequest(api[currentNetwork?.toLowerCase()] + hash, HTTP_METHODS.GET);
 
                 let txStatus = STATUS.PENDING.toLowerCase();
                 if (txRecipt?.data?.transaction) {
@@ -468,7 +480,7 @@ export default function UseWallet() {
 
                 const hash = txHash.toHex();
                 dataToDispatch.data.txHash = { hash: evmDepositeHash, mainHash: hash };
-                const txRecipt = await httpRequest(api.native + hash, HTTP_METHODS.GET);
+                const txRecipt = await httpRequest(api[currentNetwork?.toLowerCase()] + hash, HTTP_METHODS.GET);
 
                 let txStatus = STATUS.PENDING.toLowerCase();
                 if (txRecipt?.data?.transaction) {
@@ -687,6 +699,15 @@ export default function UseWallet() {
         dispatch(setAccountName(data.accName));
         dispatch(setCurrentAcc(dataToDispatch));
         if (isLogin) dispatch(pushAccounts(dataToDispatch));
+        
+        //when new keypair created or imported the old key key emit the account change event
+        getCurrentTabUId((id) => {
+          getCurrentTabUrl((url) => {
+            if(!(url === "chrome://extensions")) {
+              Browser.tabs.sendMessage(id, { id: ACCOUNT_CHANGED_EVENT, method: ACCOUNT_CHANGED_EVENT, response: { evmAddress: address, nativeAddress: nativeAddress } })
+            }
+          })
+          })
 
         return {
           error: false,
@@ -851,7 +872,6 @@ export default function UseWallet() {
     const signer = keyring.addFromPair(ed25519PairFromSeed(seedAccount));
     return signer;
   }
-  
 
   //Nominator methods
   const addNominator = async (nativeApi, payload, isFee = false) => {
