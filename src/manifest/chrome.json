@@ -18,7 +18,6 @@
       "notifications",
       "scripting",
       "storage",
-      "webRequest",
       "tabs"
     ],
     "host_permissions": [

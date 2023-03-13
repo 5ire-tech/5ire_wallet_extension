@@ -18,7 +18,6 @@
         "notifications",
         "scripting",
         "storage",
-        "webRequest",
         "tabs",
         "<all_urls>"
     ],
