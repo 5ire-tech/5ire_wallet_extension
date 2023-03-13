@@ -105,7 +105,6 @@ export default function UseWallet() {
         };
         dispatch(setCurrentAcc(dataToDispatch));
         dispatch(pushAccounts(dataToDispatch));
-        dispatch(toggleLoader(false));
 
         //when new keypair created or imported the old key key emit the account change event
         getCurrentTabUId((id) => {
@@ -117,6 +116,7 @@ export default function UseWallet() {
           })
       }
 
+      dispatch(toggleLoader(false));
       return {
         error: false,
         data: "success!",
@@ -200,7 +200,7 @@ export default function UseWallet() {
     return (new Promise(async (resolve, reject) => {
       try {
         const tempAmount = isBig ? (new BigNumber(data.amount).dividedBy(DECIMALS)).toString() : data.amount;
-        if ((Number(tempAmount) > Number(balance.evmBalance) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0) {
+        if ((Number(tempAmount) > (Number(balance.evmBalance) ) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0) {
           resolve({
             error: true,
             data: ERROR_MESSAGES.INSUFFICENT_BALANCE

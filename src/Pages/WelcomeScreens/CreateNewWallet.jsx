@@ -49,7 +49,7 @@ function CreateNewWallet() {
       if (!warrning) {
         const match = accounts.find((e) => {
           if (e.accountName === data) {
-            setWarrning("Wallet with this name is already exists.");
+            setWarrning("Wallet name already exists. ");
             return true;
           } 
           else return false;

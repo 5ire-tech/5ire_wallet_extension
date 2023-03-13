@@ -186,9 +186,9 @@ export const ApproveLogin = () => {
     }
 
     browser.storage.local.set({ popupStatus: false });
-    dispatch(setUIdata({}));
     dispatch(toggleLoader(false));
     setTimeout(() => {
+      dispatch(setUIdata({}));
       window.close();
     }, 1000);
   }

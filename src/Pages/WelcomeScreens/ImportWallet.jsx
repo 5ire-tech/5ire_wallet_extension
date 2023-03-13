@@ -89,7 +89,7 @@ function ImportWallet() {
           if (e.accountName === data.accName) {
             setWarrning((p) => ({
               ...p,
-              acc: "Wallet with this name already exists.",
+              acc: "Wallet name already exists.",
             }));
             return true;
           } else if (decryptor(e.temp1m, pass) === data.key) {

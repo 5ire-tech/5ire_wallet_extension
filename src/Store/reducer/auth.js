@@ -45,7 +45,7 @@ export const userState = {
     totalBalance: ""
   },
 
-  currentNetwork: "Testnet",
+  currentNetwork: "QA",
 
   accountName: "",
 
