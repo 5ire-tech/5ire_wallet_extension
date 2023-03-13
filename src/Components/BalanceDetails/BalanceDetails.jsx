@@ -183,14 +183,14 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                       width: 100,
                     }}
                     options={[
-                      {
-                        value: NETWORK.TEST_NETWORK,
-                        label: <span className="flexedItemSelect">Testnet</span>,
-                      },
                       // {
-                      //   value: NETWORK.QA_NETWORK,
-                      //   label: <span className="flexedItemSelect">QA</span>,
+                      //   value: NETWORK.TEST_NETWORK,
+                      //   label: <span className="flexedItemSelect">Testnet</span>,
                       // },
+                      {
+                        value: NETWORK.QA_NETWORK,
+                        label: <span className="flexedItemSelect">QA</span>,
+                      },
                     ]}
                   />
                 </div>

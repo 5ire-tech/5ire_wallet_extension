@@ -315,7 +315,12 @@ export default function UseWallet() {
           const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
           const amt = new BigNumber(data.amount).multipliedBy(DECIMALS).toString();
 
-          const transfer = nativeApi.tx.balances.transferKeepAlive(
+          // const transfer = nativeApi.tx.balances.transferKeepAlive(
+          //   data.to,
+          //   (Number(amt).noExponents()).toString()
+          // );
+
+          const transfer = nativeApi.tx.balances.transfer(
             data.to,
             (Number(amt).noExponents()).toString()
           );
@@ -777,7 +782,9 @@ export default function UseWallet() {
       }
       else if (toAddress.startsWith("5")) {
         const amt = new BigNumber(amount).multipliedBy(DECIMALS).toString();
-        transferTx = nativeApi.tx.balances.transferKeepAlive(toAddress, (Number(amt).noExponents()).toString());
+        // transferTx = nativeApi.tx.balances.transferKeepAlive(toAddress, (Number(amt).noExponents()).toString());
+
+        transferTx = nativeApi.tx.balances.transfer(toAddress, (Number(amt).noExponents()).toString());
 
       }
       const info = await transferTx?.paymentInfo(alice);
@@ -1041,7 +1048,8 @@ export default function UseWallet() {
 
       const { amount, address } = payload
       const sendAmounts = (new BigNumber(amount).multipliedBy(DECIMALS)).toFixed().toString()
-      const sendAmt = nativeApi.tx.balances.transferKeepAlive(address, sendAmounts);
+      // const sendAmt = nativeApi.tx.balances.transferKeepAlive(address, sendAmounts);
+      const sendAmt = nativeApi.tx.balances.transfer(address, sendAmounts);
 
       if (isFee) {
         const info = await sendAmt?.paymentInfo(getKeyring());
