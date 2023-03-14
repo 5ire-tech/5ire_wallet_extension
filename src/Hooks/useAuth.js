@@ -50,7 +50,7 @@ export default function useAuth() {
         // console.log("Error : ", error);
         resolve({
           error: true,
-          data: "Error occured!",
+          data: "Error occured.",
         });
       }
     });

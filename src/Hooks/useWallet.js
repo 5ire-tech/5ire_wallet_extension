@@ -280,14 +280,14 @@ export default function UseWallet() {
               data: hash,
             });
           }
-          else throw new Error("Error occured! ");
+          else throw new Error("Error occured. ");
         }
       } catch (error) {
         console.log("Error occured while evm transfer: ", error);
         dispatch(toggleLoader(false));
         resolve({
           error: true,
-          data: error.message,
+          data: "Error while transfer.",
         });
       }
     }))
@@ -377,7 +377,7 @@ export default function UseWallet() {
 
                 resolve({
                   error: true,
-                  data: "error while sending!"
+                  data: "Error while transfer."
                 });
 
               }
@@ -414,7 +414,7 @@ export default function UseWallet() {
                   if (err) {
                     resolve({
                       error: true,
-                      data: "Error while sending!"
+                      data: "Error while transfer."
                     })
                   } else {
                     resolve({
@@ -435,7 +435,7 @@ export default function UseWallet() {
         dispatch(toggleLoader(false));
         resolve({
           error: true,
-          data: "Error occured while sending!",
+          data: "Error while transfer.",
         });
       }
     })
@@ -577,7 +577,7 @@ export default function UseWallet() {
         dispatch(toggleLoader(false));
         resolve({
           error: true,
-          data: "Error occured while swapping!",
+          data: "Error while swapping.",
         });
       }
     })
@@ -669,7 +669,7 @@ export default function UseWallet() {
         dispatch(toggleLoader(false));
         resolve({
           error: true,
-          data: "Error occured while swapping!",
+          data: "Error while swapping.",
         });
       }
     }))
@@ -731,7 +731,7 @@ export default function UseWallet() {
       console.log("Error while importing : ", error);
       return {
         error: true,
-        data: "Error Occured!",
+        data: "Error occured.",
       };
     }
   };
@@ -756,7 +756,7 @@ export default function UseWallet() {
 
           return ({
             error: true,
-            data: "Invalid 'Recipient' address."
+            data: "Invalid Recipient address."
           });
         }
       }
@@ -783,7 +783,7 @@ export default function UseWallet() {
 
     } catch (error) {
       dispatch(toggleLoader(false));
-      console.log("Error while getting evm fee: ", error);
+      // console.log("Error while getting evm fee: ", error);
       return {
         error: true,
       }
