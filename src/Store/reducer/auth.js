@@ -130,13 +130,16 @@ const reducers = {
 
   setTxHistory: (state, action) => {
     const txData = state.accounts[action.payload.index].txHistory.find(item => item.txHash === action.payload.data.txHash)
-    if(!txData) {
+    if (!txData) {
       state.accounts[action.payload.index].txHistory.push(action.payload.data);
-      state.currentAccount.txHistory.push(action.payload.data);
+      const txData1 = state.currentAccount.txHistory.find(item => item.txHash === action.payload.data.txHash)
+      if (!txData1) {
+        state.currentAccount.txHistory.push(action.payload.data);
+      }
     }
   },
 
-  updateTxHistory: (state, action) => {                                                                                                            
+  updateTxHistory: (state, action) => {
 
     const currentTx = state.currentAccount.txHistory.find((item) => {
       if (action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash;
