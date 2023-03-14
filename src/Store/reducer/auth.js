@@ -13,10 +13,11 @@ export const userState = {
 
   currentAccount: {
     accountName: "",
-    temp1m: "",
-    evmAddress: "",
-    nativeAddress: "",
-    txHistory: [],
+    index:""
+    // temp1m: "",
+    // evmAddress: "",
+    // nativeAddress: "",
+    // txHistory: [],
   },
   newAccount: null,
 
