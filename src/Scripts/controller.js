@@ -10,13 +10,13 @@ import {
   toggleSite
 } from "../Utility/redux_helper";
 import { userState } from "../Store/reducer/auth";
-import {mainReducer} from "../Store/reducer/auth"
+import { mainReducer } from "../Store/reducer/auth"
 import NotificationManager from "./platform";
 import { isManifestV3 } from "./utils";
 
 import { httpRequest, EVMRPCPayload } from "../Utility/network_calls";
-import {isObject, isNullorUndef, isHasLength} from "../Utility/utility"
-import {HTTP_METHODS, PORT_NAME, EVM_JSON_RPC_METHODS, STATUS } from "../Constants";
+import { isObject, isNullorUndef, isHasLength } from "../Utility/utility"
+import { HTTP_METHODS, PORT_NAME, EVM_JSON_RPC_METHODS, STATUS } from "../Constants";
 
 
 
@@ -86,10 +86,10 @@ export function loadStore(sendStoreMessage = true) {
 
 //inject the script on current webpage
 export async function initScript() {
-  try {  
+  try {
 
 
-      await Browser.scripting.registerContentScripts([
+    await Browser.scripting.registerContentScripts([
       {
         id: "inpage",
         matches: ["http://*/*", "https://*/*"],
@@ -118,13 +118,13 @@ export class Controller {
   constructor(store) {
     this.store = store;
     this.notificationManager = new NotificationManager(store);
-    
+
     //maintain only single instance
     this.instance = null
   }
 
   static getInstance(store) {
-    if(isNullorUndef(this.instance)) this.instance = new Controller(store)
+    if (isNullorUndef(this.instance)) this.instance = new Controller(store)
     return this.instance
   }
 
@@ -262,14 +262,14 @@ export class Controller {
     }
 
     this.store.dispatch(setUIdata(data));
-     await this.notificationManager.showPopup("nativeTx");
+    await this.notificationManager.showPopup("nativeTx");
   }
 
 }
 
 //show browser notification from extension
 function showNotification(controller, message) {
-  if(!isNullorUndef(controller) && isHasLength(message)) controller.showNotification(message)
+  if (!isNullorUndef(controller) && isHasLength(message)) controller.showNotification(message)
 }
 
 // check if transaction status and inform user using browser notification
@@ -300,18 +300,18 @@ export async function checkTransactions(txData) {
 
     //check if the transaction is still pending or not
     let txRecipt;
-    if(txData.isEVM) txRecipt = await httpRequest(rpcUrl, HTTP_METHODS.POST, JSON.stringify(new EVMRPCPayload( EVM_JSON_RPC_METHODS.GET_TX_RECIPT, [txHash])));
+    if (txData.isEVM) txRecipt = await httpRequest(rpcUrl, HTTP_METHODS.POST, JSON.stringify(new EVMRPCPayload(EVM_JSON_RPC_METHODS.GET_TX_RECIPT, [txHash])));
     else txRecipt = await httpRequest(rpcUrl + txHash, HTTP_METHODS.GET)
 
     //check if the tx is native or evm based
     if (txRecipt?.result) {
       store.dispatch(updateTxHistory({ txHash, accountName, status: Boolean(parseInt(txRecipt.result.status)), isSwap }));
-      showNotification(controller ,`Transaction ${Boolean(parseInt(txRecipt.result.status)) ? STATUS.SUCCESS.toLowerCase() : STATUS.FAILED.toLowerCase()} ${txHash.slice(0, 30)} ...`);
-    } else if(txRecipt?.data && txRecipt?.data?.transaction.status.toLowerCase() !== STATUS.PENDING.toLowerCase()) {
+      showNotification(controller, `Transaction ${Boolean(parseInt(txRecipt.result.status)) ? STATUS.SUCCESS.toLowerCase() : STATUS.FAILED.toLowerCase()} ${txHash.slice(0, 30)} ...`);
+    } else if (txRecipt?.data && txRecipt?.data?.transaction.status.toLowerCase() !== STATUS.PENDING.toLowerCase()) {
       store.dispatch(updateTxHistory({ txHash, accountName, status: txRecipt?.data?.transaction.status, isSwap }));
-      showNotification(controller ,`Transaction ${txRecipt?.data?.transaction.status} ${txHash.slice(0, 30)} ...`);
+      showNotification(controller, `Transaction ${txRecipt?.data?.transaction.status} ${txHash.slice(0, 30)} ...`);
     }
-    else if(!txRecipt?.internalServer) checkTransactions(txData)
+    else if (!txRecipt?.internalServer) checkTransactions(txData)
 
   } catch (err) {
     console.log("Error while checking transaction status: ", err);

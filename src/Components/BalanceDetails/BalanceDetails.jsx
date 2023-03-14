@@ -65,7 +65,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
 
         intId = setInterval(() => {
           getBalance(res.evmApi, res.nativeApi, true);
-        }, 3000)
+        }, 5000)
 
       }
     })
