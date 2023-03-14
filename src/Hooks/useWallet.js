@@ -213,7 +213,7 @@ export default function UseWallet() {
             value: isBig
               ? data.amount
               : (Number(amt).noExponents()).toString(),
-            gas: 21000, 
+            gas: 21000,
             data: data?.data,
             nonce: await evmApi.eth.getTransactionCount(
               currentAccount?.evmAddress,
@@ -268,13 +268,12 @@ export default function UseWallet() {
             };
 
 
-            console.log("send for dispatch: ", dataToDispatch);
-            
-              dispatch(setTxHistory(dataToDispatch));
-              dispatch(toggleLoader(false));
-  
-              //send the tx notification
-              Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase() } });
+
+            dispatch(setTxHistory(dataToDispatch));
+            dispatch(toggleLoader(false));
+
+            //send the tx notification
+            Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase() } });
 
 
             resolve({
