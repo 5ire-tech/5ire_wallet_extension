@@ -91,15 +91,15 @@ function MenuFooter() {
     let acc = accounts.find(acc => acc.id === accId);
     dispatch(setCurrentAcc(acc));
 
-            //when new keypair created or imported the old key key emit the account change event
-            getCurrentTabUId((id) => {
-              getCurrentTabUrl((url) => {
-                if(!(url === "chrome://extensions")) {
-                  Browser.tabs.sendMessage(id, { id: ACCOUNT_CHANGED_EVENT, method: ACCOUNT_CHANGED_EVENT, response: { evmAddress: acc.evmAddress, nativeAddress: acc.nativeAddress } })
-                }
-              })
-              })
-  
+    //when new keypair created or imported the old key key emit the account change event
+    getCurrentTabUId((id) => {
+      getCurrentTabUrl((url) => {
+        if (!(url === "chrome://extensions")) {
+          Browser.tabs.sendMessage(id, { id: ACCOUNT_CHANGED_EVENT, method: ACCOUNT_CHANGED_EVENT, response: { evmAddress: acc.evmAddress, nativeAddress: acc.nativeAddress } })
+        }
+      })
+    })
+
     onClose();
   };
 
@@ -159,7 +159,7 @@ function MenuFooter() {
         closeIcon={<img src={ModalCloseIcon} alt="close" draggable={false} />}
       >
         {history?.length > 0 ? (
-          history?.map((data) => (
+          history?.map((data, index) => (
             <TransectionHistry
               dateTime={formatDate(data.dateTime)}
               type={data?.type}
@@ -173,6 +173,7 @@ function MenuFooter() {
               amount={`${data?.amount} 5ire`}
               status={data?.status.charAt(0).toUpperCase() + data?.status.slice(1)}
               img={Sendhistry}
+              key={index + "5ire"}
             />
           ))
         ) : (

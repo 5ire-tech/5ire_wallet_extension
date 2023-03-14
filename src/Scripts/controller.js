@@ -28,7 +28,7 @@ function init(preloadedState) {
     const store = configureStore({
       reducer: { auth: mainReducer },
       preloadedState,
-      // middleware: [logger],
+      middleware: [logger],
     });
 
     wrapStore(store, { portName: PORT_NAME });
