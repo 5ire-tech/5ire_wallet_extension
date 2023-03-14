@@ -195,7 +195,6 @@ export default function UseWallet() {
 
 
   const evmTransfer = async (evmApi, data, isBig = false) => {
-
     return (new Promise(async (resolve, reject) => {
       try {
         const tempAmount = isBig ? (new BigNumber(data.amount).dividedBy(DECIMALS)).toString() : data.amount;
@@ -269,11 +268,14 @@ export default function UseWallet() {
             };
 
 
-            dispatch(setTxHistory(dataToDispatch));
-            dispatch(toggleLoader(false));
+            console.log("send for dispatch: ", dataToDispatch);
+            
+              dispatch(setTxHistory(dataToDispatch));
+              dispatch(toggleLoader(false));
+  
+              //send the tx notification
+              Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase() } });
 
-            //send the tx notification
-            Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase() } });
 
             resolve({
               error: false,
@@ -293,6 +295,7 @@ export default function UseWallet() {
     }))
 
   };
+
 
   const nativeTransfer = async (nativeApi, data, isHttp = true) => {
 
