@@ -213,7 +213,7 @@ export default function UseWallet() {
             value: isBig
               ? data.amount
               : (Number(amt).noExponents()).toString(),
-            gas: 21000, 
+            gas: 21000,
             data: data?.data,
             nonce: await evmApi.eth.getTransactionCount(
               currentAccount?.evmAddress,
@@ -268,13 +268,12 @@ export default function UseWallet() {
             };
 
 
-            console.log("send for dispatch: ", dataToDispatch);
-            
-              dispatch(setTxHistory(dataToDispatch));
-              dispatch(toggleLoader(false));
-  
-              //send the tx notification
-              Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase() } });
+
+            dispatch(setTxHistory(dataToDispatch));
+            dispatch(toggleLoader(false));
+
+            //send the tx notification
+            Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase() } });
 
 
             resolve({
@@ -588,6 +587,17 @@ export default function UseWallet() {
 
   const evmToNativeSwap = async (evmApi, nativeApi, amount) => {
     return (new Promise(async (resolve, reject) => {
+      let dataToDispatch = {
+        data: {
+          chain: currentNetwork.toLowerCase(),
+          isEvm: true,
+          dateTime: new Date(),
+          to: "Evm to Native",
+          type: TX_TYPE?.SWAP,
+          amount: amount,
+        },
+        index: getAccId(currentAccount.id)
+      };
       try {
         if (Number(amount) >= Number(balance.evmBalance) || Number(amount) <= 0) {
           resolve({
@@ -602,7 +612,7 @@ export default function UseWallet() {
           const keyring = new Keyring({ type: "ed25519" });
           const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
           const publicKey = u8aToHex(alice.publicKey);
-          const amt = new BigNumber(amount).multipliedBy(DECIMALS).toString()
+          const amt = new BigNumber(amount).multipliedBy(DECIMALS).toString();
 
           const transaction = {
             to: publicKey.slice(0, 42),
@@ -623,7 +633,6 @@ export default function UseWallet() {
 
           if (signHash) {
 
-
             //withdraw amount
             const withdraw = await nativeApi.tx.evm.withdraw(
               publicKey.slice(0, 42),
@@ -638,24 +647,11 @@ export default function UseWallet() {
               txStatus = Boolean(Number(txRecipt.result.status)) ? STATUS.SUCCESS : STATUS.PENDING
             }
 
-
-            let dataToDispatch = {
-              data: {
-                chain: currentNetwork.toLowerCase(),
-                isEvm: true,
-                dateTime: new Date(),
-                to: "Evm to Native",
-                type: TX_TYPE?.SWAP,
-                amount: amount,
-                txHash: { mainHash: signHash, hash: signRes.toHex() },
-                status: txStatus
-              },
-              index: getAccId(currentAccount.id),
-            };
+            dataToDispatch.data.txHash = { mainHash: signHash, hash: signRes.toHex() };
+            dataToDispatch.data.status = txStatus;
 
             dispatch(setTxHistory(dataToDispatch));
             dispatch(toggleLoader(false));
-
 
             //send the tx notification
             Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase() } });
@@ -665,10 +661,14 @@ export default function UseWallet() {
               data: signHash,
             });
           }
-          else throw new Error("Error occured! ");
+          else throw new Error("Error occured.");
         }
       } catch (error) {
         console.log("Error occured while swapping evm to native: ", error);
+        // dispatch(toggleLoader(false));
+        dataToDispatch.data.txHash = { hash: "", mainHash: "" };
+        dataToDispatch.data.status = STATUS.FAILED;
+        dispatch(setTxHistory(dataToDispatch));
         dispatch(toggleLoader(false));
         resolve({
           error: true,
