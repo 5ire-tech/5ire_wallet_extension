@@ -130,14 +130,29 @@ const reducers = {
   },
 
   setTxHistory: (state, action) => {
-    const txData = state.accounts[action.payload.index].txHistory.find(item => item.txHash === action.payload.data.txHash)
-    if(!txData) {
+    const isSwap = action.payload.data.type.toLowerCase() === "swap";
+    let txData = null, txData1 = null;
+    if (isSwap) {
+      txData1 = state.currentAccount.txHistory.find(item => item.txHash.mainHash === action.payload.data.txHash.mainHash)
+      txData = state.accounts[action.payload.index].txHistory.find(item => item.txHash.mainHash === action.payload.data.txHash.mainHash)
+
+    } else {
+      txData = state.accounts[action.payload.index].txHistory.find(item => item.txHash === action.payload.data.txHash)
+      txData1 = state.currentAccount.txHistory.find(item => item.txHash === action.payload.data.txHash)
+    }
+
+    if (!txData) {
       state.accounts[action.payload.index].txHistory.push(action.payload.data);
+    }
+    if (!txData1) {
       state.currentAccount.txHistory.push(action.payload.data);
     }
+
+
+
   },
 
-  updateTxHistory: (state, action) => {                                                                                                            
+  updateTxHistory: (state, action) => {
 
     const currentTx = state.currentAccount.txHistory.find((item) => {
       if (action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash;
@@ -178,9 +193,14 @@ const reducers = {
 export const mainReducer = (state = userState, action) => {
   try {
     const isFound = hasProperty(reducers, action.type);
+
+
     if (isFound) {
+
       const copyState = { ...state }
-      if (!(JSON.stringify(state.balance) === JSON.stringify(action.payload))) reducers[action.type](copyState, action);
+      if (!(JSON.stringify(state.balance) === JSON.stringify(action.payload))) {
+        reducers[action.type](copyState, action);
+      }
       return copyState;
     } return state
   } catch (err) {
