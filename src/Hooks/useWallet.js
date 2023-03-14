@@ -206,12 +206,15 @@ export default function UseWallet() {
           })
         } else {
           dispatch(toggleLoader(true));
+
+          let amt = (new BigNumber(data.amount).multipliedBy(DECIMALS)).toString();
+
           const transactions = {
             from: currentAccount?.evmAddress,
             value: isBig
               ? data.amount
-              : (new BigNumber(data.amount).multipliedBy(DECIMALS)).toString(),
-            gas: 21000, //wei
+              : (Number(amt).noExponents()).toString(),
+            gas: 21000, 
             data: data?.data,
             nonce: await evmApi.eth.getTransactionCount(
               currentAccount?.evmAddress,
@@ -596,10 +599,11 @@ export default function UseWallet() {
           const keyring = new Keyring({ type: "ed25519" });
           const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
           const publicKey = u8aToHex(alice.publicKey);
+          const amt = new BigNumber(amount).multipliedBy(DECIMALS).toString()
 
           const transaction = {
             to: publicKey.slice(0, 42),
-            value: (new BigNumber(amount).multipliedBy(DECIMALS)).toString(),
+            value: (Number(amt).noExponents()).toString(),
             gas: 21000,
             nonce: await evmApi.eth.getTransactionCount(currentAccount?.evmAddress),
           };
@@ -617,11 +621,10 @@ export default function UseWallet() {
           if (signHash) {
 
 
-
             //withdraw amount
             const withdraw = await nativeApi.tx.evm.withdraw(
               publicKey.slice(0, 42),
-              (new BigNumber(amount).multipliedBy(DECIMALS)).toString()
+              (Number(amt).noExponents()).toString()
             );
             let signRes = await withdraw.signAndSend(alice);
 

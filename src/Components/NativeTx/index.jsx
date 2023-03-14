@@ -207,7 +207,7 @@ function NativeTx() {
                     default:
 
                 }
-                console.log("HERE RES", res)
+                // console.log("HERE RES", res)
                 if (res.error) {
                     Browser.tabs.sendMessage(auth.uiData.tabId, {
                         id: auth.uiData.id,

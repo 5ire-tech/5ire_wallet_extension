@@ -42,10 +42,6 @@ export class Connection {
 
             if (Connection.isExecuting.value) return { error: "Already in execution.", value: true }
 
-            // console.log("is first init: ", bothInit);
-
-            console.log("networkMode",networkMode);
-
             Connection.isExecuting.value = true;
             //create the Testnet Connection
             if (networkMode.toLowerCase() === NETWORK.TEST_NETWORK.toLowerCase() || bothInit) {
@@ -95,13 +91,15 @@ export class Connection {
 
         //connection with native (Polkadot)
         if (networkEndpoint.startsWith("ws")) {
-            connection = await ApiPromise.create({ provider: new WsProvider(networkEndpoint),
+            connection = await ApiPromise.create({
+                provider: new WsProvider(networkEndpoint),
                 noInitWarn: true
             });
         }
         else if (networkEndpoint.startsWith("http")) {
-            connection = await ApiPromise.create({ provider: new HttpProvider(networkEndpoint),
-            noInitWarn: true
+            connection = await ApiPromise.create({
+                provider: new HttpProvider(networkEndpoint),
+                noInitWarn: true
             });
         }
 
