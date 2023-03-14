@@ -21,7 +21,7 @@ function NativeTx() {
     const { Content } = Layout;
     const auth = useSelector((state) => state.auth);
     const dispatch = useDispatch();
-    const { addNominator, reNominate, nominatorValidatorPayout, stopValidatorNominator, unbondNominatorValidator, withdrawNominatorValidatorData, withdrawNominatorUnbonded, addValidator, bondMoreFunds, restartValidator } = UseWallet();
+    const { addNominator, reNominate, nominatorValidatorPayout, stopValidatorNominator, unbondNominatorValidator, withdrawNominatorValidatorData, withdrawNominatorUnbonded, addValidator, bondMoreFunds, restartValidator, getBalance } = UseWallet();
     const [fee, setFee] = useState(0);
     const [fomattedMethod, setFormattedMethod] = useState('')
 
@@ -36,6 +36,8 @@ function NativeTx() {
             if (!apiRes?.value) {
                 Connection.isExecuting.value = false;
             }
+            await getBalance(apiRes.evmApi, apiRes.nativeApi, true)
+
             let feeData, methodName = '';
             switch (auth?.uiData?.method) {
                 case "native_add_nominator":
@@ -136,7 +138,7 @@ function NativeTx() {
                 return toast.error("Insufficient Funds")
             }
             const method = auth?.uiData?.method;
-            const validationMethods = ["native_validator_bondmore", "native_nominator_bondmore", "native_withdraw_nominator", "native_withdraw_validator", "native_unbond_validator", "native_unbond_nominator", "native_withdraw_nominator", "native_withdraw_validator"]
+            const validationMethods = ["native_validator_bondmore", "native_nominator_bondmore", "native_withdraw_nominator", "native_withdraw_validator", "native_withdraw_nominator", "native_withdraw_validator"]
             if (validationMethods.includes(method)) {
                 const totalAmount = +fee + +auth?.uiData?.message?.amount;
                 // console.log("HERE TESET", fee, auth?.balance?.nativeBalance, totalAmount)
