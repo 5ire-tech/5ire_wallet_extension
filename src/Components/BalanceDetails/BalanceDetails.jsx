@@ -58,7 +58,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
     //inverval id for unbind the interval
     let intId = null;
 
-    connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then((res) => {
+    connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, httpEndPoints.uat, currentNetwork, false).then((res) => {
       if (!res?.value) {
         Connection.isExecuting.value = false;
         getBalance(res.evmApi, res.nativeApi, true);
@@ -188,8 +188,16 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                       //   label: <span className="flexedItemSelect">Testnet</span>,
                       // },
                       {
+                        value: NETWORK.UAT,
+                        label: <span className="flexedItemSelect">{NETWORK.UAT}</span>,
+                      },
+                      {
                         value: NETWORK.QA_NETWORK,
                         label: <span className="flexedItemSelect">{NETWORK.QA_NETWORK}</span>,
+                      },
+                      {
+                        value: NETWORK.TEST_NETWORK,
+                        label: <span className="flexedItemSelect">{NETWORK.TEST_NETWORK}</span>,
                       },
                     ]}
                   />

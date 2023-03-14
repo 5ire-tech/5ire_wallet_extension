@@ -13,7 +13,8 @@ export const TX_TYPE = {
 }
 export const NETWORK = {
     QA_NETWORK: "QA",
-    TEST_NETWORK: "Testnet"
+    TEST_NETWORK: "Testnet",
+    UAT: "UAT"
 }
 export const STATUS = {
     PENDING: "Pending",

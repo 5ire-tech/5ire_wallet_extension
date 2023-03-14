@@ -4,7 +4,7 @@ import { ApiPromise } from "@polkadot/api";
 import { HttpProvider, WsProvider } from "@polkadot/rpc-provider";
 import { NETWORK } from "../Constants";
 
-let i = 0
+
 export class Connection {
 
     //for testnet connection
@@ -14,6 +14,10 @@ export class Connection {
     //for qa connection
     static nativeApiQA = null;
     static evmApiQA = null;
+
+    //for uat connection
+    static nativeApiUAT = null;
+    static evmApiUAT = null;
 
 
     //previous endpoints
@@ -34,8 +38,8 @@ export class Connection {
 
 
     //initialize and get Api
-    initializeApi = async (networkTest, networkQA, networkMode, bothInit = false) => {
-        i++;
+    initializeApi = async (networkTest, networkQA, networkUAT, networkMode, bothInit = false) => {
+
         // console.log("call number: ", i, Connection.isExecuting.value);
 
         try {
@@ -64,6 +68,17 @@ export class Connection {
                 Connection.endPointQA = networkQA;
             }
 
+            //create qa connection
+            if (networkMode.toLowerCase() === NETWORK.UAT.toLowerCase() || bothInit) {
+                            if (!Connection.nativeApiUAT) Connection.nativeApiUAT = await this.createNativeConnection(networkUAT)
+                            if (!Connection.evmApiUAT) Connection.evmApiUAT = this.createEvmConnection(networkUAT)
+            
+                            //set the execution true
+                            // Connection.isExecuting.value = true;
+                            Connection.endPointQA = networkQA;
+                        }
+            
+
 
             if (networkMode.toLowerCase() === NETWORK.QA_NETWORK.toLowerCase()) {
                 // this.changeExecution();
@@ -76,6 +91,12 @@ export class Connection {
                 return {
                     nativeApi: Connection.nativeApiTestnet,
                     evmApi: Connection.evmApiTestnet
+                }
+            } else if (networkMode.toLowerCase() === NETWORK.UAT.toLowerCase()) {
+                // this.changeExecution();
+                return {
+                    nativeApi: Connection.nativeApiUAT,
+                    evmApi: Connection.evmApiUAT
                 }
             }
 

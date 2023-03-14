@@ -23,17 +23,20 @@ export const userState = {
   uiData: {},
 
   httpEndPoints: {
+    uat: "https://uat-http-nodes.5ire.network",
     qa: "https://qa-http-nodes.5ire.network",
     testnet: "https://rpc-testnet.5ire.network"
     // testnet: "http://52.15.41.233:9933"
   },
 
   api: {
+    uat: "https://uat-api-exp.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
     testnet: "https://explorer-api.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
     qa: "https://qa-api-exp.5ire.network/api/firechain/explorer/get-transaction-by-hash/"
   },
 
   wsEndPoints: {
+    uat: "wss://uat-wss-nodes.5ire.network",
     qa: "wss://qa-wss-nodes.5ire.network",
     testnet: "wss://wss-testnet.5ire.network"
     // testnet: "ws://52.15.41.233:9944"

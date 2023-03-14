@@ -32,7 +32,7 @@ function NativeTx() {
     function getFee() {
         dispatch(toggleLoader(true));
 
-        connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.currentNetwork, false).then(async (apiRes) => {
+        connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.wsEndPoints.uat, auth.currentNetwork, false).then(async (apiRes) => {
             if (!apiRes?.value) {
                 Connection.isExecuting.value = false;
             }
@@ -147,7 +147,7 @@ function NativeTx() {
                 }
             }
             dispatch(toggleLoader(true));
-            connectionObj.initializeApi(auth.httpEndPoints.testnet, auth.httpEndPoints.qa, auth.currentNetwork, false).then(async (apiRes) => {
+            connectionObj.initializeApi(auth.httpEndPoints.testnet, auth.httpEndPoints.qa, auth.httpEndPoints.uat, auth.currentNetwork, false).then(async (apiRes) => {
                 if (!apiRes?.value) {
                     Connection.isExecuting.value = false;
                 }

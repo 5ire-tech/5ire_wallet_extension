@@ -49,7 +49,7 @@ function ApproveTx() {
 
 
   const getApi = () => {
-    connectionObj.initializeApi(auth.httpEndPoints.testnet, auth.httpEndPoints.qa, auth.currentNetwork, false).then((apiRes) => {
+    connectionObj.initializeApi(auth.httpEndPoints.testnet, auth.httpEndPoints.qa, auth.httpEndPoints.uat, auth.currentNetwork, false).then((apiRes) => {
       if (!apiRes?.value) {
         setEvmApi(apiRes.evmApi);
         Connection.isExecuting.value = false;

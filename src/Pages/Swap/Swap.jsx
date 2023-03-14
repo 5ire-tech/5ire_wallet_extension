@@ -161,7 +161,7 @@ function Swap() {
   const handleApprove = async (e) => {
     try {
 
-      connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
+      connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, httpEndPoints.uat, currentNetwork, false).then(async (apiRes) => {
 
         if (!apiRes?.value) {
 
@@ -216,7 +216,7 @@ function Swap() {
 
   const getFee = async () => {
 
-    connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
+    connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, httpEndPoints.uat, currentNetwork, false).then(async (apiRes) => {
 
       if (!apiRes?.value) {
 

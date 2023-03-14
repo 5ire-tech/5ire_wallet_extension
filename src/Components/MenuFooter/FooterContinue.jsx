@@ -228,7 +228,7 @@ export const ApproveTx = () => {
     if (isApproved) {
       dispatch(toggleLoader(true));
 
-      connectionObj.initializeApi(auth.httpEndPoints.testnet, auth.httpEndPoints.qa, auth.currentNetwork, false).then((apiRes) => {
+      connectionObj.initializeApi(auth.httpEndPoints.testnet, auth.httpEndPoints.qa, auth.httpEndPoints.uat, auth.currentNetwork, false).then((apiRes) => {
 
         // console.log("Api Response : ",apiRes);
         if (!apiRes?.value) {
