@@ -1,10 +1,10 @@
 import style from "./style.module.scss";
 import { useSelector } from "react-redux";
-import {INPUT} from "../../Constants/index";
 import useWallet from "../../Hooks/useWallet";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { decryptor } from "../../Helper/CryptoHelper";
+import {INPUT,REGEX_WALLET_NAME} from "../../Constants/index";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
@@ -39,7 +39,6 @@ function ImportWallet() {
   };
 
   const validateAccName = () => {
-    let regex = /^[a-z0-9]+$/i; 
 
     if (data.accName.trim().length < 2 || data.accName.trim().length >= 16) {
       setWarrning((p) => ({
@@ -54,7 +53,7 @@ function ImportWallet() {
       setDisable(true);
     }
 
-    else if (!regex.test(data.accName)) {
+    else if (!REGEX_WALLET_NAME.test(data.accName)) {
 
       setWarrning(p => ({ ...p, acc: "Please enter alphanumeric characters only." }))
       setDisable(true);
@@ -86,7 +85,7 @@ function ImportWallet() {
     } else {
       if (!warrning.key && !warrning.acc) {
         const match = accounts.find((e) => {
-          if (e.accountName === data.accName) {
+          if (e.accountName === data.accName.trim()) {
             setWarrning((p) => ({
               ...p,
               acc: "Wallet name already exists.",

@@ -6,6 +6,8 @@ export const COPIED = "Copied!"
 export const CONNECTION_NAME = "5IRE_EXT";
 export const PORT_NAME = "WEBEXT_REDUX_TEST";
 export const UI_CONNECTION_NAME = "5IRE_EXT_UI";
+export const REGEX_WALLET_NAME = /^[a-z0-9\s]+$/i;
+
 
 export const TX_TYPE = {
     SEND: "Transfer",
@@ -16,8 +18,8 @@ export const NETWORK = {
     TEST_NETWORK: "Testnet"
 }
 export const STATUS = {
-    PENDING: "Pending",
     FAILED: "Failed",
+    PENDING: "Pending",
     SUCCESS: "Success",
 }
 
@@ -26,9 +28,9 @@ export const INPUT = {
 }
 
 export const HTTP_METHODS = {
-    POST: "POST",
-    GET: "GET",
     PUT: "PUT",
+    GET: "GET",
+    POST: "POST",
     PATCH: "PATCH",
     DELETE: "DELETE"
 }
@@ -42,34 +44,34 @@ export const EVM_JSON_RPC_METHODS = {
 }
 
 export const ERROR_MESSAGES = {
+    INSUFFICENT_BALANCE: "Insufficent Balance.",
+    UNDEF_PROPERTY: "Object not has given property",
     NOT_VALID_JSON_RPC_METHOD: "JSON-RPC method is not valid.",
-    INSUFFICENT_BALANCE: "Insufficent Balance!",
-    UNDEF_PROPERTY: "Object not has given property"
 }
 
 
 export const REDUX_ACTIONS = {
-    setTxPopup: "setTxPopup",
-    setPassword: "setPassword",
-    setCurrentAcc: "setCurrentAcc",
-    setAccounts: "setAccounts",
-    pushAccounts: "pushAccounts",
+    setSite: "setSite",
     setLogin: "setLogin",
     setUIdata: "setUIdata",
-    setAccountName: "setAccountName",
-    setNewAccount: "setNewAccount",
-    setCurrentNetwork: "setCurrentNetwork",
+    setTxPopup: "setTxPopup",
+    toggleSite: "toggleSite",
     setBalance: "setBalance",
+    setAccounts: "setAccounts",
+    setPassword: "setPassword",
+    pushAccounts: "pushAccounts",
     resetBalance: "resetBalance",
     setTxHistory: "setTxHistory",
+    toggleLoader: "toggleLoader",
+    setCurrentAcc: "setCurrentAcc",
+    setNewAccount: "setNewAccount",
+    setAccountName: "setAccountName",
     updateTxHistory: "updateTxHistory",
-    setSite: "setSite",
-    toggleSite: "toggleSite",
-    toggleLoader: "toggleLoader"
+    setCurrentNetwork: "setCurrentNetwork",
 }
 
 
 export const LABELS = {
+    Failed: "failed",
     Success: "success",
-    Failed: "failed"
 }
