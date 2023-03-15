@@ -1080,6 +1080,7 @@ export default function UseWallet() {
       const sendAmounts = (new BigNumber(amount).multipliedBy(DECIMALS)).toFixed().toString()
       // const sendAmt = nativeApi.tx.balances.transferKeepAlive(address, sendAmounts);
       const sendAmountNoExp = (Number(sendAmounts).noExponents()).toString()
+
       const sendAmt = nativeApi.tx.balances.transfer(address, sendAmountNoExp);
 
       if (isFee) {
@@ -1109,7 +1110,7 @@ export default function UseWallet() {
           data: "Invalid Params: Value is required"
         }
       }
-      const unbond = await nativeApi.tx.staking.withdrawUnbonded(payload.value);
+      const unbond = await nativeApi.tx.staking.withdrawUnbonded(Math.trunc(payload.value));
 
       if (isFee) {
         const info = await unbond?.paymentInfo(getKeyring());
