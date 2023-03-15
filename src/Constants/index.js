@@ -44,7 +44,7 @@ export const EVM_JSON_RPC_METHODS = {
 
 export const ERROR_MESSAGES = {
     NOT_VALID_JSON_RPC_METHOD: "JSON-RPC method is not valid.",
-    INSUFFICENT_BALANCE: "Insufficent Balance!",
+    INSUFFICENT_BALANCE: "Insufficent Balance.",
     UNDEF_PROPERTY: "Object not has given property"
 }
 

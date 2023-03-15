@@ -42,10 +42,10 @@ export default function useAuth() {
             }
             resolve({
               error: false,
-              data: "Successfully created password for user!",
+              data: "Successfully created password for user.",
             });
-          } else throw new Error("Error while setting up password for user!");
-        } else throw new Error("Error while setting up password for user!");
+          } else throw new Error("Error while setting up password for user.");
+        } else throw new Error("Error while setting up password for user.");
       } catch (error) {
         // console.log("Error : ", error);
         resolve({
@@ -97,13 +97,13 @@ export default function useAuth() {
 
       return {
         error: false,
-        data: "Logout successfully!",
+        data: "Logout successfully.",
       };
     } catch (error) {
       console.log("Error : ", error);
       return {
         error: false,
-        data: "Error while logging out!",
+        data: "Error while logging out.",
       };
     }
   };

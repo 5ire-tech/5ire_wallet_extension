@@ -39,7 +39,7 @@ function ImportWallet() {
   };
 
   const validateAccName = () => {
-    let regex = /^[a-z0-9]+$/i; 
+    let regex = /^[a-z0-9\s]+$/i; 
 
     if (data.accName.trim().length < 2 || data.accName.trim().length >= 16) {
       setWarrning((p) => ({
@@ -86,7 +86,7 @@ function ImportWallet() {
     } else {
       if (!warrning.key && !warrning.acc) {
         const match = accounts.find((e) => {
-          if (e.accountName === data.accName) {
+          if (e.accountName === data.accName.trim()) {
             setWarrning((p) => ({
               ...p,
               acc: "Wallet name already exists.",

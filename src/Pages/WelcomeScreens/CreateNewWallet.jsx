@@ -22,7 +22,7 @@ function CreateNewWallet() {
   };
 
   const validateAccName = () => {
-    let regex = /^[a-z0-9]+$/i;
+    let regex = /^[a-z0-9\s]+$/i;
 
     if (data.trim().length < 2 || data.trim().length >= 19) {
       setWarrning("Please input account name between " + 2 + " and " + 18 + " characters.");
@@ -48,7 +48,7 @@ function CreateNewWallet() {
     else {
       if (!warrning) {
         const match = accounts.find((e) => {
-          if (e.accountName === data) {
+          if (e.accountName === data.trim()) {
             setWarrning("Wallet name already exists. ");
             return true;
           } 

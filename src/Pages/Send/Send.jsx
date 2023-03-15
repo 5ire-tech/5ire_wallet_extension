@@ -195,7 +195,7 @@ function Send() {
           if (feeRes.error) {
             if (feeRes.data) {
               setDisable(true);
-              toast.error("Error while getting fee!");
+              toast.error("Error while getting fee.");
             }
           } else {
             setGassFee(feeRes.data);
@@ -209,7 +209,7 @@ function Send() {
           if (feeRes.error) {
             if (feeRes.data) {
               setDisable(true);
-              toast.error("Error while getting fee!");
+              toast.error("Error while getting fee.");
             }
 
           } else {

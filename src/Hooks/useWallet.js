@@ -119,7 +119,7 @@ export default function UseWallet() {
       dispatch(toggleLoader(false));
       return {
         error: false,
-        data: "success!",
+        data: "success.",
       };
     } catch (error) {
       // console.log("error occured while creating new account ", error);
@@ -127,7 +127,7 @@ export default function UseWallet() {
 
       return {
         error: true,
-        data: "Error Occured!",
+        data: "Error Occured.",
       };
     }
   };
@@ -521,7 +521,7 @@ export default function UseWallet() {
 
                 resolve({
                   error: true,
-                  data: "error while swapping!"
+                  data: "error while swapping."
                 });
               }
             });
@@ -557,7 +557,7 @@ export default function UseWallet() {
                   if (err) {
                     resolve({
                       error: true,
-                      data: "Error while swapping!"
+                      data: "Error while swapping."
                     })
                   } else {
                     resolve({
@@ -728,7 +728,7 @@ export default function UseWallet() {
         };
       } else return {
         error: true,
-        data: "Invalid mnemonics!",
+        data: "Invalid mnemonics.",
       };
     } catch (error) {
       console.log("Error while importing : ", error);

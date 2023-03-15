@@ -82,7 +82,7 @@ function MenuFooter() {
     if (!res.error) {
       navigate("/unlockWallet");
     } else {
-      toast.error("Error while logging out!");
+      toast.error("Error while logging out.");
     }
   };
 
