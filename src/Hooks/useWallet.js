@@ -1138,6 +1138,7 @@ export default function UseWallet() {
         }
       }
       const rotateKey = await nativeApi.rpc.author.rotateKeys();
+      const getKey = `${rotateKey}`
       const bondAmt = (new BigNumber(payload.bondedAmount).multipliedBy(DECIMALS)).toFixed().toString()
 
       const stashId = encodeAddress(decodeAddress(currentAccount?.nativeAddress));
@@ -1145,7 +1146,7 @@ export default function UseWallet() {
 
       const validatorInfo = {
         bondTx: nativeApi.tx.staking.bond(stashId, bondAmt, 'Staked'),
-        sessionTx: nativeApi.tx.session.setKeys(rotateKey, new Uint8Array()),
+        sessionTx: nativeApi.tx.session.setKeys(getKey, new Uint8Array()),
         validateTx: nativeApi.tx.staking.validate({
           blocked: false,
           commission,
