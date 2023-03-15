@@ -901,10 +901,11 @@ export default function UseWallet() {
 
       const bondedAmount = (new BigNumber(stakeAmount).multipliedBy(DECIMALS)).toFixed().toString()
 
+      const bondedAmount1 = (Number(bondedAmount).noExponents()).toString()
       const stashId = encodeAddress(currentAccount?.nativeAddress);
       const nominateTx = nativeApi.tx.staking.nominate(validatorsAccounts);
       const points = await nativeApi.derive.staking?.currentPoints(); //find points
-      const bondOwnTx = await nativeApi.tx.staking.bond(stashId, bondedAmount, "Staked");
+      const bondOwnTx = await nativeApi.tx.staking.bond(stashId, bondedAmount1, "Staked");
       const batchAll = await nativeApi.tx.utility.batchAll([bondOwnTx, nominateTx]);
 
       if (isFee) {
@@ -1044,7 +1045,8 @@ export default function UseWallet() {
 
 
       const amt = (new BigNumber(payload.amount).multipliedBy(DECIMALS)).toFixed().toString()
-      const unbound = await nativeApi.tx.staking.unbond(amt);
+      const amount = (Number(amt).noExponents()).toString()
+      const unbound = await nativeApi.tx.staking.unbond(amount);
       if (isFee) {
         const info = await unbound?.paymentInfo(getKeyring());
         const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
@@ -1077,7 +1079,8 @@ export default function UseWallet() {
       const { amount, address } = payload
       const sendAmounts = (new BigNumber(amount).multipliedBy(DECIMALS)).toFixed().toString()
       // const sendAmt = nativeApi.tx.balances.transferKeepAlive(address, sendAmounts);
-      const sendAmt = nativeApi.tx.balances.transfer(address, sendAmounts);
+      const sendAmountNoExp = (Number(sendAmounts).noExponents()).toString()
+      const sendAmt = nativeApi.tx.balances.transfer(address, sendAmountNoExp);
 
       if (isFee) {
         const info = await sendAmt?.paymentInfo(getKeyring());
@@ -1131,22 +1134,25 @@ export default function UseWallet() {
   const addValidator = async (nativeApi, payload, isFee = false) => {
     try {
 
-      if (!payload.commission || !payload.bondedAmount) {
+      if (!payload?.commission || !payload?.amount || !payload?.rotateKeys) {
         return {
           error: true,
-          data: "Invalid Params: Commission and Bonded Amount are required"
+          data: "Invalid Params: commission, rotateKeys and  amount are required"
         }
       }
-      const rotateKey = await nativeApi.rpc.author.rotateKeys();
-      const getKey = `${rotateKey}`
-      const bondAmt = (new BigNumber(payload.bondedAmount).multipliedBy(DECIMALS)).toFixed().toString()
+      // const rotateKey = await nativeApi.rpc.author.rotateKeys();
+      // const getKey = `${rotateKey}`;
+
+      const bondAmt = (new BigNumber(payload.amount).multipliedBy(DECIMALS)).toFixed().toString()
+
+      const bondAmountNoExp = (Number(bondAmt).noExponents()).toString();
 
       const stashId = encodeAddress(decodeAddress(currentAccount?.nativeAddress));
       const commission = payload.commission === 0 ? 1 : payload.commission * 10 ** 7;
 
       const validatorInfo = {
-        bondTx: nativeApi.tx.staking.bond(stashId, bondAmt, 'Staked'),
-        sessionTx: nativeApi.tx.session.setKeys(getKey, new Uint8Array()),
+        bondTx: nativeApi.tx.staking.bond(stashId, bondAmountNoExp, 'Staked'),
+        sessionTx: nativeApi.tx.session.setKeys(payload?.rotateKeys, new Uint8Array()),
         validateTx: nativeApi.tx.staking.validate({
           blocked: false,
           commission,
@@ -1191,7 +1197,9 @@ export default function UseWallet() {
         }
       }
       const amt = (new BigNumber(payload.amount).multipliedBy(DECIMALS)).toFixed().toString()
-      const bondExtraTx = await nativeApi.tx.staking.bondExtra(amt);
+      const bondAmountNoExp = (Number(amt).noExponents()).toString();
+
+      const bondExtraTx = await nativeApi.tx.staking.bondExtra(bondAmountNoExp);
 
       if (isFee) {
         const info = await bondExtraTx?.paymentInfo(getKeyring());
