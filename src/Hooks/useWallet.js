@@ -206,7 +206,8 @@ export default function UseWallet() {
         } else {
           dispatch(toggleLoader(true));
 
-          let amt = (new BigNumber(data.amount).multipliedBy(DECIMALS)).toString();
+          const amt = (new BigNumber(data.amount).multipliedBy(DECIMALS)).toString();
+
 
           const transactions = {
             from: currentAccount?.evmAddress,
@@ -260,7 +261,7 @@ export default function UseWallet() {
                 dateTime: new Date(),
                 to: data.to ? data.to : "",
                 type: data.to ? (data.amount !== "0x0" ? TX_TYPE.SEND : "Contract Execution") : "Contract Deployement",
-                amount: data.amount !== "0x0" ? data.amount : 0,
+                amount: data.amount !== "0x0" ? isBig ? tempAmount : data.amount : 0,
                 txHash: hash,
                 status: txStatus
               },
