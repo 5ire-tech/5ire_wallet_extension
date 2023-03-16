@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import style from "./style.module.scss";
-import { INPUT } from "../../Constants/index";
+import { INPUT, REGEX_WALLET_NAME } from "../../Constants/index";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setAccountName } from "../../Utility/redux_helper";
@@ -22,14 +22,13 @@ function CreateNewWallet() {
   };
 
   const validateAccName = () => {
-    let regex = /^[a-z0-9\s]+$/i;
 
     if (data.trim().length < 2 || data.trim().length >= 19) {
       setWarrning("Please input account name between " + 2 + " and " + 18 + " characters.");
       setDisable(true);
     }
 
-    else if (!regex.test(data)) {
+    else if (!REGEX_WALLET_NAME.test(data)) {
       setWarrning("Please enter only alphanumeric characters.");
       setDisable(true);
     }
@@ -51,11 +50,11 @@ function CreateNewWallet() {
           if (e.accountName === data.trim()) {
             setWarrning("Wallet name already exists. ");
             return true;
-          } 
+          }
           else return false;
 
         });
-        
+
         if (!match) {
           dispatch(setAccountName(data.trim()));
           navigate("/beforebegin");
@@ -85,7 +84,7 @@ function CreateNewWallet() {
               placeholderBaseColor={true}
               onChange={handleChange}
               keyUp={validateAccName}
-              placeholder={"Enter Wallet Name"}
+              placeholder={"Enter wallet name"}
             />
             <p className="errorText">{warrning}</p>
           </div>
