@@ -10,6 +10,7 @@ import { CONNECTION_NAME, PORT_NAME } from "./Constants";
 import reduxStore from "./Store/store";
 import browser from "webextension-polyfill";
 import { ToastContainer } from "react-toastify";
+import Browser from "webextension-polyfill";
 const isDev = process.env.NODE_ENV === "development";
 
 // eslint-disable-next-line no-extend-native
@@ -35,7 +36,9 @@ Number.prototype.noExponents = function () {
   }
 };
 
-const initApp = () => {
+
+//init the main app when store is synced with local storage
+const initApp = (popupRoute) => {
   const store = new Store({ portName: PORT_NAME });
 
   const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -55,7 +58,7 @@ const initApp = () => {
       <Provider store={store}>
         <MemoryRouter>
           {/* <React.StrictMode> */}
-          <App />
+          <App popupRoute={popupRoute} />
           <ToastContainer
             position="top-right"
             autoClose={3000}
@@ -81,39 +84,51 @@ const initApp = () => {
 };
 
 
+Browser.storage.local.get("popupRoute")
+.then((res) => {
+  
+  if (!isDev) {
+    browser.runtime.connect({ name: CONNECTION_NAME });
+  
+    // Listens for when the store gets initialized
+    browser.runtime.onMessage.addListener((req) => {
+      if (req.type === "STORE_INITIALIZED") {
+        // Initializes the popup logic
+        initApp(res.popupRoute);
+      }
+    });
+  } else {
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(
+      <Provider store={reduxStore}>
+        <MemoryRouter>
+          {/* <React.StrictMode> */}
+          <App popupRoute={res.popupRoute} />
+          <ToastContainer
+            position="top-right"
+            autoClose={4000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="colored"
+          />
+          {/* </React.StrictMode> */}
+        </MemoryRouter>
+      </Provider>
+    );
+    // reportWebVitals();
+  }
 
-if (!isDev) {
-  browser.runtime.connect({ name: CONNECTION_NAME });
-
-  // Listens for when the store gets initialized
-  browser.runtime.onMessage.addListener((req) => {
-    if (req.type === "STORE_INITIALIZED") {
-      // Initializes the popup logic
-      initApp();
-    }
-  });
-} else {
+})
+.catch((err) => {
+  console.log("Error in the initlization of main app: ", err);
   const root = ReactDOM.createRoot(document.getElementById("root"));
   root.render(
-    <Provider store={reduxStore}>
-      <MemoryRouter>
-        {/* <React.StrictMode> */}
-        <App />
-        <ToastContainer
-          position="top-right"
-          autoClose={4000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
-        {/* </React.StrictMode> */}
-      </MemoryRouter>
-    </Provider>
+    <div>Something Bad Happend 😟</div>
   );
   // reportWebVitals();
-}
+})

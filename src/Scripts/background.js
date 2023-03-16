@@ -16,6 +16,7 @@ try {
   let store = null;
 
   Browser.runtime.onConnect.addListener(async (port) => {
+
     if (port.name === CONNECTION_NAME) {
       store = await loadStore();
       isInitialized = true;
@@ -143,6 +144,7 @@ try {
   function txNotification(txData) {
     checkTransactions({...txData.data, statusCheck: txData.statusCheck});
   }
+
 
 } catch (err) {
   console.log("Error: ", err)

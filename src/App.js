@@ -25,6 +25,7 @@ import CreateNewWallet from "./Pages/WelcomeScreens/CreateNewWallet";
 import ApproveTx from "./Pages/RejectNotification/RejectNotification";
 import CreateWalletChain from "./Pages/WelcomeScreens/CreateWalletChain";
 import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
+import Browser from "webextension-polyfill";
 
 function getParameterByName(name, url = window.location.href) {
   name = name.replace(/[[\]]/g, "\\$&");
@@ -35,7 +36,7 @@ function getParameterByName(name, url = window.location.href) {
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
-function App() {
+function App(props) {
 
   const auth = useSelector((state) => state.auth);
   // const { currentNetwork, wsEndPoints } = useSelector((state) => state.auth);
@@ -56,6 +57,12 @@ function App() {
 
 
   useEffect(() => {
+
+    if(props.popupRoute && props.popupRoute?.length > 0) {
+      navigate(`/${props.popupRoute}`);
+      return;
+    }
+
     const route = getParameterByName("route");
 
     if (!auth?.isLogin && auth.accounts.length > 0 && auth.pass) {

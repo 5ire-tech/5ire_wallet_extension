@@ -260,6 +260,7 @@ function NativeTx() {
 
         //false the popup
         Browser.storage.local.set({ popupStatus: false });
+        Browser.storage.local.set({popupRoute: null});
     }
 
     function formatParams(messageInfo) {

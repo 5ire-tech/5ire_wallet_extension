@@ -13,6 +13,7 @@ import {
   toggleSite,
   setNewAccount,
 } from "../../Utility/redux_helper";
+import Browser from "webextension-polyfill";
 
 function FooterStepOne() {
   const { isLogin } = useSelector(state => state.auth);
@@ -142,6 +143,9 @@ export const ApproveLogin = () => {
   const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
+  const popupViews = Browser.extension.getViews({type: "popup"});
+
+  console.log("popupViews: ", popupViews);
 
   function handleClick(isApproved) {
     dispatch(toggleLoader(true));
@@ -188,6 +192,8 @@ export const ApproveLogin = () => {
     }
 
     browser.storage.local.set({ popupStatus: false });
+    browser.storage.local.set({popupRoute: null})
+
     dispatch(toggleLoader(false));
     setTimeout(() => {
       dispatch(setUIdata({}));
@@ -204,11 +210,13 @@ export const ApproveLogin = () => {
           text={"Cancel"}
           maxWidth={"100%"}
           onClick={() => handleClick(false)}
+          isDisable={popupViews.length > 0}
         />
         <ButtonComp
           onClick={() => handleClick(true)}
           text={"Approve"}
           maxWidth={"100%"}
+          isDisable={popupViews.length > 0}
         />
       </div>
     </>
@@ -280,6 +288,7 @@ export const ApproveTx = () => {
     }
 
     browser.storage.local.set({ popupStatus: false });
+    browser.storage.local.set({popupRoute: null})
   }
 
   return (

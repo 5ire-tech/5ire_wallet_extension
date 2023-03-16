@@ -152,6 +152,9 @@ export default class NotificationManager {
     // this.store.dispatch(setTxPopup(true))
     await Browser.storage.local.set({ popupStatus: true });
 
+    //save the currently active popup route
+    await Browser.storage.local.set({popupRoute: route})
+
     // Bring focus to chrome popup
     if (popup) {
       // bring focus to existing chrome popup
@@ -201,6 +204,7 @@ export default class NotificationManager {
       // const dataHere = await Browser.storage.local.get("popupStatus");
       // console.log("here is your data inside local: ", dataHere);
       await Browser.storage.local.set({ popupStatus: false });
+      await Browser.storage.local.set({popupRoute: null});
       // const hereOutput = await Browser.storage.local.get("popupStatus");
 
       this._popupId = undefined;
