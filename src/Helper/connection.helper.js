@@ -70,14 +70,14 @@ export class Connection {
 
             //create qa connection
             if (networkMode.toLowerCase() === NETWORK.UAT.toLowerCase() || bothInit) {
-                            if (!Connection.nativeApiUAT) Connection.nativeApiUAT = await this.createNativeConnection(networkUAT)
-                            if (!Connection.evmApiUAT) Connection.evmApiUAT = this.createEvmConnection(networkUAT)
-            
-                            //set the execution true
-                            // Connection.isExecuting.value = true;
-                            Connection.endPointQA = networkQA;
-                        }
-            
+                if (!Connection.nativeApiUAT) Connection.nativeApiUAT = await this.createNativeConnection(networkUAT)
+                if (!Connection.evmApiUAT) Connection.evmApiUAT = this.createEvmConnection(networkUAT)
+
+                //set the execution true
+                // Connection.isExecuting.value = true;
+                Connection.endPointQA = networkUAT;
+            }
+
 
 
             if (networkMode.toLowerCase() === NETWORK.QA_NETWORK.toLowerCase()) {
