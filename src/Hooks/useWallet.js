@@ -1111,8 +1111,12 @@ export default function UseWallet() {
           data: "Invalid Params: Value is required"
         }
       }
-      const unbond = await nativeApi.tx.staking.withdrawUnbonded(Math.trunc(payload.value));
+      let amount = +payload?.value;
 
+      if (amount > Number.MAX_SAFE_INTEGER) {
+        amount = Number.MAX_SAFE_INTEGER;
+      }
+      const unbond = await nativeApi.tx.staking.withdrawUnbonded(amount);
       if (isFee) {
         const info = await unbond?.paymentInfo(getKeyring());
         const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
