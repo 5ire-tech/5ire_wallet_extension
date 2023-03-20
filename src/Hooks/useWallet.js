@@ -196,8 +196,23 @@ export default function UseWallet() {
 
   const evmTransfer = async (evmApi, data, isBig = false) => {
     return (new Promise(async (resolve, reject) => {
+
+      const tempAmount = isBig ? (new BigNumber(data.amount).dividedBy(DECIMALS)).toString() : data.amount;
+      let dataToDispatch = {
+        data: {
+          isEvm: true,
+          txHash: "",
+          status: "",
+          dateTime: new Date(),
+          to: data.to ? data.to : "",
+          chain: currentNetwork.toLowerCase(),
+          amount: data.amount !== "0x0" ? isBig ? tempAmount : data.amount : 0,
+          type: data.to ? (data.amount !== "0x0" ? TX_TYPE.SEND : "Contract Execution") : "Contract Deployement",
+        },
+        index: getAccId(currentAccount.id),
+      };
+
       try {
-        const tempAmount = isBig ? (new BigNumber(data.amount).dividedBy(DECIMALS)).toString() : data.amount;
         if ((Number(tempAmount) > (Number(balance.evmBalance)) && data.amount !== '0x0') || Number(balance.evmBalance) <= 0) {
           resolve({
             error: true,
@@ -254,21 +269,8 @@ export default function UseWallet() {
               txStatus = Boolean(Number(txRecipt.result.status)) ? STATUS.SUCCESS : STATUS.PENDING
             }
 
-            let dataToDispatch = {
-              data: {
-                chain: currentNetwork.toLowerCase(),
-                isEvm: true,
-                dateTime: new Date(),
-                to: data.to ? data.to : "",
-                type: data.to ? (data.amount !== "0x0" ? TX_TYPE.SEND : "Contract Execution") : "Contract Deployement",
-                amount: data.amount !== "0x0" ? isBig ? tempAmount : data.amount : 0,
-                txHash: hash,
-                status: txStatus
-              },
-              index: getAccId(currentAccount.id),
-            };
-
-
+            dataToDispatch.data.txHash = hash;
+            dataToDispatch.data.status = txStatus;
 
             dispatch(setTxHistory(dataToDispatch));
             dispatch(toggleLoader(false));
@@ -286,6 +288,9 @@ export default function UseWallet() {
         }
       } catch (error) {
         console.log("Error occured while evm transfer: ", error);
+        dataToDispatch.data.txHash = "";
+        dataToDispatch.data.status = STATUS.FAILED;
+        dispatch(setTxHistory(dataToDispatch));
         dispatch(toggleLoader(false));
         resolve({
           error: true,
@@ -293,9 +298,7 @@ export default function UseWallet() {
         });
       }
     }))
-
   };
-
 
   const nativeTransfer = async (nativeApi, data, isHttp = true) => {
 

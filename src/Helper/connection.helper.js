@@ -68,7 +68,7 @@ export class Connection {
                 Connection.endPointQA = networkQA;
             }
 
-            //create qa connection
+            //create UAT connection
             if (networkMode.toLowerCase() === NETWORK.UAT.toLowerCase() || bothInit) {
                 if (!Connection.nativeApiUAT) Connection.nativeApiUAT = await this.createNativeConnection(networkUAT)
                 if (!Connection.evmApiUAT) Connection.evmApiUAT = this.createEvmConnection(networkUAT)

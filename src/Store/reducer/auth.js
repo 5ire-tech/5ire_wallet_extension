@@ -49,7 +49,7 @@ export const userState = {
   },
 
   // currentNetwork: "Testnet",
-  currentNetwork: "QA",
+  currentNetwork: "UAT",
 
   accountName: "",
 

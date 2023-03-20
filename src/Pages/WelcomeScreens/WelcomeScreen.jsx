@@ -20,7 +20,7 @@ function WelcomeScreen() {
         </div>
         <div className={style.cardWhite__linkOuter}>
           <Link to="/createNewWallet" className="bluegradient">
-            Create a New Wallet
+            Create A New Wallet
           </Link>
           <Link className="grayBtn" to="/importWallet">
             Import Wallet
