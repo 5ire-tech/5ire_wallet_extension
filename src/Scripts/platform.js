@@ -1,5 +1,6 @@
 import Browser from "webextension-polyfill";
 import { setUIdata } from "../Utility/redux_helper";
+import {isNullorUndef} from "../Utility/utility";
 
 export class ExtensionPlatform {
   //
@@ -59,7 +60,7 @@ export class ExtensionPlatform {
       // On Firefox, the build type and build version are in the third part of the version.
       const [major, minor, patchAndPrerelease] = versionParts;
       const matches = patchAndPrerelease.match(/^(\d+)([A-Za-z]+)(\d)+$/u);
-      if (matches === null) {
+      if (isNullorUndef(matches)) {
         throw new Error(`Version contains invalid prerelease: ${version}`);
       }
       const [, patch, buildType, buildVersion] = matches;

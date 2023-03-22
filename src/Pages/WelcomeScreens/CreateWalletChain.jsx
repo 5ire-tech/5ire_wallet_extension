@@ -1,16 +1,18 @@
 import { toast } from "react-toastify";
 import style from "./style.module.scss";
-import { useSelector } from "react-redux";
+import { AuthContext } from "../../Store";
 import useWallet from "../../Hooks/useWallet";
 import "react-toastify/dist/ReactToastify.css";
+import { isNullorUndef } from "../../Utility/utility";
 import CopyIcon from "../../Assets/CopyIcon.svg";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { TEMP1M, TEMP2P, NATIVE, EVM, COPIED } from "../../Constants/index.js";
 
 function CreateWalletChain() {
 
   const { walletSignUp, authData } = useWallet();
-  const { isLogin, newAccount } = useSelector((state) => state.auth);
+  const { state } = useContext(AuthContext);
+  const { newAccount } = state;
 
   const [data, setData] = useState({
     temp1m: "",
@@ -21,7 +23,7 @@ function CreateWalletChain() {
 
   useEffect(() => {
     let res;
-    if (((newAccount === null || !newAccount) && !isLogin) || isLogin)
+    if (((isNullorUndef(newAccount) || !newAccount) && !state.isLogin) || state.isLogin)
       res = walletSignUp();
 
     if (res?.error) toast.error(res.data);
@@ -50,7 +52,7 @@ function CreateWalletChain() {
       let string = `Mnemonic: ${data?.temp1m}\nEVM Private key: ${data?.temp2p}\nEVM Address: ${data?.evmAddress}\nNative Address: ${data?.nativeAddress}`;
       navigator.clipboard.writeText(string);
     }
-    
+
     toast.success(COPIED);
   };
 

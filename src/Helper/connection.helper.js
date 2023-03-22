@@ -90,13 +90,13 @@ export class Connection {
         let connection;
 
         //connection with native (Polkadot)
-        if (networkEndpoint.startsWith("ws")) {
+        if (networkEndpoint?.startsWith("ws")) {
             connection = await ApiPromise.create({
                 provider: new WsProvider(networkEndpoint),
                 noInitWarn: true
             });
         }
-        else if (networkEndpoint.startsWith("http")) {
+        else if (networkEndpoint?.startsWith("http")) {
             connection = await ApiPromise.create({
                 provider: new HttpProvider(networkEndpoint),
                 noInitWarn: true
@@ -129,11 +129,11 @@ export class Connection {
             }
         };
 
-        if (networkEndpoint.startsWith("http")) {
+        if (networkEndpoint?.startsWith("http")) {
             //Http connection Web3 (evm)
             web3Provider = new Web3.providers.HttpProvider(networkEndpoint, options);
 
-        } else if (networkEndpoint.startsWith("ws")) {
+        } else if (networkEndpoint?.startsWith("ws")) {
             //WebSocket connection Web3 (evm)
             web3Provider = new Web3.providers.WebsocketProvider(networkEndpoint, options);
 

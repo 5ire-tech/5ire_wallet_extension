@@ -1,7 +1,7 @@
 import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
 import { useState, useEffect} from "react";
-import {INPUT} from "../../Constants/index";
+import {INPUT, LABELS} from "../../Constants/index";
 import { useNavigate } from "react-router-dom";
 import ButtonComp from "../ButtonComp/ButtonComp";
 import InputFieldSimple from "../InputField/InputFieldSimple.jsx";
@@ -38,7 +38,7 @@ function EnterPassword() {
 
   const handleClick = async (e) => {
   
-    if ((e.key === "Enter") || (e.key === undefined)) {
+    if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
 
       let res = await verifyPass(data);
 
@@ -74,7 +74,7 @@ function EnterPassword() {
               keyUp={validateInput}
               coloredBg={true}
               type="password"
-              name="pass"
+              name={LABELS.PASS}
             />
             <p className={style.errorText}>{errMsg ? errMsg : ""}</p>
             <div>

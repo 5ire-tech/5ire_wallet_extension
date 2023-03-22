@@ -1,25 +1,35 @@
 import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
-import { useSelector } from "react-redux";
+import { AuthContext } from "../../Store";
 import useWallet from "../../Hooks/useWallet";
 import { shortner } from "../../Helper/helper";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import ComplSwap from "../../Assets/DarkLogo.svg";
-import React, { useState, useEffect } from "react";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
+import React, { useState, useEffect, useContext} from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import { connectionObj, Connection } from "../../Helper/connection.helper"
-import { NATIVE, EVM, ERROR_MESSAGES, INPUT, COPIED } from "../../Constants/index";
 import {
   InputField,
   InputFieldOnly,
 } from "../../Components/InputField/InputFieldSimple";
+import {
+  EVM,
+  INPUT,
+  NATIVE,
+  COPIED,
+  ERROR_MESSAGES,
+  HTTP_END_POINTS,
+  LABELS
+} from "../../Constants/index";
 
 
 function Send() {
+
+  const {state} = useContext(AuthContext);
   const [txHash, setTxHash] = useState("");
   const [gassFee, setGassFee] = useState("");
   const [sendError, setSendError] = useState("");
@@ -32,17 +42,17 @@ function Send() {
   const {
     evmTransfer,
     nativeTransfer,
-    getBalance,
     retriveEvmFee,
     retriveNativeFee,
     validateAddress
   } = useWallet();
+
   const {
     balance,
     currentAccount,
-    httpEndPoints,
     currentNetwork
-  } = useSelector(state => state.auth);
+  } = state;
+
 
 
   useEffect(() => {
@@ -106,10 +116,10 @@ function Send() {
       setErr((p) => ({ ...p, amount: INPUT.REQUIRED }));
 
     else if (isNaN(data.amount))
-      setErr((p) => ({ ...p, amount: "Please enter amount correctly." }));
+      setErr((p) => ({ ...p, amount: ERROR_MESSAGES.ENTER_AMOUNT_CORRECTLY }));
 
     else if (Number(data.amount) <= 0)
-      setErr((p) => ({ ...p, amount: "Amount can't be 0 or less then 0" }));
+      setErr((p) => ({ ...p, amount: ERROR_MESSAGES.AMOUNT_CANT_BE_0 }));
 
     else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
@@ -139,11 +149,11 @@ function Send() {
       if (!data.to)
         setErr((p) => ({ ...p, to: INPUT.REQUIRED }));
 
-      else if (!data.to.startsWith("0x"))
-        setErr((p) => ({ ...p, to: "Incorrect address." }));
+      else if (!data.to?.startsWith("0x"))
+        setErr((p) => ({ ...p, to: ERROR_MESSAGES.INCORRECT_ADDRESS }));
 
       else if (data.to === currentAccount.evmAddress)
-        setErr((p) => ({ ...p, to: "Recipient address should not your own address."}));
+        setErr((p) => ({ ...p, to: "Recipient address should not your own address." }));
 
       else {
         let res = await validateAddress(data.to);
@@ -161,11 +171,11 @@ function Send() {
       if (!data.to)
         setErr((p) => ({ ...p, to: INPUT.REQUIRED }));
 
-      else if (!data.to.startsWith("5"))
-        setErr((p) => ({ ...p, to: "Incorrect address." }));
+      else if (!data.to?.startsWith("5"))
+        setErr((p) => ({ ...p, to: ERROR_MESSAGES.INCORRECT_ADDRESS }));
 
       else if (data.to === currentAccount.nativeAddress)
-        setErr((p) => ({ ...p, to: "Recipient address should not your own address."}));
+        setErr((p) => ({ ...p, to: "Recipient address should not your own address." }));
 
       else {
         let res = await validateAddress(data.to);
@@ -182,7 +192,7 @@ function Send() {
 
   const getFee = async () => {
 
-    connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
+    connectionObj.initializeApi(HTTP_END_POINTS.TESTNET, HTTP_END_POINTS.QA, currentNetwork, false).then(async (apiRes) => {
 
       if (!apiRes?.value) {
 
@@ -195,7 +205,7 @@ function Send() {
           if (feeRes.error) {
             if (feeRes.data) {
               setDisable(true);
-              toast.error("Error while getting fee!");
+              toast.error("Error while getting fee.");
             }
           } else {
             setGassFee(feeRes.data);
@@ -209,7 +219,7 @@ function Send() {
           if (feeRes.error) {
             if (feeRes.data) {
               setDisable(true);
-              toast.error("Error while getting fee!");
+              toast.error("Error while getting fee.");
             }
 
           } else {
@@ -255,7 +265,7 @@ function Send() {
 
 
   const handleEnter = (e) => {
-    if ((e.key === "Enter")) {
+    if ((e.key === LABELS.ENTER)) {
       if (!disableBtn) {
         handleApprove();
       }
@@ -266,7 +276,7 @@ function Send() {
   const handleApprove = async () => {
     try {
 
-      connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
+      connectionObj.initializeApi(HTTP_END_POINTS.TESTNET,HTTP_END_POINTS.QA, currentNetwork, false).then(async (apiRes) => {
 
         if (!apiRes?.value) {
           Connection.isExecuting.value = false;

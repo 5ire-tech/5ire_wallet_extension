@@ -1,9 +1,10 @@
 import { Drawer } from "antd";
 import { toast } from "react-toastify";
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
+import { AuthContext } from "../../Store";
 import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
-import { TX_TYPE } from "../../Constants/index";
+import { LABELS, TX_TYPE } from "../../Constants/index";
 import Logout from "../../Assets/PNG/logout.png";
 import Import from "../../Assets/PNG/import.png";
 import Wallet from "../../Assets/WalletIcon.svg";
@@ -11,9 +12,7 @@ import Setting from "../../Assets/PNG/setting.png";
 import Sendhistry from "../../Assets/sendhistry.svg";
 import HistoryIcon from "../../Assets/PNG/histry.png";
 import Myaccount from "../../Assets/PNG/myaccount.png";
-import { useSelector, useDispatch } from "react-redux";
 import BackArrow from "../../Assets/PNG/arrowright.png";
-// import Walletlogo from "../../Assets/PNG/walletlogo.png";
 import { shortner, formatDate } from "../../Helper/helper";
 import SocialAccount from "../SocialAccount/SocialAccount";
 import ModalCloseIcon from "../../Assets/ModalCloseIcon.svg";
@@ -22,11 +21,6 @@ import Createaccount from "../../Assets/PNG/createaccount.png";
 import AccountSetting from "../AccountSetting/AccountSetting.jsx";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import TransectionHistry from "../TransectionHistry/TransectionHistry";
-import { setCurrentAcc } from "../../Utility/redux_helper";
-// import { Moment } from "moment";
-// import DefiIcon from "../../Assets/DefiIcon.svg";
-// import SettignIcon from "../../Assets/SettignIcon.svg";
-// import ButtonComp from "../ButtonComp/ButtonComp";
 import FooterStepOne, {
   ApproveLogin,
   FooterStepTwo,
@@ -39,18 +33,20 @@ import { getCurrentTabUId, getCurrentTabUrl } from "../../Scripts/utils";
 function MenuFooter() {
   const { logout } = useAuth();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const { state, updateState} = useContext(AuthContext);
   const getLocation = useLocation();
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [history, setHistory] = useState([]);
-  // const [accData, setAccData] = useState([]);
+  const [accData, setAccData] = useState([]);
   const path = getLocation.pathname.replace("/", "");
-  const { accounts,
-    currentAccount,
-    currentNetwork
-  } = useSelector((state) => state.auth);
+
+  const { currentAccount, allAccounts, currentNetwork} = state;
+
+  useEffect(() => {
+    setAccData(allAccounts ? allAccounts[currentAccount.index] : {});
+  }, [currentAccount.accountName, allAccounts.length]);
 
 
   const onClose1 = () => {
@@ -88,8 +84,9 @@ function MenuFooter() {
 
   const onSelectAcc = (accId) => {
     // dispatch(resetBalance());
-    let acc = accounts.find(acc => acc.id === accId);
-    dispatch(setCurrentAcc(acc));
+    let acc = allAccounts.find(acc => acc.id === accId);
+    // console.log("Account Now : ", acc);;
+    updateState(LABELS.CURRENT_ACCOUNT, { accountName: acc.accountName, index: Number(acc.id) - 1 })
 
     //when new keypair created or imported the old key key emit the account change event
     getCurrentTabUId((id) => {
@@ -105,8 +102,11 @@ function MenuFooter() {
 
   const handleHistoryOpen = () => {
     setOpen1(true);
-    let filterData = currentAccount.txHistory.filter((his) => {
-      return his.chain === currentNetwork.toLowerCase();
+
+    console.log("accData : ",accData);
+    
+    let filterData = accData.txHistory.filter((his) => {
+      return his.chain?.toLoweCase() === currentNetwork.toLowerCase();
     });
     let newArr = [];
     for (let i = filterData.length - 1; i >= 0; i--) {
@@ -206,11 +206,11 @@ function MenuFooter() {
         open={open}
         closeIcon={<img src={ModalCloseIcon} alt="ModalCloseIcon" draggable={false} />}
       >
-        {accounts?.map((data, index) => (
+        {allAccounts?.map((data, index) => (
           <ManageCustom
             img={Sendhistry}
             data={data}
-            active={data?.id === currentAccount?.id ? true : false}
+            active={data?.id === accData?.id ? true : false}
             edited={false}
             checkValue={index}
             onSelectAcc={onSelectAcc}

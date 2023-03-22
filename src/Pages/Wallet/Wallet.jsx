@@ -1,10 +1,10 @@
-import React, { useState } from "react";
 import Send from "../Send/Send";
 import Swap from "../Swap/Swap.jsx";
+import React, { useState } from "react";
 import style from "./style.module.scss";
 
 function Wallet() {
-  
+
   const [activeTab, setActiveTab] = useState("send");
   const activeSend = () => {
     setActiveTab("send");
@@ -20,20 +20,18 @@ function Wallet() {
             <button
               onClick={activeSend}
               className={`${style.wallet__sendSwapbtn__buttons} 
-              ${
-                activeTab === "send" &&
+              ${activeTab === "send" &&
                 style.wallet__sendSwapbtn__buttons__active
-              }
+                }
             `}
             >
               Transfer
             </button>
             <button
               onClick={activeSwap}
-              className={`${style.wallet__sendSwapbtn__buttons}  ${
-                activeTab === "swap" &&
+              className={`${style.wallet__sendSwapbtn__buttons}  ${activeTab === "swap" &&
                 style.wallet__sendSwapbtn__buttons__active
-              }`}
+                }`}
             >
               Swap
             </button>

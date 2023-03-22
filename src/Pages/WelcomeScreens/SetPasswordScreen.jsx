@@ -2,26 +2,27 @@ import style from "./style.module.scss";
 import { toast } from "react-toastify";
 import useAuth from "../../Hooks/useAuth";
 import { useParams } from "react-router-dom";
-import { INPUT } from "../../Constants/index";
+import { INPUT, LABELS } from "../../Constants/index";
 import { useNavigate } from "react-router-dom";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState, useContext} from "react";
+// import { useDispatch, useSelector } from "react-redux";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import { toggleLoader, setLogin } from "../../Utility/redux_helper";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
 import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
+import { AuthContext } from "../../Store";
 
 
 
 export default function SetPasswordScreen() {
-  const navigate = useNavigate();
   const params = useParams();
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { setUserPass } = useAuth();
+  const { state,updateState } = useContext(AuthContext);
   const [error, setError] = useState("");
   const [show, setShow] = useState(false);
   const [confirmError, setconfirmError] = useState("");
-  const { isLogin } = useSelector((state) => state.auth);
+  // const dispatch = useDispatch();
+  // const { isLogin } = useSelector((state) => state.auth);
   const [pass, setPass] = useState({ pass: "", confirmPass: "" });
 
 
@@ -79,7 +80,7 @@ export default function SetPasswordScreen() {
 
   const handleSubmit = async (e) => {
 
-    if ((e.key === "Enter") || (e.key === undefined)) {
+    if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
 
       if (pass.pass.length === 0 && pass.confirmPass.length === 0) {
         setError(INPUT.REQUIRED);
@@ -93,16 +94,17 @@ export default function SetPasswordScreen() {
       }
       else {
         if (!error && !confirmError) {
-          dispatch(toggleLoader(true));
+          // dispatch(toggleLoader(true));
           let res = await setUserPass(pass.pass);
           if (res.error) {
-            dispatch(toggleLoader(false));
+            // dispatch(toggleLoader(false));
             toast.error(res.data);
           } else {
-            dispatch(toggleLoader(false));
+            // dispatch(toggleLoader(false));
             setShow(true);
             setTimeout(() => {
-              if (isLogin !== true) dispatch(setLogin(true));
+              if (state.isLogin !== true) updateState(LABELS.ISLOGIN, true);
+              // dispatch(setLogin(true));
               setShow(false);
               setTimeout(() => {
                 navigate("/wallet");
@@ -137,7 +139,7 @@ export default function SetPasswordScreen() {
             <InputFieldSimple
               // type="password"
               value={pass.pass}
-              name="pass"
+              name={LABELS.PASS}
               onChange={handleChange}
               placeholder={"Enter Password"}
               placeholderBaseColor={true}

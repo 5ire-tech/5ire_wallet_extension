@@ -1,18 +1,23 @@
 import { Layout } from "antd";
-import React, { useEffect } from "react";
-import style from "../../Layout/style.module.scss";
-import footerstyle from "../MenuFooter/style.module.scss"
-import pageStyle from "../../Pages/RejectNotification/style.module.scss"
-import { setTxHistory, setUIdata, toggleLoader } from "../../Utility/redux_helper";
-import { useDispatch, useSelector } from "react-redux";
-import Browser from "webextension-polyfill";
-import ButtonComp from "../ButtonComp/ButtonComp";
-import UseWallet from "../../Hooks/useWallet";
 import { useState } from "react";
-import { connectionObj, Connection } from "../../Helper/connection.helper";
-import { STATUS, TX_TYPE } from "../../Constants";
 import { toast } from "react-toastify";
+import React, { useEffect } from "react";
+import Browser from "webextension-polyfill";
+import UseWallet from "../../Hooks/useWallet";
+import ButtonComp from "../ButtonComp/ButtonComp";
+import style from "../../Layout/style.module.scss";
+import { useDispatch, useSelector } from "react-redux";
 import { shortLongAddress } from "../../Utility/utility";
+import footerstyle from "../MenuFooter/style.module.scss";
+import pageStyle from "../../Pages/RejectNotification/style.module.scss";
+import { connectionObj, Connection } from "../../Helper/connection.helper";
+import { setTxHistory, setUIdata, toggleLoader } from "../../Utility/redux_helper";
+import {
+    STATUS,
+    TX_TYPE,
+    HTTP_END_POINTS,
+    WS_END_POINTS
+} from "../../Constants";
 
 
 const extraFee = 0.02;
@@ -26,13 +31,13 @@ function NativeTx() {
     const [fomattedMethod, setFormattedMethod] = useState('')
 
     useEffect(() => {
-        getFee()
+        getFee();
     }, [])
 
     function getFee() {
         dispatch(toggleLoader(true));
 
-        connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.currentNetwork, false).then(async (apiRes) => {
+        connectionObj.initializeApi(WS_END_POINTS.TESTNET, WS_END_POINTS.QA, auth.currentNetwork, false).then(async (apiRes) => {
             if (!apiRes?.value) {
                 Connection.isExecuting.value = false;
             }
@@ -131,7 +136,6 @@ function NativeTx() {
     }
 
 
-
     function handleClick(isApproved) {
         if (isApproved) {
             if (+auth?.balance?.nativeBalance < +fee) {
@@ -147,7 +151,7 @@ function NativeTx() {
                 }
             }
             dispatch(toggleLoader(true));
-            connectionObj.initializeApi(auth.httpEndPoints.testnet, auth.httpEndPoints.qa, auth.currentNetwork, false).then(async (apiRes) => {
+            connectionObj.initializeApi(HTTP_END_POINTS.TESTNET, HTTP_END_POINTS.QA, auth.currentNetwork, false).then(async (apiRes) => {
                 if (!apiRes?.value) {
                     Connection.isExecuting.value = false;
                 }

@@ -1,20 +1,20 @@
-import React, { useState } from "react";
 import style from "./style.module.scss";
-import { INPUT,REGEX_WALLET_NAME} from "../../Constants/index";
+import { AuthContext } from "../../Store";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { setAccountName } from "../../Utility/redux_helper";
+import React, { useState, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
+import { INPUT, LABELS, REGEX_WALLET_NAME, ERROR_MESSAGES} from "../../Constants/index";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 
 function CreateNewWallet() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [data, setData] = useState("");
+  const [data, setData, isLogin] = useState("");
   const [warrning, setWarrning] = useState("");
   const [isDisable, setDisable] = useState(true);
-  const { isLogin, accounts } = useSelector((state) => state.auth);
+  const { state, updateState } = useContext(AuthContext);
+  const{allAccounts} = state;
+
 
   const handleChange = (e) => {
     setData(e.target.value);
@@ -24,12 +24,12 @@ function CreateNewWallet() {
   const validateAccName = () => {
 
     if (data.trim().length < 2 || data.trim().length >= 19) {
-      setWarrning("Please input account name between " + 2 + " and " + 18 + " characters.");
+      setWarrning(ERROR_MESSAGES.INPUT_BETWEEN_2_TO_18);
       setDisable(true);
     }
 
     else if (!REGEX_WALLET_NAME.test(data)) {
-      setWarrning("Please enter only alphanumeric characters.");
+      setWarrning(ERROR_MESSAGES.ALPHANUMERIC_CHARACTERS);
       setDisable(true);
     }
 
@@ -46,17 +46,12 @@ function CreateNewWallet() {
 
     else {
       if (!warrning) {
-        const match = accounts.find((e) => {
-          if (e.accountName === data.trim()) {
-            setWarrning("Wallet name already exists. ");
-            return true;
-          } 
-          else return false;
+        const match = allAccounts.find((e) => e.accountName === data.trim());
+        if (match) {
+          setWarrning(ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS);
+        } else {
 
-        });
-        
-        if (!match) {
-          dispatch(setAccountName(data.trim()));
+          updateState(LABELS.ACCOUNT_NAME, data.trim(), false);
           navigate("/beforebegin");
         }
       }
@@ -64,6 +59,7 @@ function CreateNewWallet() {
   };
 
   const handleCancle = () => {
+    updateState(LABELS.ACCOUNT_NAME, null, false);
     if (isLogin) navigate("/wallet");
     else navigate("/");
   };
@@ -80,7 +76,7 @@ function CreateNewWallet() {
             <InputFieldOnly
               value={data}
               coloredBg={true}
-              name="accountName"
+              name={LABELS.ACCOUNT_NAME}
               placeholderBaseColor={true}
               onChange={handleChange}
               keyUp={validateAccName}
