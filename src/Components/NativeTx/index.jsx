@@ -227,13 +227,15 @@ function NativeTx() {
                             type: TX_TYPE?.SEND,
                             amount: 0,
                             txHash: res?.data?.txHash,
-                            status: STATUS.SUCCESS
+                            status: STATUS.PENDING
                         },
                         index: auth?.accounts.findIndex((obj) => obj.id === auth?.currentAccount?.id),
                     };
 
 
                     dispatch(setTxHistory(dataToDispatch));
+                    Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: false, status: STATUS.PENDING } });
+
                     Browser.tabs.sendMessage(auth.uiData.tabId, {
                         id: auth.uiData.id,
                         response: res.data,
