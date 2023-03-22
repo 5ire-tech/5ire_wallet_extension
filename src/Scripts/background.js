@@ -3,7 +3,8 @@ import {
   Controller,
   initScript,
   loadStore,
-  checkTransactions
+  checkTransactions,
+  nativeFeeCalculator
 } from "./controller";
 import { setNewAccount } from "../Utility/redux_helper";
 import Browser from "webextension-polyfill";
@@ -24,6 +25,7 @@ try {
       //set the current newAccount state to null
       const currState = await store.getState();
       currState.auth.newAccount && store.dispatch(setNewAccount(null));
+
 
       port.onDisconnect.addListener(function () {
         //handle popup close actions
@@ -69,7 +71,8 @@ try {
   Browser.runtime.onMessage.addListener(async function (message, sender, cb) {
 
     //check if the current event is transactions
-    if (message?.type === "tx") txNotification(message);
+    if (message?.type === "tx") {txNotification(message); return;}
+    else if (message?.type === "gas" || message?.type === "native_tx") {await gasEstimationNative(message?.isFee); return;}
 
 
     if (!isInitialized) {
@@ -146,6 +149,16 @@ try {
   }
 
 
+  //estimate the native gas fee
+  async function gasEstimationNative(args) {
+   try {
+    await nativeFeeCalculator(args);
+   } catch (err) {
+    console.log("Error while native gas estimation: ", err);
+   }
+  }
+
+
 } catch (err) {
-  console.log("Error: ", err)
+  console.log("Error in Background: ", err)
 }

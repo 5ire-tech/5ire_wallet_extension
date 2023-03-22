@@ -1,5 +1,5 @@
 import { Layout } from "antd";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import style from "../../Layout/style.module.scss";
 import footerstyle from "../MenuFooter/style.module.scss"
 import pageStyle from "../../Pages/RejectNotification/style.module.scss"
@@ -13,126 +13,106 @@ import { connectionObj, Connection } from "../../Helper/connection.helper";
 import { STATUS, TX_TYPE } from "../../Constants";
 import { toast } from "react-toastify";
 import { shortLongAddress } from "../../Utility/utility";
-
+import {closeBoth} from "../../Utility/window.helper"
 
 const extraFee = 0.02;
+
+
 
 function NativeTx() {
     const { Content } = Layout;
     const auth = useSelector((state) => state.auth);
     const dispatch = useDispatch();
-    const { addNominator, reNominate, nominatorValidatorPayout, stopValidatorNominator, unbondNominatorValidator, withdrawNominatorValidatorData, withdrawNominatorUnbonded, addValidator, bondMoreFunds, restartValidator, getBalance } = UseWallet();
     const [fee, setFee] = useState(0);
     const [fomattedMethod, setFormattedMethod] = useState('')
 
     useEffect(() => {
-        getFee()
+        calculateFee();
     }, [])
 
-    function getFee() {
-        dispatch(toggleLoader(true));
 
-        connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.currentNetwork, false).then(async (apiRes) => {
-            if (!apiRes?.value) {
-                Connection.isExecuting.value = false;
-            }
-            await getBalance(apiRes.evmApi, apiRes.nativeApi, true)
+    Browser.runtime.onMessage.addListener(async (res) => {
+        if (res.type === "EST_GAS") {
+          console.log("here the data from background EST_GAS: ", res);
+          if(res?.data?.feeData?.error) {
+            console.log("error happend while native transaction: ", res?.data?.feeData?.error);
+            return;
+          }
+          setFee(res?.data?.feeData?.data)
+          setFormattedMethod(res?.data?.methodName)
+        } else if(res.type === "NATIVE_TX") {
 
-            let feeData, methodName = '';
-            switch (auth?.uiData?.method) {
-                case "native_add_nominator":
-                    feeData = await addNominator(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Add Nominator";
-                    break;
-                case "native_renominate":
-                    feeData = await reNominate(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Re-Nominate";
-                    break;
-                case "native_nominator_payout":
-                    feeData = await nominatorValidatorPayout(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Nominator Payout";
-                    break;
-                case "native_validator_payout":
-                    feeData = await nominatorValidatorPayout(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Validator Payout";
-                    break;
-                case "native_stop_validator":
-                    feeData = await stopValidatorNominator(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Stop Validator";
-                    break;
+            console.log("here is the tx data: ", res);
 
-                case "native_stop_nominator":
-                    feeData = await stopValidatorNominator(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Stop Nominator";
-                    break;
-                case "native_unbond_validator":
-                    feeData = await unbondNominatorValidator(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Unbond Validator";
-                    break;
+            if (res.data.feeData.error) {
 
-                case "native_unbond_nominator":
-                    feeData = await unbondNominatorValidator(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Unbond Nominator";
-                    break;
-                case "native_withdraw_nominator":
-                    feeData = await withdrawNominatorValidatorData(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Send Funds";
-                    break;
+                console.log("error is here: ", res);
 
-                case "native_withdraw_validator":
-                    feeData = await withdrawNominatorValidatorData(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Send Funds";
-                    break;
-                case "native_withdraw_nominator_unbonded":
-                    feeData = await withdrawNominatorUnbonded(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Withdraw Nominator Unbonded";
-                    break;
-
-                case "native_add_validator":
-                    feeData = await addValidator(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Add Validator";
-                    break;
-
-                case "native_validator_bondmore":
-                    feeData = await bondMoreFunds(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Bond More Funds";
-                    break;
-                case "native_nominator_bondmore":
-                    feeData = await bondMoreFunds(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Bond More Funds";
-                    break;
-                case "native_restart_validator":
-                    feeData = await restartValidator(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Restart Validator";
-                    break;
-                default:
-
-            }
-
-            if (!feeData?.error && methodName) {
-                setFee(+feeData.data + extraFee);
-                setFormattedMethod(methodName)
-            } else {
-                Browser.tabs.sendMessage(auth.uiData.tabId, {
+                await Browser.tabs.sendMessage(auth.uiData.tabId, {
                     id: auth.uiData.id,
                     response: null,
-                    error: feeData.data,
+                    error: res?.data?.feeData?.data,
+                });
+            } else {
+
+                //dispatch the native transactions
+                await Browser.tabs.sendMessage(auth.uiData.tabId, {
+                    id: auth.uiData.id,
+                    response: res?.data?.feeData?.data,
+                    error: null,
                 });
 
-                setTimeout(() => {
-                    dispatch(setUIdata({}));
-                    window.close();
-                }, 300);
+                closeBoth();
+
+                let dataToDispatch = {
+                    data: {
+                        chain: auth?.currentNetwork.toLowerCase(),
+                        isEvm: false,
+                        dateTime: new Date(),
+                        to: "",
+                        type: TX_TYPE?.SEND,
+                        amount: 0,
+                        txHash: res.data.feeData?.data?.txHash,
+                        status: STATUS.SUCCESS
+                    },
+                    index: auth?.accounts.findIndex((obj) => obj.id === auth?.currentAccount?.id),
+                };
+                dispatch(setTxHistory(dataToDispatch));
+                dispatch(setUIdata({}));
             }
-            dispatch(toggleLoader(false));
 
-        })
+        }
 
-    }
+        // dispatch(toggleLoader(false));
+      });
 
+
+     function calculateFee() {
+        // dispatch(toggleLoader(true));
+        Browser.runtime.sendMessage({type: "gas"});
+     } 
+
+    // async function loadApi() {
+    //     try {
+    //         dispatch(toggleLoader(true));
+    //         const apiRes = await connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.currentNetwork, false);
+
+    //         if(!apiRes?.value) {
+    //             apiRef.current = apiRes;
+    //             getBalance(apiRef.current.evmApi, apiRef.current.nativeApi, true);
+    //             setReadyApi(true);
+    //         }
+
+    //     } catch (err) {
+    //         console.log("Error while creating the connection: ", err);
+    //         dispatch(toggleLoader(false));
+    //         setReadyApi(false);
+    //     }
+    // }
 
 
     function handleClick(isApproved) {
+
         if (isApproved) {
             if (+auth?.balance?.nativeBalance < +fee) {
                 return toast.error("Insufficient Funds")
@@ -146,122 +126,22 @@ function NativeTx() {
                     return toast.error("Insufficient Funds: Fee + Amount is more than available balance,")
                 }
             }
-            dispatch(toggleLoader(true));
-            connectionObj.initializeApi(auth.httpEndPoints.testnet, auth.httpEndPoints.qa, auth.currentNetwork, false).then(async (apiRes) => {
-                if (!apiRes?.value) {
-                    Connection.isExecuting.value = false;
-                }
 
-                let res
-                switch (method) {
-                    case "native_add_nominator":
-                        res = await addNominator(apiRes.nativeApi, auth?.uiData?.message);
-                        break;
-                    case "native_renominate":
-                        res = await reNominate(apiRes.nativeApi, auth?.uiData?.message);
-                        break;
-                    case "native_nominator_payout":
-                        res = await nominatorValidatorPayout(apiRes.nativeApi, auth?.uiData?.message);
-                        break;
-                    case "native_validator_payout":
-                        res = await nominatorValidatorPayout(apiRes.nativeApi, auth?.uiData?.message);
-                        break;
-                    case "native_stop_validator":
-                        res = await stopValidatorNominator(apiRes.nativeApi);
-                        break;
-
-                    case "native_stop_nominator":
-                        res = await stopValidatorNominator(apiRes.nativeApi);
-                        break;
-                    case "native_unbond_validator":
-                        res = await unbondNominatorValidator(apiRes.nativeApi, auth?.uiData?.message);
-                        break;
-
-                    case "native_unbond_nominator":
-                        res = await unbondNominatorValidator(apiRes.nativeApi, auth?.uiData?.message);
-                        break;
-                    case "native_withdraw_nominator":
-                        res = await withdrawNominatorValidatorData(apiRes.nativeApi, auth?.uiData?.message);
-                        break;
-
-                    case "native_withdraw_validator":
-                        res = await withdrawNominatorValidatorData(apiRes.nativeApi, auth?.uiData?.message);
-                        break;
-                    case "native_withdraw_nominator_unbonded":
-                        res = await withdrawNominatorUnbonded(apiRes.nativeApi, auth?.uiData?.message);
-                        break;
-
-                    case "native_add_validator":
-                        res = await addValidator(apiRes.nativeApi, auth?.uiData?.message);
-                        break;
-
-                    case "native_validator_bondmore":
-                        res = await bondMoreFunds(apiRes.nativeApi, auth?.uiData?.message);
-                        break;
-
-                    case "native_restart_validator":
-                        res = await restartValidator(apiRes.nativeApi, auth?.uiData?.message);
-                        break;
-
-                    case "native_nominator_bondmore":
-                        res = await bondMoreFunds(apiRes.nativeApi, auth?.uiData?.message);
-                        break;
-                    default:
-
-                }
-                // console.log("HERE RES", res)
-                if (res.error) {
-                    Browser.tabs.sendMessage(auth.uiData.tabId, {
-                        id: auth.uiData.id,
-                        response: null,
-                        error: res.data,
-                    });
-                } else {
-
-                    let dataToDispatch = {
-                        data: {
-                            chain: auth?.currentNetwork.toLowerCase(),
-                            isEvm: false,
-                            dateTime: new Date(),
-                            to: "",
-                            type: TX_TYPE?.SEND,
-                            amount: 0,
-                            txHash: res?.data?.txHash,
-                            status: STATUS.SUCCESS
-                        },
-                        index: auth?.accounts.findIndex((obj) => obj.id === auth?.currentAccount?.id),
-                    };
-
-
-                    dispatch(setTxHistory(dataToDispatch));
-                    Browser.tabs.sendMessage(auth.uiData.tabId, {
-                        id: auth.uiData.id,
-                        response: res.data,
-                        error: null,
-                    });
-                }
-                dispatch(toggleLoader(false));
-
-                setTimeout(() => {
-                    dispatch(setUIdata({}));
-                    window.close();
-                }, 300);
-            })
+            // dispatch(toggleLoader(true));
+            Browser.runtime.sendMessage({type: "native_tx", isFee: false})
 
         } else {
             Browser.tabs.sendMessage(auth.uiData.tabId, {
                 id: auth.uiData.id,
                 response: null,
-                error: "User rejected  transaction.",
+                error: "User rejected transaction.",
             });
+            // dispatch(toggleLoader(false));
+            closeBoth();
             dispatch(setUIdata({}));
-            window.close();
         }
-
-        //false the popup
-        Browser.storage.local.set({ popupStatus: false });
-        Browser.storage.local.set({popupRoute: null});
     }
+
 
     function formatParams(messageInfo) {
         try {
@@ -277,8 +157,6 @@ function NativeTx() {
             return []
         }
     }
-
-
 
     return (
         <div className={`${style.fixedLayout}`}>

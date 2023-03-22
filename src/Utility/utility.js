@@ -15,6 +15,11 @@ export function isNullorUndef(arg) {
     return arg === undefined || arg === null
 }
 
+//check if something is undefined or not
+export function isUndef(arg) {
+    return arg === undefined;
+}
+
 //check if string or array has length
 export function isHasLength(arg) {
     if (isString(arg)) return arg.trim().length > 0;
@@ -30,7 +35,18 @@ export function hasProperty(arg, key) {
 }
 
 
-
+//slice the string to any size
 export const shortLongAddress = (data = '', startLen = 10, endLen = 10) => {
     return `${data.substring(0, startLen)}...${data.substring(data.length - endLen, data.length)}`;
 };
+
+
+//logging utility
+export function log(...logs) {
+
+//get the time stamp for the logs
+const timeStamp = new Date(Date.now())
+const dateString = `${timeStamp.getDate()}:${timeStamp.getMonth()}:${timeStamp.getFullYear()} :: ${timeStamp.getHours()}:${timeStamp.getMinutes()}:${timeStamp.getSeconds()}:${timeStamp.getMilliseconds()}`
+
+console.log(`${dateString} - `, ...logs);
+}

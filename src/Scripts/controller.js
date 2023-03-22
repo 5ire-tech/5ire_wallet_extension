@@ -15,8 +15,10 @@ import NotificationManager from "./platform";
 import { isManifestV3 } from "./utils";
 
 import { httpRequest, EVMRPCPayload } from "../Utility/network_calls";
-import {isObject, isNullorUndef, isHasLength} from "../Utility/utility"
+import {isObject, isNullorUndef, isHasLength, log} from "../Utility/utility"
 import {HTTP_METHODS, PORT_NAME, EVM_JSON_RPC_METHODS } from "../Constants";
+import {Connection} from "../Helper/connection.helper"
+import {nativeMethod} from "./nativehelper"
 
 
 
@@ -117,7 +119,7 @@ export async function initScript() {
 export class Controller {
   constructor(store) {
     this.store = store;
-    this.notificationManager = new NotificationManager(store);
+    this.notificationManager = NotificationManager.getInstance(store);
     
     //maintain only single instance
     this.instance = null
@@ -166,18 +168,6 @@ export class Controller {
   async handleConnect(data) {
     const state = this.store.getState();
 
-    const hereOutput = await Browser.storage.local.get("popupStatus");
-
-    if (hereOutput.popupStatus) {
-      Browser.tabs.sendMessage(data.tabId, {
-        id: data.id,
-        response: null,
-        error: "5ire extension transaction approve popup session is already active",
-      });
-      return;
-    }
-
-
     const isEthReq =
       data?.method === "eth_requestAccounts" ||
       data?.method === "eth_accounts";
@@ -225,16 +215,16 @@ export class Controller {
   //for transaction from connected website
   async handleEthTransaction(data) {
 
-    const hereOutput = await Browser.storage.local.get("popupStatus");
+    // const hereOutput = await Browser.storage.local.get("popupStatus");
 
-    if (hereOutput.popupStatus) {
-      Browser.tabs.sendMessage(data.tabId, {
-        id: data.id,
-        response: null,
-        error: "5ire extension transaction approve popup session is already active",
-      });
-      return;
-    }
+    // if (hereOutput.popupStatus) {
+    //   Browser.tabs.sendMessage(data.tabId, {
+    //     id: data.id,
+    //     response: null,
+    //     error: "5ire extension transaction approve popup session is already active",
+    //   });
+    //   return;
+    // }
 
     this.store.dispatch(
       setUIdata({
@@ -250,16 +240,16 @@ export class Controller {
   //Handle Validator nominator methods
   async handleValidatorNominatorTransactions(data) {
 
-    const hereOutput = await Browser.storage.local.get("popupStatus");
+    // const hereOutput = await Browser.storage.local.get("popupStatus");
 
-    if (hereOutput.popupStatus) {
-      Browser.tabs.sendMessage(data.tabId, {
-        id: data.id,
-        response: null,
-        error: "5ire extension transaction approve popup session is already active",
-      });
-      return;
-    }
+    // if (hereOutput.popupStatus) {
+    //   Browser.tabs.sendMessage(data.tabId, {
+    //     id: data.id,
+    //     response: null,
+    //     error: "5ire extension transaction approve popup session is already active",
+    //   });
+    //   return;
+    // }
 
     this.store.dispatch(setUIdata(data));
      await this.notificationManager.showPopup("nativeTx");
@@ -319,7 +309,132 @@ export async function checkTransactions(txData) {
   }
 }
 
+//create rpc handler
+export const apiConnection = async () => {
+  try {
+    const connector = Connection.getConnector();
+    const apiConn = await connector.initializeApi("", "https://qa-http-nodes.5ire.network", "QA")
+    console.log("api connection: ", apiConn);
+    return apiConn;
+  } catch (err) {
+    console.log("Error while making the connection to native api: ", err.message);
+  }
+}
 
 
+//for validator and nominator transactions
+export const nativeFeeCalculator = async (isFee=true) => {
+      //get the estimated gas fee
+
+      let feeData, methodName = '';
+        try {
+          const {
+            addNominator,
+            reNominate,
+            nominatorValidatorPayout,
+            stopValidatorNominator,
+            unbondNominatorValidator,
+            withdrawNominatorValidatorData,
+            withdrawNominatorUnbonded,
+            addValidator,
+            bondMoreFunds,
+            restartValidator,
+            state
+          } = await nativeMethod();
+
+          const api = await apiConnection();
+
+          if(api?.value) return;
+          Connection.isExecuting.value = false;
+
+            // await Browser.runtime.sendMessage({ type: "gas", game: "main thread is here"});
+            const {auth} = state;
+            switch (auth?.uiData?.method) {
+                case "native_add_nominator":
+                    feeData = await addNominator(api.nativeApi, auth?.uiData?.message, isFee);
+                    methodName = "Add Nominator";
+                    break;
+                case "native_renominate":
+                    feeData = await reNominate(api.nativeApi, auth?.uiData?.message, isFee);
+                    methodName = "Re-Nominate";
+                    break;
+                case "native_nominator_payout":
+                    feeData = await nominatorValidatorPayout(api.nativeApi, auth?.uiData?.message, isFee);
+                    methodName = "Nominator Payout";
+                    break;
+                case "native_validator_payout":
+                    feeData = await nominatorValidatorPayout(api.nativeApi, auth?.uiData?.message, isFee);
+                    methodName = "Validator Payout";
+                    break;
+                case "native_stop_validator":
+                    feeData = await stopValidatorNominator(api.nativeApi, auth?.uiData?.message, isFee);
+                    methodName = "Stop Validator";
+                    break;
+
+                case "native_stop_nominator":
+                    feeData = await stopValidatorNominator(api.nativeApi, auth?.uiData?.message, isFee);
+                    methodName = "Stop Nominator";
+                    break;
+                case "native_unbond_validator":
+                    feeData = await unbondNominatorValidator(api.nativeApi, auth?.uiData?.message, isFee);
+                    methodName = "Unbond Validator";
+                    break;
+
+                case "native_unbond_nominator":
+                    feeData = await unbondNominatorValidator(api.nativeApi, auth?.uiData?.message, isFee);
+                    methodName = "Unbond Nominator";
+                    break;
+                case "native_withdraw_nominator":
+                    feeData = await withdrawNominatorValidatorData(api.nativeApi, auth?.uiData?.message, isFee);
+                    methodName = "Send Funds";
+                    break;
+
+                case "native_withdraw_validator":
+                    feeData = await withdrawNominatorValidatorData(api.nativeApi, auth?.uiData?.message, isFee);
+                    methodName = "Send Funds";
+                    break;
+                case "native_withdraw_nominator_unbonded":
+                    feeData = await withdrawNominatorUnbonded(api.nativeApi, auth?.uiData?.message, isFee);
+                    methodName = "Withdraw Nominator Unbonded";
+                    break;
+
+                case "native_add_validator":
+                    feeData = await addValidator(api.nativeApi, auth?.uiData?.message, isFee);
+                    methodName = "Add Validator";
+                    break;
+
+                case "native_validator_bondmore":
+                    feeData = await bondMoreFunds(api.nativeApi, auth?.uiData?.message, isFee);
+                    methodName = "Bond More Funds";
+                    break;
+                case "native_nominator_bondmore":
+                    feeData = await bondMoreFunds(api.nativeApi, auth?.uiData?.message, isFee);
+                    methodName = "Bond More Funds";
+                    break;
+                case "native_restart_validator":
+                    feeData = await restartValidator(api.nativeApi, auth?.uiData?.message, isFee);
+                    methodName = "Restart Validator";
+                    break;
+                default:
+
+            }
+
+            console.log("the main data is here: ", feeData);
 
 
+            if (!feeData?.error && methodName && isFee) {
+              Browser.runtime.sendMessage({type: "EST_GAS", data: {feeData, methodName}})
+            } else if(!feeData?.error && methodName && (!isFee)) {
+              Browser.runtime.sendMessage({type: "NATIVE_TX", data: {feeData, methodName}})
+            }
+            else {
+              if(isFee) Browser.runtime.sendMessage({type: "EST_GAS", data: {feeData, methodName}})
+              else Browser.runtime.sendMessage({type: "NATIVE_TX", data: {feeData, methodName}})
+              
+            }
+          } catch (err) {
+            console.log("Error while getting the fee: ", err);
+            if(isFee) Browser.runtime.sendMessage({type: "EST_GAS", data: {feeData: {error: err}, methodName}})
+            else Browser.runtime.sendMessage({type: "NATIVE_TX", data: {feeData: {error: err}, methodName}})
+        }
+}

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import style from "./style.module.scss";
 import browser from "webextension-polyfill";
 import useWallet from "../../Hooks/useWallet";
@@ -13,7 +13,7 @@ import {
   toggleSite,
   setNewAccount,
 } from "../../Utility/redux_helper";
-import Browser from "webextension-polyfill";
+import {closeBoth} from "../../Utility/window.helper"
 
 function FooterStepOne() {
   const { isLogin } = useSelector(state => state.auth);
@@ -40,9 +40,6 @@ function FooterStepOne() {
     </>
   );
 }
-
-
-export default FooterStepOne;
 
 export const FooterStepTwo = () => {
   const { isLogin } = useSelector((state) => state.auth);
@@ -139,15 +136,13 @@ export const FooterStepTwo = () => {
 //   );
 // };
 
+
+//approve the connection to pass the accounts
 export const ApproveLogin = () => {
   const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
-  const popupViews = Browser.extension.getViews({type: "popup"});
-
-  console.log("popupViews: ", popupViews);
-
-  function handleClick(isApproved) {
+  async function handleClick(isApproved) {
     dispatch(toggleLoader(true));
 
     if (isApproved) {
@@ -191,14 +186,9 @@ export const ApproveLogin = () => {
       });
     }
 
-    browser.storage.local.set({ popupStatus: false });
-    browser.storage.local.set({popupRoute: null})
-
     dispatch(toggleLoader(false));
-    setTimeout(() => {
-      dispatch(setUIdata({}));
-      window.close();
-    }, 1000);
+    closeBoth();
+    dispatch(setUIdata({}));
   }
 
 
@@ -210,27 +200,25 @@ export const ApproveLogin = () => {
           text={"Cancel"}
           maxWidth={"100%"}
           onClick={() => handleClick(false)}
-          isDisable={popupViews.length > 0}
         />
         <ButtonComp
           onClick={() => handleClick(true)}
           text={"Approve"}
           maxWidth={"100%"}
-          isDisable={popupViews.length > 0}
         />
       </div>
     </>
   );
 };
 
-
-
-
-
+//approve the evm transactions
 export const ApproveTx = () => {
   const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const { evmTransfer } = useWallet();
+
+
+
 
   function handleClick(isApproved) {
     if (isApproved) {
@@ -265,12 +253,7 @@ export const ApproveTx = () => {
               });
             }
 
-            dispatch(setUIdata({}));
             dispatch(toggleLoader(false));
-
-            setTimeout(() => {
-              window.close();
-            }, 300);
           });
         }
       });
@@ -280,15 +263,12 @@ export const ApproveTx = () => {
       browser.tabs.sendMessage(auth.uiData.tabId, {
         id: auth.uiData.id,
         response: null,
-        error: "User rejected  transaction.",
+        error: "User rejected transaction.",
       });
-
-      dispatch(setUIdata({}));
-      window.close();
     }
 
-    browser.storage.local.set({ popupStatus: false });
-    browser.storage.local.set({popupRoute: null})
+    closeBoth();
+    dispatch(setUIdata({}));
   }
 
   return (
@@ -309,3 +289,6 @@ export const ApproveTx = () => {
     </>
   );
 };
+
+//default export
+export default FooterStepOne;

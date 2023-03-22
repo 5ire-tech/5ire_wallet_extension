@@ -1,5 +1,5 @@
 import "./App.scss";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Send from "./Pages/Send/Send";
 import Swap from "./Pages/Swap/Swap";
 // import { NETWORK } from "./Constants";
@@ -25,7 +25,6 @@ import CreateNewWallet from "./Pages/WelcomeScreens/CreateNewWallet";
 import ApproveTx from "./Pages/RejectNotification/RejectNotification";
 import CreateWalletChain from "./Pages/WelcomeScreens/CreateWalletChain";
 import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
-import Browser from "webextension-polyfill";
 
 function getParameterByName(name, url = window.location.href) {
   name = name.replace(/[[\]]/g, "\\$&");
@@ -41,6 +40,7 @@ function App(props) {
   const auth = useSelector((state) => state.auth);
   // const { currentNetwork, wsEndPoints } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  const [api, setApi] = useState(null)
 
   // useEffect(() => {
 
@@ -58,7 +58,9 @@ function App(props) {
 
   useEffect(() => {
 
-    if(props.popupRoute && props.popupRoute?.length > 0) {
+    props.api && setApi(props.api);
+
+    if(props.popupRoute && props.popupRoute?.length > 0 && auth?.isLogin) {
       navigate(`/${props.popupRoute}`);
       return;
     }
@@ -150,8 +152,9 @@ function App(props) {
             <Route
               index
               path="/nativeTx"
-              element={<NativeTx />}
+              element={<NativeTx api={api} />}
             />
+            
             <Route
               path="/loginApprove"
               element={<WelcomeLayout children={<LoginApprove />} />}

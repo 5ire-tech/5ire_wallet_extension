@@ -4,7 +4,7 @@ import { ApiPromise } from "@polkadot/api";
 import { HttpProvider, WsProvider } from "@polkadot/rpc-provider";
 import { NETWORK } from "../Constants";
 
-let i = 0
+// let i = 0
 export class Connection {
 
     //for testnet connection
@@ -35,7 +35,7 @@ export class Connection {
 
     //initialize and get Api
     initializeApi = async (networkTest, networkQA, networkMode, bothInit = false) => {
-        i++;
+        // i++;
         // console.log("call number: ", i, Connection.isExecuting.value);
 
         try {
