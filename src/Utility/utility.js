@@ -26,6 +26,11 @@ export function isHasLength(arg) {
     return arg.length > 0
 }
 
+//check if string or array has length
+export function compStr(a, b) {
+    return a === b;
+}
+
 //check if object has the given property
 export function hasProperty(arg, key) {
     if (isObject(arg)) {

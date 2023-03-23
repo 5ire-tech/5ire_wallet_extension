@@ -2,18 +2,17 @@ import React, {useState} from "react";
 import ReactDOM from "react-dom/client";
 import "./index.scss";
 import App from "./App";
-// import reportWebVitals from "./reportWebVitals";
-import { MemoryRouter } from "react-router-dom";
-import { Provider } from "react-redux";
-import { Store } from "./Scripts/webext-redux/dist/webext-redux";
-import { CONNECTION_NAME, PORT_NAME } from "./Constants";
-import reduxStore from "./Store/store";
+import Context from "./Store";
 import browser from "webextension-polyfill";
+import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Browser from "webextension-polyfill";
-import { closeBoth } from "./Utility/window.helper";
 import { log } from "./Utility/utility";
+import { CONNECTION_NAME } from "./Constants";
+// import { Store } from "./Scripts/webext-redux/dist/webext-redux";
+
 const isDev = process.env.NODE_ENV === "development";
+// import reportWebVitals from "./reportWebVitals";
 
 // eslint-disable-next-line no-extend-native
 Number.prototype.noExponents = function () {
@@ -34,83 +33,58 @@ Number.prototype.noExponents = function () {
     while (mag--) z += "0";
     return str + z;
   } catch (error) {
-  
+
   }
 };
 
-
-//init the main app when store is synced with local storage
-const initApp = (popupRoute) => {
-
-  const store = new Store({ portName: PORT_NAME });
-
+const initApp = (data) => {
+  
   const root = ReactDOM.createRoot(document.getElementById("root"));
 
-  //fix for redux v8 in webext
-  Object.assign(store, {
-    dispatch: store.dispatch.bind(store),
-    getState: store.getState.bind(store),
-    subscribe: store.subscribe.bind(store),
-  });
-  const unsubscribe = store.subscribe(() => {
-    unsubscribe()
-
-    // The store implements the same interface as Redux's store
-    // so you can use tools like `react-redux` no problem!
-    root.render(
-      <Provider store={store}>
-        <MemoryRouter>
-          {/* <React.StrictMode> */}
-          <App popupRoute={popupRoute}/>
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="colored"
-          />
-          {/* </React.StrictMode> */}
-        </MemoryRouter>
-      </Provider>
-    );
-  });
-
-  // If you want to start measuring performance in your app, pass a function
-  // to log results (for example: reportWebVitals(console.log))
-  // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-  // reportWebVitals();
+  
+  root.render(
+    <Context>
+      <MemoryRouter>
+        <App data={data} />
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
+      </MemoryRouter>
+    </Context>
+  );
 };
 
 (async () => {
-
   try {
     const res = await Browser.storage.local.get("popupRoute");
   
   log("here the route: ", res, window);
 
-    if (!isDev) {
-      browser.runtime.connect({ name: CONNECTION_NAME });
-    
-      // Listens for when the store gets initialized
-      browser.runtime.onMessage.addListener((req) => {
-        if (req.type === "STORE_INITIALIZED") {
-          // Initializes the popup logic
-          initApp(res.popupRoute);
-        } else if(req.type === "CLOSEMAIN") closeBoth(true)
-      });
-
-    } else {
-      const root = ReactDOM.createRoot(document.getElementById("root"));
-      root.render(
-        <Provider store={reduxStore}>
+  if (!isDev) {
+    browser.runtime.connect({ name: CONNECTION_NAME });
+  
+    // Listens for when the store gets initialized
+    browser.runtime.onMessage.addListener((req) => {
+      if (req.type === "STORE_INITIALIZED") {
+        // Initializes the popup logic
+        initApp(req.data);
+      }});
+  } else {
+  
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(
+        <Context>
           <MemoryRouter>
-            {/* <React.StrictMode> */}
-            <App popupRoute={res.popupRoute} />
+            <App />
             <ToastContainer
               position="top-right"
               autoClose={4000}
@@ -123,12 +97,12 @@ const initApp = (popupRoute) => {
               pauseOnHover
               theme="colored"
             />
-            {/* </React.StrictMode> */}
           </MemoryRouter>
-        </Provider>
-      );
-      // reportWebVitals();
-    }
+        </Context>
+    );
+    // reportWebVitals();
+  }
+  
 
 
   } catch (err) {

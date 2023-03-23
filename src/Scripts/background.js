@@ -1,14 +1,16 @@
+import { isManifestV3 } from "./utils";
+import Browser from "webextension-polyfill";
 import { CONNECTION_NAME } from "../Constants";
+import { setNewAccount } from "../Utility/redux_helper";
 import {
   Controller,
   initScript,
   loadStore,
   checkTransactions,
-  nativeFeeCalculator
+  nativeFeeCalculator,
+  // loadStore,
+  init
 } from "./controller";
-import { setNewAccount } from "../Utility/redux_helper";
-import Browser from "webextension-polyfill";
-import { isManifestV3 } from "./utils";
 
 try {
 
@@ -19,17 +21,22 @@ try {
   Browser.runtime.onConnect.addListener(async (port) => {
 
     if (port.name === CONNECTION_NAME) {
-      store = await loadStore();
+      // store = await loadStore();
+      store = await init();
       isInitialized = true;
 
+
       //set the current newAccount state to null
-      const currState = await store.getState();
-      currState.auth.newAccount && store.dispatch(setNewAccount(null));
+      // const currState = await store.getState();
+      // currState.auth.newAccount && store.dispatch(setNewAccount(null));
 
 
       port.onDisconnect.addListener(function () {
         //handle popup close actions
       });
+      // port.onDisconnect.addListener(function () {
+      //   //handle popup close actions
+      // });
 
     }
   });
@@ -76,10 +83,14 @@ try {
 
 
     if (!isInitialized) {
-      store = await loadStore(false);
+      // store = await loadStore(false);
+      store = await init(false);
+     
       isInitialized = true;
     }
 
+    // console.log("Store : ",store);
+      
     const controller = Controller.getInstance(store);
 
     const data = {

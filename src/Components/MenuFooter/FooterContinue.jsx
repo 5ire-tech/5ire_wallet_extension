@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import style from "./style.module.scss";
 import browser from "webextension-polyfill";
 import useWallet from "../../Hooks/useWallet";
 import { useNavigate } from "react-router-dom";
 import ButtonComp from "../ButtonComp/ButtonComp";
+import { HTTP_END_POINTS, LABELS } from "../../Constants/index";
 import { useDispatch, useSelector } from "react-redux";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
 import {
@@ -14,13 +15,17 @@ import {
   setNewAccount,
 } from "../../Utility/redux_helper";
 import {closeBoth} from "../../Utility/window.helper"
+import { AuthContext } from "../../Store";
 
 function FooterStepOne() {
-  const { isLogin } = useSelector(state => state.auth);
+  const { state } = useContext(AuthContext);
   const navigate = useNavigate();
+  const {isLogin} = state;
+
   const handleCancle = () => {
     if (isLogin) navigate("/wallet");
-    else navigate("/");
+    else 
+    navigate("/");
   }
   return (
     <>
@@ -42,12 +47,13 @@ function FooterStepOne() {
 }
 
 export const FooterStepTwo = () => {
-  const { isLogin } = useSelector((state) => state.auth);
+  const { state, updateState } = useContext(AuthContext);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const {isLogin} = state;
 
   const handleCancle = () => {
-    dispatch(setNewAccount(null));
+    updateState(LABELS.NEW_ACCOUNT, null);
+    updateState(LABELS.ACCOUNT_NAME, null, false);
     navigate("/beforebegin");
   };
 
@@ -58,7 +64,7 @@ export const FooterStepTwo = () => {
   return (
     <>
       <div className={style.menuItems__cancleContinue}>
-        {!isLogin && (
+        {!state.isLogin && (
           <ButtonComp
             bordered={true}
             text={"Cancel"}
@@ -212,6 +218,7 @@ export const ApproveLogin = () => {
 };
 
 //approve the evm transactions
+
 export const ApproveTx = () => {
   const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -224,9 +231,8 @@ export const ApproveTx = () => {
     if (isApproved) {
       dispatch(toggleLoader(true));
 
-      connectionObj.initializeApi(auth.httpEndPoints.testnet, auth.httpEndPoints.qa, auth.currentNetwork, false).then((apiRes) => {
+      connectionObj.initializeApi(HTTP_END_POINTS.TESTNET, HTTP_END_POINTS.QA, auth.currentNetwork, false).then((apiRes) => {
 
-        // console.log("Api Response : ",apiRes);
         if (!apiRes?.value) {
           Connection.isExecuting.value = false;
 

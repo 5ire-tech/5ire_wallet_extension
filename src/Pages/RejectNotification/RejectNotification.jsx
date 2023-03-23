@@ -1,5 +1,6 @@
 import style from "./style.module.scss";
 import useWallet from "../../Hooks/useWallet";
+import { HTTP_END_POINTS } from "../../Constants";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleLoader } from "../../Utility/redux_helper";
@@ -49,7 +50,7 @@ function ApproveTx() {
 
 
   const getApi = () => {
-    connectionObj.initializeApi(auth.httpEndPoints.testnet, auth.httpEndPoints.qa, auth.currentNetwork, false).then((apiRes) => {
+    connectionObj.initializeApi(HTTP_END_POINTS.TESTNET, HTTP_END_POINTS.QA, auth.currentNetwork, false).then((apiRes) => {
       if (!apiRes?.value) {
         setEvmApi(apiRes.evmApi);
         Connection.isExecuting.value = false;

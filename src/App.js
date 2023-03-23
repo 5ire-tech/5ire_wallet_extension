@@ -1,21 +1,22 @@
 import "./App.scss";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import Send from "./Pages/Send/Send";
 import Swap from "./Pages/Swap/Swap";
+import { AuthContext } from "./Store";
 // import { NETWORK } from "./Constants";
+import { localStorage } from "./Storage";
+// import { useSelector } from "react-redux";
 import Loader from "./Pages/Loader/Loader";
 import Wallet from "./Pages/Wallet/Wallet";
+import NativeTx from "./Components/NativeTx";
 import OnlyContent from "./Layout/OnlyContent";
 import WelcomeLayout from "./Layout/WelcomeLayout";
 import FixWidthLayout from "./Layout/FixWidthLayout";
-import { useSelector } from "react-redux";
 import PrivateKey from "./Components/Setting/PrivateKey";
-// import { connectionObj } from "./Helper/connection.helper";
 import Beforebegin from "./Pages/WelcomeScreens/Beforebegin";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import EnterPassword from "./Components/Setting/EnterPassword";
 import LoginApprove from "./Pages/WelcomeScreens/LoginApprove";
-import NativeTx from "./Components/NativeTx";
 import SwapApprove from "./Pages/Swap/SwapApprove/SwapApprove";
 import ImportWallet from "./Pages/WelcomeScreens/ImportWallet";
 import UnlockWelcome from "./Pages/WelcomeScreens/UnlockWelcome";
@@ -36,75 +37,69 @@ function getParameterByName(name, url = window.location.href) {
 }
 
 function App(props) {
-
-  const auth = useSelector((state) => state.auth);
-  // const { currentNetwork, wsEndPoints } = useSelector((state) => state.auth);
+  const { setState, state} = useContext(AuthContext);
+  const {allAccounts, isLogin, pass} = state;
   const navigate = useNavigate();
-  const [api, setApi] = useState(null)
 
-  // useEffect(() => {
-
-  //   if (currentNetwork.toLowerCase() === NETWORK.TEST_NETWORK.toLowerCase()) {
-  //     connectionObj.initializeApi(wsEndPoints.testnet).then((res)=>{
-  //       console.log("Api initialize for ist time for testnet");
-  //     });
-  //   }else if(currentNetwork.toLowerCase() === NETWORK.QA_NETWORK.toLowerCase()){
-  //     connectionObj.initializeApi(wsEndPoints.qa).then((res)=>{
-  //       console.log("Api initialize for ist time for qa");
-  //     });
-  //   }
-  // }, []);
-
+  useEffect(()=>{
+    setState(props.data.state);
+  },[]);
 
   useEffect(() => {
 
-    props.api && setApi(props.api);
-
-    if(props.popupRoute && props.popupRoute?.length > 0 && auth?.isLogin) {
+    if(props.popupRoute && props.popupRoute?.length > 0 && state?.isLogin) {
       navigate(`/${props.popupRoute}`);
       return;
     }
 
     const route = getParameterByName("route");
 
-    if (!auth?.isLogin && auth.accounts.length > 0 && auth.pass) {
+    if (route) {
+      navigate("/" + route);
+    }else{
+      navigate("/");
+    }
+
+    if (!isLogin && allAccounts?.length > 0 && pass) {
       navigate("/unlockWallet", {
         state: {
           redirectRoute: route ? "/" + route : "",
         },
       });
-    } else if (auth.accounts.length <= 0) {
+    } else if (allAccounts.length <= 0) {
       navigate("/");
     } else if (route) {
       navigate("/" + route);
-    } else if (auth?.isLogin) {
+    } else if (state?.isLogin) {
       navigate("/wallet");
     } else {
       navigate("/");
     }
-    
-  }, [auth?.isLogin]);
 
-  
+  }, [state?.isLogin]);
+
+
   return (
     <div className="App">
       <Routes>
-        {!auth?.isLogin ? (
+        {!state.isLogin ? (
           <>
             <Route
               index
               path="/"
               element={<WelcomeLayout children={<WelcomeScreen />} />}
             />
+
             <Route
               path="/setPassword/:id"
               element={<WelcomeLayout children={<SetPasswordScreen />} />}
             />
-
+  
             <Route
               path="/unlockWallet"
               element={<WelcomeLayout children={<UnlockWelcome />} />}
             />
+
           </>
         ) : (
           <>
@@ -113,6 +108,7 @@ function App(props) {
               path="/wallet"
               element={<FixWidthLayout children={<Wallet />} />}
             />
+
             <Route
               index
               path="/swapapprove"
@@ -133,6 +129,7 @@ function App(props) {
               path="/swap"
               element={<OnlyContent children={<Swap />} />}
             />
+            {/* 
             <Route
               index
               path="/manageWallet"
@@ -148,7 +145,6 @@ function App(props) {
               path="/approveTx"
               element={<FixWidthLayout children={<ApproveTx />} />}
             />
-
             <Route
               index
               path="/nativeTx"
@@ -159,12 +155,17 @@ function App(props) {
               path="/loginApprove"
               element={<WelcomeLayout children={<LoginApprove />} />}
             />
+            */}
+
+
           </>
         )}
+
         <Route
           path="/importWallet"
           element={<WelcomeLayout children={<ImportWallet />} />}
         />
+
         <Route
           path="/createwalletchain"
           element={<WelcomeLayout children={<CreateWalletChain />} />}
@@ -179,7 +180,7 @@ function App(props) {
           element={<WelcomeLayout children={<CreateNewWallet />} />}
         />
       </Routes>
-      <Loader />
+      {/* <Loader /> */}
     </div>
   );
 }

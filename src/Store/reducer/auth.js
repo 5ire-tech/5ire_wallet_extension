@@ -22,22 +22,22 @@ export const userState = {
 
   uiData: {},
 
-  httpEndPoints: {
-    qa: "https://qa-http-nodes.5ire.network",
-    testnet: "https://rpc-testnet.5ire.network"
-    // testnet: "http://52.15.41.233:9933"
-  },
+  // httpEndPoints: {
+  //   qa: "https://qa-http-nodes.5ire.network",
+  //   testnet: "https://rpc-testnet.5ire.network"
+  //   // testnet: "http://52.15.41.233:9933"
+  // },
 
-  api: {
-    testnet: "https://explorer-api.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
-    qa: "https://qa-api-exp.5ire.network/api/firechain/explorer/get-transaction-by-hash/"
-  },
+  // api: {
+  //   testnet: "https://explorer-api.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
+  //   qa: "https://qa-api-exp.5ire.network/api/firechain/explorer/get-transaction-by-hash/"
+  // },
 
-  wsEndPoints: {
-    qa: "wss://qa-wss-nodes.5ire.network",
-    testnet: "wss://wss-testnet.5ire.network"
-    // testnet: "ws://52.15.41.233:9944"
-  },
+  // wsEndPoints: {
+  //   qa: "wss://qa-wss-nodes.5ire.network",
+  //   testnet: "wss://wss-testnet.5ire.network"
+  //   // testnet: "ws://52.15.41.233:9944"
+  // },
 
   balance: {
     evmBalance: "",
@@ -146,8 +146,6 @@ const reducers = {
     if (!txData1) {
       state.currentAccount.txHistory.push(action.payload.data);
     }
-
-
 
   },
 

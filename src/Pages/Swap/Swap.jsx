@@ -1,25 +1,31 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
-import React, { useState } from "react";
 import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
-import { useSelector } from "react-redux";
+import { AuthContext } from "../../Store";
 import useWallet from "../../Hooks/useWallet";
 import { shortner } from "../../Helper/helper";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import ComplSwap from "../../Assets/DarkLogo.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
+import React, { useState, useContext } from "react";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import { InputField } from "../../Components/InputField/InputFieldSimple";
-import { NATIVE, EVM, ERROR_MESSAGES, INPUT,COPIED } from "../../Constants/index";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
+import {
+  EVM,
+  NATIVE,
+  ERROR_MESSAGES,
+  INPUT, COPIED, HTTP_END_POINTS, LABELS
+} from "../../Constants/index";
 
 
 function Swap() {
-
+  const accountData = useRef(null);
+  const { state } = useContext(AuthContext);
   const [error, setError] = useState("");
   const [txHash, setTxHash] = useState("");
   const [amount, setAmount] = useState("");
@@ -32,36 +38,40 @@ function Swap() {
   const [address, setAddress] = useState({ fromAddress: "", toAddress: "" });
 
   const {
-    currentAccount,
     balance,
-    httpEndPoints,
+    allAccounts,
+    currentAccount,
     currentNetwork
-  } = useSelector((state) => state.auth);
+  } = state;
+
   const {
     evmToNativeSwap,
     nativeToEvmSwap,
-    getBalance,
     retriveNativeFee,
     retriveEvmFee,
   } = useWallet();
 
+  useEffect(() => {
+    accountData.current = allAccounts[currentAccount.index];
+  }, [currentAccount.accountName]);
 
   useEffect(() => {
+
     if (toFrom.from.toLowerCase() === NATIVE.toLowerCase())
       setAddress({
-        toAddress: currentAccount?.evmAddress,
-        fromAddress: currentAccount?.nativeAddress,
+        toAddress: accountData?.current?.evmAddress,
+        fromAddress: accountData?.current?.nativeAddress,
       });
 
     else if (toFrom.from.toLowerCase() === EVM.toLowerCase())
       setAddress({
-        toAddress: currentAccount?.nativeAddress,
-        fromAddress: currentAccount?.evmAddress,
+        toAddress: accountData?.current?.nativeAddress,
+        fromAddress: accountData?.current?.evmAddress,
       });
     setAmount("");
     setError("");
 
-  }, [currentAccount?.evmAddress, currentAccount?.nativeAddress, toFrom]);
+  }, [toFrom]);
 
 
   useEffect(() => {
@@ -127,10 +137,10 @@ function Swap() {
       setError(INPUT.REQUIRED);
 
     else if (isNaN(amount))
-      setError("Please enter amount correctly.");
+      setError(ERROR_MESSAGES.ENTER_AMOUNT_CORRECTLY);
 
     else if (Number(amount) <= 0)
-      setError("Amount can't be 0 or less then 0");
+      setError(ERROR_MESSAGES.AMOUNT_CANT_BE_0);
 
     else if (
       toFrom.from.toLowerCase() === EVM.toLowerCase() &&
@@ -161,7 +171,7 @@ function Swap() {
   const handleApprove = async (e) => {
     try {
 
-      connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
+      connectionObj.initializeApi(HTTP_END_POINTS.TESTNET, HTTP_END_POINTS.QA, currentNetwork, false).then(async (apiRes) => {
 
         if (!apiRes?.value) {
 
@@ -179,9 +189,6 @@ function Swap() {
             } else {
               setIsModalOpen(true);
               setTxHash(res.data);
-              // setTimeout(() => {
-              //   getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-              // }, 3000);
             }
 
           } else if (
@@ -192,7 +199,7 @@ function Swap() {
             let res = await nativeToEvmSwap(apiRes.nativeApi, amount);
             // console.log("res.err : ",res.error);
             if (res.error) {
-            // console.log("error true");
+              // console.log("error true");
 
               setIsFaildOpen(true);
               setSwapError(res.data);
@@ -200,9 +207,6 @@ function Swap() {
               // console.log("error false");
               setIsModalOpen(true);
               setTxHash(res.data);
-              // setTimeout(() => {
-              //   getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-              // }, 3000);
             }
           }
         }
@@ -216,7 +220,7 @@ function Swap() {
 
   const getFee = async () => {
 
-    connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
+    connectionObj.initializeApi(HTTP_END_POINTS.TESTNET, HTTP_END_POINTS.QA, currentNetwork, false).then(async (apiRes) => {
 
       if (!apiRes?.value) {
 
@@ -282,7 +286,7 @@ function Swap() {
 
 
   const handleEnter = (e) => {
-    if ((e.key === "Enter")) {
+    if ((e.key === LABELS.ENTER)) {
       if (!disableBtn) {
         handleApprove();
       }
@@ -315,10 +319,10 @@ function Swap() {
 
   const handleCopy = (e) => {
     if (e.target.name.toLowerCase() === NATIVE.toLowerCase())
-      navigator.clipboard.writeText(currentAccount.nativeAddress);
+      navigator.clipboard.writeText(accountData.current.nativeAddress);
 
     if (e.target.name.toLowerCase() === EVM.toLowerCase())
-      navigator.clipboard.writeText(currentAccount.evmAddress);
+      navigator.clipboard.writeText(accountData.current.evmAddress);
 
     if (e.target.name.toLowerCase() === "hash")
       navigator.clipboard.writeText(txHash);
@@ -457,7 +461,7 @@ function Swap() {
                 alt="copyIcon"
                 draggable={false}
                 onClick={handleCopy}
-                />
+              />
             </span>
 
             <div className="footerbuttons">

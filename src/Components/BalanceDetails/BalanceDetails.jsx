@@ -2,44 +2,50 @@ import { Select } from "antd";
 import QRCode from "react-qr-code";
 import { toast } from "react-toastify";
 import style from "./style.module.scss";
+import { AuthContext } from "../../Store";
 import useWallet from "../../Hooks/useWallet";
 import { useLocation } from "react-router-dom";
 import { shortner } from "../../Helper/helper";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import WalletQr from "../../Assets/QRicon.svg";
 import DarkLogo from "../../Assets/DarkLogo.svg";
-import React, { useEffect, useState } from "react";
 import GrayCircle from "../../Assets/graycircle.svg";
 import ModalCustom from "../ModalCustom/ModalCustom";
 import GreenCircle from "../../Assets/greencircle.svg";
-import { useDispatch, useSelector } from "react-redux";
 import { getCurrentTabUrl } from "../../Scripts/utils";
+import React, { useEffect, useState, useContext } from "react";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import DownArrowSuffix from "../../Assets/DownArrowSuffix.svg";
-import { NATIVE, EVM, NETWORK, COPIED } from "../../Constants/index";
+import { NATIVE, EVM, NETWORK, COPIED, HTTP_END_POINTS } from "../../Constants/index";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
-import { resetBalance, setCurrentNetwork, toggleLoader } from "../../Utility/redux_helper"
 
 
-function BalanceDetails({ className, textLeft, mt0 }) {
+function BalanceDetails({ mt0 }) {
 
-  const dispatch = useDispatch();
   const getLocation = useLocation();
   const { getBalance } = useWallet();
+  const { state, updateState } = useContext(AuthContext);
   const [isConnected, setIsConnected] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEvmModal, setIsEvmModal] = useState(false);
+  const [accountData, setAccountData] = useState({ accountName: "" });
   const [addresses, setAddresses] = useState({
     evmAddress: "",
     nativeAddress: "",
   });
+
   const {
     currentAccount,
     currentNetwork,
     balance,
+    allAccounts,
     connectedSites,
-    httpEndPoints
-  } = useSelector((state) => state.auth);
+  } = state;
+
+  useEffect(() => {
+    setAccountData(allAccounts ? allAccounts[currentAccount.index] : {});
+
+  }, [currentAccount.index])
 
 
   useEffect(() => {
@@ -51,53 +57,55 @@ function BalanceDetails({ className, textLeft, mt0 }) {
       }
     });
 
-    if (currentAccount.evmAddress && currentAccount?.nativeAddress) {
-      setAddresses({ evmAddress: shortner(currentAccount?.evmAddress), nativeAddress: shortner(currentAccount?.nativeAddress) });
+    if (accountData.evmAddress && accountData?.nativeAddress) {
+      setAddresses({ evmAddress: shortner(accountData?.evmAddress), nativeAddress: shortner(accountData?.nativeAddress) });
     }
 
     //inverval id for unbind the interval
     let intId = null;
 
-    connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then((res) => {
-      if (!res?.value) {
-        Connection.isExecuting.value = false;
-        getBalance(res.evmApi, res.nativeApi, true);
-
-        intId = setInterval(() => {
+    connectionObj.initializeApi(HTTP_END_POINTS.TESTNET, HTTP_END_POINTS.QA, currentNetwork, false)
+      .then((res) => {
+        if (!res?.value) {
+          Connection.isExecuting.value = false;
           getBalance(res.evmApi, res.nativeApi, true);
-        }, 5000)
 
-      }
-    })
+          intId = setInterval(() => {
+            getBalance(res.evmApi, res.nativeApi, true);
+          }, 5000)
+
+        }
+      })
       .catch((err) => {
         console.log("Error while getting the balance : ", err.message)
       });
 
     return () => { intId && clearInterval(intId) }
 
-  }, [currentNetwork, currentAccount.accountName]);
+  }, [currentNetwork, accountData.accountName]);
 
 
 
-  useEffect(() => {
-    if (balance?.evmBalance === "" || balance.nativeAddress === "") {
-      dispatch(toggleLoader(true));
-    } else {
-      dispatch(toggleLoader(false));
-    }
-  }, [balance?.evmBalance, balance?.nativeBalance, balance?.totalBalance]);
+  // useEffect(() => {
+  //   if (balance?.evmBalance === "" || balance.nativeAddress === "") {
+  //     // dispatch(toggleLoader(true));
+  //   } else {
+  //     // dispatch(toggleLoader(false));
+  //   }
+  // }, [balance?.evmBalance, balance?.nativeBalance, balance?.totalBalance]);
 
 
   const handleNetworkChange = (network) => {
-    dispatch(setCurrentNetwork(network));
-    dispatch(resetBalance());
+    // dispatch(setCurrentNetwork(network));
+    updateState(currentNetwork, network);
+    updateState(balance, { evmBalance: "", nativeBalance: "", totalBalance: "" });
   };
 
   const handleCopy = (e) => {
     if (e.target.name === NATIVE)
-      navigator.clipboard.writeText(currentAccount.nativeAddress);
+      navigator.clipboard.writeText(accountData.nativeAddress);
     else if (e.target.name === EVM)
-      navigator.clipboard.writeText(currentAccount.evmAddress);
+      navigator.clipboard.writeText(accountData.evmAddress);
     toast.success(COPIED);
   };
 
@@ -142,7 +150,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                         <>
                           <p>
                             <img src={GreenCircle} alt="connectionLogo" draggable={false} />
-                            {currentAccount?.accountName}
+                            {accountData?.accountName}
                           </p>
                           <span>{addresses.evmAddress}
                             {" "}
@@ -158,7 +166,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                         :
                         <p>
                           <img src={GrayCircle} alt="connectionLogo" draggable={false} />
-                          {currentAccount?.accountName}
+                          {accountData?.accountName}
 
                         </p>
 
@@ -267,7 +275,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                       size={200}
                       style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                       viewBox={`0 0 256 256`}
-                      value={currentAccount.nativeAddress}
+                      value={accountData.nativeAddress}
                     />
                   </div>
                   <div className={style.balanceDetails__nativemodal__modalOr}>
@@ -311,7 +319,7 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                       size={200}
                       style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                       viewBox={`0 0 256 256`}
-                      value={currentAccount.evmAddress}
+                      value={accountData.evmAddress}
                     />
                   </div>
                   <div className={style.balanceDetails__nativemodal__modalOr}>

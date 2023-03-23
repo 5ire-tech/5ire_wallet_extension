@@ -2,67 +2,110 @@ import { configureStore } from "@reduxjs/toolkit";
 import { wrapStore } from "./webext-redux/dist/webext-redux";
 import Browser from "webextension-polyfill";
 // import logger from "redux-logger";
+import logger from "redux-logger";
+import { isManifestV3 } from "./utils";
+import { localStorage } from "../Storage";
+import NotificationManager from "./platform";
+import {userState} from "../Store/initialState";
+// import { configureStore } from "@reduxjs/toolkit";
+// import { mainReducer } from "../Store/reducer/auth";
+// import { wrapStore } from "./webext-redux/dist/webext-redux";
+import { httpRequest, EVMRPCPayload } from "../Utility/network_calls";
+import { isObject, isNullorUndef, isHasLength } from "../Utility/utility";
 import {
   setUIdata,
-  setLogin,
+  toggleSite,
   toggleLoader,
   updateTxHistory,
-  toggleSite
 } from "../Utility/redux_helper";
-import { userState } from "../Store/reducer/auth";
 import {mainReducer} from "../Store/reducer/auth"
-import NotificationManager from "./platform";
-import { isManifestV3 } from "./utils";
 
-import { httpRequest, EVMRPCPayload } from "../Utility/network_calls";
-import {isObject, isNullorUndef, isHasLength, log} from "../Utility/utility"
-import {HTTP_METHODS, PORT_NAME, EVM_JSON_RPC_METHODS } from "../Constants";
+import {HTTP_METHODS, PORT_NAME, EVM_JSON_RPC_METHODS,  API,
+  STATUS,
+  HTTP_END_POINTS, } from "../Constants";
 import {Connection} from "../Helper/connection.helper"
 import {nativeMethod} from "./nativehelper"
 
 
 
+
 // Initializes the Redux store
-function init(preloadedState) {
+// function init(preloadedState) {
+//   return new Promise((resolve, reject) => {
+
+
+//     const store = configureStore({
+//       reducer: { auth: mainReducer },
+//       preloadedState,
+//       // middleware: [logger],
+//     });
+
+//     wrapStore(store, { portName: PORT_NAME });
+
+//     // Subscribes to the redux store changes. For each state
+//     // change, we want to store the new state to the storage.
+//     store.subscribe(() => {
+//       Browser.storage.local.set({ state: store.getState() });
+
+//       // Optional: other things we want to do on state change
+//       // Here we update the badge text with the counter value.
+//       //    Browser.action.setBadgeText({ text: `${store.getState().counter?.value}` });
+//     });
+//     if (isManifestV3) {
+//       Browser.storage.session
+//         .get(["login"])
+//         .then((res) => {
+//           store.dispatch(setLogin(res?.login ? res.login : false));
+//           resolve(store);
+//         })
+//         .catch(reject);
+//     } else {
+//       Browser.storage.local
+//         .get(["login"])
+//         .then((res) => {
+
+//           store.dispatch(setLogin(res?.login ? res.login : false));
+//           resolve(store);
+//         })
+//         .catch(reject);
+//     }
+//   });
+// }
+
+export const init = (sendStoreMessage = true) => {
   return new Promise((resolve, reject) => {
 
+    getData().then(data => {
+      sendStoreMessage &&
+        Browser.runtime.sendMessage({ type: "STORE_INITIALIZED", data: data });
+      resolve(data);
+    }).catch(e => {
+      console.log("Error when init the app: ", e);
+      reject(e);
+    })
+  })
+}
 
-    const store = configureStore({
-      reducer: { auth: mainReducer },
-      preloadedState,
-      // middleware: [logger],
-    });
+const getData = () => {
+  return new Promise((resolve, reject) => {
 
-    wrapStore(store, { portName: PORT_NAME });
+    localStorage.get("state")
+      .then(res => {
+        console.log("Data from local storage : ",res);
 
-    // Subscribes to the redux store changes. For each state
-    // change, we want to store the new state to the storage.
-    store.subscribe(() => {
-      Browser.storage.local.set({ state: store.getState() });
+        if (!res) {
+          localStorage.set({ state: userState });
+          resolve({ state: userState });
+        } else {
+          resolve(res);
+        }
 
-      // Optional: other things we want to do on state change
-      // Here we update the badge text with the counter value.
-      //    Browser.action.setBadgeText({ text: `${store.getState().counter?.value}` });
-    });
-    if (isManifestV3) {
-      Browser.storage.session
-        .get(["login"])
-        .then((res) => {
-          store.dispatch(setLogin(res?.login ? res.login : false));
-          resolve(store);
-        })
-        .catch(reject);
-    } else {
-      Browser.storage.local
-        .get(["login"])
-        .then((res) => {
-
-          store.dispatch(setLogin(res?.login ? res.login : false));
-          resolve(store);
-        })
-        .catch(reject);
-    }
-  });
+      })
+      .catch(err => {
+        console.log("error : ", err);
+        reject(err);
+      });
+  })
 }
 
 //Load the redux store
@@ -153,7 +196,7 @@ export class Controller {
         //pass the current network http endpoint
         Browser.tabs.sendMessage(data.tabId, {
           id: data.id,
-          response: { result: storage.auth.httpEndPoints[storage.auth.currentNetwork.toLowerCase()] },
+          response: { result: HTTP_END_POINTS[storage.auth.currentNetwork.toUpperCase()] },
           error: null,
         });
       }
@@ -285,7 +328,7 @@ export async function checkTransactions(txData) {
     const isSwap = txData.type.toLowerCase() === "swap";
 
     //check if the current tx is evm tx or native tx
-    const rpcUrl = txData.isEVM ? state.auth.httpEndPoints[txData.chain] || "https://rpc-testnet.5ire.network" : state.auth.api[state.auth.currentNetwork.toLowerCase()];
+    const rpcUrl = txData.isEVM ? HTTP_END_POINTS[txData.chain.toUpperCase()] || "https://rpc-testnet.5ire.network" : API[state.auth.currentNetwork.toUpperCase()];
 
 
     //check if the transaction is still pending or not

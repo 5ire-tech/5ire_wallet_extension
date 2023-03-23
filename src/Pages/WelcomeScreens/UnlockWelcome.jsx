@@ -1,24 +1,25 @@
 import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
-import { INPUT } from "../../Constants/index";
 import PlaceLogo from "../../Assets/PlaceLog.svg";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState, useContext } from "react";
+import { INPUT, LABELS } from "../../Constants/index";
+// import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import { setLogin, toggleLoader } from "../../Utility/redux_helper";
+// import { setLogin, toggleLoader } from "../../Utility/redux_helper";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+import { AuthContext } from "../../Store";
 
 function UnlockWelcome() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const location = useLocation();
   const { verifyPass } = useAuth();
   const [data, setData] = useState("");
   const [errMsg, setErrorMsg] = useState("");
   const [isDisable, setDisable] = useState(true);
-  const { isLogin } = useSelector(state => state.auth);
+  const { state, updateState } = useContext(AuthContext);
+  const { isLogin } = state;
 
 
   useEffect(() => {
@@ -44,15 +45,16 @@ function UnlockWelcome() {
 
   const handleClick = async (e) => {
 
-    if ((e.key === "Enter") || (e.key === undefined)) {
-      dispatch(toggleLoader(true));
+    if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
+      // dispatch(toggleLoader(true));
 
       let res = await verifyPass(data);
-      dispatch(toggleLoader(false));
+      // dispatch(toggleLoader(false));
 
       if (!res.error) {
         if (isLogin !== true)
-          dispatch(setLogin(true));
+          updateState("isLogin", true);
+        // dispatch(setLogin(true));
         navigate(location.state?.redirectRoute || "/wallet");
       }
 
