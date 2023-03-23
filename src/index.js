@@ -8,6 +8,8 @@ import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Browser from "webextension-polyfill";
 import { CONNECTION_NAME } from "./Constants";
+import {getDataLocal} from "../src/Storage/loadstore"
+import { localStorage } from "./Storage";
 
 //For Dev Enviroment Check
 const isDev = process.env.NODE_ENV === "development";
@@ -63,16 +65,12 @@ const initApp = (data) => {
 
 (async () => {
   try {
-  const res = await Browser.storage.local.get("popupRoute");
+  const res = await localStorage.get("popupRoute");
+  browser.runtime.connect({ name: CONNECTION_NAME });
 
-    browser.runtime.connect({ name: CONNECTION_NAME });
-  
-    //Listen for the context data is ready in state
-    browser.runtime.onMessage.addListener((req) => {
-      if (req.type === "APP_READY") {
-        // Initializes the popup logic
-        initApp(req.data);
-      }});
+  //inject the current state into main app
+  const currentLocalState = await getDataLocal("state");
+  initApp(currentLocalState.state);
 
   } catch (err) {
     console.log("Error in the initlization of main app: ", err);

@@ -40,7 +40,7 @@ export const init = (sendStoreMessage = true) => {
 }
 
 //get the data from local storage
-const getData = () => {
+export const getData = () => {
   return new Promise((resolve, reject) => {
 
     localStorage.get("state")
@@ -60,28 +60,6 @@ const getData = () => {
         reject(err);
       });
   })
-}
-
-
-//Load the redux store
-export function loadStore(sendStoreMessage = true) {
-  return new Promise(async (resolve) => {
-    try {
-      Browser.storage.local.get("state").then(async (storage) => {
-        // 1. Initializes the redux store and the message passing.
-        const store = await init(storage.state || { auth: userState });
-        store.dispatch(toggleLoader(false));
-
-        // 2. Sends a message to notify that the store is ready.
-        sendStoreMessage &&
-          Browser.runtime.sendMessage({ type: "STORE_INITIALIZED" });
-        resolve(store);
-      });
-    } catch (err) {
-      // console.log("Here error in store", err);
-      //error while loading the store
-    }
-  });
 }
 
 //inject the script on current webpage
@@ -264,7 +242,7 @@ function showNotification(controller, message) {
 export async function checkTransactions(txData) {
 
   try {
-    const store = await loadStore(false);
+    const store = await getData();
     const controller = Controller.getInstance(store);
     const txHash = isObject(txData.txHash) ? txData.txHash.mainHash : txData.txHash;
 
