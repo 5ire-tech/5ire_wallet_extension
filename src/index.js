@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.scss";
 import App from "./App";
@@ -7,12 +7,10 @@ import browser from "webextension-polyfill";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Browser from "webextension-polyfill";
-import { log } from "./Utility/utility";
 import { CONNECTION_NAME } from "./Constants";
-// import { Store } from "./Scripts/webext-redux/dist/webext-redux";
 
+//For Dev Enviroment Check
 const isDev = process.env.NODE_ENV === "development";
-// import reportWebVitals from "./reportWebVitals";
 
 // eslint-disable-next-line no-extend-native
 Number.prototype.noExponents = function () {
@@ -37,11 +35,11 @@ Number.prototype.noExponents = function () {
   }
 };
 
-const initApp = (data) => {
-  
-  const root = ReactDOM.createRoot(document.getElementById("root"));
+//find the root element for component injection
+const root = ReactDOM.createRoot(document.getElementById("root"));
 
-  
+//init the main app
+const initApp = (data) => {
   root.render(
     <Context>
       <MemoryRouter>
@@ -65,49 +63,19 @@ const initApp = (data) => {
 
 (async () => {
   try {
-    const res = await Browser.storage.local.get("popupRoute");
-  
-  log("here the route: ", res, window);
+  const res = await Browser.storage.local.get("popupRoute");
 
-  if (!isDev) {
     browser.runtime.connect({ name: CONNECTION_NAME });
   
-    // Listens for when the store gets initialized
+    //Listen for the context data is ready in state
     browser.runtime.onMessage.addListener((req) => {
-      if (req.type === "STORE_INITIALIZED") {
+      if (req.type === "APP_READY") {
         // Initializes the popup logic
         initApp(req.data);
       }});
-  } else {
-  
-    const root = ReactDOM.createRoot(document.getElementById("root"));
-    root.render(
-        <Context>
-          <MemoryRouter>
-            <App />
-            <ToastContainer
-              position="top-right"
-              autoClose={4000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="colored"
-            />
-          </MemoryRouter>
-        </Context>
-    );
-    // reportWebVitals();
-  }
-  
-
 
   } catch (err) {
     console.log("Error in the initlization of main app: ", err);
-    const root = ReactDOM.createRoot(document.getElementById("root"));
     root.render(
       <div>Something Bad Happend 😟</div>
     );

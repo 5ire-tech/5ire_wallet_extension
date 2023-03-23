@@ -1,5 +1,3 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { wrapStore } from "./webext-redux/dist/webext-redux";
 import Browser from "webextension-polyfill";
 // import logger from "redux-logger";
 import logger from "redux-logger";
@@ -27,57 +25,12 @@ import {Connection} from "../Helper/connection.helper"
 import {nativeMethod} from "./nativehelper"
 
 
-
-
-// Initializes the Redux store
-// function init(preloadedState) {
-//   return new Promise((resolve, reject) => {
-
-
-//     const store = configureStore({
-//       reducer: { auth: mainReducer },
-//       preloadedState,
-//       // middleware: [logger],
-//     });
-
-//     wrapStore(store, { portName: PORT_NAME });
-
-//     // Subscribes to the redux store changes. For each state
-//     // change, we want to store the new state to the storage.
-//     store.subscribe(() => {
-//       Browser.storage.local.set({ state: store.getState() });
-
-//       // Optional: other things we want to do on state change
-//       // Here we update the badge text with the counter value.
-//       //    Browser.action.setBadgeText({ text: `${store.getState().counter?.value}` });
-//     });
-//     if (isManifestV3) {
-//       Browser.storage.session
-//         .get(["login"])
-//         .then((res) => {
-//           store.dispatch(setLogin(res?.login ? res.login : false));
-//           resolve(store);
-//         })
-//         .catch(reject);
-//     } else {
-//       Browser.storage.local
-//         .get(["login"])
-//         .then((res) => {
-
-//           store.dispatch(setLogin(res?.login ? res.login : false));
-//           resolve(store);
-//         })
-//         .catch(reject);
-//     }
-//   });
-// }
-
 export const init = (sendStoreMessage = true) => {
   return new Promise((resolve, reject) => {
 
     getData().then(data => {
       sendStoreMessage &&
-        Browser.runtime.sendMessage({ type: "STORE_INITIALIZED", data: data });
+        Browser.runtime.sendMessage({ type: "APP_READY", data: data });
       resolve(data);
     }).catch(e => {
       console.log("Error when init the app: ", e);
@@ -86,6 +39,7 @@ export const init = (sendStoreMessage = true) => {
   })
 }
 
+//get the data from local storage
 const getData = () => {
   return new Promise((resolve, reject) => {
 
@@ -107,6 +61,7 @@ const getData = () => {
       });
   })
 }
+
 
 //Load the redux store
 export function loadStore(sendStoreMessage = true) {

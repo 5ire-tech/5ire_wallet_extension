@@ -1,11 +1,9 @@
 import "./App.scss";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useContext } from "react";
 import Send from "./Pages/Send/Send";
 import Swap from "./Pages/Swap/Swap";
 import { AuthContext } from "./Store";
-// import { NETWORK } from "./Constants";
 import { localStorage } from "./Storage";
-// import { useSelector } from "react-redux";
 import Loader from "./Pages/Loader/Loader";
 import Wallet from "./Pages/Wallet/Wallet";
 import NativeTx from "./Components/NativeTx";
