@@ -2,8 +2,11 @@ import Send from "../Send/Send";
 import Swap from "../Swap/Swap.jsx";
 import React, { useState } from "react";
 import style from "./style.module.scss";
+// import { localStorage, sessionStorage } from "../../Storage";
 
 function Wallet() {
+  // localStorage.get("state").then(r => { console.log("State : ", r); }).catch(e => { console.log("e ", e); })
+  // sessionStorage.get("isLogin").then(r => { console.log("isLogin : ", r); }).catch(e => { console.log("e ", e); })
 
   const [activeTab, setActiveTab] = useState("send");
   const activeSend = () => {

@@ -5,7 +5,7 @@ import { setNewAccount } from "../Utility/redux_helper";
 import {
   Controller,
   initScript,
-  loadStore,
+  // loadStore,
   checkTransactions,
   nativeFeeCalculator,
   // loadStore,

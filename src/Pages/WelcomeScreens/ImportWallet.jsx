@@ -5,9 +5,10 @@ import { useNavigate } from "react-router-dom";
 import { decryptor } from "../../Helper/CryptoHelper";
 import React, { useState, useEffect, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import { INPUT, REGEX_WALLET_NAME, ERROR_MESSAGES, LABELS } from "../../Constants/index";
+import { REGEX, ERROR_MESSAGES, LABELS } from "../../Constants/index";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+import { isEmpty } from "../../Utility/utility";
 
 
 
@@ -48,7 +49,7 @@ function ImportWallet() {
       setDisable(true);
     }
 
-    else if (!REGEX_WALLET_NAME.test(data.accName)) {
+    else if (!REGEX.WALLET_NAME.test(data.accName)) {
 
       setWarrning(p => ({ ...p, acc: ERROR_MESSAGES.ALPHANUMERIC_CHARACTERS }))
       setDisable(true);
@@ -61,8 +62,8 @@ function ImportWallet() {
   };
 
   const validateKey = () => {
-    if (data.key.length === 0) {
-      setWarrning((p) => ({ ...p, key: INPUT.REQUIRED }));
+    if (isEmpty(data.key)) {
+      setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
       setDisable(true)
     } else {
       setWarrning((p) => ({ ...p, key: "" }));
@@ -71,11 +72,11 @@ function ImportWallet() {
 
   const handleClick = async (e) => {
     if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
-      if (data.key.length === 0) {
-        setWarrning((p) => ({ ...p, key: INPUT.REQUIRED }));
+      if (isEmpty(data.key)) {
+        setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
         setDisable(true);
-      } else if (data.accName.trim().length === 0) {
-        setWarrning((p) => ({ ...p, acc: INPUT.REQUIRED }));
+      } else if (isEmpty(data.accName.trim())) {
+        setWarrning((p) => ({ ...p, acc: ERROR_MESSAGES.INPUT_REQUIRED }));
         setDisable(true);
       } else {
         if (!warrning.key && !warrning.acc) {

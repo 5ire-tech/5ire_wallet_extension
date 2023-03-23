@@ -1,13 +1,13 @@
 import bcrypt from "bcryptjs";
-import {useContext} from "react";
+import { useContext } from "react";
 import { AuthContext } from "../Store";
-import {LABELS} from "../Constants/index";
 import Browser from "webextension-polyfill";
 import { isManifestV3 } from "../Scripts/utils";
 import { encryptor } from "../Helper/CryptoHelper";
+import { LABELS, ERROR_MESSAGES, SUCCESS_MESSAGES} from "../Constants/index";
 
 export default function useAuth() {
-  const {state, updateState} = useContext(AuthContext);
+  const { state, updateState } = useContext(AuthContext);
   const { allAccounts, newAccount } = state;
 
   const setUserPass = (p) => {
@@ -27,31 +27,31 @@ export default function useAuth() {
             };
 
             const currentAccountDetails = {
-              index : allAccounts.length,
-              accountName : newAccount.accountName,          
+              index: allAccounts.length,
+              accountName: newAccount.accountName,
             }
 
             updateState(LABELS.PASS, hash);
-            updateState(LABELS.NEW_ACCOUNT,null);
+            updateState(LABELS.NEW_ACCOUNT, null, false);
             updateState(LABELS.ALL_ACCOUNTS, [...allAccounts, dataToDispatch]);
-            updateState(LABELS.CURRENT_ACCOUNT,currentAccountDetails );
-            updateState(LABELS.ISLOGIN,true);
-            
-            if (isManifestV3) {
-              await Browser.storage.session.set({ login: true });
-            } else {
-              await Browser.storage.local.set({ login: true });
-            }
+            updateState(LABELS.CURRENT_ACCOUNT, currentAccountDetails);
+            updateState(LABELS.ISLOGIN, true, true, true);
+
+            // if (isManifestV3) {
+            //   await Browser.storage.session.set({ login: true });
+            // } else {
+            //   await Browser.storage.local.set({ login: true });
+            // }
             resolve({
               error: false,
-              data: "Successfully created password for user.",
+              data: SUCCESS_MESSAGES.PASS_CREATED_SUCCESS,
             });
-          } else throw new Error("Error");
-        } else throw new Error("Error");
+          } else throw new Error();
+        } else throw new Error();
       } catch (error) {
         resolve({
           error: true,
-          data: "Error occured.",
+          data: ERROR_MESSAGES.ERR_OCCURED,
         });
       }
     });
@@ -66,23 +66,23 @@ export default function useAuth() {
           await Browser.storage.session.set({ login: true });
         } else {
           await Browser.storage.local.set({ login: true });
-        } 
+        }
 
         return {
           error: false,
-          data: "Login successfully.",
+          data: SUCCESS_MESSAGES.LOGIN_SUCCESS,
         };
       } else {
         return {
           error: true,
-          data: "Incorrect password.",
+          data: ERROR_MESSAGES.INCORRECT_PASS,
         };
       }
     } catch (error) {
-      // console.log("Error : ", error);
+      console.log("Error : ", error);
       return {
         error: true,
-        data: "Error Occured.",
+        data: ERROR_MESSAGES.ERR_OCCURED,
       };
     }
   };
@@ -98,13 +98,13 @@ export default function useAuth() {
 
       return {
         error: false,
-        data: "Logout successfully!",
+        data: SUCCESS_MESSAGES.LOGOUT_SUCCESS,
       };
     } catch (error) {
       console.log("Error : ", error);
       return {
         error: false,
-        data: "Error while logging out!",
+        data: ERROR_MESSAGES.LOGOUT_ERR,
       };
     }
   };

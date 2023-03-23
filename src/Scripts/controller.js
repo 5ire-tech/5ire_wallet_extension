@@ -1,8 +1,7 @@
-import Browser from "webextension-polyfill";
-// import logger from "redux-logger";
 import logger from "redux-logger";
 import { isManifestV3 } from "./utils";
 import { localStorage } from "../Storage";
+import Browser from "webextension-polyfill";
 import NotificationManager from "./platform";
 import {userState} from "../Store/initialState";
 // import { configureStore } from "@reduxjs/toolkit";
@@ -18,9 +17,14 @@ import {
 } from "../Utility/redux_helper";
 import {mainReducer} from "../Store/reducer/auth"
 
-import {HTTP_METHODS, PORT_NAME, EVM_JSON_RPC_METHODS,  API,
+import {
+  API,
   STATUS,
-  HTTP_END_POINTS, } from "../Constants";
+  PORT_NAME, 
+  HTTP_METHODS, 
+  HTTP_END_POINTS,
+  EVM_JSON_RPC_METHODS,  
+ } from "../Constants";
 import {Connection} from "../Helper/connection.helper"
 import {nativeMethod} from "./nativehelper"
 
@@ -30,7 +34,7 @@ export const init = (sendStoreMessage = true) => {
 
     getData().then(data => {
       sendStoreMessage &&
-        Browser.runtime.sendMessage({ type: "APP_READY", data: data });
+        // Browser.runtime.sendMessage({ type: "APP_READY", data: data });
       resolve(data);
     }).catch(e => {
       console.log("Error when init the app: ", e);

@@ -8,7 +8,7 @@ import {
   mnemonicValidate,
   ed25519PairFromSeed
 } from "@polkadot/util-crypto";
-import { loadStore } from "./controller";
+// import { loadStore } from "./controller";
 
 
 //for fee calculation
@@ -16,7 +16,8 @@ const DECIMALS = 10 ** 18;
 
 export const nativeMethod = async () => {
 
-const store = await loadStore(false);
+// const store = await loadStore(false);
+let store ={};
 const state = await store.getState();
 const {pass, currentAccount} = state.auth;
 

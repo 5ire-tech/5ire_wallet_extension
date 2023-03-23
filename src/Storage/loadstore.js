@@ -6,7 +6,7 @@ import { userState } from "../Store/initialState";
 //local storage data null safety check
 export const getDataLocal = async (key) => {
     try {
-        if(!isString(key) && key.trim().length === 0) throw new Error("Query Key is invalid");
+        if(!isString(key) && key.trim().length === 0) throw new Error("Query key is invalid");
         const localState = await localStorage.get(key);
 
         if(!localState) {
@@ -25,7 +25,7 @@ export const getDataLocal = async (key) => {
 //session storage data null safety check
 export const getDataSession = async (key) => {
     try {
-        if(!isString(key) && key.trim().length === 0) throw new Error("Query Key is invalid");
+        if(!isString(key) && key.trim().length === 0) throw new Error("Query key is invalid");
         const sessionState = await sessionStorage.get(key);
 
         if(!sessionState) {

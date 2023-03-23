@@ -4,7 +4,7 @@ import React, { useState, useContext, useEffect, useRef } from "react";
 import { AuthContext } from "../../Store";
 import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
-import { LABELS, TX_TYPE } from "../../Constants/index";
+import { EMTY_STR, LABELS, TX_TYPE } from "../../Constants/index";
 import Logout from "../../Assets/PNG/logout.png";
 import Import from "../../Assets/PNG/import.png";
 import Wallet from "../../Assets/WalletIcon.svg";
@@ -40,7 +40,7 @@ function MenuFooter() {
   const [open2, setOpen2] = useState(false);
   const [history, setHistory] = useState([]);
   const [accData, setAccData] = useState([]);
-  const path = getLocation.pathname.replace("/", "");
+  const path = getLocation.pathname.replace("/", EMTY_STR);
 
   const { currentAccount, allAccounts, currentNetwork} = state;
 
@@ -168,7 +168,7 @@ function MenuFooter() {
               to={
                 data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase()
                   ? data.to
-                  : `${data?.to ? `To: ` + shortner(data.to) : ""}`
+                  : `${data?.to ? `To: ` + shortner(data.to) : EMTY_STR}`
               }
               amount={`${data?.amount} 5ire`}
               status={data?.status.charAt(0).toUpperCase() + data?.status.slice(1)}

@@ -1,17 +1,28 @@
 export const EVM = "Evm";
+export const EMTY_STR = "";
 export const NATIVE = "Native";
 export const TEMP2P = "temp2p";
 export const TEMP1M = "temp1m";
 export const COPIED = "Copied!";
+export const WINDOW_WIDTH = 400;
+export const WINDOW_HEIGHT = 620;
 export const DECIMALS = 10 ** 18;
 export const CONNECTION_NAME = "5IRE_EXT";
 export const PORT_NAME = "WEBEXT_REDUX_TEST";
 export const UI_CONNECTION_NAME = "5IRE_EXT_UI";
-export const WINDOW_HEIGHT = 620;
-export const WINDOW_WIDTH = 400;
-export const REGEX_WALLET_NAME = /^[a-z0-9\s]+$/i;
 export const ACCOUNT_CHANGED_EVENT = 'accountChanged';
 
+
+/* Regular expressions */
+export const REGEX = {
+    MIN_LENGTH: /.{8,}/,
+    DIGITS: /(?=.*?[0-9])/,
+    LOWERCASE: /(?=.*?[a-z])/,
+    UPPERCASE: /(?=.*?[A-Z])/,
+    WALLET_NAME: /^[a-z0-9\s]+$/i,
+    SPECIAL_CHAR: /(?=.*?[#?!@$%^&*-])/
+
+}
 
 export const TX_TYPE = {
     SEND: "Transfer",
@@ -27,10 +38,6 @@ export const STATUS = {
     FAILED: "Failed",
     PENDING: "Pending",
     SUCCESS: "Success",
-};
-
-export const INPUT = {
-    REQUIRED: "This field is required.",
 };
 
 export const HTTP_METHODS = {
@@ -50,7 +57,13 @@ export const EVM_JSON_RPC_METHODS = {
 };
 
 export const ERROR_MESSAGES = {
+    ERR_OCCURED: "Error occured.",
+    INVALID_MNEMONIC:"Invalid mnemonic.",
+    LOGOUT_ERR: "Error while logging out",
+    INCORRECT_PASS: "Incorrect password.",
     INCORRECT_ADDRESS: "Incorrect address.",
+    INPUT_REQUIRED: "This field is required.",
+    PASS_DONT_MATCH: "Passwords do not match.",
     INSUFFICENT_BALANCE: "Insufficent Balance.",
     UNDEF_PROPERTY: "Object not has given property",
     ENTER_AMOUNT_CORRECTLY: "Please enter amount correctly.",
@@ -60,7 +73,14 @@ export const ERROR_MESSAGES = {
     ALPHANUMERIC_CHARACTERS: "Please enter alphanumeric characters only.",
     MNEMONICS_ALREADY_EXISTS: "Wallet with this mnemonic already exists.",
     INPUT_BETWEEN_2_TO_18: "Please input account name between " + 2 + " and " + 18 + " characters.",
+    CREATE_PASS_MSG: "Password must have at least 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
 
+};
+
+export const SUCCESS_MESSAGES = {
+    LOGIN_SUCCESS: "Login successfully.",
+    LOGOUT_SUCCESS: "Logout successfully",
+    PASS_CREATED_SUCCESS: "Successfully created password for user.",
 };
 
 
@@ -71,9 +91,10 @@ export const LABELS = {
     ISLOGIN: "isLogin",
     SUCCESS: "success",
     BALANCE: "balance",
+    TX_HISTORY : "txHistory",
+    NEW_ACCOUNT: "newAccount",
     ALL_ACCOUNTS: "allAccounts",
     ACCOUNT_NAME: "accountName",
-    NEW_ACCOUNT: "newAccount",
     CURRENT_ACCOUNT: "currentAccount",
 };
 
@@ -92,6 +113,16 @@ export const WS_END_POINTS = {
     TESTNET: "wss://wss-testnet.5ire.network"
 };
 
+export const ROUTES = {
+    DEFAULT: "/",
+    WALLET: "/wallet",
+    SET_PASS: "/setPassword",
+    SWAP_APPROVE: "/swapapprove",
+    UNLOACK_WALLET: "/unlockWallet",
+    UNLOCK_WELCOME: "/unlockWallet",
+    ENTER_PASS: "/enterPassword"
+}
+
 export const ACTIONS = {
     setSite: "setSite",
     setLogin: "setLogin",
@@ -99,7 +130,6 @@ export const ACTIONS = {
     setTxPopup: "setTxPopup",
     toggleSite: "toggleSite",
     setBalance: "setBalance",
-    setAccounts: "setAccounts",
     setPassword: "setPassword",
     pushAccounts: "pushAccounts",
     resetBalance: "resetBalance",
@@ -107,6 +137,7 @@ export const ACTIONS = {
     toggleLoader: "toggleLoader",
     setCurrentAcc: "setCurrentAcc",
     setNewAccount: "setNewAccount",
+    setAllAccounts: "setAllAccounts",
     setAccountName: "setAccountName",
     updateTxHistory: "updateTxHistory",
     setCurrentNetwork: "setCurrentNetwork",

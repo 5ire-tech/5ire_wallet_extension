@@ -1,15 +1,15 @@
-import style from "./style.module.scss";
 import { toast } from "react-toastify";
+import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
+import { isEmpty } from "../../Utility/utility";
+import { AuthContext } from "../../Store";
 import { useParams } from "react-router-dom";
-import { INPUT, LABELS } from "../../Constants/index";
 import { useNavigate } from "react-router-dom";
-import React, { useEffect, useState, useContext} from "react";
-// import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
+import { REGEX, LABELS, ERROR_MESSAGES, EMTY_STR, ROUTES } from "../../Constants/index";
 import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
-import { AuthContext } from "../../Store";
 
 
 
@@ -17,64 +17,56 @@ export default function SetPasswordScreen() {
   const params = useParams();
   const navigate = useNavigate();
   const { setUserPass } = useAuth();
-  const { state,updateState } = useContext(AuthContext);
-  const [error, setError] = useState("");
   const [show, setShow] = useState(false);
-  const [confirmError, setconfirmError] = useState("");
-  // const dispatch = useDispatch();
-  // const { isLogin } = useSelector((state) => state.auth);
-  const [pass, setPass] = useState({ pass: "", confirmPass: "" });
+  const [error, setError] = useState(EMTY_STR);
+  const [confirmError, setconfirmError] = useState(EMTY_STR);
+  const { state, updateState } = useContext(AuthContext);
+  const [pass, setPass] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
 
 
   useEffect(() => {
 
-    if (pass.confirmPass === pass.pass || pass.pass === "") {
-      setconfirmError("");
+    if (pass.confirmPass === pass.pass || pass.pass === EMTY_STR) {
+      setconfirmError(EMTY_STR);
     } else {
-      if (pass.confirmPass !== "")
-        setconfirmError("Passwords do not match.")
+
+      if (pass.confirmPass !== EMTY_STR)
+        setconfirmError(ERROR_MESSAGES.PASS_DONT_MATCH)
     }
-  }, [pass.pass, pass.confirmPass])
+  }, [pass.pass, pass.confirmPass]);
+
 
   const validatePass = () => {
-    const uppercaseRegExp = /(?=.*?[A-Z])/;
-    const lowercaseRegExp = /(?=.*?[a-z])/;
-    const digitsRegExp = /(?=.*?[0-9])/;
-    const specialCharRegExp = /(?=.*?[#?!@$%^&*-])/;
-    const minLengthRegExp = /.{8,}/;
-    let errMsg = "";
+    let errMsg = EMTY_STR;
 
-
-    if (pass.pass.length === 0) {
-      errMsg = INPUT.REQUIRED;
-    }
+    if (pass.pass.length === 0)
+      errMsg = ERROR_MESSAGES.INPUT_REQUIRED;
 
     else if (
-      !uppercaseRegExp.test(pass.pass) ||
-      !lowercaseRegExp.test(pass.pass) ||
-      !digitsRegExp.test(pass.pass) ||
-      !specialCharRegExp.test(pass.pass) ||
-      !minLengthRegExp.test(pass.pass)
-    ) {
-      errMsg = "Password must have at least 8 characters, combination of Mixed case, 1 Special Character and 1 Number.";
-    }
+      !REGEX.UPPERCASE.test(pass.pass) ||
+      !REGEX.LOWERCASE.test(pass.pass) ||
+      !REGEX.DIGITS.test(pass.pass) ||
+      !REGEX.SPECIAL_CHAR.test(pass.pass) ||
+      !REGEX.MIN_LENGTH.test(pass.pass)
+    )
+      errMsg = ERROR_MESSAGES.CREATE_PASS_MSG;
 
-    else {
-      errMsg = "";
-    }
+    else
+      errMsg = EMTY_STR;
+
     setError(errMsg);
   };
 
-  const validateConfirmPass = () => {
 
+  const validateConfirmPass = () => {
     if (pass.confirmPass.length === 0)
-      setconfirmError(INPUT.REQUIRED);
+      setconfirmError(ERROR_MESSAGES.INPUT_REQUIRED);
 
     else if (pass.confirmPass !== pass.pass)
-      setconfirmError("Passwords do not match.");
+      setconfirmError(ERROR_MESSAGES.PASS_DONT_MATCH);
 
     else
-      setconfirmError("");
+      setconfirmError(EMTY_STR);
 
   };
 
@@ -82,33 +74,29 @@ export default function SetPasswordScreen() {
 
     if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
 
-      if (pass.pass.length === 0 && pass.confirmPass.length === 0) {
-        setError(INPUT.REQUIRED);
-        setconfirmError(INPUT.REQUIRED);
+      if (isEmpty(pass.pass) && isEmpty(pass.confirmPass)) {
+        setError(ERROR_MESSAGES.INPUT_REQUIRED);
+        setconfirmError(ERROR_MESSAGES.INPUT_REQUIRED);
       }
-      else if (pass.pass.length === 0) {
-        setError(INPUT.REQUIRED);
+      else if (isEmpty(pass.pass)) {
+        setError(ERROR_MESSAGES.INPUT_REQUIRED);
       }
-      else if (pass.confirmPass.length === 0) {
-        setconfirmError(INPUT.REQUIRED);
+      else if (isEmpty(pass.confirmPass)) {
+        setconfirmError(ERROR_MESSAGES.INPUT_REQUIRED);
       }
       else {
         if (!error && !confirmError) {
-          // dispatch(toggleLoader(true));
           let res = await setUserPass(pass.pass);
-          if (res.error) {
-            // dispatch(toggleLoader(false));
+          if (res.error)
             toast.error(res.data);
-          } else {
-            // dispatch(toggleLoader(false));
+          else {
             setShow(true);
             setTimeout(() => {
               if (state.isLogin !== true) updateState(LABELS.ISLOGIN, true);
-              // dispatch(setLogin(true));
               setShow(false);
               setTimeout(() => {
-                navigate("/wallet");
-              }, 500);
+                navigate(ROUTES.WALLET);
+              }, 200);
             }, 2000);
           }
         }
@@ -137,7 +125,6 @@ export default function SetPasswordScreen() {
           </p>
           <div className={style.cardWhite__beginText__passInputSec}>
             <InputFieldSimple
-              // type="password"
               value={pass.pass}
               name={LABELS.PASS}
               onChange={handleChange}
@@ -150,7 +137,6 @@ export default function SetPasswordScreen() {
           <p className={style.errorText}>{error ? error : ""}</p>
           <div className={style.cardWhite__beginText__passInputSec}>
             <InputFieldSimple
-              // type="password"
               value={pass.confirmPass}
               name="confirmPass"
               onChange={handleChange}

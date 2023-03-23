@@ -1,12 +1,12 @@
 import "./App.scss";
-import { useEffect, useContext } from "react";
 import Send from "./Pages/Send/Send";
 import Swap from "./Pages/Swap/Swap";
 import { AuthContext } from "./Store";
-import { localStorage } from "./Storage";
+import {EMTY_STR} from "./Constants/index";
 import Loader from "./Pages/Loader/Loader";
 import Wallet from "./Pages/Wallet/Wallet";
 import NativeTx from "./Components/NativeTx";
+import { useEffect, useContext } from "react";
 import OnlyContent from "./Layout/OnlyContent";
 import WelcomeLayout from "./Layout/WelcomeLayout";
 import FixWidthLayout from "./Layout/FixWidthLayout";
@@ -30,22 +30,22 @@ function getParameterByName(name, url = window.location.href) {
   var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
     results = regex.exec(url);
   if (!results) return null;
-  if (!results[2]) return "";
+  if (!results[2]) return EMTY_STR;
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
 function App(props) {
-  const { setState, state} = useContext(AuthContext);
-  const {allAccounts, isLogin, pass} = state;
   const navigate = useNavigate();
+  const { setState, state } = useContext(AuthContext);
+  const { allAccounts, isLogin, pass } = state;
 
-  useEffect(()=>{
-    setState(props.data.state);
-  },[]);
+  useEffect(() => {
+    setState(props.data);
+  }, []);
 
   useEffect(() => {
 
-    if(props.popupRoute && props.popupRoute?.length > 0 && state?.isLogin) {
+    if (props.popupRoute && props.popupRoute?.length > 0 && state?.isLogin) {
       navigate(`/${props.popupRoute}`);
       return;
     }
@@ -54,14 +54,14 @@ function App(props) {
 
     if (route) {
       navigate("/" + route);
-    }else{
+    } else {
       navigate("/");
     }
 
     if (!isLogin && allAccounts?.length > 0 && pass) {
       navigate("/unlockWallet", {
         state: {
-          redirectRoute: route ? "/" + route : "",
+          redirectRoute: route ? "/" + route : EMTY_STR,
         },
       });
     } else if (allAccounts.length <= 0) {
@@ -92,7 +92,7 @@ function App(props) {
               path="/setPassword/:id"
               element={<WelcomeLayout children={<SetPasswordScreen />} />}
             />
-  
+
             <Route
               path="/unlockWallet"
               element={<WelcomeLayout children={<UnlockWelcome />} />}

@@ -27,6 +27,11 @@ export function isHasLength(arg) {
 }
 
 //check if string or array has length
+export function isEmpty(str) {
+   return str.length === 0 
+}
+
+//check if string or array has length
 export function compStr(a, b) {
     return a === b;
 }

@@ -134,7 +134,7 @@ function Swap() {
   const validateAmount = () => {
 
     if (amount.length === 0)
-      setError(INPUT.REQUIRED);
+      setError(ERROR_MESSAGES.INPUT_REQUIRED);
 
     else if (isNaN(amount))
       setError(ERROR_MESSAGES.ENTER_AMOUNT_CORRECTLY);

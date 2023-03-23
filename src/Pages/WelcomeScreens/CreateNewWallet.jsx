@@ -3,8 +3,8 @@ import { AuthContext } from "../../Store";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
+import { LABELS, REGEX, ERROR_MESSAGES } from "../../Constants/index";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
-import { INPUT, LABELS, REGEX_WALLET_NAME, ERROR_MESSAGES} from "../../Constants/index";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 
 function CreateNewWallet() {
@@ -13,7 +13,7 @@ function CreateNewWallet() {
   const [warrning, setWarrning] = useState("");
   const [isDisable, setDisable] = useState(true);
   const { state, updateState } = useContext(AuthContext);
-  const{allAccounts} = state;
+  const { allAccounts } = state;
 
 
   const handleChange = (e) => {
@@ -28,7 +28,7 @@ function CreateNewWallet() {
       setDisable(true);
     }
 
-    else if (!REGEX_WALLET_NAME.test(data)) {
+    else if (!REGEX.WALLET_NAME.test(data)) {
       setWarrning(ERROR_MESSAGES.ALPHANUMERIC_CHARACTERS);
       setDisable(true);
     }
@@ -42,7 +42,7 @@ function CreateNewWallet() {
   const handleClick = () => {
 
     if (data.trim().length === 0)
-      setWarrning(INPUT.REQUIRED);
+      setWarrning(ERROR_MESSAGES.INPUT_REQUIRED);
 
     else {
       if (!warrning) {
@@ -50,7 +50,6 @@ function CreateNewWallet() {
         if (match) {
           setWarrning(ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS);
         } else {
-
           updateState(LABELS.ACCOUNT_NAME, data.trim(), false);
           navigate("/beforebegin");
         }
