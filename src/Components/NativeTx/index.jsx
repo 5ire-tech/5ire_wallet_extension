@@ -88,6 +88,11 @@ function NativeTx() {
                     methodName = "Withdraw Nominator Unbonded";
                     break;
 
+                case "native_withdraw_validator_unbonded":
+                    feeData = await withdrawNominatorUnbonded(apiRes.nativeApi, auth?.uiData?.message, true);
+                    methodName = "Withdraw Validator Unbonded";
+                    break;
+
                 case "native_add_validator":
                     feeData = await addValidator(apiRes.nativeApi, auth?.uiData?.message, true);
                     methodName = "Add Validator";
@@ -191,6 +196,9 @@ function NativeTx() {
                         res = await withdrawNominatorUnbonded(apiRes.nativeApi, auth?.uiData?.message);
                         break;
 
+                    case "native_withdraw_validator_unbonded":
+                        res = await withdrawNominatorUnbonded(apiRes.nativeApi, auth?.uiData?.message);
+                        break;
                     case "native_add_validator":
                         res = await addValidator(apiRes.nativeApi, auth?.uiData?.message);
                         break;
