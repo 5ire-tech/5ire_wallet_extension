@@ -58,6 +58,8 @@ function App(props) {
       navigate("/");
     }
 
+    // console.log("isLogin : ", isLogin, "all accounts length : ",allAccounts.length, " pass : ",pass);
+
     if (!isLogin && allAccounts?.length > 0 && pass) {
       navigate("/unlockWallet", {
         state: {
@@ -68,19 +70,19 @@ function App(props) {
       navigate("/");
     } else if (route) {
       navigate("/" + route);
-    } else if (state?.isLogin) {
+    } else if (isLogin) {
       navigate("/wallet");
     } else {
       navigate("/");
     }
 
-  }, [state?.isLogin]);
+  }, [isLogin]);
 
 
   return (
     <div className="App">
       <Routes>
-        {!state.isLogin ? (
+        {!isLogin ? (
           <>
             <Route
               index

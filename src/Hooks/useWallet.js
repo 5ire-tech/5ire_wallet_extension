@@ -31,7 +31,7 @@ import {
 
 export default function UseWallet() {
 
-  const { state, updateState, updatedTxHistory } = useContext(AuthContext);
+  const { state, updateState, setTxHistory } = useContext(AuthContext);
   const accountData = useRef(null);
   const {
     pass,
@@ -52,7 +52,7 @@ export default function UseWallet() {
   });
 
   useEffect(() => {
-    console.log("allAccounts  : ", allAccounts);
+    // console.log("allAccounts  : ", allAccounts);
     accountData.current = allAccounts[currentAccount.index];
   }, [currentAccount.index]);
 
@@ -229,8 +229,6 @@ export default function UseWallet() {
   const getBalance = async (evm_api, native_api, isHttp = true) => {
     try {
       let nbalance = 0;
-
-      console.log("Getting balance   ::: => : ", accountData.current);
 
       // Evm Balance
       const w3balance = await evm_api?.eth?.getBalance(
@@ -492,22 +490,7 @@ export default function UseWallet() {
             dataToDispatch.data.txHash = hash;
             dataToDispatch.data.status = txStatus;
 
-            updateState(accountData.current.accountName, dataToDispatch);
-
-
-
-            // accountData.current.txHistory.push(dataToDispatch);
-            // // console.log("accountData.current : ",accountData.current);
-
-            // let tempArr = allAccounts;
-            // console.log("Temp array before", tempArr);
-
-            // tempArr[currentAccount.index] = accountData.current;
-            // console.log("Temp array after", tempArr);
-            // updateState("allAccounts",tempArr)
-
-            // dispatch(setTxHistory(dataToDispatch));
-            // dispatch(toggleLoader(false));
+            setTxHistory(accountData.current.accountName,dataToDispatch);
 
             //send the tx notification
             Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase() } });
@@ -518,13 +501,13 @@ export default function UseWallet() {
               data: hash,
             });
           }
-          else throw new Error();
+          else throw new Error("");
         }
       } catch (error) {
         console.log("Error occured while evm transfer: ", error);
         dataToDispatch.data.txHash = "";
         dataToDispatch.data.status = STATUS.FAILED;
-        updateState(accountData.current.accountName, dataToDispatch);
+        setTxHistory(accountData.current.accountName,dataToDispatch);
         resolve({
           error: true,
           data: "Error while transfer.",

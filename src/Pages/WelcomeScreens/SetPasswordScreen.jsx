@@ -92,7 +92,7 @@ export default function SetPasswordScreen() {
           else {
             setShow(true);
             setTimeout(() => {
-              if (state.isLogin !== true) updateState(LABELS.ISLOGIN, true);
+              // if (state.isLogin !== true) updateState(LABELS.ISLOGIN, true);
               setShow(false);
               setTimeout(() => {
                 navigate(ROUTES.WALLET);

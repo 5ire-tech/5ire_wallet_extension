@@ -50,6 +50,14 @@ export const shortLongAddress = (data = '', startLen = 10, endLen = 10) => {
     return `${data.substring(0, startLen)}...${data.substring(data.length - endLen, data.length)}`;
 };
 
+export const arrayReverser = arr => {
+    const newArr = [];
+    for (let i = arr.length - 1; i >= 0; i--) {
+      newArr.push(arr[i]);
+    }
+    return(newArr)
+}
+
 
 //logging utility
 export function log(...logs) {

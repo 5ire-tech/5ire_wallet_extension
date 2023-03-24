@@ -20,6 +20,7 @@ export default function Context({ children }) {
 
     if (toSession) {
       if (isManifestV3) {
+        console.log("Setting to Session storage : ",{ [name]: data });
         sessionStorage.set({ [name]: data });
       } else {
         localStorage.set({ [name]: data });
@@ -30,19 +31,39 @@ export default function Context({ children }) {
   };
 
   const setTxHistory = (accName, data) => {
-    const dataToSet = {
-      ...state,
-      txHistory: state.txHistory[accName].push(data)
+
+      let dataToSet = {}
+    if (state.txHistory[state.currentAccount.accountName]) {
+      setState(p => {
+        return {
+          ...p,
+          txHistory: p.txHistory[accName].push(data)
+        }
+      });
+      dataToSet = {
+        ...state,
+        txHistory: state.txHistory[accName].push(data)
+      }
+    } else {
+      setState(p => {
+        return {
+          ...p,
+          txHistory: {
+            ...p.txHistory,
+            [accName] : data
+          }
+        }
+      });
+      dataToSet = {
+        ...state,
+        txHistory: {
+          ...state.txHistory,
+          [accName] : [data]
+        }
+      }
     }
     
     localStorage.set({ state: dataToSet });
-
-    setState(p => {
-      return {
-        ...p,
-        txHistory: p.txHistory[accName].push(data)
-      }
-    });
 
   }
 

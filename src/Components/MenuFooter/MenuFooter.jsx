@@ -1,15 +1,15 @@
 import { Drawer } from "antd";
 import { toast } from "react-toastify";
-import React, { useState, useContext, useEffect, useRef } from "react";
-import { AuthContext } from "../../Store";
 import style from "./style.module.scss";
+import { AuthContext } from "../../Store";
 import useAuth from "../../Hooks/useAuth";
-import { EMTY_STR, LABELS, TX_TYPE } from "../../Constants/index";
+import Browser from "webextension-polyfill";
 import Logout from "../../Assets/PNG/logout.png";
 import Import from "../../Assets/PNG/import.png";
 import Wallet from "../../Assets/WalletIcon.svg";
 import Setting from "../../Assets/PNG/setting.png";
 import Sendhistry from "../../Assets/sendhistry.svg";
+import { arrayReverser } from "../../Utility/utility";
 import HistoryIcon from "../../Assets/PNG/histry.png";
 import Myaccount from "../../Assets/PNG/myaccount.png";
 import BackArrow from "../../Assets/PNG/arrowright.png";
@@ -18,22 +18,23 @@ import SocialAccount from "../SocialAccount/SocialAccount";
 import ModalCloseIcon from "../../Assets/ModalCloseIcon.svg";
 import ManageCustom from "../ManageCustomtocken/ManageCustom";
 import Createaccount from "../../Assets/PNG/createaccount.png";
+import { ACCOUNT_CHANGED_EVENT } from "../../Scripts/constants";
 import AccountSetting from "../AccountSetting/AccountSetting.jsx";
+import { EMTY_STR, LABELS, TX_TYPE } from "../../Constants/index";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useContext, useEffect, useRef } from "react";
+import { getCurrentTabUId, getCurrentTabUrl } from "../../Scripts/utils";
 import TransectionHistry from "../TransectionHistry/TransectionHistry";
 import FooterStepOne, {
   ApproveLogin,
   FooterStepTwo,
   ApproveTx,
 } from "./FooterContinue";
-import Browser from "webextension-polyfill";
-import { ACCOUNT_CHANGED_EVENT } from "../../Scripts/constants";
-import { getCurrentTabUId, getCurrentTabUrl } from "../../Scripts/utils";
 
 function MenuFooter() {
   const { logout } = useAuth();
   const navigate = useNavigate();
-  const { state, updateState} = useContext(AuthContext);
+  const { state, updateState } = useContext(AuthContext);
   const getLocation = useLocation();
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
@@ -42,7 +43,7 @@ function MenuFooter() {
   const [accData, setAccData] = useState([]);
   const path = getLocation.pathname.replace("/", EMTY_STR);
 
-  const { currentAccount, allAccounts, currentNetwork} = state;
+  const { currentAccount, allAccounts, currentNetwork, txHistory } = state;
 
   useEffect(() => {
     setAccData(allAccounts ? allAccounts[currentAccount.index] : {});
@@ -103,16 +104,18 @@ function MenuFooter() {
   const handleHistoryOpen = () => {
     setOpen1(true);
 
-    console.log("accData : ",accData);
-    
-    let filterData = accData.txHistory.filter((his) => {
+    let txData = txHistory[accData.accountName] ?
+      txHistory[accData.accountName].filter(data => data.chain?.toLoweCase() === currentNetwork.toLowerCase())
+      : [];
+
+    console.log("txData : ", txData);
+
+    const filterData = accData.txHistory.filter((his) => {
       return his.chain?.toLoweCase() === currentNetwork.toLowerCase();
     });
-    let newArr = [];
-    for (let i = filterData.length - 1; i >= 0; i--) {
-      newArr.push(filterData[i]);
-    }
-    setHistory(newArr);
+
+    // setHistory(arrayReverser(filterData));
+    setHistory([{dateTime:" ", type:"Transfer", txHash : "wghgewqert", to : "efgbn", amount: "100",status:"pending"}]);
   }
 
 

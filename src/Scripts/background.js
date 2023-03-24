@@ -135,6 +135,10 @@ try {
     }
   });
 
+  Browser.windows.onRemoved.addListener(function(windowid) {
+    console.log("WINDOW REMOVED");
+   })
+
   /**
    *  Sent to the event page just before it is unloaded.
    *  This gives the extension opportunity to do some clean up.
@@ -159,6 +163,7 @@ try {
     checkTransactions({...txData.data, statusCheck: txData.statusCheck});
   }
 
+  
 
   //estimate the native gas fee
   async function gasEstimationNative(args) {

@@ -8,8 +8,9 @@ import Browser from "webextension-polyfill";
 import browser from "webextension-polyfill";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { CONNECTION_NAME, EMTY_STR} from "./Constants";
-import {getDataLocal} from "../src/Storage/loadstore"
+import { CONNECTION_NAME, EMTY_STR, LABELS } from "./Constants";
+import { getDataLocal, getDataSession } from "../src/Storage/loadstore"
+import { sessionStorage } from "../src/Storage/index";
 
 //For Dev Enviroment Check
 const isDev = process.env.NODE_ENV === "development";
@@ -65,18 +66,34 @@ const initApp = (data) => {
 
 (async () => {
   try {
-  const res = await localStorage.get("popupRoute");
-  browser.runtime.connect({ name: CONNECTION_NAME });
+    const res = await localStorage.get("popupRoute");
+    browser.runtime.connect({ name: CONNECTION_NAME });
 
-  //inject the current state into main app
-  const currentLocalState = await getDataLocal("state");
-  console.log("Current local state : ",currentLocalState);
-  initApp(currentLocalState);
+    //inject the current state into main app
+    const currentLocalState = await getDataLocal("state");
+    const loginState = await sessionStorage.get("isLogin");
+
+
+    // console.log("login state : ", loginState);
+
+    // console.log("Current local state before: ", currentLocalState);
+
+    currentLocalState.isLogin = loginState ? loginState.isLogin : currentLocalState.isLogin;
+
+    // console.log("Current local state after: ", currentLocalState);
+
+    initApp(currentLocalState);
 
   } catch (err) {
     console.log("Error in the initlization of main app: ", err);
     root.render(
-      <div>Something Bad Happend 😟</div>
+      <div className="errPage">
+        <center>
+          <h2>
+            Something Bad Happend 😟
+          </h2>
+        </center>
+      </div>
     );
   }
 })();
