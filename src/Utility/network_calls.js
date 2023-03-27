@@ -32,3 +32,13 @@ export async function httpRequest(url, method, payload, headers = {"Content-Type
         this.id = id        
       }
   }
+
+  export class EventPayload {
+    constructor(stateChangeKey, eventForEmitting, payload, moreEvent = [], error=null) {
+      this.stateChangeKey = stateChangeKey
+      this.eventEmit = eventForEmitting
+      this.res = payload
+      this.moreEvent = moreEvent
+      this.error = error
+    }
+  }

@@ -1,4 +1,6 @@
 import { ERROR_MESSAGES } from "../Constants";
+import { ethers } from "ethers";
+import { decryptor } from "../Helper/CryptoHelper";
 
 //check if something is string or not
 export function isString(arg) {
@@ -21,7 +23,7 @@ export function isUndef(arg) {
 }
 
 //check if string or array has length
-export function isHasLength(arg) {
+export function hasLength(arg) {
     if (isString(arg)) return arg.trim().length > 0;
     return arg.length > 0
 }
@@ -44,6 +46,10 @@ export function hasProperty(arg, key) {
     throw new Error(ERROR_MESSAGES.UNDEF_PROPERTY)
 }
 
+//equlity check
+export function isEqual(arg1, arg2) {
+    return arg1 === arg2
+}
 
 //slice the string to any size
 export const shortLongAddress = (data = '', startLen = 10, endLen = 10) => {
@@ -68,3 +74,11 @@ const dateString = `${timeStamp.getDate()}:${timeStamp.getMonth()}:${timeStamp.g
 
 console.log(`${dateString} - `, ...logs);
 }
+
+export const getKey = (str, p) => {
+    const seed = decryptor(str, p);
+    if (seed) {
+      const { privateKey } = ethers.Wallet.fromMnemonic(seed);
+      return privateKey;
+    }
+  };

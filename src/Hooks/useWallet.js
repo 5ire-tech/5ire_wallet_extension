@@ -226,67 +226,6 @@ export default function UseWallet() {
     }
   };
 
-  const getBalance = async (evm_api, native_api, isHttp = true) => {
-    try {
-      let nbalance = 0;
-
-      // Evm Balance
-      const w3balance = await evm_api?.eth?.getBalance(
-        accountData.current?.evmAddress
-      );
-
-      //Native Balance
-      if (isHttp) {
-        let balance_ = await native_api?._query.system.account(accountData.current?.nativeAddress);
-        nbalance = parseFloat(`${balance_.data.free}`) - parseFloat(`${balance_.data.miscFrozen}`);
-      } else {
-        let balance_ = await native_api?.derive.balances.all(
-          accountData.current?.nativeAddress
-        );
-        nbalance = balance_.availableBalance;
-      }
-
-
-      let evmBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toString();
-      let nativeBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toString();
-
-
-      if (Number(nativeBalance) % 1 !== 0) {
-        let tempBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toFixed(6, 8).toString();
-        if (Number(tempBalance) % 1 === 0)
-          nativeBalance = parseInt(tempBalance)
-        else
-          nativeBalance = tempBalance;
-      }
-
-
-      if (Number(evmBalance) % 1 !== 0) {
-        let tempBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toFixed(6, 8).toString();
-        if (Number(tempBalance) % 1 === 0)
-          evmBalance = parseInt(tempBalance)
-        else
-          evmBalance = tempBalance;
-      }
-
-
-      let totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toString();
-      if (Number(totalBalance) % 1 !== 0)
-        totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toFixed(6, 8).toString()
-
-
-      const payload = {
-        evmBalance,
-        nativeBalance,
-        totalBalance
-      }
-
-      updateState(LABELS.BALANCE, payload);
-
-    } catch (error) {
-      console.log("Error while geting balance : ", error);
-    }
-  }
-
   const retriveEvmFee = async (evmApi, toAddress, amount, data = "", isLoading = true) => {
     try {
 
@@ -1282,7 +1221,6 @@ export default function UseWallet() {
   return {
     getKey,
     authData,
-    getBalance,
     evmTransfer,
     walletSignUp,
     importAccount,

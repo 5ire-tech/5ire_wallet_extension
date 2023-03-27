@@ -81,7 +81,25 @@ export const SUCCESS_MESSAGES = {
     LOGIN_SUCCESS: "Login successfully.",
     LOGOUT_SUCCESS: "Logout successfully",
     PASS_CREATED_SUCCESS: "Successfully created password for user.",
+    INVAILD_ERROR_MESSAGE: "Error message must be an object.",
+    INVALID_ERROR_PAYLOAD: "Error payload is invalid, (missing required properties).",
+    INVALID_PROPERTY: "Invalid property.",
+    INVALID_RPC_OPERATION: "Message is not the part of rpc call system",
+    UNDEF_DATA: "Value is null or undefined.",
+    TX_FAILED: "Transaction failed. some wrong happend.",
+    NETWORK_REQUEST: "Network error try after sometime",
+    INVALID_TYPE: "argument type is invalid"
 };
+
+export const ERRCODES = {
+    INTERNAL: 1,
+    CHECK_FAIL: 2,
+    INVALID_INPUT: 3,
+    NULL_UNDEF: 4,
+    NETWORK_REQUEST: 5,
+    TX_FAILED: 6,
+    INVALID_ARGU_TYPE: 7
+}
 
 
 
@@ -99,6 +117,11 @@ export const LABELS = {
     ALL_ACCOUNTS: "allAccounts",
     ACCOUNT_NAME: "accountName",
     CURRENT_ACCOUNT: "currentAccount",
+    EXTENSIONUI: "extensionui",
+
+    ERRCODE: "errCode",
+    ERRMESSAGE: "errMessage",
+    STATE: "state"
 };
 
 export const HTTP_END_POINTS = {
@@ -144,4 +167,35 @@ export const ACTIONS = {
     setAccountName: "setAccountName",
     updateTxHistory: "updateTxHistory",
     setCurrentNetwork: "setCurrentNetwork",
+}
+
+export const MESSAGE_EVENT_LABELS = {
+    EVM_FEE: "evmFee",
+    EVM_TX: "evmTransfer",
+    EVM_TO_NATIVE_SWAP: "evmToNativeSwap",
+    NATIVE_FEE: "nativeFee",
+    NATIVE_TX: "nativeTransfer",
+    NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
+    NV_FEE: "nvTX",
+    NV_TX: "nvTx",
+    BALANCE: "getBalance",
+    UPDATE_TX_HISTORY: "txupdatehistory",
+    NOTIFICATION: "notification"
+}
+
+export const INTERNAL_EVENT_LABELS = {
+    CONNECTION: "connection",
+    ERROR_BALANCE_FETCH: "balance_fetch_error"
+}
+
+export const STATE_CHANGE_ACTIONS = {
+    BALANCE: "balance",
+    TX_HISTORY: "txHistory",
+    TX_HISTORY_UPDATE: "txHistoryUpdate"
+}
+
+export const ERROR_EVENTS_LABELS = {
+    NETWORK_ERROR: "networkError",
+    INSUFFICENT_BALANCE: "insufficentBalance",
+    CONNFAILED: "connfailed"
 }
