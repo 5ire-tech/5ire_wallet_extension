@@ -154,9 +154,11 @@ export const INTERNAL_EVENT_LABELS = {
 }
 
 export const STATE_CHANGE_ACTIONS = {
-    BALANCE: "balance",
-    TX_HISTORY: "txHistory",
-    TX_HISTORY_UPDATE: "txHistoryUpdate"
+    BALANCE: "updateBalance",
+    TX_HISTORY: "addNewTxHistory",
+    TX_HISTORY_UPDATE: "updateTxHistory",
+    CHANGE_NETWORK: "changeNetwork",
+    CHANGE_ACCOUNT: "changeAccount"
 }
 
 export const ERROR_EVENTS_LABELS = {

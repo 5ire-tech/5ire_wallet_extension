@@ -247,6 +247,7 @@ export class InitBackground {
   _parseRPCRes = async (rpcResponse) => {
     try {
       if(!rpcResponse.error) {
+
         console.log("in the processing the unit: ", rpcResponse);
       } else {
         console.log("in the processing the unit error section: ", rpcResponse);
@@ -323,13 +324,18 @@ export class Services {
     }
   }
 
-   //message to ui helper
-   messageUI = async () => {
+   //pass message to extension ui
+   messageToUI = async () => {
     try {
 
     } catch (err) {
         console.log("Error while sending the message to extension ui: ", err);
     }
+   }
+
+   //pass error related messaged to extension ui
+   errorMessageToUI = async () => {
+
    }
 
     /*************************** Service Internals ******************************/
