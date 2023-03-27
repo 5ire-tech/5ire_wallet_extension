@@ -1,9 +1,9 @@
 import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
-import { useState, useEffect} from "react";
-import {INPUT, LABELS} from "../../Constants/index";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ButtonComp from "../ButtonComp/ButtonComp";
+import { LABELS, ERROR_MESSAGES } from "../../Constants/index";
 import InputFieldSimple from "../InputField/InputFieldSimple.jsx";
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 
@@ -16,13 +16,13 @@ function EnterPassword() {
   const [errMsg, setErrorMsg] = useState("");
   const [isDisable, setDisable] = useState(true);
 
-  useEffect(()=>{
+  useEffect(() => {
     if (errMsg || !data) {
       setDisable(true);
-    }else{
+    } else {
       setDisable(false);
     }
-  },[errMsg, data]);
+  }, [errMsg, data]);
 
   const handleChange = (e) => {
     setData(e.target.value);
@@ -31,13 +31,13 @@ function EnterPassword() {
 
   const validateInput = () => {
     if (data.length === 0) {
-      setErrorMsg(INPUT.REQUIRED);
+      setErrorMsg(ERROR_MESSAGES.INPUT_REQUIRED);
       setDisable(true);
     }
   }
 
   const handleClick = async (e) => {
-  
+
     if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
 
       let res = await verifyPass(data);

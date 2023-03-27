@@ -141,7 +141,7 @@ export class Controller {
     // }
 
     this.store.dispatch(setUIdata(data));
-     await this.notificationManager.showPopup("nativeTx");
+    await this.notificationManager.showPopup("nativeTx");
   }
 
 }

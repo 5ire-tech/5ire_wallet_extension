@@ -21,6 +21,15 @@ code {
 
 // --------------common css--------------
 
+.errPage{
+  background-color: #08132c;
+  margin: 0;
+  color: white;
+  height: 700px;
+  width: 400px;
+  overflow: hidden;
+}
+
 .bluegradient {
   background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
   border: 1px solid rgba(255, 255, 255, 0.5);

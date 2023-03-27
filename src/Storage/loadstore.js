@@ -1,5 +1,5 @@
 import { localStorage, sessionStorage } from ".";
-import { hasLength, isEqual, isNullorUndef, isObject, isString, log } from "../Utility/utility";
+import { hasLength, isEqual, isNullorUndef, isObject, isString, log, isEmpty } from "../Utility/utility";
 import { userState } from "../Store/initialState";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import { ERRCODES, ERROR_MESSAGES, LABELS } from "../Constants";
@@ -8,10 +8,10 @@ import { ERRCODES, ERROR_MESSAGES, LABELS } from "../Constants";
 //local storage data null safety check
 export const getDataLocal = async (key) => {
     try {
-        if (!isString(key) && key.trim().length === 0) throw new Error("Query Key is invalid");
+        if (!isString(key) && isEmpty(key.trim())) throw new Error("Query key is invalid");
         const localState = await localStorage.get(key);
 
-        if (!localState) {
+        if (!localState?.state) {
             localStorage.set({ state: userState })
             return userState;
         }
@@ -27,15 +27,9 @@ export const getDataLocal = async (key) => {
 //session storage data null safety check
 export const getDataSession = async (key) => {
     try {
-        if (!isString(key) && key.trim().length === 0) throw new Error("Query Key is invalid");
+        if (!isString(key) && isEmpty(key.trim())) throw new Error("Query key is invalid");
         const sessionState = await sessionStorage.get(key);
-
-        if (!sessionState) {
-            sessionStorage.set({ state: userState })
-            return userState;
-        }
-
-        return sessionState.state;
+        return sessionState ? sessionState : null;
 
     } catch (err) {
         console.log("Error while setting and getting state in session storage");

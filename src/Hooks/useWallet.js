@@ -5,9 +5,9 @@ import { BigNumber } from "bignumber.js";
 import { Keyring } from "@polkadot/keyring";
 import Browser from "webextension-polyfill";
 import { TX_TYPE, STATUS } from "../Constants/index";
-import { useState, useContext, useEffect, useRef } from "react";
 import { u8aToHex, hexToU8a, isHex } from "@polkadot/util";
 import { decryptor, encryptor } from "../Helper/CryptoHelper";
+import { useState, useContext, useEffect, useRef } from "react";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import { httpRequest, EVMRPCPayload } from "../Utility/network_calls";
 import { getCurrentTabUId, getCurrentTabUrl } from "../Scripts/utils";
@@ -31,11 +31,13 @@ import {
 
 export default function UseWallet() {
 
-  const { state, isLogin, updateState } = useContext(AuthContext);
+  const { state, updateState, setTxHistory } = useContext(AuthContext);
   const accountData = useRef(null);
   const {
     pass,
+    isLogin,
     balance,
+    txHistory,
     allAccounts,
     accountName,
     currentNetwork,
@@ -50,9 +52,9 @@ export default function UseWallet() {
   });
 
   useEffect(() => {
-    console.log("allAccounts  : ", allAccounts);
+    // console.log("allAccounts  : ", allAccounts);
     accountData.current = allAccounts[currentAccount.index];
-  }, []);
+  }, [currentAccount.index]);
 
 
   const getKey = (str, p) => {
@@ -90,7 +92,6 @@ export default function UseWallet() {
         id,
         temp1m,
         accountName,
-        txHistory: [],
         nativeAddress,
         evmAddress: address,
         temp2p: privateKey,
@@ -99,7 +100,7 @@ export default function UseWallet() {
       setAuthData(dataToDispatch);
 
       if (!isLogin) {
-        updateState(LABELS.NEW_ACCOUNT, dataToDispatch);
+        updateState(LABELS.NEW_ACCOUNT, dataToDispatch, false);
       }
       else {
 
@@ -115,7 +116,7 @@ export default function UseWallet() {
         updateState(LABELS.ALL_ACCOUNTS, [...allAccounts, dataToDispatch]);
 
 
-        //when new keypair created or imported the old key key emit the account change event
+        //when new keypair created or imported the old key emit the account change event
         getCurrentTabUId((id) => {
           getCurrentTabUrl((url) => {
             if (!(url === "chrome://extensions")) {
@@ -128,15 +129,15 @@ export default function UseWallet() {
       // dispatch(toggleLoader(false));
       return {
         error: false,
-        data: "success!",
+        data: "success",
       };
     } catch (error) {
-      // console.log("error occured while creating new account ", error);
+      console.log("error occured while creating new account ", error);
       // dispatch(toggleLoader(false));
 
       return {
         error: true,
-        data: "Error Occured!",
+        data: ERROR_MESSAGES.ERR_OCCURED,
       };
     }
   };
@@ -164,11 +165,11 @@ export default function UseWallet() {
         const dataToDispatch = {
           id,
           temp1m,
-          txHistory: [],
           nativeAddress,
           accountName: data.accName.trim(),
           evmAddress: address,
         };
+
         if (isLogin) {
           dataToDispatch.temp1m = encryptor(data.key, pass);
           updateState(LABELS.ALL_ACCOUNTS, [...allAccounts, dataToDispatch]);
@@ -177,10 +178,11 @@ export default function UseWallet() {
             index: allAccounts.length,
             accountName: data.accName,
           }
+
           updateState(LABELS.CURRENT_ACCOUNT, currentAccountDetails);
 
         } else {
-          updateState(LABELS.NEW_ACCOUNT, dataToDispatch);
+          updateState(LABELS.NEW_ACCOUNT, dataToDispatch, false);
           // updateState(LABELS.ACCOUNT_NAME, null);
         }
 
@@ -213,13 +215,13 @@ export default function UseWallet() {
         };
       } else return {
         error: true,
-        data: "Invalid mnemonic.",
+        data: ERROR_MESSAGES.INVALID_MNEMONIC,
       };
     } catch (error) {
       console.log("Error while importing : ", error);
       return {
         error: true,
-        data: "Error occured.",
+        data: ERROR_MESSAGES.ERR_OCCURED,
       };
     }
   };
@@ -234,21 +236,6 @@ export default function UseWallet() {
 
       if (toAddress?.startsWith("5"))
         toAddress = u8aToHex(toAddress).slice(0, 42);
-
-      if (toAddress?.startsWith("0x")) {
-        try {
-          amount = Math.round(Number(amount));
-          Web3.utils.toChecksumAddress(toAddress);
-        } catch (error) {
-
-          // if (isLoading) dispatch(toggleLoader(false));
-
-          return ({
-            error: true,
-            data: "Invalid Recipient address."
-          });
-        }
-      }
 
       const tx = {
         to: toAddress,
@@ -272,7 +259,7 @@ export default function UseWallet() {
 
     } catch (error) {
       // dispatch(toggleLoader(false));
-      // console.log("Error while getting evm fee: ", error);
+      console.log("Error while getting evm fee: ", error);
       return {
         error: true,
       }
@@ -442,18 +429,7 @@ export default function UseWallet() {
             dataToDispatch.data.txHash = hash;
             dataToDispatch.data.status = txStatus;
 
-            accountData.current.txHistory.push(dataToDispatch);
-            console.log("accountData.current : ",accountData.current);
-
-            let tempArr = allAccounts;
-            console.log("Temp array before", tempArr);
-
-            tempArr[currentAccount.index] = accountData.current;
-            console.log("Temp array after", tempArr);
-            updateState("allAccounts",tempArr)
-
-            // dispatch(setTxHistory(dataToDispatch));
-            // dispatch(toggleLoader(false));
+            setTxHistory(accountData.current.accountName,dataToDispatch);
 
             //send the tx notification
             Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase() } });
@@ -464,12 +440,13 @@ export default function UseWallet() {
               data: hash,
             });
           }
-          else throw new Error("Error occured. ");
+          else throw new Error("");
         }
       } catch (error) {
         console.log("Error occured while evm transfer: ", error);
         dataToDispatch.data.txHash = "";
         dataToDispatch.data.status = STATUS.FAILED;
+        setTxHistory(accountData.current.accountName,dataToDispatch);
         resolve({
           error: true,
           data: "Error while transfer.",

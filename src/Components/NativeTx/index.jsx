@@ -16,6 +16,7 @@ import { connectionObj, Connection } from "../../Helper/connection.helper";
 import {
     STATUS,
     TX_TYPE,
+    EMTY_STR,
     HTTP_END_POINTS,
     WS_END_POINTS
 } from "../../Constants";
@@ -75,7 +76,7 @@ function NativeTx() {
                         chain: auth?.currentNetwork.toLowerCase(),
                         isEvm: false,
                         dateTime: new Date(),
-                        to: "",
+                        to: EMTY_STR,
                         type: TX_TYPE?.SEND,
                         amount: 0,
                         txHash: res.data.feeData?.data?.txHash,

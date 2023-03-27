@@ -1,15 +1,14 @@
 import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
+import { AuthContext } from "../../Store";
 import PlaceLogo from "../../Assets/PlaceLog.svg";
-import React, { useEffect, useState, useContext } from "react";
-import { INPUT, LABELS } from "../../Constants/index";
-// import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
+import { LABELS, ERROR_MESSAGES} from "../../Constants/index";
+import React, { useEffect, useState, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-// import { setLogin, toggleLoader } from "../../Utility/redux_helper";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
-import { AuthContext } from "../../Store";
+
 
 function UnlockWelcome() {
   const navigate = useNavigate();
@@ -30,14 +29,16 @@ function UnlockWelcome() {
     }
   }, [errMsg, data]);
 
+
   const handleChange = (e) => {
     setData(e.target.value);
     setErrorMsg("");
   };
+  
 
   const validateInput = () => {
     if (data.length === 0) {
-      setErrorMsg(INPUT.REQUIRED);
+      setErrorMsg(ERROR_MESSAGES.INPUT_REQUIRED);
       setDisable(true);
     }
 
@@ -46,19 +47,17 @@ function UnlockWelcome() {
   const handleClick = async (e) => {
 
     if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
-      // dispatch(toggleLoader(true));
 
       let res = await verifyPass(data);
-      // dispatch(toggleLoader(false));
 
       if (!res.error) {
         if (isLogin !== true)
-          updateState("isLogin", true);
-        // dispatch(setLogin(true));
+          updateState(LABELS.ISLOGIN, true);
         navigate(location.state?.redirectRoute || "/wallet");
       }
 
       else {
+
         setErrorMsg(res.data);
         setDisable(true);
       }

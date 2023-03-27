@@ -1,15 +1,16 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
 import "./index.scss";
 import App from "./App";
+import React from "react";
 import Context from "./Store";
+import ReactDOM from "react-dom/client";
+import { localStorage } from "./Storage";
+import Browser from "webextension-polyfill";
 import browser from "webextension-polyfill";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import Browser from "webextension-polyfill";
-import { CONNECTION_NAME } from "./Constants";
-import {getDataLocal} from "../src/Storage/loadstore"
-import { localStorage } from "./Storage";
+import { CONNECTION_NAME, EMTY_STR, LABELS } from "./Constants";
+import { getDataLocal, getDataSession } from "../src/Storage/loadstore"
+import { sessionStorage } from "../src/Storage/index";
 
 //For Dev Enviroment Check
 const isDev = process.env.NODE_ENV === "development";
@@ -19,15 +20,15 @@ Number.prototype.noExponents = function () {
   try {
     var data = String(this).split(/[eE]/);
     if (data.length === 1) return data[0];
-    var z = "",
-      sign = this < 0 ? "-" : "",
-      str = data[0].replace(".", ""),
+    var z = EMTY_STR,
+      sign = this < 0 ? "-" : EMTY_STR,
+      str = data[0].replace(".", EMTY_STR),
       mag = Number(data[1]) + 1;
     if (mag < 0) {
       z = sign + "0.";
       while (mag++) z += "0";
       // eslint-disable-next-line no-useless-escape
-      return z + str.replace(/^\-/, "");
+      return z + str.replace(/^\-/, EMTY_STR);
     }
     mag -= str.length;
     while (mag--) z += "0";
@@ -65,17 +66,27 @@ const initApp = (data) => {
 
 (async () => {
   try {
-  const res = await localStorage.get("popupRoute");
-  browser.runtime.connect({ name: CONNECTION_NAME });
+    const res = await localStorage.get("popupRoute");
+    browser.runtime.connect({ name: CONNECTION_NAME });
 
-  //inject the current state into main app
-  const currentLocalState = await getDataLocal("state");
-  initApp(currentLocalState);
+    //inject the current state into main app
+    const currentLocalState = await getDataLocal(LABELS.STATE);
+    const loginState = await sessionStorage.get(LABELS.ISLOGIN);
+
+    currentLocalState.isLogin = !loginState?.isLogin ? false : currentLocalState.isLogin;
+
+    initApp(currentLocalState);
 
   } catch (err) {
     console.log("Error in the initlization of main app: ", err);
     root.render(
-      <div>Something Bad Happend 😟</div>
+      <div className="errPage">
+        <center>
+          <h2>
+            Something Bad Happend 😟
+          </h2>
+        </center>
+      </div>
     );
   }
 })();

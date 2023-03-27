@@ -113,7 +113,7 @@ function Send() {
   const validateAmount = () => {
 
     if (!data.amount)
-      setErr((p) => ({ ...p, amount: INPUT.REQUIRED }));
+      setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INPUT_REQUIRED }));
 
     else if (isNaN(data.amount))
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.ENTER_AMOUNT_CORRECTLY }));
@@ -147,7 +147,7 @@ function Send() {
     if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
       if (!data.to)
-        setErr((p) => ({ ...p, to: INPUT.REQUIRED }));
+        setErr((p) => ({ ...p, to: ERROR_MESSAGES.INPUT_REQUIRED }));
 
       else if (!data.to?.startsWith("0x"))
         setErr((p) => ({ ...p, to: ERROR_MESSAGES.INCORRECT_ADDRESS }));
@@ -169,7 +169,7 @@ function Send() {
     else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
 
       if (!data.to)
-        setErr((p) => ({ ...p, to: INPUT.REQUIRED }));
+        setErr((p) => ({ ...p, to: ERROR_MESSAGES.INPUT_REQUIRED }));
 
       else if (!data.to?.startsWith("5"))
         setErr((p) => ({ ...p, to: ERROR_MESSAGES.INCORRECT_ADDRESS }));

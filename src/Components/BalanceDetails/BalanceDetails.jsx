@@ -16,8 +16,8 @@ import { getCurrentTabUrl } from "../../Scripts/utils";
 import React, { useEffect, useState, useContext } from "react";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import DownArrowSuffix from "../../Assets/DownArrowSuffix.svg";
-import { NATIVE, EVM, NETWORK, COPIED, HTTP_END_POINTS } from "../../Constants/index";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
+import { NATIVE, EVM, NETWORK, COPIED, HTTP_END_POINTS, EMTY_STR} from "../../Constants/index";
 
 
 function BalanceDetails({ mt0 }) {
@@ -28,10 +28,10 @@ function BalanceDetails({ mt0 }) {
   const [isConnected, setIsConnected] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEvmModal, setIsEvmModal] = useState(false);
-  const [accountData, setAccountData] = useState({ accountName: "" });
+  const [accountData, setAccountData] = useState({ accountName: EMTY_STR });
   const [addresses, setAddresses] = useState({
-    evmAddress: "",
-    nativeAddress: "",
+    evmAddress: EMTY_STR,
+    nativeAddress: EMTY_STR,
   });
 
   const {
@@ -42,9 +42,9 @@ function BalanceDetails({ mt0 }) {
     connectedSites,
   } = state;
 
+
   useEffect(() => {
     setAccountData(allAccounts ? allAccounts[currentAccount.index] : {});
-
   }, [currentAccount.index])
 
 
@@ -98,7 +98,7 @@ function BalanceDetails({ mt0 }) {
   const handleNetworkChange = (network) => {
     // dispatch(setCurrentNetwork(network));
     updateState(currentNetwork, network);
-    updateState(balance, { evmBalance: "", nativeBalance: "", totalBalance: "" });
+    updateState(balance, { evmBalance: EMTY_STR, nativeBalance: EMTY_STR, totalBalance: EMTY_STR });
   };
 
   const handleCopy = (e) => {
@@ -110,7 +110,7 @@ function BalanceDetails({ mt0 }) {
   };
 
 
-  const path = getLocation.pathname.replace("/", "");
+  const path = getLocation.pathname.replace("/", EMTY_STR);
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -137,7 +137,7 @@ function BalanceDetails({ mt0 }) {
       {(path === "wallet" ||
         path === "swapapprove" ||
         path === "approveTx") && (
-          <div className={`${style.balanceDetails} ${mt0 ? mt0 : ""}`}>
+          <div className={`${style.balanceDetails} ${mt0 ? mt0 : EMTY_STR}`}>
             <div className={style.balanceDetails__decoratedSec}>
               <>
                 <img src={DarkLogo} alt="logo" draggable={false} />

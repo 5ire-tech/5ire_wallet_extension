@@ -52,7 +52,7 @@ export const FooterStepTwo = () => {
   const {isLogin} = state;
 
   const handleCancle = () => {
-    updateState(LABELS.NEW_ACCOUNT, null);
+    updateState(LABELS.NEW_ACCOUNT, null, false);
     updateState(LABELS.ACCOUNT_NAME, null, false);
     navigate("/beforebegin");
   };

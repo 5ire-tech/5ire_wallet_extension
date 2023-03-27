@@ -29,6 +29,11 @@ export function hasLength(arg) {
 }
 
 //check if string or array has length
+export function isEmpty(str) {
+   return str.length === 0 
+}
+
+//check if string or array has length
 export function compStr(a, b) {
     return a === b;
 }
@@ -50,6 +55,14 @@ export function isEqual(arg1, arg2) {
 export const shortLongAddress = (data = '', startLen = 10, endLen = 10) => {
     return `${data.substring(0, startLen)}...${data.substring(data.length - endLen, data.length)}`;
 };
+
+export const arrayReverser = arr => {
+    const newArr = [];
+    for (let i = arr.length - 1; i >= 0; i--) {
+      newArr.push(arr[i]);
+    }
+    return(newArr)
+}
 
 
 //logging utility
