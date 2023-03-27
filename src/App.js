@@ -40,7 +40,7 @@ function App(props) {
   const navigate = useNavigate();
 
   useEffect(()=>{
-    setState(props.data.state);
+    setState(props.data);
   },[]);
 
   useEffect(() => {

@@ -3,6 +3,8 @@ export const userState = {
 
     allAccounts: [],
 
+    txHistory: {},
+
     popupChecks: {
         txApprove: false
     },

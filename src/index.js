@@ -70,7 +70,7 @@ const initApp = (data) => {
 
   //inject the current state into main app
   const currentLocalState = await getDataLocal("state");
-  initApp(currentLocalState.state);
+  initApp(currentLocalState);
 
   } catch (err) {
     console.log("Error in the initlization of main app: ", err);
