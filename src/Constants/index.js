@@ -58,7 +58,7 @@ export const EVM_JSON_RPC_METHODS = {
 
 export const ERROR_MESSAGES = {
     ERR_OCCURED: "Error occured.",
-    INVALID_MNEMONIC:"Invalid mnemonic.",
+    INVALID_MNEMONIC: "Invalid mnemonic.",
     LOGOUT_ERR: "Error while logging out",
     INCORRECT_PASS: "Incorrect password.",
     INCORRECT_ADDRESS: "Incorrect address.",
@@ -84,14 +84,17 @@ export const SUCCESS_MESSAGES = {
 };
 
 
+
 export const LABELS = {
     PASS: "pass",
     ENTER: "Enter",
     FAILED: "failed",
     ISLOGIN: "isLogin",
     SUCCESS: "success",
+    
+    STATE: "state",
     BALANCE: "balance",
-    TX_HISTORY : "txHistory",
+    TX_HISTORY: "txHistory",
     NEW_ACCOUNT: "newAccount",
     ALL_ACCOUNTS: "allAccounts",
     ACCOUNT_NAME: "accountName",

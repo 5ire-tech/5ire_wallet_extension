@@ -36,12 +36,8 @@ function getParameterByName(name, url = window.location.href) {
 
 function App(props) {
   const navigate = useNavigate();
-  const { setState, state } = useContext(AuthContext);
+  const { state } = useContext(AuthContext);
   const { allAccounts, isLogin, pass } = state;
-
-  useEffect(() => {
-    setState(props.data);
-  }, []);
 
   useEffect(() => {
 

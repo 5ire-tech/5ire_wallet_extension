@@ -1,13 +1,32 @@
+import { LABELS } from "../Constants";
 import { userState } from "./initialState";
-import { createContext, useState } from "react";
 import { isManifestV3 } from "../Scripts/utils";
-import { localStorage, sessionStorage } from "../Storage";
+import { createContext, useState, useEffect } from "react";
+import { sessionStorage } from "../Storage";
+import { getDataLocal, getDataSession } from "../Storage/loadstore";
 
 export const AuthContext = createContext();
 
 
 export default function Context({ children }) {
   const [state, setState] = useState(userState);
+
+  useEffect(() => {
+    (async () => {
+
+      //inject the current state into main app
+      const localState = await getDataLocal(LABELS.STATE);
+      const loginState = await getDataSession(LABELS.ISLOGIN);
+      console.log("Current local state before: ", localState);
+      if (localState) {
+        localState.isLogin = !loginState?.isLogin ? false : localState.isLogin
+      }
+      console.log("Current local state after: ", localState);
+
+      setState(localState);
+
+    })();
+  }, []);
 
   const updateState = (name, data, toLocal = true, toSession = false) => {
     if (toLocal) {
@@ -20,7 +39,7 @@ export default function Context({ children }) {
 
     if (toSession) {
       if (isManifestV3) {
-        console.log("Setting to Session storage : ",{ [name]: data });
+        console.log("Setting to Session storage : ", { [name]: data });
         sessionStorage.set({ [name]: data });
       } else {
         localStorage.set({ [name]: data });
@@ -32,7 +51,7 @@ export default function Context({ children }) {
 
   const setTxHistory = (accName, data) => {
 
-      let dataToSet = {}
+    let dataToSet = {}
     if (state.txHistory[state.currentAccount.accountName]) {
       setState(p => {
         return {
@@ -50,7 +69,7 @@ export default function Context({ children }) {
           ...p,
           txHistory: {
             ...p.txHistory,
-            [accName] : data
+            [accName]: data
           }
         }
       });
@@ -58,14 +77,14 @@ export default function Context({ children }) {
         ...state,
         txHistory: {
           ...state.txHistory,
-          [accName] : [data]
+          [accName]: [data]
         }
       }
     }
-    
+
     localStorage.set({ state: dataToSet });
 
-  }
+  };
 
 
   const values = {
