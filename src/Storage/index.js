@@ -8,6 +8,8 @@ const getLocalStorage = key => {
                 resolve(res[key] ? res : null);
             })
             .catch(err => {
+                console.log("error while getting data to local storage : ", err)
+
                 reject(err);
             });
 
@@ -19,11 +21,11 @@ const setLocalStorage = (data) => {
 
         browser.storage.local.set(data)
             .then(res => {
+
                 resolve(true);
             })
             .catch(err => {
                 console.log("error while setting data to session storage : ", err)
-
                 reject(err);
             });
     });

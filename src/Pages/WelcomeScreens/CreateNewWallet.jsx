@@ -15,6 +15,8 @@ function CreateNewWallet() {
   const { state, updateState } = useContext(AuthContext);
   const { allAccounts } = state;
 
+  // console.log("All Account : ",allAccounts)
+
 
   const handleChange = (e) => {
     setData(e.target.value);
@@ -46,7 +48,7 @@ function CreateNewWallet() {
 
     else {
       if (!warrning) {
-        const match = allAccounts.find((e) => e.accountName === data.trim());
+        const match = allAccounts?.find((e) => e.accountName === data.trim());
         if (match) {
           setWarrning(ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS);
         } else {

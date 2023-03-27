@@ -20,7 +20,7 @@ export default function SetPasswordScreen() {
   const [show, setShow] = useState(false);
   const [error, setError] = useState(EMTY_STR);
   const [confirmError, setconfirmError] = useState(EMTY_STR);
-  const { state, updateState } = useContext(AuthContext);
+  // const { state, updateState } = useContext(AuthContext);
   const [pass, setPass] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
 
 
@@ -69,6 +69,7 @@ export default function SetPasswordScreen() {
       setconfirmError(EMTY_STR);
 
   };
+  
 
   const handleSubmit = async (e) => {
 

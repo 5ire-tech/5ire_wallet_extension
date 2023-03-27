@@ -27,7 +27,7 @@ export function encryptor(text, key) {
     encrypted = Buffer.concat([encrypted, cipher.final()]);
     return iv.toString("hex") + ":" + encrypted.toString("hex");
   } catch (error) {
-    console.error(error);
+    console.error("Error : ", error);
   }
 }
 
@@ -46,6 +46,6 @@ export function decryptor(text, key) {
     decrypted = Buffer.concat([decrypted, decipher.final()]);
     return decrypted.toString();
   } catch (error) {
-    console.error("error : ",error);
+    console.error("error : ", error);
   }
 }

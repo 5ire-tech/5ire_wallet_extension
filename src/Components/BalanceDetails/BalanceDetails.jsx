@@ -42,9 +42,9 @@ function BalanceDetails({ mt0 }) {
     connectedSites,
   } = state;
 
+
   useEffect(() => {
     setAccountData(allAccounts ? allAccounts[currentAccount.index] : {});
-
   }, [currentAccount.index])
 
 

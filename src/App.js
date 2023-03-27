@@ -36,12 +36,16 @@ function getParameterByName(name, url = window.location.href) {
 
 function App(props) {
   const navigate = useNavigate();
-  const { state } = useContext(AuthContext);
+  const { state, setState } = useContext(AuthContext);
   const { allAccounts, isLogin, pass } = state;
+
+  useEffect(()=> {
+    setState(props.data);
+  },[])
 
   useEffect(() => {
 
-    if (props.popupRoute && props.popupRoute?.length > 0 && state?.isLogin) {
+    if (props.popupRoute && props.popupRoute?.length > 0 && isLogin) {
       navigate(`/${props.popupRoute}`);
       return;
     }
@@ -72,7 +76,7 @@ function App(props) {
       navigate("/");
     }
 
-  }, [isLogin]);
+  }, [isLogin, pass, allAccounts.length]);
 
 
   return (

@@ -1,10 +1,9 @@
+import { LABELS } from "../Constants";
 import { userState } from "./initialState";
 import { isManifestV3 } from "../Scripts/utils";
 import { createContext, useState, useEffect } from "react";
+import { sessionStorage, localStorage } from "../Storage";
 import { getDataLocal, getDataSession } from "../Storage/loadstore";
-import { localStorage, sessionStorage } from "../Storage";
-import { sendRuntimeMessage } from "../Utility/message_helper";
-import { LABELS, MESSAGE_EVENT_LABELS } from "../Constants";
 
 export const AuthContext = createContext();
 
@@ -12,75 +11,70 @@ export const AuthContext = createContext();
 export default function Context({ children }) {
   const [state, setState] = useState(userState);
 
-  useEffect(() => {
-    (async () => {
+  // useEffect(() => {
+  //   (async () => {
 
-      //inject the current state into main app
-      const localState = await getDataLocal(LABELS.STATE);
-      const loginState = await getDataSession(LABELS.ISLOGIN);
-      console.log("Current local state before: ", localState);
-      if (localState) {
-        localState.isLogin = !loginState?.isLogin ? false : localState.isLogin
-      }
-      console.log("Current local state after: ", localState);
+  //     //inject the current state into main app
+  //     const localState = await getDataLocal(LABELS.STATE);
+  //     const loginState = await getDataSession(LABELS.ISLOGIN);
 
-      setState(localState);
+  //     console.log("Current local state before: ", localState);
+  //     if (localState) {
+  //       localState.isLogin = !loginState?.isLogin ? false : localState.isLogin
+  //     }
+  //     console.log("Current local state after: ", localState);
 
-    })();
-  }, []);
+  //     setState(localState);
+
+  //   })();
+  // }, []);
 
   const updateState = (name, data, toLocal = true, toSession = false) => {
-    if (toLocal) {
-      const dataToSet = {
-        ...state,
-        [name]: data
-      }
-      localStorage.set({ state: dataToSet });
-    }
 
     if (toSession) {
       if (isManifestV3) {
-        console.log("Setting to Session storage : ", { [name]: data });
         sessionStorage.set({ [name]: data });
       } else {
         localStorage.set({ [name]: data });
       }
       sessionStorage.set({ [name]: data });
     }
-    setState(p => ({ ...p, [name]: data }));
+
+    setState(p => {
+      const dataToSet = {
+        ...p,
+        [name]: data
+      }
+      localStorage.set({ state : dataToSet });
+
+      return dataToSet;
+    });
   };
 
   const setTxHistory = (accName, data) => {
 
-    let dataToSet = {}
+    let dataToSet = {};
+
     if (state.txHistory[state.currentAccount.accountName]) {
       setState(p => {
-        return {
+        dataToSet = {
           ...p,
           txHistory: p.txHistory[accName].push(data)
         }
+        return dataToSet;
       });
-      dataToSet = {
-        ...state,
-        txHistory: state.txHistory[accName].push(data)
-      }
+
     } else {
       setState(p => {
-        return {
+        dataToSet = {
           ...p,
           txHistory: {
             ...p.txHistory,
-            [accName]: data
+            [accName]: [data]
           }
         }
+        return dataToSet;
       });
-      dataToSet = {
-        ...state,
-        txHistory: {
-          ...state.txHistory,
-          [accName]: [data]
-        }
-      }
     }
 
     localStorage.set({ state: dataToSet });

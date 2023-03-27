@@ -107,10 +107,10 @@ export const LABELS = {
     PASS: "pass",
     ENTER: "Enter",
     FAILED: "failed",
-    ISLOGIN: "isLogin",
     SUCCESS: "success",
     
     STATE: "state",
+    ISLOGIN: "isLogin",
     BALANCE: "balance",
     TX_HISTORY: "txHistory",
     NEW_ACCOUNT: "newAccount",
@@ -121,7 +121,6 @@ export const LABELS = {
 
     ERRCODE: "errCode",
     ERRMESSAGE: "errMessage",
-    STATE: "state"
 };
 
 export const HTTP_END_POINTS = {

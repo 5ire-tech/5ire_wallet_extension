@@ -42,11 +42,11 @@ Number.prototype.noExponents = function () {
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 //init the main app
-const initApp = () => {
+const initApp = (data) => {
   root.render(
     <Context>
       <MemoryRouter>
-        <App />
+        <App data={data} />
         <ToastContainer
           position="top-right"
           autoClose={3000}
@@ -69,7 +69,13 @@ const initApp = () => {
     const res = await localStorage.get("popupRoute");
     browser.runtime.connect({ name: CONNECTION_NAME });
 
-    initApp();
+    //inject the current state into main app
+    const currentLocalState = await getDataLocal(LABELS.STATE);
+    const loginState = await sessionStorage.get(LABELS.ISLOGIN);
+
+    currentLocalState.isLogin = !loginState?.isLogin ? false : currentLocalState.isLogin;
+
+    initApp(currentLocalState);
 
   } catch (err) {
     console.log("Error in the initlization of main app: ", err);

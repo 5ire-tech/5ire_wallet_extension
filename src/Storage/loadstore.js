@@ -11,7 +11,7 @@ export const getDataLocal = async (key) => {
         if (!isString(key) && isEmpty(key.trim())) throw new Error("Query key is invalid");
         const localState = await localStorage.get(key);
 
-        if (!localState) {
+        if (!localState?.state) {
             localStorage.set({ state: userState })
             return userState;
         }
