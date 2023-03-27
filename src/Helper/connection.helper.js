@@ -2,23 +2,13 @@
 import Web3 from "web3";
 import { ApiPromise } from "@polkadot/api";
 import { HttpProvider, WsProvider } from "@polkadot/rpc-provider";
-import { NETWORK } from "../Constants";
+import { HTTP_END_POINTS } from "../Constants";
 
-// let i = 0
 export class Connection {
 
     //for testnet connection
-    static nativeApiTestnet = null;
-    static evmApiTestnet = null;
-
-    //for qa connection
-    static nativeApiQA = null;
-    static evmApiQA = null;
-
-
-    //previous endpoints
-    static endPointTestnet = "";
-    static endPointQA = "";
+    static nativeApi = null;
+    static evmApi = null;
 
     //execution controlling
     static isExecuting = { value: false }
@@ -34,53 +24,26 @@ export class Connection {
 
 
     //initialize and get Api
-    initializeApi = async (networkTest, networkQA, networkMode, bothInit = false) => {
-        // i++;
-        // console.log("call number: ", i, Connection.isExecuting.value);
+    initializeApi = async (networkMode) => {
 
         try {
 
             if (Connection.isExecuting.value) return { error: "Already in execution.", value: true }
 
             Connection.isExecuting.value = true;
-            //create the Testnet Connection
-            if (networkMode.toLowerCase() === NETWORK.TEST_NETWORK.toLowerCase() || bothInit) {
-                if (!Connection.nativeApiTestnet) Connection.nativeApiTestnet = await this.createNativeConnection(networkTest);
-                if (!Connection.evmApiTestnet) Connection.evmApiTestnet = this.createEvmConnection(networkTest);
+            //create the connection
+            if (!Connection.nativeApi) Connection.nativeApi = await this.createNativeConnection(HTTP_END_POINTS[networkMode.toUpperCase()]);
+            if (!Connection.evmApi) Connection.evmApi = this.createEvmConnection(HTTP_END_POINTS[networkMode.toUpperCase()]);
+            Connection.isExecuting.value = false;
 
-                //set the execution true
-                // Connection.isExecuting.value = true;
-                Connection.endPointTestnet = networkTest;
-            }
-
-
-            //create qa connection
-            if (networkMode.toLowerCase() === NETWORK.QA_NETWORK.toLowerCase() || bothInit) {
-                if (!Connection.nativeApiQA) Connection.nativeApiQA = await this.createNativeConnection(networkQA)
-                if (!Connection.evmApiQA) Connection.evmApiQA = this.createEvmConnection(networkQA)
-
-                //set the execution true
-                // Connection.isExecuting.value = true;
-                Connection.endPointQA = networkQA;
-            }
-
-
-            if (networkMode.toLowerCase() === NETWORK.QA_NETWORK.toLowerCase()) {
-                // this.changeExecution();
                 return {
-                    nativeApi: Connection.nativeApiQA,
-                    evmApi: Connection.evmApiQA
+                    nativeApi: Connection.nativeApi,
+                    evmApi: Connection.evmApi
                 }
-            } else if (networkMode.toLowerCase() === NETWORK.TEST_NETWORK.toLowerCase()) {
-                // this.changeExecution();
-                return {
-                    nativeApi: Connection.nativeApiTestnet,
-                    evmApi: Connection.evmApiTestnet
-                }
-            }
 
         } catch (err) {
             console.log("Error while making connection with socket api's : ", err);
+            Connection.isExecuting.value = false
             return { error: err, value: true }
         }
     }
