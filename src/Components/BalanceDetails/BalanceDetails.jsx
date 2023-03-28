@@ -1,5 +1,6 @@
 import { Select } from "antd";
 import QRCode from "react-qr-code";
+import { ROUTES } from "../../Routes";
 import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
@@ -17,7 +18,7 @@ import React, { useEffect, useState, useContext } from "react";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import DownArrowSuffix from "../../Assets/DownArrowSuffix.svg";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
-import { NATIVE, EVM, NETWORK, COPIED, HTTP_END_POINTS, EMTY_STR} from "../../Constants/index";
+import { NATIVE, EVM, NETWORK, COPIED, HTTP_END_POINTS, EMTY_STR } from "../../Constants/index";
 
 
 function BalanceDetails({ mt0 }) {
@@ -32,6 +33,8 @@ function BalanceDetails({ mt0 }) {
     evmAddress: EMTY_STR,
     nativeAddress: EMTY_STR,
   });
+
+  const { pathname } = getLocation;
 
   const {
     currentAccount,
@@ -108,8 +111,6 @@ function BalanceDetails({ mt0 }) {
     toast.success(COPIED);
   };
 
-
-  const path = getLocation.pathname.replace("/", EMTY_STR);
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -133,15 +134,14 @@ function BalanceDetails({ mt0 }) {
 
   return (
     <>
-      {(path === "wallet" ||
-        path === "swapapprove" ||
-        path === "approveTx") && (
+      {(pathname === (ROUTES.WALLET || ROUTES.SWAP_APPROVE || ROUTES.APPROVE_TXN) ) && (
+
           <div className={`${style.balanceDetails} ${mt0 ? mt0 : EMTY_STR}`}>
             <div className={style.balanceDetails__decoratedSec}>
               <>
                 <img src={DarkLogo} alt="logo" draggable={false} />
 
-                {path === "wallet" && (
+                {pathname === ROUTES.WALLET && (
 
                   <div className={style.balanceDetails__accountName}>
                     {
@@ -172,6 +172,7 @@ function BalanceDetails({ mt0 }) {
                     }
                   </div>
                 )}
+
                 <div className={style.balanceDetails__selectStyle}>
                   <Select
                     onChange={handleNetworkChange}
@@ -190,10 +191,10 @@ function BalanceDetails({ mt0 }) {
                       width: 100,
                     }}
                     options={[
-                      // {
-                      //   value: NETWORK.TEST_NETWORK,
-                      //   label: <span className="flexedItemSelect">Testnet</span>,
-                      // },
+                      {
+                        value: NETWORK.TEST_NETWORK,
+                        label: <span className="flexedItemSelect">Testnet</span>,
+                      },
                       {
                         value: NETWORK.QA_NETWORK,
                         label: <span className="flexedItemSelect">{NETWORK.QA_NETWORK}</span>,
@@ -215,7 +216,8 @@ function BalanceDetails({ mt0 }) {
                 </div>
               </div>
             )} */}
-            {path === "wallet" && (
+
+            {pathname === ROUTES.WALLET && (
               <div className={style.balanceDetails__innerBalance}>
                 <div className={style.balanceDetails__innerBalance__totalBalnce}>
                   <p>
@@ -258,6 +260,7 @@ function BalanceDetails({ mt0 }) {
                 </div>
               </div>
             )}
+
             <ModalCustom
               isModalOpen={isModalOpen}
               handleOk={handleOk}

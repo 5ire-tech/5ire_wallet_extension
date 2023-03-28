@@ -1,50 +1,48 @@
 import { Layout } from "antd";
+import { ROUTES } from "../Routes";
+import style from "./style.module.scss";
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import BalanceDetails from "../Components/BalanceDetails/BalanceDetails";
-import MenuRestofHeaders from "../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 import MenuFooter from "../Components/MenuFooter/MenuFooter";
-import style from "./style.module.scss";
+// import MenuRestofHeaders from "../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 
 function FixWidthLayout({ children }) {
   const { Content } = Layout;
   const getLocation = useLocation();
   const navigate = useNavigate();
 
-  const path = getLocation.pathname.replace("/", "");
+  const { pathname } = getLocation
 
   useEffect(() => {
-    if (!path) {
-      navigate("/wallet");
+    if (!pathname) {
+      navigate(ROUTES.WALLET);
     }
-  }, [path]);
+  }, [pathname]);
 
   return (
     <div className={`${style.fixedLayout}`}>
       <div className={style.fixedLayout__inner}>
-        {(path === "wallet" ||
-          path === "swapapprove" ||
-          path === "approveTx") && (
+        {(pathname === (ROUTES.WALLET || ROUTES.SWAP_APPROVE || ROUTES.APPROVE_TXN)) && (
           <div className={style.fixedLayout__inner__walletLayout}>
             <div className={style.decoratedBg} style={{ textAlign: "left" }}>
-              {/* <img src={LogoHorizontal} width={155} height={20} /> */}
               <BalanceDetails />
             </div>
           </div>
         )}
 
-        {path === "history" && (
-          <MenuRestofHeaders backTo={"/wallet"} title={"History"} />
+        {/* {pathname === "history" && (
+          <MenuRestofHeaders backTo={ROUTES.WALLET} title={"History"} />
         )}
-        {path === "setting" && (
+        {pathname === "setting" && (
           <MenuRestofHeaders
-            backTo={"/wallet"}
+            backTo={ROUTES.WALLET}
             title={"Setting"}
-            searchTo="/"
+            searchTo={ROUTES.DEFAULT}
           />
-        )}
+        )} */}
         <Content className={style.fixedLayout__content}>{children} </Content>
-        {(path === "wallet" || path === "approveTx") && <MenuFooter />}
+        {(pathname === (ROUTES.WALLET || ROUTES.APPROVE_TXN)) && <MenuFooter />}
       </div>
     </div>
   );

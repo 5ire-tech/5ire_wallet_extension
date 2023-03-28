@@ -82,11 +82,12 @@ export const ERROR_MESSAGES = {
     INVAILD_ERROR_MESSAGE: "Error message must be an object.",
     INVALID_ERROR_PAYLOAD: "Error payload is invalid, (missing required properties).",
     INVALID_PROPERTY: "Invalid property.",
-    INVALID_RPC_OPERATION: "Message is not the part of rpc call system",
+    INVALID_TYPE: "argument type is invalid.",
     UNDEF_DATA: "Value is null or undefined.",
-    TX_FAILED: "Transaction failed. some wrong happend.",
     NETWORK_REQUEST: "Network error try after sometime",
-    INVALID_TYPE: "argument type is invalid"
+    TX_FAILED: "Transaction failed. some wrong happend.",
+    PASS_CREATED_SUCCESS: "Successfully created password for user.",
+    INVALID_RPC_OPERATION: "Message is not the part of rpc call system",
 };
 
 export const SUCCESS_MESSAGES = {
@@ -141,15 +142,6 @@ export const WS_END_POINTS = {
     TESTNET: "wss://wss-testnet.5ire.network"
 };
 
-export const ROUTES = {
-    DEFAULT: "/",
-    WALLET: "/wallet",
-    SET_PASS: "/setPassword",
-    SWAP_APPROVE: "/swapapprove",
-    UNLOACK_WALLET: "/unlockWallet",
-    UNLOCK_WELCOME: "/unlockWallet",
-    ENTER_PASS: "/enterPassword"
-}
 
 export const ACTIONS = {
     setSite: "setSite",

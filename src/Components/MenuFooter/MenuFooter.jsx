@@ -20,7 +20,7 @@ import ManageCustom from "../ManageCustomtocken/ManageCustom";
 import Createaccount from "../../Assets/PNG/createaccount.png";
 import { ACCOUNT_CHANGED_EVENT } from "../../Scripts/constants";
 import AccountSetting from "../AccountSetting/AccountSetting.jsx";
-import { EMTY_STR, LABELS, TX_TYPE } from "../../Constants/index";
+import { EMTY_STR, ERROR_MESSAGES, LABELS, TX_TYPE } from "../../Constants/index";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { getCurrentTabUId, getCurrentTabUrl } from "../../Scripts/utils";
@@ -30,6 +30,7 @@ import FooterStepOne, {
   FooterStepTwo,
   ApproveTx,
 } from "./FooterContinue";
+import { ROUTES } from "../../Routes";
 
 function MenuFooter() {
   const { logout } = useAuth();
@@ -41,7 +42,8 @@ function MenuFooter() {
   const [open2, setOpen2] = useState(false);
   const [history, setHistory] = useState([]);
   const [accData, setAccData] = useState([]);
-  const path = getLocation.pathname.replace("/", EMTY_STR);
+
+  const { pathname } = getLocation;
 
   const { currentAccount, allAccounts, currentNetwork, txHistory } = state;
 
@@ -66,20 +68,20 @@ function MenuFooter() {
   };
 
   const hanldeCreateNewAcc = () => {
-    navigate("/createNewWallet");
+    navigate(ROUTES.CREATE_WALLET);
   };
 
   const handleImportAcc = () => {
-    navigate("/importWallet");
+    navigate(ROUTES.IMPORT_WALLET);
   };
 
   const handleLogout = async () => {
     const res = await logout();
 
     if (!res.error) {
-      navigate("/unlockWallet");
+      navigate(ROUTES.UNLOACK_WALLET);
     } else {
-      toast.error("Error while logging out!");
+      toast.error(ERROR_MESSAGES.LOGOUT_ERR);
     }
   };
 
@@ -115,41 +117,48 @@ function MenuFooter() {
     });
 
     // setHistory(arrayReverser(filterData));
-    setHistory([{dateTime:" ", type:"Transfer", txHash : "wghgewqert", to : "efgbn", amount: "100",status:"pending"}]);
+    setHistory([{ dateTime: " ", type: "Transfer", txHash: "wghgewqert", to: "efgbn", amount: "100", status: "pending" }]);
   }
 
 
-  const edited = false;
-
   return (
     <div className={`${style.menuItems} welcomeFooter`}>
-      {/* {path === "wallet" && (
-        <Link
-          to="/wallet"
-          // onClick={() => setactiveLink("wallet")}
-          className={`${style.menuItems__items} ${path === "wallet" ? style.menuItems__items__active : ""
-            }`}
-        >
-          <div className={style.menuItems__items__img}>
-            <img src={Walletlogo} alt="Walletlogo"/>
-          </div>
-          <span className={style.menuItems__items__title}>Wallet</span>
-        </Link>
-      )} */}
-      {path === "wallet" && (
-        <Link
-          to="#"
-          // onClick={() => setOpen1(true)}
-          onClick={handleHistoryOpen}
-          className={`${style.menuItems__items} ${path === "history" ? style.menuItems__items__active : ""
-            }`}
-        >
-          <div className={style.menuItems__items__img}>
-            <img src={HistoryIcon} alt="HistoryIcon" draggable={false} />
-          </div>
-          <span className={style.menuItems__items__title}>History</span>
-        </Link>
+
+      {pathname === ROUTES.WALLET && (
+        <>
+          <Link
+            to="#"
+            onClick={handleHistoryOpen}
+            className={`${style.menuItems__items} ${style.menuItems__items__active}`}
+          >
+            <div className={style.menuItems__items__img}>
+              <img src={HistoryIcon} alt="HistoryIcon" draggable={false} />
+            </div>
+            <span className={style.menuItems__items__title}>History</span>
+          </Link>
+
+          <Link
+            onClick={handleMyAccOpen}
+            className={`${style.menuItems__items} ${style.menuItems__items__active}`}
+          >
+            <div className={style.menuItems__items__img}>
+              <img src={Myaccount} alt="Myaccount" draggable={false} />
+            </div>
+            <span className={style.menuItems__items__title}>My Accounts</span>
+          </Link>
+
+          <Link
+            onClick={() => setOpen2(true)}
+            className={`${style.menuItems__items} ${style.menuItems__items__active}`}
+          >
+            <div className={style.menuItems__items__img}>
+              <img src={Setting} alt="Setting" draggable={false} />
+            </div>
+            <span className={style.menuItems__items__title}>Settings</span>
+          </Link>
+        </>
       )}
+
       <Drawer
         title={
           <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -184,20 +193,6 @@ function MenuFooter() {
         )}
       </Drawer>
 
-      {path === "wallet" && (
-        <Link
-          // to="/setting"
-          // onClick={() => setOpen(true)}
-          onClick={handleMyAccOpen}
-          className={`${style.menuItems__items} ${path === "setting" ? style.menuItems__items__active : ""
-            }`}
-        >
-          <div className={style.menuItems__items__img}>
-            <img src={Myaccount} alt="Myaccount" draggable={false} />
-          </div>
-          <span className={style.menuItems__items__title}>My Accounts</span>
-        </Link>
-      )}
       <Drawer
         title={
           <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -232,19 +227,6 @@ function MenuFooter() {
         <AccountSetting img={Logout} title="Logout" onClick={handleLogout} />
       </Drawer>
 
-      {path === "wallet" && (
-        <Link
-          // to="/setting"
-          onClick={() => setOpen2(true)}
-          className={`${style.menuItems__items} ${path === "setting" ? style.menuItems__items__active : ""
-            }`}
-        >
-          <div className={style.menuItems__items__img}>
-            <img src={Setting} alt="Setting" draggable={false} />
-          </div>
-          <span className={style.menuItems__items__title}>Settings</span>
-        </Link>
-      )}
       <Drawer
         title={
           <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -256,7 +238,7 @@ function MenuFooter() {
         open={open2}
         closeIcon={<img src={ModalCloseIcon} alt="ModalCloseIcon" draggable={false} />}
       >
-        <Link to="/manageWallet">
+        <Link to={ROUTES.MANAGE_WALLET}>
           <div className={style.sttings}>
             <div className={style.sttings__left}>
               <div className={style.walletIconBorder}><img draggable={false} src={Wallet} width={30} height={30} alt="walletIcon" /></div>
@@ -274,6 +256,7 @@ function MenuFooter() {
         </Link>
         <SocialAccount />
       </Drawer>
+
       {/* {(path === "" ||
         path === "createNewWallet" ||
         path === "unlockWallet" ||
@@ -284,11 +267,10 @@ function MenuFooter() {
             </p>
           </div>
         )} */}
-      {path === "beforebegin" && <FooterStepOne />}
-      {path === "createwalletchain" && <FooterStepTwo />}
-      {/* {path === "setPassword" && <FooterStepThree />} */}
-      {path === "loginApprove" && <ApproveLogin />}
-      {path === "approveTx" && <ApproveTx />}
+      {pathname === ROUTES.BEFORE_BEGIN && <FooterStepOne />}
+      {pathname === ROUTES.NEW_WALLET_DETAILS && <FooterStepTwo />}
+      {pathname === ROUTES.LOGIN_APPROVE && <ApproveLogin />}
+      {pathname === ROUTES.APPROVE_TXN && <ApproveTx />}
     </div>
   );
 }

@@ -1,12 +1,13 @@
 import "./App.scss";
+import { ROUTES } from "./Routes";
 import Send from "./Pages/Send/Send";
 import Swap from "./Pages/Swap/Swap";
 import { AuthContext } from "./Store";
-import {EMTY_STR} from "./Constants/index";
-import Loader from "./Pages/Loader/Loader";
+import { EMTY_STR } from "./Constants";
 import Wallet from "./Pages/Wallet/Wallet";
 import NativeTx from "./Components/NativeTx";
 import { useEffect, useContext } from "react";
+// import Loader from "./Pages/Loader/Loader";
 import OnlyContent from "./Layout/OnlyContent";
 import WelcomeLayout from "./Layout/WelcomeLayout";
 import FixWidthLayout from "./Layout/FixWidthLayout";
@@ -40,10 +41,9 @@ function App(props) {
   const { state, setState } = useContext(AuthContext);
   const { allAccounts, isLogin, pass } = state;
 
-  useEffect(()=> {
-    log("updated state data: ", props);
+  useEffect(() => {
     setState(props.data);
-  },[])
+  }, [])
 
   useEffect(() => {
 
@@ -55,27 +55,27 @@ function App(props) {
     const route = getParameterByName("route");
 
     if (route) {
-      navigate("/" + route);
+      navigate(ROUTES.DEFAULT + route);
     } else {
-      navigate("/");
+      navigate(ROUTES.DEFAULT);
     }
 
     // console.log("isLogin : ", isLogin, "all accounts length : ",allAccounts.length, " pass : ",pass);
 
     if (!isLogin && allAccounts?.length > 0 && pass) {
-      navigate("/unlockWallet", {
+      navigate(ROUTES.UNLOACK_WALLET, {
         state: {
-          redirectRoute: route ? "/" + route : EMTY_STR,
+          redirectRoute: route ? ROUTES.DEFAULT + route : EMTY_STR,
         },
       });
     } else if (allAccounts.length <= 0) {
-      navigate("/");
+      navigate(ROUTES.DEFAULT);
     } else if (route) {
-      navigate("/" + route);
+      navigate(ROUTES.DEFAULT + route);
     } else if (isLogin) {
-      navigate("/wallet");
+      navigate(ROUTES.WALLET);
     } else {
-      navigate("/");
+      navigate(ROUTES.DEFAULT);
     }
 
   }, [isLogin, pass, allAccounts.length]);
@@ -88,17 +88,17 @@ function App(props) {
           <>
             <Route
               index
-              path="/"
+              path={ROUTES.DEFAULT}
               element={<WelcomeLayout children={<WelcomeScreen />} />}
             />
 
             <Route
-              path="/setPassword/:id"
+              path={ROUTES.SET_PASS+"/:id"}
               element={<WelcomeLayout children={<SetPasswordScreen />} />}
             />
 
             <Route
-              path="/unlockWallet"
+              path={ROUTES.UNLOACK_WALLET}
               element={<WelcomeLayout children={<UnlockWelcome />} />}
             />
 
@@ -107,78 +107,76 @@ function App(props) {
           <>
             <Route
               index
-              path="/wallet"
+              path={ROUTES.WALLET}
               element={<FixWidthLayout children={<Wallet />} />}
             />
 
             <Route
               index
-              path="/swapapprove"
+              path={ROUTES.SWAP_APPROVE}
               element={<FixWidthLayout children={<SwapApprove />} />}
             />
             <Route
               index
-              path="/enterPassword"
+              path={ROUTES.ENTER_PASS}
               element={<OnlyContent children={<EnterPassword />} />}
             />
             <Route
               index
-              path="/send"
+              path={ROUTES.SEND}
               element={<OnlyContent children={<Send />} />}
             />
             <Route
               index
-              path="/swap"
+              path={ROUTES.SWAP}
               element={<OnlyContent children={<Swap />} />}
             />
-            {/* 
             <Route
               index
-              path="/manageWallet"
+              path={ROUTES.MANAGE_WALLET}
               element={<OnlyContent children={<ManageWallet />} />}
             />
             <Route
               index
-              path="/privateKey"
+              path={ROUTES.PVT_KEY}
               element={<OnlyContent children={<PrivateKey />} />}
             />
+
             <Route
               index
-              path="/approveTx"
+              path={ROUTES.APPROVE_TXN}
               element={<FixWidthLayout children={<ApproveTx />} />}
             />
             <Route
               index
-              path="/nativeTx"
-              element={<NativeTx api={api} />}
+              path={ROUTES.NATIVE_TXN}
+              element={<NativeTx  /*api={api}*/ />}
             />
-            
+
             <Route
-              path="/loginApprove"
+              path={ROUTES.LOGIN_APPROVE}
               element={<WelcomeLayout children={<LoginApprove />} />}
             />
-            */}
-
 
           </>
         )}
 
         <Route
-          path="/importWallet"
+          path={ROUTES.IMPORT_WALLET}
           element={<WelcomeLayout children={<ImportWallet />} />}
         />
 
         <Route
-          path="/createwalletchain"
+          path={ROUTES.NEW_WALLET_DETAILS}
           element={<WelcomeLayout children={<CreateWalletChain />} />}
         />
         <Route
-          path="/beforebegin"
+          path={ROUTES.BEFORE_BEGIN}
           element={<WelcomeLayout children={<Beforebegin />} />}
         />
 
         <Route
-          path="/createNewWallet"
+          path={ROUTES.CREATE_WALLET}
           element={<WelcomeLayout children={<CreateNewWallet />} />}
         />
       </Routes>

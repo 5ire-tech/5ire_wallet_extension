@@ -1,7 +1,8 @@
 import React from "react";
+import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
-import PlaceLogo from "../../Assets/PlaceLog.svg";
 import { Link } from "react-router-dom";
+import PlaceLogo from "../../Assets/PlaceLog.svg";
 // import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 
 function WelcomeScreen() {
@@ -19,10 +20,10 @@ function WelcomeScreen() {
           </div>
         </div>
         <div className={style.cardWhite__linkOuter}>
-          <Link to="/createNewWallet" className="bluegradient">
+          <Link to={ROUTES.CREATE_WALLET} className="bluegradient">
             Create a New Wallet
           </Link>
-          <Link className="grayBtn" to="/importWallet">
+          <Link className="grayBtn" to={ROUTES.IMPORT_WALLET}>
             Import Wallet
           </Link>
         </div>

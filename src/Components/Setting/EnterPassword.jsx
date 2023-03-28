@@ -1,3 +1,4 @@
+import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
 import { useState, useEffect } from "react";
@@ -44,7 +45,7 @@ function EnterPassword() {
 
       if (!res.error) {
         // navigate(location.state?.redirectRoute || "/wallet");
-        navigate("/privateKey");
+        navigate(ROUTES.PVT_KEY);
 
       } else {
         setErrorMsg(res.data);
@@ -57,7 +58,7 @@ function EnterPassword() {
   return (
     <>
       <div className={`scrollableCont`} onKeyDown={handleClick}>
-        <MenuRestofHeaders backTo={"/manageWallet"} title={""} />
+        <MenuRestofHeaders backTo={ROUTES.MANAGE_WALLET} title={""} />
         <div className={`flexedContent`}>
           <div className={style.enterPassword}>
             <div className={style.commonHeadeing}>

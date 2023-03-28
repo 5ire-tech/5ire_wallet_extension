@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { ROUTES } from "../../Routes";
 import { toast } from "react-toastify";
 import React, { useState } from "react";
 import style from "./style.module.scss";
-import { useSelector } from "react-redux";
-import {COPIED} from "../../Constants/index";
+import { useContext, useEffect } from "react";
+import { COPIED } from "../../Constants/index";
 import useWallet from "../../Hooks/useWallet";
+import { AuthContext } from "../../Store/index";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import ButtonComp from "../ButtonComp/ButtonComp";
 import { decryptor } from "../../Helper/CryptoHelper";
@@ -12,7 +13,8 @@ import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHea
 
 
 function PrivateKey() {
-  const { currentAccount, pass } = useSelector((state) => state.auth);
+  const { state } = useContext(AuthContext);
+  const { allAccounts, currentAccount, pass } = state;
   const [key, setKey] = useState("");
   const [seed, setSeed] = useState("");
   const [show, handleShow] = useState(false);
@@ -20,7 +22,7 @@ function PrivateKey() {
   const name = ["seed", "key"];
 
   useEffect(() => {
-    setKey(getKey(currentAccount?.temp1m, pass));
+    setKey(getKey(allAccounts[currentAccount?.index]?.temp1m, pass));
   }, [currentAccount, getKey]);
 
   const handleCopy = (e) => {
@@ -33,7 +35,7 @@ function PrivateKey() {
 
   useEffect(() => {
     if (show && !seed) {
-      let seed = (decryptor(currentAccount.temp1m, pass));
+      let seed = (decryptor(allAccounts[currentAccount?.index]?.temp1m, pass));
       setSeed(seed)
     }
   }, [show]);
@@ -45,7 +47,7 @@ function PrivateKey() {
   return (
     <>
       <div className={`scrollableCont`}>
-        <MenuRestofHeaders backTo={"/wallet"} title={""} />
+        <MenuRestofHeaders backTo={ROUTES.WALLET} title={""} />
         <div className={`flexedContent`}>
           <div className={style.enterPassword}>
             <div className={style.commonHeadeing}>

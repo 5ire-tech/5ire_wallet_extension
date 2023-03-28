@@ -47,7 +47,6 @@ export const setSessionStorage = data => {
 
 export const getSessionStorage = key => {
     return new Promise((resolve, reject) => {
-
         browser.storage.session.get(key)
             .then(res => {
                 // console.log("Response after getting data from session storage : ", res);

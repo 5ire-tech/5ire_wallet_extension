@@ -1,5 +1,6 @@
-import React, { useContext } from "react";
 import style from "./style.module.scss";
+import { ROUTES } from "../../Routes";
+import React, { useContext } from "react";
 import browser from "webextension-polyfill";
 import useWallet from "../../Hooks/useWallet";
 import { useNavigate } from "react-router-dom";
@@ -12,20 +13,19 @@ import {
   setUIdata,
   toggleLoader,
   toggleSite,
-  setNewAccount,
 } from "../../Utility/redux_helper";
-import {closeBoth} from "../../Utility/window.helper"
+import { closeBoth } from "../../Utility/window.helper"
 import { AuthContext } from "../../Store";
 
 function FooterStepOne() {
   const { state } = useContext(AuthContext);
   const navigate = useNavigate();
-  const {isLogin} = state;
+  const { isLogin } = state;
 
   const handleCancle = () => {
-    if (isLogin) navigate("/wallet");
-    else 
-    navigate("/");
+    if (isLogin) navigate(ROUTES.WALLET);
+    else
+      navigate(ROUTES.DEFAULT);
   }
   return (
     <>
@@ -37,7 +37,7 @@ function FooterStepOne() {
           maxWidth={"100%"}
         />
         <ButtonComp
-          onClick={() => navigate("/createwalletchain")}
+          onClick={() => navigate(ROUTES.NEW_WALLET_DETAILS)}
           text={"Continue"}
           maxWidth={"100%"}
         />
@@ -49,17 +49,17 @@ function FooterStepOne() {
 export const FooterStepTwo = () => {
   const { state, updateState } = useContext(AuthContext);
   const navigate = useNavigate();
-  const {isLogin} = state;
+  const { isLogin } = state;
 
   const handleCancle = () => {
     updateState(LABELS.NEW_ACCOUNT, null, false);
     updateState(LABELS.ACCOUNT_NAME, null, false);
-    navigate("/beforebegin");
+    navigate(ROUTES.BEFORE_BEGIN);
   };
 
   const handleClick = () => {
-    if (isLogin) navigate("/wallet");
-    else navigate("/setPassword/create");
+    if (isLogin) navigate(ROUTES.WALLET);
+    else navigate(ROUTES.SET_PASS + "/create");
   };
   return (
     <>
@@ -78,70 +78,6 @@ export const FooterStepTwo = () => {
     </>
   );
 };
-
-// export const FooterStepThree = () => {
-//   const { pass, passError, isLogin} = useSelector((state) => state.auth);
-//   const [show, setShow] = useState(false);
-//   const navigate = useNavigate();
-//   const { setUserPass } = useAuth();
-//   const dispatch = useDispatch();
-
-//   // const handleCancle = () => {
-//   //   if(isLogin) 
-//   //   navigate("/createwalletchain");
-//   // };
-
-//   const handleSubmit = async () => {
-//     if (!passError) {
-//       dispatch(toggleLoader(true));
-//       let res = await setUserPass(pass);
-
-//       if (res.error) {
-//         dispatch(toggleLoader(false));
-//         toast.error(res.data);
-//       } else {
-//         dispatch(toggleLoader(false));
-
-//         setShow(true);
-//         setTimeout(() => {
-//           console.log("IS LOGIN ::: ",isLogin);
-//           if (isLogin !== true)
-//             dispatch(setLogin(true));
-//           setShow(false);
-//           setTimeout(() => {
-//             navigate("/wallet");
-//           }, 500);
-//         }, 2000);
-//       }
-//     }
-//   };
-
-//   return (
-//     <>
-//       <div className={style.menuItems__cancleContinue}>
-//         {/* <ButtonComp
-//           bordered={true}
-//           text={"Cancel"}
-//           maxWidth={"100%"}
-//           onClick={handleCancle}
-//         /> */}
-
-//         {show && (
-//           <div className="loader">
-//             <CongratulationsScreen />
-//           </div>
-//         )}
-
-//         <ButtonComp
-//           onClick={handleSubmit}
-//           text={"Continue"}
-//           maxWidth={"100%"}
-//         />
-//       </div>
-//     </>
-//   );
-// };
-
 
 //approve the connection to pass the accounts
 export const ApproveLogin = () => {
