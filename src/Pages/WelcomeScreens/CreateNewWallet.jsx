@@ -6,6 +6,7 @@ import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { LABELS, REGEX, ERROR_MESSAGES } from "../../Constants/index";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+import { ROUTES } from "../../Routes";
 
 function CreateNewWallet() {
   const navigate = useNavigate();
@@ -53,7 +54,7 @@ function CreateNewWallet() {
           setWarrning(ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS);
         } else {
           updateState(LABELS.ACCOUNT_NAME, data.trim(), false);
-          navigate("/beforebegin");
+          navigate(ROUTES.BEFORE_BEGIN);
         }
       }
     }
@@ -61,8 +62,8 @@ function CreateNewWallet() {
 
   const handleCancle = () => {
     updateState(LABELS.ACCOUNT_NAME, null, false);
-    if (isLogin) navigate("/wallet");
-    else navigate("/");
+    if (isLogin) navigate(ROUTES.WALLET);
+    else navigate(ROUTES.DEFAULT);
   };
 
   return (

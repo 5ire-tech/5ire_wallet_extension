@@ -1,14 +1,15 @@
+import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import useWallet from "../../Hooks/useWallet";
 import { useNavigate } from "react-router-dom";
+import { isEmpty } from "../../Utility/utility";
 import { decryptor } from "../../Helper/CryptoHelper";
 import React, { useState, useEffect, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { REGEX, ERROR_MESSAGES, LABELS } from "../../Constants/index";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
-import { isEmpty } from "../../Utility/utility";
 
 
 
@@ -101,8 +102,8 @@ function ImportWallet() {
             if (res.error) setWarrning((p) => ({ ...p, key: res.data }));
             else {
               setWarrning({ acc: "", key: "" });
-              if (isLogin) navigate("/wallet");
-              else navigate("/setPassword/import");
+              if (isLogin) navigate(ROUTES);
+              else navigate(ROUTES.SET_PASS+"/import");
             }
           }
         }
@@ -111,8 +112,8 @@ function ImportWallet() {
   };
 
   const handleCancle = () => {
-    if (isLogin) navigate("/wallet");
-    else navigate("/");
+    if (isLogin) navigate(ROUTES.WALLET);
+    else navigate(ROUTES.DEFAULT);
   };
 
   return (

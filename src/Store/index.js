@@ -37,7 +37,6 @@ export default function Context({ children }) {
       } else {
         localStorage.set({ [name]: data });
       }
-      sessionStorage.set({ [name]: data });
     }
 
     setState(p => {
@@ -46,7 +45,6 @@ export default function Context({ children }) {
         [name]: data
       }
       localStorage.set({ state : dataToSet });
-
       return dataToSet;
     });
   };

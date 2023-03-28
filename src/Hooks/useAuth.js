@@ -86,19 +86,21 @@ export default function useAuth() {
 
   const logout = async () => {
     try {
-      if (isManifestV3) {
-        await Browser.storage.session.remove(["login"]);
-      } else {
-        await Browser.storage.local.remove(["login"]);
-      }
+      // if (isManifestV3) {
+      //   await Browser.storage.session.remove(["login"]);
+      // } else {
+      //   await Browser.storage.local.remove(["login"]);
+      // }
       // dispatch(setLogin(false));
+
+      updateState(LABELS.ISLOGIN,false, true, true);
 
       return {
         error: false,
         data: SUCCESS_MESSAGES.LOGOUT_SUCCESS,
       };
     } catch (error) {
-      console.log("Error : ", error);
+      console.log("Error  while logging out: ", error);
       return {
         error: false,
         data: ERROR_MESSAGES.LOGOUT_ERR,

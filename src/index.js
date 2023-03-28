@@ -72,7 +72,7 @@ const initApp = (data) => {
     //inject the current state into main app
     const currentLocalState = await getDataLocal(LABELS.STATE);
     const loginState = await sessionStorage.get(LABELS.ISLOGIN);
-
+    
     currentLocalState.isLogin = !loginState?.isLogin ? false : currentLocalState.isLogin;
 
     initApp(currentLocalState);

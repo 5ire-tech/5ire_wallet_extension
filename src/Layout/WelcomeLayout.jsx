@@ -1,30 +1,42 @@
-// import { Content } from "antd/es/layout/layout";
-import { Layout } from "antd";
+
 import React from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Layout } from "antd";
 import MenuFooter from "../Components/MenuFooter/MenuFooter";
-import style from "../Pages/WelcomeScreens/style.module.scss";
+
+// import style from "../Pages/WelcomeScreens/style.module.scss";
+// import { useLocation } from "react-router-dom";
+// import { ROUTES } from "../Routes";
 
 function WelcomeLayout({ children }) {
   const { Content } = Layout;
-  const getLocation = useLocation();
-  const path = getLocation.pathname.replace("/", "");
+  
+  // const getLocation = useLocation();
+  // const {pathname} = getLocation;
+
+
   return (
     <div className={"WelcomeLayout"}>
       <div className="WelcomeLayout__container">
+        {/* {
+          pathname === (ROUTES.BEFORE_BEGIN || ROUTES.NEW_WALLET_DETAILS || ROUTES.SET_PASS) &&
+          <div className={style.cardWhite__numberingSec}></div>
+        } */}
 
-        {path === "beforebegin" && (
+        {/* {pathname === ROUTES.BEFORE_BEGIN && (
           <div className={style.cardWhite__numberingSec}>
+            1
           </div>
         )}
-        {path === "createwalletchain" && (
+        {pathname === ROUTES.NEW_WALLET_DETAILS && (
           <div className={style.cardWhite__numberingSec}>
+           2
           </div>
         )}
-        {path === "setPassword" && (
+        {pathname === ROUTES.SET_PASS && (
           <div className={style.cardWhite__numberingSec}>
+            3
           </div>
-        )}
+        )} */}
         <Content className="WelcomeLayout__content">{children}</Content>
         <MenuFooter />
       </div>

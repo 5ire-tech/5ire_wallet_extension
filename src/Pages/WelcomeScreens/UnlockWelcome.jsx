@@ -8,6 +8,7 @@ import React, { useEffect, useState, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+import { ROUTES } from "../../Routes";
 
 
 function UnlockWelcome() {
@@ -52,12 +53,10 @@ function UnlockWelcome() {
 
       if (!res.error) {
         if (isLogin !== true)
-          updateState(LABELS.ISLOGIN, true);
-        navigate(location.state?.redirectRoute || "/wallet");
+          updateState(LABELS.ISLOGIN, true, true, true);
+        navigate(location.state?.redirectRoute || ROUTES.WALLET);
       }
-
       else {
-
         setErrorMsg(res.data);
         setDisable(true);
       }

@@ -1,16 +1,16 @@
+import {ROUTES} from "../../Routes";
 import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
-import { isEmpty } from "../../Utility/utility";
 import { AuthContext } from "../../Store";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { isEmpty } from "../../Utility/utility";
 import React, { useEffect, useState, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
-import { REGEX, LABELS, ERROR_MESSAGES, EMTY_STR, ROUTES } from "../../Constants/index";
+import { REGEX, LABELS, ERROR_MESSAGES, EMTY_STR } from "../../Constants/index";
 import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
-
 
 
 export default function SetPasswordScreen() {

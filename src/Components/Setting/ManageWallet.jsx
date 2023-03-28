@@ -1,18 +1,26 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {toast} from "react-toastify";
 import style from "./style.module.scss";
-import { useSelector } from "react-redux";
+import { AuthContext } from "../../Store/index";
 import { useNavigate } from "react-router-dom";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import ButtonComp from "../ButtonComp/ButtonComp.jsx";
 import { NATIVE, EVM, COPIED } from "../../Constants/index";
 import Exportprivate from "../../Assets/PNG/exportprivate.png";
-// import { InputFieldOnly } from "../InputField/InputFieldSimple.jsx";
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx";
+import { ROUTES } from "../../Routes";
 
 function ManageWallet() {
   const navigate = useNavigate();
-  const { currentAccount } = useSelector(state => state.auth);
+  const [accountData, setAccountData] = useState("");
+
+  const { state} = useContext(AuthContext);
+  const { currentAccount, allAccounts } = state;
+
+  useEffect(()=>{
+    let data = allAccounts[currentAccount?.index];
+    setAccountData(data);
+  },[currentAccount.index])
 
   const handleCopy = (e) => {
     if (e.target.name === NATIVE) {
@@ -30,7 +38,7 @@ function ManageWallet() {
   return (
     <>
       <div className={`scrollableCont`}>
-        <MenuRestofHeaders backTo={"/wallet"} title={"Manage Wallet"} />
+        <MenuRestofHeaders backTo={ROUTES.WALLET} title={"Manage Wallet"} />
         <div className={`flexedContent`}>
           {/* <InputFieldOnly
             placeholder={"Type Wallet Name"}
@@ -42,7 +50,7 @@ function ManageWallet() {
             <div className={style.wallet__addressInput}>
               <label>Wallet Name:</label>
               <p className={style.wallet__addressInput__copyText}>
-                <span>{currentAccount?.accountName}</span>
+                <span>{accountData?.accountName}</span>
                 <img src={CopyIcon} alt="copyIcon" name="name" onClick={handleCopy} draggable={false}/>{" "}
               </p>
             </div>
@@ -51,7 +59,7 @@ function ManageWallet() {
             <div className={style.wallet__addressInput}>
               <label>Native Chain Address:</label>
               <p className={style.wallet__addressInput__copyText}>
-                <span>{currentAccount.nativeAddress}</span>
+                <span>{accountData.nativeAddress}</span>
                 <img src={CopyIcon} alt="copyIcon" name={NATIVE} onClick={handleCopy} draggable={false}/>{" "}
               </p>
             </div>
@@ -60,14 +68,14 @@ function ManageWallet() {
             <div className={style.wallet__addressInput}>
               <label>Evm Chain Address:</label>
               <p className={style.wallet__addressInput__copyText}>
-                <span>{currentAccount.evmAddress}</span>
+                <span>{accountData.evmAddress}</span>
                 <img src={CopyIcon} alt="copyIcon" name={EVM} onClick={handleCopy} draggable={false} />{" "}
               </p>
             </div>
           </div>
           <div className={style.btn_icon}>
             <ButtonComp
-              onClick={() => navigate("/enterPassword")}
+              onClick={() => navigate(ROUTES.ENTER_PASS)}
               text="Export Private Key"
               img={Exportprivate}
             ></ButtonComp>
