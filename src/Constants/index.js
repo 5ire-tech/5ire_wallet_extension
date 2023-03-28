@@ -24,6 +24,11 @@ export const REGEX = {
 
 }
 
+export const STORAGE = {
+    LOCAL:"local",
+    SESSION:"session"
+}
+
 export const TX_TYPE = {
     SEND: "Transfer",
     SWAP: "Swap"
@@ -74,13 +79,6 @@ export const ERROR_MESSAGES = {
     MNEMONICS_ALREADY_EXISTS: "Wallet with this mnemonic already exists.",
     INPUT_BETWEEN_2_TO_18: "Please input account name between " + 2 + " and " + 18 + " characters.",
     CREATE_PASS_MSG: "Password must have at least 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
-
-};
-
-export const SUCCESS_MESSAGES = {
-    LOGIN_SUCCESS: "Login successfully.",
-    LOGOUT_SUCCESS: "Logout successfully",
-    PASS_CREATED_SUCCESS: "Successfully created password for user.",
     INVAILD_ERROR_MESSAGE: "Error message must be an object.",
     INVALID_ERROR_PAYLOAD: "Error payload is invalid, (missing required properties).",
     INVALID_PROPERTY: "Invalid property.",
@@ -89,6 +87,12 @@ export const SUCCESS_MESSAGES = {
     TX_FAILED: "Transaction failed. some wrong happend.",
     NETWORK_REQUEST: "Network error try after sometime",
     INVALID_TYPE: "argument type is invalid"
+};
+
+export const SUCCESS_MESSAGES = {
+    LOGIN_SUCCESS: "Login successfully.",
+    LOGOUT_SUCCESS: "Logout successfully",
+    PASS_CREATED_SUCCESS: "Successfully created password for user.",
 };
 
 export const ERRCODES = {
@@ -117,7 +121,6 @@ export const LABELS = {
     ALL_ACCOUNTS: "allAccounts",
     ACCOUNT_NAME: "accountName",
     CURRENT_ACCOUNT: "currentAccount",
-    EXTENSIONUI: "extensionui",
 
     ERRCODE: "errCode",
     ERRMESSAGE: "errMessage",
@@ -199,4 +202,9 @@ export const ERROR_EVENTS_LABELS = {
     NETWORK_ERROR: "networkError",
     INSUFFICENT_BALANCE: "insufficentBalance",
     CONNFAILED: "connfailed"
+}
+
+export const MESSAGE_TYPE_LABELS = {
+    EXTENSION_UI: "extensionUi",
+    EXTENSION_BACKGROUND: "extensionbackGround"
 }

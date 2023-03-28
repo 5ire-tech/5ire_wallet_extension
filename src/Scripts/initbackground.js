@@ -1,7 +1,7 @@
 import Browser from "webextension-polyfill";
 import { Controller } from "./controller";
-import { getDataLocal } from "../Storage/loadstore";
-import { CONNECTION_NAME, INTERNAL_EVENT_LABELS, DECIMALS, LABELS, STATE_CHANGE_ACTIONS, TX_TYPE,STATUS } from "../Constants";
+import { getDataLocal, ExtensionStorageHandler } from "../Storage/loadstore";
+import { CONNECTION_NAME, INTERNAL_EVENT_LABELS, DECIMALS, MESSAGE_TYPE_LABELS, STATE_CHANGE_ACTIONS, TX_TYPE,STATUS } from "../Constants";
 import { isManifestV3 } from "./utils";
 import { hasLength, isObject, isNullorUndef, hasProperty, getKey, log } from "../Utility/utility";
 import { HTTP_END_POINTS, API, HTTP_METHODS, EVM_JSON_RPC_METHODS, ERRCODES, ERROR_MESSAGES, ERROR_EVENTS_LABELS } from "../Constants";
@@ -17,6 +17,7 @@ import Web3 from "web3";
 import Keyring from "@polkadot/keyring";
 import { decryptor } from "../Helper/CryptoHelper";
 import { ed25519PairFromSeed, mnemonicToMiniSecret } from "@polkadot/util-crypto";
+import { sendRuntimeMessage } from "../Utility/message_helper";
 
 
 //handling the connection using the events
@@ -26,6 +27,8 @@ eventEmitter.on(INTERNAL_EVENT_LABELS.CONNECTION, async () => {
     const api = await services.apiConnection();
     if(api?.value) return;
     RPCCalls.api = api
+
+    log("Here is the api after init: ", api);
 })
 
 
@@ -87,7 +90,7 @@ export class InitBackground {
             const localData = await getDataLocal("state");
 
             //checks for event from extension ui
-            if (message?.type === LABELS.EXTENSIONUI) {
+            if (message?.type === MESSAGE_TYPE_LABELS.EXTENSION_UI) {
                 await this._rpcCallsMiddleware(message, localData);
                 return;
             }
@@ -204,19 +207,11 @@ export class InitBackground {
     this.services.checkTransactions({...txData.data, statusCheck: txData.statusCheck});
   }
 
-  //estimate the native gas fee
-  _gasEstimationNative = async (isFee, state) => {
-   try {
-    await this.rpcCalls.nativeFeeCalculator(isFee, state);
-   } catch (err) {
-    console.log("Error while native gas estimation: ", err);
-   }
-  }
-
 
   //rpc calls middleware
   _rpcCallsMiddleware = async (message, state) => {
     try {
+
         if(hasProperty(this.rpcCalls, message.event)) {
             const rpcResponse = await this._errorCheck(message, state)
             this._parseRPCRes(rpcResponse);
@@ -248,7 +243,11 @@ export class InitBackground {
     try {
       if(!rpcResponse.error) {
 
-        console.log("in the processing the unit: ", rpcResponse);
+        //change the state in local storage
+        if(rpcResponse.stateChangeKey) this.services.updateLocalState(rpcResponse.stateChangeKey, {payload: rpcResponse.payload})
+        //send the response message to extension ui
+        if(rpcResponse.eventEmit) this.services.messageToUI(rpcResponse.eventEmit, rpcResponse.payload)
+        
       } else {
         console.log("in the processing the unit error section: ", rpcResponse);
         //send the error related messages here
@@ -325,9 +324,10 @@ export class Services {
   }
 
    //pass message to extension ui
-   messageToUI = async () => {
+   messageToUI = async (event, message) => {
     try {
-
+      log("here is the event and message: ", event, message)
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND, event, message)
     } catch (err) {
         console.log("Error while sending the message to extension ui: ", err);
     }
@@ -336,6 +336,15 @@ export class Services {
    //pass error related messaged to extension ui
    errorMessageToUI = async () => {
 
+   }
+
+   //update the local storage data
+   updateLocalState = async (key, data) => {
+    try {
+      ExtensionStorageHandler.updateStorage(key, data)
+    } catch (err) {
+      log("Error while updating the local state: ", err)
+    }
    }
 
     /*************************** Service Internals ******************************/

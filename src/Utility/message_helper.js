@@ -15,7 +15,7 @@ export const sendRuntimeMessage = (typeLabel, eventLabel, message) => {
 
 
 //bind the message listner
-export const messageListenerHelper = (listner) => {
+export const bindRuntimeMessageListener = (listner) => {
     try {
         Browser.runtime.onMessage.addListener(listner)
     } catch (err) {

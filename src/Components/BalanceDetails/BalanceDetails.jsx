@@ -23,7 +23,6 @@ import { NATIVE, EVM, NETWORK, COPIED, HTTP_END_POINTS, EMTY_STR} from "../../Co
 function BalanceDetails({ mt0 }) {
 
   const getLocation = useLocation();
-  const { getBalance } = useWallet();
   const { state, updateState } = useContext(AuthContext);
   const [isConnected, setIsConnected] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -61,26 +60,26 @@ function BalanceDetails({ mt0 }) {
       setAddresses({ evmAddress: shortner(accountData?.evmAddress), nativeAddress: shortner(accountData?.nativeAddress) });
     }
 
-    //inverval id for unbind the interval
-    let intId = null;
+    // //inverval id for unbind the interval
+    // let intId = null;
 
-    connectionObj.initializeApi(HTTP_END_POINTS.TESTNET, HTTP_END_POINTS.QA, currentNetwork, false)
-      .then((res) => {
-        if (!res?.value) {
-          Connection.isExecuting.value = false;
-          getBalance(res.evmApi, res.nativeApi, true);
+    // connectionObj.initializeApi(HTTP_END_POINTS.TESTNET, HTTP_END_POINTS.QA, currentNetwork, false)
+    //   .then((res) => {
+    //     if (!res?.value) {
+    //       Connection.isExecuting.value = false;
+    //       getBalance(res.evmApi, res.nativeApi, true);
 
-          intId = setInterval(() => {
-            getBalance(res.evmApi, res.nativeApi, true);
-          }, 5000)
+    //       intId = setInterval(() => {
+    //         getBalance(res.evmApi, res.nativeApi, true);
+    //       }, 5000)
 
-        }
-      })
-      .catch((err) => {
-        console.log("Error while getting the balance : ", err.message)
-      });
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     console.log("Error while getting the balance : ", err.message)
+    //   });
 
-    return () => { intId && clearInterval(intId) }
+    // return () => { intId && clearInterval(intId) }
 
   }, [currentNetwork, accountData.accountName]);
 

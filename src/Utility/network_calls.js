@@ -37,7 +37,7 @@ export async function httpRequest(url, method, payload, headers = {"Content-Type
     constructor(stateChangeKey, eventForEmitting, payload, moreEvent = [], error=null) {
       this.stateChangeKey = stateChangeKey
       this.eventEmit = eventForEmitting
-      this.res = payload
+      this.payload = payload
       this.moreEvent = moreEvent
       this.error = error
     }

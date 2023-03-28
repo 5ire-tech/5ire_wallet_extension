@@ -24,6 +24,7 @@ import CreateNewWallet from "./Pages/WelcomeScreens/CreateNewWallet";
 import ApproveTx from "./Pages/RejectNotification/RejectNotification";
 import CreateWalletChain from "./Pages/WelcomeScreens/CreateWalletChain";
 import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
+import {log} from "./Utility/utility"
 
 function getParameterByName(name, url = window.location.href) {
   name = name.replace(/[[\]]/g, "\\$&");
@@ -40,6 +41,7 @@ function App(props) {
   const { allAccounts, isLogin, pass } = state;
 
   useEffect(()=> {
+    log("updated state data: ", props);
     setState(props.data);
   },[])
 

@@ -1,9 +1,12 @@
-import { LABELS } from "../Constants";
 import { userState } from "./initialState";
 import { isManifestV3 } from "../Scripts/utils";
 import { createContext, useState, useEffect } from "react";
 import { sessionStorage, localStorage } from "../Storage";
 import { getDataLocal, getDataSession } from "../Storage/loadstore";
+import { sendRuntimeMessage, bindRuntimeMessageListener } from "../Utility/message_helper";
+import { MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS,STORAGE} from "../Constants";
+import { isEqual, log } from "../Utility/utility";
+import Browser from "webextension-polyfill";
 
 export const AuthContext = createContext();
 
@@ -11,23 +14,34 @@ export const AuthContext = createContext();
 export default function Context({ children }) {
   const [state, setState] = useState(userState);
 
-  // useEffect(() => {
-  //   (async () => {
+  useEffect(() => {
+    setInterval(() => {
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.BALANCE, {})
+    }, 8000);
 
-  //     //inject the current state into main app
-  //     const localState = await getDataLocal(LABELS.STATE);
-  //     const loginState = await getDataSession(LABELS.ISLOGIN);
+  }, []);
 
-  //     console.log("Current local state before: ", localState);
-  //     if (localState) {
-  //       localState.isLogin = !loginState?.isLogin ? false : localState.isLogin
-  //     }
-  //     console.log("Current local state after: ", localState);
 
-  //     setState(localState);
+  Browser.storage.onChanged.addListener((changedData, area) => {
+    if(area === STORAGE.LOCAL){
+      //change the state whenever the local storage is updated
+       setState(changedData.state.newValue)
+    }
+  })
 
-  //   })();
-  // }, []);
+
+   //bind the message from background event
+   bindRuntimeMessageListener((message) => {
+    if(message.type === MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND) {
+      
+    }
+  })
+  
+  // const updateBalance = (balanceState) => {
+  //   if(isEqual(balanceState.totalBalance, state.balance.totalBalance)) return;
+  //   setState(prev => {return {...prev, balance: balanceState}})
+  // };
+
 
   const updateState = (name, data, toLocal = true, toSession = false) => {
 
@@ -80,7 +94,7 @@ export default function Context({ children }) {
     localStorage.set({ state: dataToSet });
 
   };
-
+  
 
   const values = {
     state,
