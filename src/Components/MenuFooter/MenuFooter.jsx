@@ -20,11 +20,11 @@ import ManageCustom from "../ManageCustomtocken/ManageCustom";
 import Createaccount from "../../Assets/PNG/createaccount.png";
 import { ACCOUNT_CHANGED_EVENT } from "../../Scripts/constants";
 import AccountSetting from "../AccountSetting/AccountSetting.jsx";
-import { EMTY_STR, ERROR_MESSAGES, LABELS, TX_TYPE } from "../../Constants/index";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { getCurrentTabUId, getCurrentTabUrl } from "../../Scripts/utils";
 import TransectionHistry from "../TransectionHistry/TransectionHistry";
+import { EMTY_STR, ERROR_MESSAGES, LABELS, TX_TYPE } from "../../Constants/index";
 import FooterStepOne, {
   ApproveLogin,
   FooterStepTwo,
@@ -86,9 +86,8 @@ function MenuFooter() {
   };
 
   const onSelectAcc = (accId) => {
-    // dispatch(resetBalance());
+
     let acc = allAccounts.find(acc => acc.id === accId);
-    // console.log("Account Now : ", acc);;
     updateState(LABELS.CURRENT_ACCOUNT, { accountName: acc.accountName, index: Number(acc.id) - 1 })
 
     //when new keypair created or imported the old key key emit the account change event
@@ -104,20 +103,11 @@ function MenuFooter() {
   };
 
   const handleHistoryOpen = () => {
+    if (txHistory.hasOwnProperty(accData.accountName)) {
+      let txData = txHistory[accData.accountName].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()));
+      setHistory(arrayReverser(txData));
+    }
     setOpen1(true);
-
-    let txData = txHistory[accData.accountName] ?
-      txHistory[accData.accountName].filter(data => data.chain?.toLoweCase() === currentNetwork.toLowerCase())
-      : [];
-
-    console.log("txData : ", txData);
-
-    const filterData = accData.txHistory.filter((his) => {
-      return his.chain?.toLoweCase() === currentNetwork.toLowerCase();
-    });
-
-    // setHistory(arrayReverser(filterData));
-    setHistory([{ dateTime: " ", type: "Transfer", txHash: "wghgewqert", to: "efgbn", amount: "100", status: "pending" }]);
   }
 
 

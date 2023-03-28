@@ -3,7 +3,7 @@ export const userState = {
 
     allAccounts: [],
 
-    txHistory:{},
+    txHistory: {},
 
     popupChecks: {
         txApprove: false
@@ -11,7 +11,7 @@ export const userState = {
 
     currentAccount: {
         accountName: "",
-        index:""
+        index: ""
     },
 
     newAccount: null,

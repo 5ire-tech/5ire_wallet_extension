@@ -16,8 +16,6 @@ function CreateNewWallet() {
   const { state, updateState } = useContext(AuthContext);
   const { allAccounts } = state;
 
-  // console.log("All Account : ",allAccounts)
-
 
   const handleChange = (e) => {
     setData(e.target.value);

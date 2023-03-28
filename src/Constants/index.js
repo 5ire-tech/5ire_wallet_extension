@@ -116,6 +116,7 @@ export const LABELS = {
     NEW_ACCOUNT: "newAccount",
     ALL_ACCOUNTS: "allAccounts",
     ACCOUNT_NAME: "accountName",
+    CURRENT_NETWORK:"currentNetwork",
     CURRENT_ACCOUNT: "currentAccount",
     EXTENSIONUI: "extensionui",
 
