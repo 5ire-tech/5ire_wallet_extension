@@ -18,7 +18,7 @@ import React, { useEffect, useState, useContext } from "react";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import DownArrowSuffix from "../../Assets/DownArrowSuffix.svg";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
-import { NATIVE, EVM, NETWORK, COPIED, HTTP_END_POINTS, EMTY_STR } from "../../Constants/index";
+import { NATIVE, EVM, NETWORK, COPIED, HTTP_END_POINTS, EMTY_STR, LABELS } from "../../Constants/index";
 
 
 function BalanceDetails({ mt0 }) {
@@ -98,8 +98,8 @@ function BalanceDetails({ mt0 }) {
 
 
   const handleNetworkChange = (network) => {
-    // dispatch(setCurrentNetwork(network));
-    updateState(currentNetwork, network);
+
+    updateState(LABELS.CURRENT_NETWORK, network);
     updateState(balance, { evmBalance: EMTY_STR, nativeBalance: EMTY_STR, totalBalance: EMTY_STR });
   };
 
