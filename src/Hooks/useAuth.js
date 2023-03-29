@@ -8,7 +8,7 @@ import { LABELS, ERROR_MESSAGES, SUCCESS_MESSAGES } from "../Constants/index";
 
 export default function useAuth() {
   const { state, updateState } = useContext(AuthContext);
-  const { allAccounts, newAccount, pass } = state;
+  const { allAccounts, newAccount, pass, txHistory} = state;
 
   const setUserPass = (p) => {
     return new Promise(async (resolve) => {
@@ -33,7 +33,8 @@ export default function useAuth() {
             }
 
             updateState(LABELS.PASS, hash);
-            updateState(LABELS.NEW_ACCOUNT, null, false);
+            updateState(LABELS.NEW_ACCOUNT, null);
+            updateState(LABELS.TX_HISTORY, { ...txHistory, [newAccount.accountName]: [] });
             updateState(LABELS.ALL_ACCOUNTS, [...allAccounts, dataToDispatch]);
             updateState(LABELS.CURRENT_ACCOUNT, currentAccountDetails);
             updateState(LABELS.ISLOGIN, true, true, true);

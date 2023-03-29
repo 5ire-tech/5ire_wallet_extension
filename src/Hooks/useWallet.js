@@ -111,8 +111,8 @@ export default function UseWallet() {
         };
 
         // updateState(LABELS.NEW_ACCOUNT, dataToDispatch);
+        updateState(LABELS.TX_HISTORY, { ...txHistory, [accountName]: [] });
         updateState(LABELS.CURRENT_ACCOUNT, { index: allAccounts.length, accountName });
-
         updateState(LABELS.ALL_ACCOUNTS, [...allAccounts, dataToDispatch]);
 
 
@@ -180,26 +180,14 @@ export default function UseWallet() {
           }
 
           updateState(LABELS.CURRENT_ACCOUNT, currentAccountDetails);
+          updateState(LABELS.TX_HISTORY, { ...txHistory, [accountName]: [] });
+          updateState(LABELS.ACCOUNT_NAME, null);
 
         } else {
           updateState(LABELS.NEW_ACCOUNT, dataToDispatch, false);
           // updateState(LABELS.ACCOUNT_NAME, null);
         }
-
-        // updateState(LABELS.CURRENT_ACCOUNT, dataToDispatch);
-
-        // const currentAccountDetails = {
-        //   index: allAccounts.length,
-        //   accountName: data.accName,
-        // }
-        // updateState(LABELS.CURRENT_ACCOUNT, currentAccountDetails);
-
-        // dispatch(setAccountName(data.accName));
-        // dispatch(setCurrentAcc(dataToDispatch));
-
-        // if (isLogin)
-        // dispatch(pushAccounts(dataToDispatch));
-
+        
         //when new keypair created or imported the old key key emit the account change event
         getCurrentTabUId((id) => {
           getCurrentTabUrl((url) => {
@@ -429,7 +417,7 @@ export default function UseWallet() {
             dataToDispatch.data.txHash = hash;
             dataToDispatch.data.status = txStatus;
 
-            setTxHistory(accountData.current.accountName,dataToDispatch);
+            setTxHistory(accountData.current.accountName, dataToDispatch);
 
             //send the tx notification
             Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase() } });
@@ -446,7 +434,7 @@ export default function UseWallet() {
         console.log("Error occured while evm transfer: ", error);
         dataToDispatch.data.txHash = "";
         dataToDispatch.data.status = STATUS.FAILED;
-        setTxHistory(accountData.current.accountName,dataToDispatch);
+        setTxHistory(accountData.current.accountName, dataToDispatch);
         resolve({
           error: true,
           data: "Error while transfer.",

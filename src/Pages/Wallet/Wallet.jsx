@@ -1,7 +1,6 @@
 import Send from "../Send/Send";
 import Swap from "../Swap/Swap.jsx";
 import React, { useState } from "react";
-import { LABELS } from "../../Constants";
 import style from "./style.module.scss";
 
 function Wallet() {

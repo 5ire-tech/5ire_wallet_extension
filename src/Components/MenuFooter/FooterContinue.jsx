@@ -24,9 +24,13 @@ function FooterStepOne() {
 
   const handleCancle = () => {
     if (isLogin) navigate(ROUTES.WALLET);
-    else
-      navigate(ROUTES.DEFAULT);
+    else navigate(ROUTES.DEFAULT);
   }
+
+  const handleClick = () => {
+    navigate(ROUTES.NEW_WALLET_DETAILS);
+  }
+
   return (
     <>
       <div className={style.menuItems__cancleContinue}>
@@ -37,7 +41,7 @@ function FooterStepOne() {
           maxWidth={"100%"}
         />
         <ButtonComp
-          onClick={() => navigate(ROUTES.NEW_WALLET_DETAILS)}
+          onClick={handleClick}
           text={"Continue"}
           maxWidth={"100%"}
         />
@@ -53,11 +57,12 @@ export const FooterStepTwo = () => {
 
   const handleCancle = () => {
     updateState(LABELS.NEW_ACCOUNT, null, false);
-    updateState(LABELS.ACCOUNT_NAME, null, false);
+    // updateState(LABELS.ACCOUNT_NAME, null, false);
     navigate(ROUTES.BEFORE_BEGIN);
   };
 
   const handleClick = () => {
+
     if (isLogin) navigate(ROUTES.WALLET);
     else navigate(ROUTES.SET_PASS + "/create");
   };

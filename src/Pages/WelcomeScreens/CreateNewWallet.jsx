@@ -1,3 +1,4 @@
+import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +7,6 @@ import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { LABELS, REGEX, ERROR_MESSAGES } from "../../Constants/index";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
-import { ROUTES } from "../../Routes";
 
 function CreateNewWallet() {
   const navigate = useNavigate();
