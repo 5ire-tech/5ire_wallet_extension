@@ -40,10 +40,10 @@ function BalanceDetails({ mt0 }) {
     currentAccount,
     currentNetwork,
     balance,
+    txHistory,
     allAccounts,
     connectedSites,
   } = state;
-
 
   useEffect(() => {
     setAccountData(allAccounts ? allAccounts[currentAccount.index] : {});

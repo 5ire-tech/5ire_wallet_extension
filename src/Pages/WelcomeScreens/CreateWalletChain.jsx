@@ -3,8 +3,8 @@ import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import useWallet from "../../Hooks/useWallet";
 import "react-toastify/dist/ReactToastify.css";
-import { isNullorUndef } from "../../Utility/utility";
 import CopyIcon from "../../Assets/CopyIcon.svg";
+import { isNullorUndef } from "../../Utility/utility";
 import React, { useEffect, useState, useContext } from "react";
 import { TEMP1M, TEMP2P, NATIVE, EVM, COPIED } from "../../Constants/index.js";
 
@@ -12,7 +12,7 @@ function CreateWalletChain() {
 
   const { walletSignUp, authData } = useWallet();
   const { state } = useContext(AuthContext);
-  const { newAccount } = state;
+  const { newAccount, isLogin} = state;
 
   const [data, setData] = useState({
     temp1m: "",
@@ -22,20 +22,25 @@ function CreateWalletChain() {
   });
 
   useEffect(() => {
-    let res;
-    if (((isNullorUndef(newAccount) || !newAccount) && !state.isLogin) || state.isLogin)
-      res = walletSignUp();
+    // let res;
+    // console.log("NewAccount : ",newAccount);
+    // if (((isNullorUndef(newAccount) || !newAccount) && !isLogin) || isLogin)
+    //   res = walletSignUp();
 
-    if (res?.error) toast.error(res.data);
+    // if (res?.error) toast.error(res.data);
+
+    let res = walletSignUp();
+
+
+    if(res.error) toast.error(res.data);
 
   }, []);
 
   useEffect(() => {
     if (authData.temp1m) setData(authData);
-    else if (newAccount) {
-      setData(newAccount);
-    }
-  }, [authData, newAccount]);
+    // else if (newAccount) setData(newAccount);
+    
+  }, [authData]);
 
 
   const handleCopy = (e) => {

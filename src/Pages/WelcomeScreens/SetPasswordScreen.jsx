@@ -1,4 +1,4 @@
-import {ROUTES} from "../../Routes";
+import { ROUTES } from "../../Routes";
 import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
@@ -69,7 +69,7 @@ export default function SetPasswordScreen() {
       setconfirmError(EMTY_STR);
 
   };
-  
+
 
   const handleSubmit = async (e) => {
 
