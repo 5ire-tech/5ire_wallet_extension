@@ -13,13 +13,8 @@ export const AuthContext = createContext();
 
 export default function Context({ children }) {
   const [state, setState] = useState(userState);
-
-  useEffect(() => {
-    setInterval(() => {
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.BALANCE, {})
-    }, 8000);
-
-  }, []);
+  const [estimatedGas, setEstimatedGas] = useState(null);
+  const [isLoading, setLoading] = useState(false);
 
 
   Browser.storage.onChanged.addListener((changedData, area) => {
@@ -32,17 +27,28 @@ export default function Context({ children }) {
 
    //bind the message from background event
    bindRuntimeMessageListener((message) => {
+    log("message from the background script: ", message)
     if(message.type === MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND) {
-      
+      if(message.event === MESSAGE_EVENT_LABELS.EVM_FEE || message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE) {
+        (!estimatedGas) && updateEstimatedGas(message.data.fee);
+      }
+      updateLoading(false);
     }
   })
+
   
-  // const updateBalance = (balanceState) => {
-  //   if(isEqual(balanceState.totalBalance, state.balance.totalBalance)) return;
-  //   setState(prev => {return {...prev, balance: balanceState}})
-  // };
+  /********************************state update handler**************************************/
+  //set the evm fee
+  const updateEstimatedGas = (latestEstimatedGas) => {
+    (latestEstimatedGas !== estimatedGas) && setEstimatedGas(latestEstimatedGas)
+  }
 
+  //set Loading
+  const updateLoading = (loading) => {
+    setLoading(loading)
+  } 
 
+  //update the main state (also update into the persistant store)
   const updateState = (name, data, toLocal = true, toSession = false) => {
 
     if (toSession) {
@@ -63,6 +69,7 @@ export default function Context({ children }) {
     });
   };
 
+  //set the tx history
   const setTxHistory = (accName, data) => {
 
     let dataToSet = {};
@@ -96,9 +103,13 @@ export default function Context({ children }) {
 
   const values = {
     state,
+    estimatedGas,
+    isLoading,
     setState,
     updateState,
-    setTxHistory
+    setTxHistory,
+    updateEstimatedGas,
+    updateLoading
   }
 
   return (

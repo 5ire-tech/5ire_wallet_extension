@@ -1,6 +1,10 @@
 import { InitBackground } from "./initbackground";
+import { bindNoExponentWithNumber } from "./utils";
 
 try {
+
+  bindNoExponentWithNumber();
+  
   //init the background events
   InitBackground.initBackground();
 

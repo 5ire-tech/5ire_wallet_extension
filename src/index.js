@@ -13,7 +13,7 @@ import { getDataLocal, getDataSession } from "../src/Storage/loadstore"
 import { sessionStorage } from "../src/Storage/index";
 
 //For Dev Enviroment Check
-const isDev = process.env.NODE_ENV === "development";
+// const isDev = process.env.NODE_ENV === "development";
 
 // eslint-disable-next-line no-extend-native
 Number.prototype.noExponents = function () {

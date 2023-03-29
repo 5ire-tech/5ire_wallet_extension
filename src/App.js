@@ -7,7 +7,7 @@ import { EMTY_STR } from "./Constants";
 import Wallet from "./Pages/Wallet/Wallet";
 import NativeTx from "./Components/NativeTx";
 import { useEffect, useContext } from "react";
-// import Loader from "./Pages/Loader/Loader";
+import Loader from "./Pages/Loader/Loader";
 import OnlyContent from "./Layout/OnlyContent";
 import WelcomeLayout from "./Layout/WelcomeLayout";
 import FixWidthLayout from "./Layout/FixWidthLayout";
@@ -38,7 +38,7 @@ function getParameterByName(name, url = window.location.href) {
 
 function App(props) {
   const navigate = useNavigate();
-  const { state, setState } = useContext(AuthContext);
+  const { state, setState, isLoading } = useContext(AuthContext);
   const { allAccounts, isLogin, pass } = state;
 
   useEffect(() => {
@@ -180,7 +180,7 @@ function App(props) {
           element={<WelcomeLayout children={<CreateNewWallet />} />}
         />
       </Routes>
-      {/* <Loader /> */}
+      {isLoading && <Loader />}
     </div>
   );
 }

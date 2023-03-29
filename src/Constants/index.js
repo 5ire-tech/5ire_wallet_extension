@@ -11,6 +11,7 @@ export const CONNECTION_NAME = "5IRE_EXT";
 export const PORT_NAME = "WEBEXT_REDUX_TEST";
 export const UI_CONNECTION_NAME = "5IRE_EXT_UI";
 export const ACCOUNT_CHANGED_EVENT = 'accountChanged';
+export const AUTO_BALANCE_UPDATE_TIMER = 8000;
 
 
 /* Regular expressions */
@@ -179,7 +180,7 @@ export const MESSAGE_EVENT_LABELS = {
 
 export const INTERNAL_EVENT_LABELS = {
     CONNECTION: "connection",
-    ERROR_BALANCE_FETCH: "balance_fetch_error"
+    BALANCE_FETCH: "balanceFetch"
 }
 
 export const STATE_CHANGE_ACTIONS = {
@@ -193,10 +194,11 @@ export const STATE_CHANGE_ACTIONS = {
 export const ERROR_EVENTS_LABELS = {
     NETWORK_ERROR: "networkError",
     INSUFFICENT_BALANCE: "insufficentBalance",
-    CONNFAILED: "connfailed"
+    CONNFAILED: "connfailed",
+    ERROR_BALANCE_FETCH: "balance_fetch_error"
 }
 
 export const MESSAGE_TYPE_LABELS = {
     EXTENSION_UI: "extensionUi",
-    EXTENSION_BACKGROUND: "extensionbackGround"
+    EXTENSION_BACKGROUND: "extensionBackground"
 }

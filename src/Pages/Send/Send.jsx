@@ -23,15 +23,17 @@ import {
   COPIED,
   ERROR_MESSAGES,
   HTTP_END_POINTS,
-  LABELS
+  LABELS,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
+import { sendRuntimeMessage } from "../../Utility/message_helper";
 
 
 function Send() {
 
-  const {state} = useContext(AuthContext);
+  const {state, estimatedGas, updateEstimatedGas, updateLoading} = useContext(AuthContext);
   const [txHash, setTxHash] = useState("");
-  const [gassFee, setGassFee] = useState("");
   const [sendError, setSendError] = useState("");
   const [disableBtn, setDisable] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,6 +41,7 @@ function Send() {
   const [err, setErr] = useState({ to: "", amount: "" });
   const [data, setData] = useState({ to: "", amount: "" });
   const [activeTab, setActiveTab] = useState(NATIVE.toLowerCase());
+
   const {
     evmTransfer,
     nativeTransfer,
@@ -67,7 +70,7 @@ function Send() {
       if ((!err.to) && (!err.amount) && data.amount.length > 0 && data.to.length > 0) {
         getFee();
       } else {
-        setGassFee("");
+        updateEstimatedGas("");
         setDisable(true);
       }
     }, 1000);
@@ -78,12 +81,12 @@ function Send() {
 
 
   useEffect(() => {
-    if (gassFee === "" || !gassFee) {
+    if (estimatedGas === "" || !estimatedGas) {
       setDisable(true);
     } else {
       if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-        if ((Number(data.amount) + Number(gassFee)) >= Number(balance.evmBalance)) {
-          setGassFee("");
+        if ((Number(data.amount) + Number(estimatedGas)) >= Number(balance.evmBalance)) {
+          updateEstimatedGas("");
           setDisable(true);
           setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
 
@@ -93,8 +96,8 @@ function Send() {
         }
       } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
 
-        if ((Number(data.amount) + Number(gassFee)) >= Number(balance.nativeBalance)) {
-          setGassFee("");
+        if ((Number(data.amount) + Number(estimatedGas)) >= Number(balance.nativeBalance)) {
+          updateEstimatedGas("");
           setDisable(true);
           setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
 
@@ -104,7 +107,7 @@ function Send() {
         }
       }
     }
-  }, [gassFee]);
+  }, [estimatedGas]);
 
 
   const blockInvalidChar = (e) => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
@@ -192,43 +195,42 @@ function Send() {
 
   const getFee = async () => {
 
-    connectionObj.initializeApi(HTTP_END_POINTS.TESTNET, HTTP_END_POINTS.QA, currentNetwork, false).then(async (apiRes) => {
-
-      if (!apiRes?.value) {
-
-        Connection.isExecuting.value = false;
-
         if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
 
-          let feeRes = await retriveNativeFee(apiRes.nativeApi, data.to, data.amount);
+          // let feeRes = await retriveNativeFee(apiRes.nativeApi, data.to, data.amount);
 
-          if (feeRes.error) {
-            if (feeRes.data) {
-              setDisable(true);
-              toast.error("Error while getting fee.");
-            }
-          } else {
-            setGassFee(feeRes.data);
-            setDisable(false);
-          }
+          // if (feeRes.error) {
+          //   if (feeRes.data) {
+          //     setDisable(true);
+          //     toast.error("Error while getting fee.");
+          //   }
+          // } else {
+          //   setGassFee(feeRes.data);
+          //   setDisable(false);
+          // }
+
+          updateLoading(true);
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_FEE, {amount: data.amount});
         }
         else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
-          let feeRes = await retriveEvmFee(apiRes.evmApi, data.to, data.amount);
+          // let feeRes = await retriveEvmFee(apiRes.evmApi, data.to, data.amount);
 
-          if (feeRes.error) {
-            if (feeRes.data) {
-              setDisable(true);
-              toast.error("Error while getting fee.");
-            }
+          // if (feeRes.error) {
+          //   if (feeRes.data) {
+          //     setDisable(true);
+          //     toast.error("Error while getting fee.");
+          //   }
 
-          } else {
-            setGassFee(feeRes.data);
-            setDisable(false);
-          }
-        }
+          // } else {
+          //   setGassFee(feeRes.data);
+          //   setDisable(false);
+          // }
+
+          //calculate the evm fee
+          updateLoading(true);
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_FEE, {amount: data.amount});
       }
-    });
   };
 
 
@@ -243,12 +245,12 @@ function Send() {
           setData(p => ({ ...p, amount: arr[0] + "." + slice }))
         } else {
           setData(p => ({ ...p, amount: e.target.value }))
-          setGassFee("");
+          updateEstimatedGas("");
         }
       }
       else {
         setData(p => ({ ...p, amount: e.target.value }))
-        setGassFee("");
+        updateEstimatedGas("");
       }
     } else {
 
@@ -257,7 +259,7 @@ function Send() {
           ...p,
           [e.target.name]: (e.target.value).trim(),
         }));
-        setGassFee("");
+        updateEstimatedGas("");
       }
 
     }
@@ -276,45 +278,48 @@ function Send() {
   const handleApprove = async () => {
     try {
 
-      connectionObj.initializeApi(HTTP_END_POINTS.TESTNET,HTTP_END_POINTS.QA, currentNetwork, false).then(async (apiRes) => {
-
-        if (!apiRes?.value) {
-          Connection.isExecuting.value = false;
-
           if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
-            const res = await evmTransfer(apiRes.evmApi, data);
-            if (res.error) {
-              setSendError(res.data);
-              setIsFaildOpen(true);
-            }
-            else {
-              setTxHash(res.data);
-              setIsModalOpen(true);
-              // setTimeout(() => {
-              //   getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-              // }, 3000);
-            }
+            //pass the message request for evm transfer
+            updateLoading(true);
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_TX, {to: data.to, amount: data.amount});
+            setIsModalOpen(true);
+
+            // const res = await evmTransfer(apiRes.evmApi, data);
+            // if (res.error) {
+            //   setSendError(res.data);
+            //   setIsFaildOpen(true);
+            // }
+            // else {
+            //   setTxHash(res.data);
+            //   setIsModalOpen(true);
+            //   // setTimeout(() => {
+            //   //   getBalance(apiRes.evmApi, apiRes.nativeApi, true);
+            //   // }, 3000);
+            // }
 
           } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
 
-            const res = await nativeTransfer(apiRes.nativeApi, data);
-            if (res.error) {
-              setSendError(res.data);
-              setIsFaildOpen(true);
-            }
-            else {
-              setTxHash(res.data);
-              setIsModalOpen(true);
-              // setTimeout(() => {
-              //   getBalance(apiRes.evmApi, apiRes.nativeApi, true)
-              // }, 3000);
-            }
+            //pass the message request for native transfer
+            updateLoading(true);
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_TX, {to: data.to, amount: data.amount});
+            setIsModalOpen(true);
+
+            // const res = await nativeTransfer(apiRes.nativeApi, data);
+            // if (res.error) {
+            //   setSendError(res.data);
+            //   setIsFaildOpen(true);
+            // }
+            // else {
+            //   setTxHash(res.data);
+            //   setIsModalOpen(true);
+            //   // setTimeout(() => {
+            //   //   getBalance(apiRes.evmApi, apiRes.nativeApi, true)
+            //   // }, 3000);
+            // }
           }
 
-        }
-        setGassFee("");
-      });
+        updateEstimatedGas("");
 
     } catch (error) {
       toast.error("Error occured.");
@@ -324,7 +329,7 @@ function Send() {
 
   const activeSend = (e) => {
     setActiveTab(e.target.name);
-    setGassFee("");
+    updateEstimatedGas("");
     setDisable(true);
     setErr({ to: "", amount: "" });
     setData({ to: "", amount: "" });
@@ -337,8 +342,8 @@ function Send() {
   };
 
 
-  const handle_OK_Cancle = () => {
-    setGassFee("");
+  const handle_OK_Cancel = () => {
+    updateEstimatedGas("");
     setDisable(true);
     setIsModalOpen(false);
     setIsFaildOpen(false);
@@ -410,21 +415,21 @@ function Send() {
 
         </div>
         <div className={style.sendSec__transactionFee}>
-          <p>{gassFee ? `Estimated fee : ${gassFee} 5ire` : ""}</p>
+          <p>{estimatedGas ? `Estimated fee : ${estimatedGas} 5ire` : ""}</p>
         </div>
       </div>
       <Approve onClick={handleApprove} text="Transfer" isDisable={disableBtn} />
 
       <ModalCustom
         isModalOpen={isModalOpen}
-        handleOk={handle_OK_Cancle}
-        handleCancel={handle_OK_Cancle}
+        handleOk={handle_OK_Cancel}
+        handleCancel={handle_OK_Cancel}
       >
         <div className="swapsendModel">
           <div className="innerContact">
             <img src={ComplSwap} alt="swapImage" width={127} height={127} draggable={false} />
             <h2 className="title">Transfer Processed</h2>
-            <p className="transId">Your Transaction ID</p>
+            {/* <p className="transId">Your Transaction ID</p>
             <span className="address">{shortner(txHash)}</span>
             <img
               draggable={false}
@@ -432,10 +437,10 @@ function Send() {
               alt="copyIcon"
               name="naiveAddress"
               onClick={handleCopy}
-            />
+            /> */}
 
             <div className="footerbuttons">
-              <ButtonComp text={"Transfer Again"} onClick={handle_OK_Cancle} />
+              <ButtonComp text={"Transfer Again"} onClick={handle_OK_Cancel} />
             </div>
           </div>
         </div>
@@ -443,8 +448,8 @@ function Send() {
 
       <ModalCustom
         isModalOpen={isFaildOpen}
-        handleOk={handle_OK_Cancle}
-        handleCancel={handle_OK_Cancle}
+        handleOk={handle_OK_Cancel}
+        handleCancel={handle_OK_Cancel}
       >
         <div className="swapsendModel">
           <div className="innerContact">
@@ -453,7 +458,7 @@ function Send() {
             <p className="transId">{sendError}</p>
 
             <div className="footerbuttons">
-              <ButtonComp text={"Try Again"} onClick={handle_OK_Cancle} />
+              <ButtonComp text={"Try Again"} onClick={handle_OK_Cancel} />
             </div>
           </div>
         </div>

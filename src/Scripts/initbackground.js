@@ -1,7 +1,7 @@
 import Browser from "webextension-polyfill";
 import { Controller } from "./controller";
 import { getDataLocal, ExtensionStorageHandler } from "../Storage/loadstore";
-import { CONNECTION_NAME, INTERNAL_EVENT_LABELS, DECIMALS, MESSAGE_TYPE_LABELS, STATE_CHANGE_ACTIONS, TX_TYPE,STATUS } from "../Constants";
+import { CONNECTION_NAME, INTERNAL_EVENT_LABELS, DECIMALS, MESSAGE_TYPE_LABELS, STATE_CHANGE_ACTIONS, TX_TYPE,STATUS, LABELS, MESSAGE_EVENT_LABELS, AUTO_BALANCE_UPDATE_TIMER } from "../Constants";
 import { isManifestV3 } from "./utils";
 import { hasLength, isObject, isNullorUndef, hasProperty, getKey, log } from "../Utility/utility";
 import { HTTP_END_POINTS, API, HTTP_METHODS, EVM_JSON_RPC_METHODS, ERRCODES, ERROR_MESSAGES, ERROR_EVENTS_LABELS } from "../Constants";
@@ -20,8 +20,8 @@ import { ed25519PairFromSeed, mnemonicToMiniSecret } from "@polkadot/util-crypto
 import { sendRuntimeMessage } from "../Utility/message_helper";
 
 
-//handling the connection using the events
 const eventEmitter = new EventEmitter();
+//handling the connection using the events
 eventEmitter.on(INTERNAL_EVENT_LABELS.CONNECTION, async () => {
     const services = new Services();
     const api = await services.apiConnection();
@@ -34,6 +34,8 @@ eventEmitter.on(INTERNAL_EVENT_LABELS.CONNECTION, async () => {
 
 //for initilization of background events
 export class InitBackground {
+    //check if there is time interval binded
+    static balanceTimer = null;
     constructor() {
         this.injectScriptInTab();
         this.bindAllEvents();
@@ -148,14 +150,21 @@ export class InitBackground {
 
     //perform according to the port name
     if (port.name === CONNECTION_NAME) {
-      // currState.auth.newAccount && store.dispatch(setNewAccount(null));
 
       //handle the connection emit the connection event
       eventEmitter.emit(INTERNAL_EVENT_LABELS.CONNECTION);
 
+      //auto update the balance
+      if(!isNullorUndef(InitBackground.balanceTimer)) clearInterval(InitBackground.balanceTimer)
+      InitBackground.balanceTimer = this._balanceUpdate();
+
       //handle the popup close event
-      port.onDisconnect.addListener(function () {
-        
+      port.onDisconnect.addListener(() => {
+        //clear the Interval on popup close
+        if(!isNullorUndef(InitBackground.balanceTimer)) {
+          clearInterval(InitBackground.balanceTimer)
+          InitBackground.balanceTimer = null;
+        }
       });
     }
   });
@@ -257,6 +266,16 @@ export class InitBackground {
       console.log("Error in parsing the rpc response: ", err);
   }
   }
+
+  //auto update the balance
+  _balanceUpdate = async () => {
+    const id = setInterval(async () => {
+      const state = await getDataLocal(LABELS.STATE);
+      await this._rpcCallsMiddleware({event: MESSAGE_EVENT_LABELS.BALANCE}, state)
+    }, AUTO_BALANCE_UPDATE_TIMER)
+
+    return id;
+  }
 }
 
 //for extension common service work
@@ -326,7 +345,6 @@ export class Services {
    //pass message to extension ui
    messageToUI = async (event, message) => {
     try {
-      log("here is the event and message: ", event, message)
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND, event, message)
     } catch (err) {
         console.log("Error while sending the message to extension ui: ", err);
@@ -338,20 +356,21 @@ export class Services {
 
    }
 
-   //update the local storage data
-   updateLocalState = async (key, data) => {
-    try {
-      ExtensionStorageHandler.updateStorage(key, data)
-    } catch (err) {
-      log("Error while updating the local state: ", err)
-    }
-   }
+  //update the local storage data
+  updateLocalState = async (key, data) => {
+      try {
+        ExtensionStorageHandler.updateStorage(key, data)
+      } catch (err) {
+        log("Error while updating the local state: ", err)
+      }
+     }
 
     /*************************** Service Internals ******************************/
     //show browser notification from extension
-    _showNotification = (controller, message) => {
+  _showNotification = (controller, message) => {
         if(!isNullorUndef(controller) && hasLength(message)) controller.showNotification(message)
       }
+
 }
 
 
@@ -420,7 +439,7 @@ export class RPCCalls {
             totalBalance
           }
     
-          return new EventPayload(STATE_CHANGE_ACTIONS.BALANCE, message.event, payload, [], null);
+          return new EventPayload(STATE_CHANGE_ACTIONS.BALANCE, null, payload, [], null);
     
     }
 
@@ -522,8 +541,7 @@ export class RPCCalls {
           }
 
 
-   }
-
+    }
 
     //********************************** Evm ***************************************/
    
@@ -657,7 +675,7 @@ export class RPCCalls {
               // state.txHistory[state.currentAccount.name].push(dataToDispatch);  
   
               //send the tx notification
-              this.services.checkTransactions({ ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase()}});
+              // this.services.checkTransactions({ ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase()}});
 
 
               payload = {
@@ -754,7 +772,7 @@ export class RPCCalls {
   
   
               //send the tx notification
-              this.services.checkTransactions({ ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase()}});
+              // this.services.checkTransactions({ ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase()}});
 
 
               payload = {
@@ -791,11 +809,11 @@ export class RPCCalls {
       let transferTx;
 
       const keyring = new Keyring({ type: "ed25519" });
-      const seedAlice = mnemonicToMiniSecret(decryptor(state.temp1m, state.pass));
+      const seedAlice = mnemonicToMiniSecret(decryptor(account.temp1m, state.pass));
       const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
 
       if (toAddress?.startsWith("0x")) {
-        const amt = BigNumber(message).multipliedBy(DECIMALS).toString();
+        const amt = BigNumber(data.amount).multipliedBy(DECIMALS).toString();
         transferTx = await RPCCalls.api.nativeApi.tx.evm.deposit(toAddress, (Number(amt).noExponents()).toString());
       }
       else if (toAddress?.startsWith("5")) {
@@ -877,8 +895,8 @@ export class RPCCalls {
                 dataToDispatch.data.status = txStatus;
 
 
-              //send the tx notification
-              this.services.checkTransactions({ ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase()}});
+              // //send the tx notification
+              // this.services.checkTransactions({ ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase()}});
 
 
               payload = {
@@ -1001,8 +1019,8 @@ export class RPCCalls {
                 dataToDispatch.data.status = txStatus;
 
 
-              //send the tx notification
-              this.services.checkTransactions({ ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase()}});
+              // //send the tx notification
+              // this.services.checkTransactions({ ...dataToDispatch, statusCheck: { isFound: txStatus !== STATUS.PENDING, status: txStatus.toLowerCase()}});
 
               payload = {
                 txDetails: dataToDispatch
