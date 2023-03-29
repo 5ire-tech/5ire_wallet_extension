@@ -156,7 +156,7 @@ export class InitBackground {
 
       //auto update the balance
       if(!isNullorUndef(InitBackground.balanceTimer)) clearInterval(InitBackground.balanceTimer)
-      InitBackground.balanceTimer = this._balanceUpdate();
+      InitBackground.balanceTimer = await this._balanceUpdate();
 
       //handle the popup close event
       port.onDisconnect.addListener(() => {
@@ -253,9 +253,9 @@ export class InitBackground {
       if(!rpcResponse.error) {
 
         //change the state in local storage
-        if(rpcResponse.stateChangeKey) this.services.updateLocalState(rpcResponse.stateChangeKey, {payload: rpcResponse.payload})
+        if(rpcResponse.stateChangeKey) this.services.updateLocalState(rpcResponse.stateChangeKey, rpcResponse.payload.data, rpcResponse.payload?.options)
         //send the response message to extension ui
-        if(rpcResponse.eventEmit) this.services.messageToUI(rpcResponse.eventEmit, rpcResponse.payload)
+        if(rpcResponse.eventEmit) this.services.messageToUI(rpcResponse.eventEmit, rpcResponse.payload.data)
         
       } else {
         console.log("in the processing the unit error section: ", rpcResponse);
@@ -357,9 +357,9 @@ export class Services {
    }
 
   //update the local storage data
-  updateLocalState = async (key, data) => {
+  updateLocalState = async (key, data, options) => {
       try {
-        ExtensionStorageHandler.updateStorage(key, data)
+        ExtensionStorageHandler.updateStorage(key, data, options)
       } catch (err) {
         log("Error while updating the local state: ", err)
       }
@@ -434,9 +434,11 @@ export class RPCCalls {
     
     
           const payload = {
-            evmBalance,
-            nativeBalance,
-            totalBalance
+            data: {
+              evmBalance,
+              nativeBalance,
+              totalBalance
+            }
           }
     
           return new EventPayload(STATE_CHANGE_ACTIONS.BALANCE, null, payload, [], null);
@@ -548,11 +550,12 @@ export class RPCCalls {
     //get the evm fee
     evmFee = async (message, state) => {
      
-     const account = state.allAccounts[state?.currentAccount?.index]
+      const {data} = message;
+     const account = state.allAccounts[data.account.index]
      if(isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
      
-     let toAddress = message.data.toAddress ? message.data.toAddress : account.nativeAddress;
-     let amount = message.data.amount;
+     let toAddress = data.toAddress ? data.toAddress : account.nativeAddress;
+     let amount = data.amount;
      
      if (toAddress?.startsWith("5"))
         toAddress = u8aToHex(toAddress).slice(0, 42);
@@ -572,8 +575,8 @@ export class RPCCalls {
           value: amount,
         };
         
-        if (message.data.data) {
-          tx.data = message.data.data;
+        if (data?.data) {
+          tx.data = data.data;
         }
         
         const gasAmount = await RPCCalls.api.evmApi.eth.estimateGas(tx);
@@ -581,7 +584,7 @@ export class RPCCalls {
         let fee = (new BigNumber(gasPrice * gasAmount)).dividedBy(DECIMALS).toString();
         
         const payload = {
-          fee
+          data: {fee}
         }
 
         return new EventPayload(null, message.event, payload, [], null);
@@ -595,9 +598,9 @@ export class RPCCalls {
       let dataToDispatch = null, payload = null;
 
       try {
-      const account = state.allAccounts[state?.currentAccount?.index]
-      if(isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
       const {data} = message;
+      const account = state.allAccounts[data.account.index]
+      if(isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
  
         dataToDispatch = {
           data: {
@@ -679,7 +682,10 @@ export class RPCCalls {
 
 
               payload = {
-                txDetails: dataToDispatch
+                data: dataToDispatch,
+                options: {
+                  accountName: data.account.accountName
+                }
               }
               
               return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, message.event, payload, [], null);
@@ -693,7 +699,7 @@ export class RPCCalls {
           dataToDispatch.data.status = STATUS.FAILED;
           
           payload = {
-            txDetails: dataToDispatch
+            data: dataToDispatch
           }
           return new EventPayload(null, ERROR_EVENTS_LABELS.NETWORK_ERROR, payload, [], new ErrorPayload(err.message.errCode || ERRCODES.NETWORK_REQUEST, err.message));
         }
@@ -706,10 +712,10 @@ export class RPCCalls {
       let dataToDispatch = null, payload = null;
       
         try {
-          const account = state.allAccounts[state?.currentAccount?.index]
+          const {data} = message;
+          const account = state.allAccounts[data.account.index]
           if(isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
-          const {data} = message;
 
           dataToDispatch = {
             data: {
@@ -800,11 +806,12 @@ export class RPCCalls {
    //get native gas fee
    nativeFee = async (message, state) => {
 
-      const account = state.allAccounts[state?.currentAccount?.index]
+     const {data} = message;
+
+      const account = state.allAccounts[data.account.index];
       if(isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
 
-      const {data} = message
       const toAddress = data.toAddress ? data.toAddress : account.evmAddress;
       let transferTx;
 
@@ -825,7 +832,7 @@ export class RPCCalls {
       const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS)).toString();
 
       //construct payload
-      const payload = {fee}
+      const payload = {data:{fee}}
       return new EventPayload(null, message.event, payload, [], null);
 
 
@@ -839,9 +846,9 @@ export class RPCCalls {
 
       try {
 
-        const account = state.allAccounts[state?.currentAccount?.index]
-        if(isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
         const {data} = message;
+        const account = state.allAccounts[data.account.index]
+        if(isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
         if (Number(data.amount) >= Number(state.balance.nativeBalance)) {
           return new EventPayload(null, ERROR_EVENTS_LABELS.INSUFFICENT_BALANCE, null, [], null);
@@ -860,11 +867,11 @@ export class RPCCalls {
 
           let hash, err;
 
-          const seedAlice = mnemonicToMiniSecret(
+          const secretSeed = mnemonicToMiniSecret(
             decryptor(account?.temp1m, state.pass)
           );
           const keyring = new Keyring({ type: "ed25519" });
-          const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
+          const keypair = keyring.addFromPair(ed25519PairFromSeed(secretSeed));
           const amt = new BigNumber(data.amount).multipliedBy(DECIMALS).toString();
 
           // const transfer = nativeApi.tx.balances.transferKeepAlive(
@@ -872,13 +879,10 @@ export class RPCCalls {
           //   (Number(amt).noExponents()).toString()
           // );
 
-          const transfer = RPCCalls.api.nativeApi.tx.balances.transfer(
-            data.to,
-            (Number(amt).noExponents()).toString()
-          );
+          const transfer = RPCCalls.api.nativeApi.tx.balances.transfer(data.to, (Number(amt).noExponents()).toString());
 
           if (RPCCalls.isHttp) {
-            transfer.signAndSend(alice, async (txHash) => {
+            const txHash = await transfer.signAndSend(keypair)
               if (txHash) {
 
 
@@ -900,19 +904,21 @@ export class RPCCalls {
 
 
               payload = {
-                txDetails: dataToDispatch
+                data: dataToDispatch,
+                options: {
+                  accountName: data.account.accountName
+                }
               }
               
               return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, message.event, payload, [], null);
 
               } else new Error(new ErrorPayload(ERRCODES.NETWORK_REQUEST, ERROR_MESSAGES.TX_FAILED)).throw();
-            });
 
           } else {
             //Send and sign txn
-            transfer.signAndSend(alice, ({ status, events, txHash }) => {
+            const { status, events, txHash } = transfer.signAndSend(keypair);
+            
               if (status.isInBlock) {
-
                 if (hash !== txHash.toHex()) {
                   hash = txHash.toHex();
                   let phase = events.filter(({ phase }) => phase.isApplyExtrinsic);
@@ -941,7 +947,6 @@ export class RPCCalls {
                   }
                 }
               }
-            });
           }
         }
       } catch (err) {
@@ -950,7 +955,7 @@ export class RPCCalls {
         dataToDispatch.data.status = STATUS.FAILED;
         
         payload = {
-          txDetails: dataToDispatch
+          data: dataToDispatch
         }
         return new EventPayload(null, ERROR_EVENTS_LABELS.NETWORK_ERROR, payload, [], new ErrorPayload(err.message.errCode || ERRCODES.NETWORK_REQUEST, err.message));
       }
@@ -963,10 +968,10 @@ export class RPCCalls {
 
       try {
 
-        const account = state.allAccounts[state?.currentAccount?.index]
+        const {data} = message;
+        const account = state.allAccounts[data.account.index]
         if(isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
         
-        const {data} = message;
         
         if (Number(data.amount) >= Number(state.balance.nativeBalance) || Number(data.amount) <= 0) {
           return new EventPayload(null, ERROR_EVENTS_LABELS.INSUFFICENT_BALANCE, null, [], null);

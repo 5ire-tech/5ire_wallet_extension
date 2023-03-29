@@ -102,7 +102,7 @@ function ImportWallet() {
             if (res.error) setWarrning((p) => ({ ...p, key: res.data }));
             else {
               setWarrning({ acc: "", key: "" });
-              if (isLogin) navigate(ROUTES);
+              if (isLogin) navigate(ROUTES.WALLET);
               else navigate(ROUTES.SET_PASS+"/import");
             }
           }

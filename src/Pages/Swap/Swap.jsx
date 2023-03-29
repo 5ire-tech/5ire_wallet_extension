@@ -19,17 +19,20 @@ import {
   EVM,
   NATIVE,
   ERROR_MESSAGES,
-  INPUT, COPIED, HTTP_END_POINTS, LABELS
+  COPIED, HTTP_END_POINTS, LABELS,
+  MESSAGE_EVENT_LABELS,
+  MESSAGE_TYPE_LABELS
 } from "../../Constants/index";
+import { sendRuntimeMessage } from "../../Utility/message_helper";
 
 
 function Swap() {
   const accountData = useRef(null);
-  const { state } = useContext(AuthContext);
+  const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
   const [error, setError] = useState("");
   const [txHash, setTxHash] = useState("");
   const [amount, setAmount] = useState("");
-  const [gassFee, setGassFee] = useState("");
+  // const [gassFee, setGassFee] = useState("");
   const [swapErr, setSwapError] = useState("");
   const [disableBtn, setDisable] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -80,7 +83,7 @@ function Swap() {
       if (amount.length > 0 && !error) {
         getFee();
       } else {
-        setGassFee("");
+        updateEstimatedGas("");
         setDisable(true);
       }
     }, 1000);
@@ -91,15 +94,15 @@ function Swap() {
 
 
   useEffect(() => {
-    if (gassFee === "" || !gassFee) setDisable(true);
+    if (estimatedGas === "" || !estimatedGas) setDisable(true);
 
     else {
       if (
         toFrom.from.toLowerCase() === EVM.toLowerCase() &&
         toFrom.to.toLowerCase() === NATIVE.toLowerCase()
       ) {
-        if ((Number(amount) + Number(gassFee)) >= Number(balance.evmBalance)) {
-          setGassFee("");
+        if ((Number(amount) + Number(estimatedGas)) >= Number(balance.evmBalance)) {
+          updateEstimatedGas("");
           setDisable(true);
           setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
 
@@ -113,8 +116,8 @@ function Swap() {
         toFrom.to.toLowerCase() === EVM.toLowerCase()
       ) {
 
-        if ((Number(amount) + Number(gassFee)) >= Number(balance.nativeBalance)) {
-          setGassFee("");
+        if ((Number(amount) + Number(estimatedGas)) >= Number(balance.nativeBalance)) {
+          updateEstimatedGas("");
           setDisable(true);
           setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
 
@@ -125,7 +128,7 @@ function Swap() {
 
       }
     }
-  }, [gassFee]);
+  }, [estimatedGas]);
 
 
   const blockInvalidChar = (e) => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
@@ -171,47 +174,46 @@ function Swap() {
   const handleApprove = async (e) => {
     try {
 
-      connectionObj.initializeApi(HTTP_END_POINTS.TESTNET, HTTP_END_POINTS.QA, currentNetwork, false).then(async (apiRes) => {
 
-        if (!apiRes?.value) {
 
           Connection.isExecuting.value = false;
 
-          if (
-            toFrom.from.toLowerCase() === EVM.toLowerCase() &&
-            toFrom.to.toLowerCase() === NATIVE.toLowerCase()
-          ) {
+          if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
 
-            let res = await evmToNativeSwap(apiRes.evmApi, apiRes.nativeApi, amount);
-            if (res.error) {
-              setIsFaildOpen(true);
-              setSwapError(res.data);
-            } else {
-              setIsModalOpen(true);
-              setTxHash(res.data);
-            }
+            // let res = await evmToNativeSwap(apiRes.evmApi, apiRes.nativeApi, amount);
+            // if (res.error) {
+            //   setIsFaildOpen(true);
+            //   setSwapError(res.data);
+            // } else {
+            //   setIsModalOpen(true);
+            //   setTxHash(res.data);
+            // }
 
-          } else if (
-            toFrom.from.toLowerCase() === NATIVE.toLowerCase() &&
-            toFrom.to.toLowerCase() === EVM.toLowerCase()
-          ) {
+            updateLoading(true);
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP, {amount: amount, account: state.currentAccount});
+            setIsModalOpen(true);
 
-            let res = await nativeToEvmSwap(apiRes.nativeApi, amount);
-            // console.log("res.err : ",res.error);
-            if (res.error) {
-              // console.log("error true");
+          } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
 
-              setIsFaildOpen(true);
-              setSwapError(res.data);
-            } else {
-              // console.log("error false");
-              setIsModalOpen(true);
-              setTxHash(res.data);
-            }
+            // let res = await nativeToEvmSwap(apiRes.nativeApi, amount);
+            // // console.log("res.err : ",res.error);
+            // if (res.error) {
+            //   // console.log("error true");
+
+            //   setIsFaildOpen(true);
+            //   setSwapError(res.data);
+            // } else {
+            //   // console.log("error false");
+            //   setIsModalOpen(true);
+            //   setTxHash(res.data);
+            // }
+
+            updateLoading(true);
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP, {amount: amount, account: state.currentAccount});
+            setIsModalOpen(true);
           }
-        }
-        setGassFee("");
-      });
+
+      updateEstimatedGas("");
     } catch (error) {
       toast.error("Error occured.");
     }
@@ -220,42 +222,37 @@ function Swap() {
 
   const getFee = async () => {
 
-    connectionObj.initializeApi(HTTP_END_POINTS.TESTNET, HTTP_END_POINTS.QA, currentNetwork, false).then(async (apiRes) => {
-
-      if (!apiRes?.value) {
-
-        Connection.isExecuting.value = false;
-
         if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase()) {
 
-          let feeRes = await retriveNativeFee(apiRes.nativeApi, "", amount);
-          if (feeRes.error) {
-            if (feeRes.data) {
-              toast.error(feeRes.error);
-              setDisable(false);
-            }
-          } else {
-            setGassFee(feeRes.data);
-            setDisable(false);
-          }
+          // let feeRes = await retriveNativeFee(apiRes.nativeApi, "", amount);
+          // if (feeRes.error) {
+          //   if (feeRes.data) {
+          //     toast.error(feeRes.error);
+          //     setDisable(false);
+          //   }
+          // } else {
+          //   updateEstimatedGas(feeRes.data);
+          //   setDisable(false);
+          // }
 
+          updateLoading(true);
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_FEE, {amount: amount, account: state.currentAccount});
         } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase()) {
 
-          let feeRes = await retriveEvmFee(apiRes.evmApi, "", amount);
-          if (feeRes.error) {
-            if (feeRes.data) {
-              setError(feeRes.error);
-            } else {
-              toast.error("Error while getting fee.");
-            }
-          } else {
-            setGassFee(feeRes.data);
-            setDisable(false);
-          }
-
+          // let feeRes = await retriveEvmFee(apiRes.evmApi, "", amount);
+          // if (feeRes.error) {
+          //   if (feeRes.data) {
+          //     setError(feeRes.error);
+          //   } else {
+          //     toast.error("Error while getting fee.");
+          //   }
+          // } else {
+          //   updateEstimatedGas(feeRes.data);
+          //   setDisable(false);
+          // }
+          updateLoading(true);
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_FEE, {amount: amount, account: state.currentAccount});
         }
-      }
-    });
 
   };
 
@@ -272,14 +269,14 @@ function Swap() {
       } else {
         if (amount !== val) {
           setAmount(val);
-          setGassFee("");
+          updateEstimatedGas("");
         }
       }
     }
     else {
       if (amount !== val) {
         setAmount(val);
-        setGassFee("");
+        updateEstimatedGas("");
       }
     }
   };
@@ -294,9 +291,9 @@ function Swap() {
   };
 
 
-  const handle_OK_Cancle = () => {
+  const handle_OK_Cancel = () => {
     setAmount("");
-    setGassFee("");
+    updateEstimatedGas("");
     setDisable(true);
     setIsFaildOpen(false);
     setIsModalOpen(false);
@@ -312,7 +309,7 @@ function Swap() {
       setToFrom({ from: EVM, to: NATIVE });
 
     setAmount("");
-    setGassFee("");
+    updateEstimatedGas("");
 
   };
 
@@ -437,20 +434,20 @@ function Swap() {
           </div> */}
         </div>
         <div className={style.swap__transactionFee}>
-          <p>{gassFee ? `Estimated fee : ${gassFee} 5ire` : ""}</p>
+          <p>{estimatedGas ? `Estimated fee : ${estimatedGas} 5ire` : ""}</p>
         </div>
       </div>
       <Approve onClick={handleApprove} text="Swap" isDisable={disableBtn} />
       <ModalCustom
         isModalOpen={isModalOpen}
-        handleOk={handle_OK_Cancle}
-        handleCancel={handle_OK_Cancle}
+        handleOk={handle_OK_Cancel}
+        handleCancel={handle_OK_Cancel}
       >
         <div className="swapsendModel">
           <div className="innerContact">
             <img src={ComplSwap} alt="swapIcon" width={127} height={127} draggable={false} />
             <h2 className="title">Swap Processed</h2>
-            <p className="transId">Your Swapped Transaction ID</p>
+            {/* <p className="transId">Your Swapped Transaction ID</p>
             <span className="address">
               {txHash ? shortner(txHash) : ""}
               <img
@@ -462,18 +459,18 @@ function Swap() {
                 draggable={false}
                 onClick={handleCopy}
               />
-            </span>
+            </span> */}
 
             <div className="footerbuttons">
-              <ButtonComp text={"Swap Again"} onClick={handle_OK_Cancle} />
+              <ButtonComp text={"Swap Again"} onClick={handle_OK_Cancel} />
             </div>
           </div>
         </div>
       </ModalCustom>
       <ModalCustom
         isModalOpen={isFaildOpen}
-        handleOk={handle_OK_Cancle}
-        handleCancel={handle_OK_Cancle}
+        handleOk={handle_OK_Cancel}
+        handleCancel={handle_OK_Cancel}
       >
         <div className="swapsendModel">
           <div className="innerContact">
@@ -482,7 +479,7 @@ function Swap() {
             <p className="transId">{swapErr}</p>
 
             <div className="footerbuttons">
-              <ButtonComp text={"Try Again"} onClick={handle_OK_Cancle} />
+              <ButtonComp text={"Try Again"} onClick={handle_OK_Cancel} />
             </div>
           </div>
         </div>

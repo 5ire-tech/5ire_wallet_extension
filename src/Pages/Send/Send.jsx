@@ -210,7 +210,7 @@ function Send() {
           // }
 
           updateLoading(true);
-          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_FEE, {amount: data.amount});
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_FEE, {amount: data.amount, account: state.currentAccount, toAddress: data.to});
         }
         else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
@@ -229,7 +229,7 @@ function Send() {
 
           //calculate the evm fee
           updateLoading(true);
-          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_FEE, {amount: data.amount});
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_FEE, {amount: data.amount, account: state.currentAccount, toAddress: data.to});
       }
   };
 
@@ -282,7 +282,7 @@ function Send() {
 
             //pass the message request for evm transfer
             updateLoading(true);
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_TX, {to: data.to, amount: data.amount});
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_TX, {to: data.to, amount: data.amount, account: state.currentAccount});
             setIsModalOpen(true);
 
             // const res = await evmTransfer(apiRes.evmApi, data);
@@ -302,7 +302,7 @@ function Send() {
 
             //pass the message request for native transfer
             updateLoading(true);
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_TX, {to: data.to, amount: data.amount});
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_TX, {to: data.to, amount: data.amount, account: state.currentAccount});
             setIsModalOpen(true);
 
             // const res = await nativeTransfer(apiRes.nativeApi, data);

@@ -43,7 +43,7 @@ export class ExtensionStorageHandler {
     static instance = null;
 
     //error checker static member
-    static updateStorage = async (key, data) => {
+    static updateStorage = async (key, data, options) => {
         try {
             //checks for invalid or undef argument
             isNullorUndef(key) && !hasLength(key) && new Error(new ErrorPayload(ERRCODES.INVALID_ARGU_TYPE, ERROR_MESSAGES.INVALID_TYPE)).throw();
@@ -57,7 +57,7 @@ export class ExtensionStorageHandler {
             }
 
             const state = await getDataLocal(LABELS.STATE);
-            ExtensionStorageHandler.instance[key](data, state);
+            ExtensionStorageHandler.instance[key](data, state, options);
             return false;
 
         } catch (err) {
@@ -71,29 +71,32 @@ export class ExtensionStorageHandler {
 
     //update the balance
     updateBalance = async (data, state) => {
-        if (isEqual(data.payload.totalBalance, state.balance.totalBalance)) return false;
-        const newState = { ...state, balance: data.payload };
+        if (isEqual(data.totalBalance, state.balance.totalBalance)) return false;
+        const newState = { ...state, balance: data };
         return await this._updateStorage(newState)
     }
 
     //push the transactions
-    addNewTxHistory = async (data, state) => {
+    addNewTxHistory = async (data, state, options) => {
+
+        log("here is the history saver: ", data, state, options)
+
         const newState = { ...state }
-        newState.txHistory[data.accountName].push(data.paylaod);
+        newState.txHistory[options.accountName].push(data);
         return await this._updateStorage(newState);
     }
 
     //update transaction
-    updateTxHistory = async (data, state) => {
-        const txHistory = state.txHistory[data.payload.accountName];
+    updateTxHistory = async (data, state, options) => {
+        const txHistory = state.txHistory[options.accountName];
         const txIndex = txHistory.findIndex((item) => {
-            const isTx = isNullorUndef(item?.txHash) ? item.txHash === data.paylaod.txHash : item.txHash.mainHash === data.paylaod.txHash
+            const isTx = isNullorUndef(item?.txHash) ? item.txHash === data.txHash : item.txHash.mainHash === data.txHash
             return isTx;
         })
 
         if (txIndex < 0) return false;
         //set the updated status into localstorage
-        txHistory[txIndex].status = data.payload.status;
+        txHistory[txIndex].status = data.status;
         const newState = { ...state };
 
         //update the history
@@ -103,15 +106,15 @@ export class ExtensionStorageHandler {
 
     //change current network
     changeNetwork = async (data, state) => {
-        if (isEqual(data.payload.currentNetwork, state.currentNetwork)) return false
-        const newState = { ...state, currentNetwork: data.payload.currentNetwork }
+        if (isEqual(data.currentNetwork, state.currentNetwork)) return false
+        const newState = { ...state, currentNetwork: data.currentNetwork }
         return await this._updateStorage(newState);
     }
 
     //change account
     changeAccount = async (data, state) => {
-        if (data.payload.accountName === state.currentAccount.accountName) return false;
-        const newState = { ...state, currentAccount: data.payload }
+        if (data.accountName === state.currentAccount.accountName) return false;
+        const newState = { ...state, currentAccount: data }
         return await this._updateStorage(newState);
     }
 
