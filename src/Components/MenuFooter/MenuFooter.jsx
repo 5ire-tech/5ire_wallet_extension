@@ -24,13 +24,14 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { getCurrentTabUId, getCurrentTabUrl } from "../../Scripts/utils";
 import TransectionHistry from "../TransectionHistry/TransectionHistry";
-import { EMTY_STR, ERROR_MESSAGES, LABELS, TX_TYPE } from "../../Constants/index";
+import { EMTY_STR, ERROR_MESSAGES, LABELS, TX_TYPE, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
 import FooterStepOne, {
   ApproveLogin,
   FooterStepTwo,
   ApproveTx,
 } from "./FooterContinue";
 import { ROUTES } from "../../Routes";
+import { sendRuntimeMessage } from "../../Utility/message_helper";
 
 function MenuFooter() {
   const { logout } = useAuth();
@@ -90,7 +91,7 @@ function MenuFooter() {
     let acc = allAccounts.find(acc => acc.id === accId);
     updateState(LABELS.CURRENT_ACCOUNT, { accountName: acc.accountName, index: Number(acc.id) - 1 })
 
-    //when new keypair created or imported the old key key emit the account change event
+    //send account details whenever account is changed
     getCurrentTabUId((id) => {
       getCurrentTabUrl((url) => {
         if (!(url === "chrome://extensions")) {
@@ -98,6 +99,10 @@ function MenuFooter() {
         }
       })
     })
+
+    //fetch balance of changed account
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.BALANCE, {});
+
 
     onClose();
   };

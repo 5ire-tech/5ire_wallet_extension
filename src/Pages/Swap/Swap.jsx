@@ -174,10 +174,6 @@ function Swap() {
   const handleApprove = async (e) => {
     try {
 
-
-
-          Connection.isExecuting.value = false;
-
           if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
 
             // let res = await evmToNativeSwap(apiRes.evmApi, apiRes.nativeApi, amount);
@@ -189,7 +185,7 @@ function Swap() {
             //   setTxHash(res.data);
             // }
 
-            updateLoading(true);
+            // updateLoading(true);
             sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP, {amount: amount, account: state.currentAccount});
             setIsModalOpen(true);
 
@@ -208,7 +204,7 @@ function Swap() {
             //   setTxHash(res.data);
             // }
 
-            updateLoading(true);
+            // updateLoading(true);
             sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP, {amount: amount, account: state.currentAccount});
             setIsModalOpen(true);
           }

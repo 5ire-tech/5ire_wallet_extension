@@ -281,7 +281,7 @@ function Send() {
           if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
             //pass the message request for evm transfer
-            updateLoading(true);
+            // updateLoading(true);
             sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_TX, {to: data.to, amount: data.amount, account: state.currentAccount});
             setIsModalOpen(true);
 
@@ -301,7 +301,7 @@ function Send() {
           } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
 
             //pass the message request for native transfer
-            updateLoading(true);
+            // updateLoading(true);
             sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_TX, {to: data.to, amount: data.amount, account: state.currentAccount});
             setIsModalOpen(true);
 

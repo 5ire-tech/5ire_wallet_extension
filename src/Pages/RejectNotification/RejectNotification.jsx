@@ -1,66 +1,14 @@
 import style from "./style.module.scss";
-import useWallet from "../../Hooks/useWallet";
-import { HTTP_END_POINTS } from "../../Constants";
-import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { toggleLoader } from "../../Utility/redux_helper";
-import { connectionObj, Connection } from "../../Helper/connection.helper";
+import React, {useState, useContext } from "react";
+import { AuthContext } from "../../Store";
 
 function ApproveTx() {
-
-  const dispatch = useDispatch();
-  const [fee, setFee] = useState("");
-  const [evmApi, setEvmApi] = useState(null);
-  const { retriveEvmFee } = useWallet();
   const [activeTab, setActiveTab] = useState("detail");
-  const auth = useSelector((state) => state.auth);
+  const {estimatedGas, updateEstimatedGas, state} = useContext(AuthContext);
 
-  useEffect(() => {
+  //get current account
+  const account = state.allAccounts[state.currentAccount.index];
 
-    if (evmApi) {
-      retriveEvmFee(
-        evmApi,
-        auth?.uiData?.message?.to,
-        auth?.uiData?.message?.value,
-        auth?.uiData?.message?.data,
-        false
-      )
-        .then((res) => {
-
-          if (!res.error) {
-            setFee(res.data);
-          }
-        })
-        .catch((e) => {
-          console.log("Error : ", e);
-        });
-    } else {
-      getApi();
-    }
-  }, [evmApi]);
-
-
-  useEffect(() => {
-    if (fee) {
-      dispatch(toggleLoader(false));
-    } else {
-      dispatch(toggleLoader(true));
-    }
-  }, [fee])
-
-
-  const getApi = () => {
-    connectionObj.initializeApi(HTTP_END_POINTS.TESTNET, HTTP_END_POINTS.QA, auth.currentNetwork, false).then((apiRes) => {
-      if (!apiRes?.value) {
-        setEvmApi(apiRes.evmApi);
-        Connection.isExecuting.value = false;
-      } else {
-        setTimeout(() => {
-          getApi();
-        }, 4000)
-      }
-    });
-  }
 
   const activeDetail = () => {
     setActiveTab("detail");
@@ -100,25 +48,25 @@ function ApproveTx() {
               <>
                 <div className={style.rejectedSec__listReject__innerList}>
                   <h4>From: </h4>
-                  <h4>{auth.currentAccount.evmAddress}</h4>
+                  <h4>{account.evmAddress}</h4>
                 </div>
                 <div className={style.rejectedSec__listReject__innerList}>
                   <h4>To: </h4>
-                  <h4>{auth?.uiData?.message?.to || ""}</h4>
+                  <h4>{state?.uiData?.message?.to || ""}</h4>
                 </div>
                 <div className={style.rejectedSec__listReject__innerList}>
                   <h4>Value: </h4>
-                  <h4>{String(auth?.uiData?.message?.value || 0)}</h4>
+                  <h4>{String(state?.uiData?.message?.value || 0)}</h4>
                 </div>
 
                 <div className={style.rejectedSec__listReject__innerList}>
                   <h4>Fee: </h4>
-                  <h4>{fee ? `${fee} 5ire`: ""}</h4>
+                  <h4>{estimatedGas ? `${estimatedGas} 5ire`: ""}</h4>
                 </div>
               </>
             ) : (
               <div className={style.rejectedSec__listReject__innerList}>
-                <h4 style={{ wordBreak: "break-all" }}>{auth?.uiData?.message?.data || ""}</h4>
+                <h4 style={{ wordBreak: "break-all" }}>{state?.uiData?.message?.data || ""}</h4>
               </div>
             )}
           </div>

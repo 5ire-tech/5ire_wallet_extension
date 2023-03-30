@@ -4,7 +4,7 @@ import { isNullorUndef, isObject, isString } from "./utility";
 //message passing helper
 export const sendRuntimeMessage = (typeLabel, eventLabel, message) => {
     try {
-        if(!isObject(message) && isNullorUndef(message)) throw new Error("Invalid message, (*Only Objects and Array is the Valid)");
+        if(!isObject(message) && isNullorUndef(message)) throw new Error("Invalid message, (*Only Objects or Array is valid value)");
         if(!isString(eventLabel) && eventLabel.trim().length === 0) throw new Error("Invalid event Label")
         if(!isString(typeLabel) && typeLabel.trim().length === 0) throw new Error("Invalid type Label")
         Browser.runtime.sendMessage({type: typeLabel, event: eventLabel, data: message});

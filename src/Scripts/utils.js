@@ -51,5 +51,9 @@ Number.prototype.noExponents = function () {
 };
 }
 
-export const isManifestV3 =
-  Browser.runtime.getManifest().manifest_version === 3;
+export const isManifestV3 = Browser.runtime.getManifest().manifest_version === 3;
+
+//tx notification message generator
+export const txNotificationStringTemplate = (status, hash, showHashLength = 30) => {
+  return (`Transaction ${status.toLowerCase()} ${hash.slice(0, showHashLength)}...`);
+}

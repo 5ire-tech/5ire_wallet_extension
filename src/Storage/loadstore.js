@@ -78,26 +78,23 @@ export class ExtensionStorageHandler {
 
     //push the transactions
     addNewTxHistory = async (data, state, options) => {
-
-        log("here is the history saver: ", data, state, options)
-
         const newState = { ...state }
-        newState.txHistory[options.accountName].push(data);
+        newState.txHistory[options.account.accountName].push(data);
         return await this._updateStorage(newState);
     }
 
     //update transaction
     updateTxHistory = async (data, state, options) => {
-        const txHistory = state.txHistory[options.accountName];
+        const newState = { ...state };
+        const txHistory = newState.txHistory[options.account.accountName];
         const txIndex = txHistory.findIndex((item) => {
-            const isTx = isNullorUndef(item?.txHash) ? item.txHash === data.txHash : item.txHash.mainHash === data.txHash
+            const isTx = data.isSwap ? item.txHash.mainHash === data.txHash : item.txHash === data.txHash;
             return isTx;
         })
 
-        if (txIndex < 0) return false;
+        if (0 > txIndex) return false;
         //set the updated status into localstorage
         txHistory[txIndex].status = data.status;
-        const newState = { ...state };
 
         //update the history
         return await this._updateStorage(newState);
