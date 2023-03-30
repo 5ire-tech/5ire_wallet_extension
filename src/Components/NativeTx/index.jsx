@@ -88,6 +88,11 @@ function NativeTx() {
                     methodName = "Withdraw Nominator Unbonded";
                     break;
 
+                case "native_withdraw_validator_unbonded":
+                    feeData = await withdrawNominatorUnbonded(apiRes.nativeApi, auth?.uiData?.message, true);
+                    methodName = "Withdraw Validator Unbonded";
+                    break;
+
                 case "native_add_validator":
                     feeData = await addValidator(apiRes.nativeApi, auth?.uiData?.message, true);
                     methodName = "Add Validator";
@@ -191,6 +196,9 @@ function NativeTx() {
                         res = await withdrawNominatorUnbonded(apiRes.nativeApi, auth?.uiData?.message);
                         break;
 
+                    case "native_withdraw_validator_unbonded":
+                        res = await withdrawNominatorUnbonded(apiRes.nativeApi, auth?.uiData?.message);
+                        break;
                     case "native_add_validator":
                         res = await addValidator(apiRes.nativeApi, auth?.uiData?.message);
                         break;
@@ -227,13 +235,15 @@ function NativeTx() {
                             type: TX_TYPE?.SEND,
                             amount: 0,
                             txHash: res?.data?.txHash,
-                            status: STATUS.SUCCESS
+                            status: STATUS.PENDING
                         },
                         index: auth?.accounts.findIndex((obj) => obj.id === auth?.currentAccount?.id),
                     };
 
 
                     dispatch(setTxHistory(dataToDispatch));
+                    Browser.runtime.sendMessage({ type: "tx", ...dataToDispatch, statusCheck: { isFound: false, status: STATUS.PENDING } });
+
                     Browser.tabs.sendMessage(auth.uiData.tabId, {
                         id: auth.uiData.id,
                         response: res.data,

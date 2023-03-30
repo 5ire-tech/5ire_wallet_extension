@@ -50,7 +50,7 @@ try {
     }
   });
 
-  
+
   Browser.runtime.onStartup.addListener(() => {
     //on background script startup
     // store.dispatch(setApiReady(false));
@@ -110,6 +110,7 @@ try {
       case "native_withdraw_nominator":
       case "native_withdraw_validator":
       case "native_withdraw_nominator_unbonded":
+      case "native_withdraw_validator_unbonded":
       case "native_add_validator":
       case "native_validator_bondmore":
       case "native_restart_validator":
@@ -132,7 +133,7 @@ try {
   Browser.runtime.onSuspend.addListener(async () => {
     //event called when extension is suspended or closed
     // console.log("[background.js] onSuspend");
-    await Browser.scripting.unregisterContentScripts({ids: ["inpage"]})
+    await Browser.scripting.unregisterContentScripts({ ids: ["inpage"] })
     isInitialized = false;
   });
 
@@ -141,7 +142,7 @@ try {
 
   //send the Notification if transaction is confirmed
   function txNotification(txData) {
-    checkTransactions({...txData.data, statusCheck: txData.statusCheck});
+    checkTransactions({ ...txData.data, statusCheck: txData.statusCheck });
   }
 
 } catch (err) {

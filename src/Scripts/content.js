@@ -55,6 +55,7 @@ contentStream.on("data", async (data) => {
       case "native_withdraw_nominator":
       case "native_withdraw_validator":
       case "native_withdraw_nominator_unbonded":
+      case "native_withdraw_validator_unbonded":
       case "native_add_validator":
       case "native_validator_bondmore":
       case "native_restart_validator":

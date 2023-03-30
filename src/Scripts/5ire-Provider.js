@@ -43,6 +43,7 @@ export class FireProvider extends SafeEventEmitter {
       "native_withdraw_nominator",
       "native_withdraw_validator",
       "native_withdraw_nominator_unbonded",
+      "native_withdraw_validator_unbonded",
       "native_add_validator",
       "native_validator_bondmore",
       "native_restart_validator",
