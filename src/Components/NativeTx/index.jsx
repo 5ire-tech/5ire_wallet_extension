@@ -121,7 +121,7 @@ function NativeTx() {
                 Browser.tabs.sendMessage(auth.uiData.tabId, {
                     id: auth.uiData.id,
                     response: null,
-                    error: feeData.data,
+                    error: feeData?.data,
                 });
 
                 setTimeout(() => {
@@ -218,11 +218,11 @@ function NativeTx() {
 
                 }
                 // console.log("HERE RES", res)
-                if (res.error) {
+                if (res?.error) {
                     Browser.tabs.sendMessage(auth.uiData.tabId, {
                         id: auth.uiData.id,
                         response: null,
-                        error: res.data,
+                        error: res?.data,
                     });
                 } else {
 
