@@ -3,58 +3,43 @@ import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
 import { AuthContext } from "../../Store";
 import useWallet from "../../Hooks/useWallet";
-import { shortner } from "../../Helper/helper";
-import CopyIcon from "../../Assets/CopyIcon.svg";
+// import { isEmpty } from "../../Utility/utility";
 import ComplSwap from "../../Assets/DarkLogo.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import React, { useState, useEffect, useContext} from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
+import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
-import { connectionObj, Connection } from "../../Helper/connection.helper"
+import {
+  EVM,
+  LABELS,
+  NATIVE,
+  CURRENCY,
+  ERROR_MESSAGES,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS,
+} from "../../Constants/index";
 import {
   InputField,
   InputFieldOnly,
 } from "../../Components/InputField/InputFieldSimple";
-import {
-  EVM,
-  INPUT,
-  NATIVE,
-  COPIED,
-  ERROR_MESSAGES,
-  HTTP_END_POINTS,
-  LABELS,
-  MESSAGE_TYPE_LABELS,
-  MESSAGE_EVENT_LABELS
-} from "../../Constants/index";
-import { sendRuntimeMessage } from "../../Utility/message_helper";
 
 
 function Send() {
 
-  const {state, estimatedGas, updateEstimatedGas, updateLoading} = useContext(AuthContext);
-  const [txHash, setTxHash] = useState("");
-  const [sendError, setSendError] = useState("");
+  const { validateAddress } = useWallet();
+  // const [txHash, setTxHash] = useState("");
+  // const [sendError, setSendError] = useState("");
   const [disableBtn, setDisable] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [err, setErr] = useState({ to: "", amount: "" });
   const [data, setData] = useState({ to: "", amount: "" });
   const [activeTab, setActiveTab] = useState(NATIVE.toLowerCase());
+  const {state, estimatedGas, updateEstimatedGas, updateLoading} = useContext(AuthContext);
+  const { balance, currentAccount } = state;
 
-  const {
-    evmTransfer,
-    nativeTransfer,
-    retriveEvmFee,
-    retriveNativeFee,
-    validateAddress
-  } = useWallet();
-
-  const {
-    balance,
-    currentAccount,
-    currentNetwork
-  } = state;
 
 
 
@@ -70,7 +55,7 @@ function Send() {
       if ((!err.to) && (!err.amount) && data.amount.length > 0 && data.to.length > 0) {
         getFee();
       } else {
-        updateEstimatedGas("");
+        updateEstimatedGas(null);
         setDisable(true);
       }
     }, 1000);
@@ -81,12 +66,12 @@ function Send() {
 
 
   useEffect(() => {
-    if (estimatedGas === "" || !estimatedGas) {
+    if (!estimatedGas) {
       setDisable(true);
     } else {
       if (activeTab.toLowerCase() === EVM.toLowerCase()) {
         if ((Number(data.amount) + Number(estimatedGas)) >= Number(balance.evmBalance)) {
-          updateEstimatedGas("");
+          updateEstimatedGas(null);
           setDisable(true);
           setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
 
@@ -97,7 +82,7 @@ function Send() {
       } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
 
         if ((Number(data.amount) + Number(estimatedGas)) >= Number(balance.nativeBalance)) {
-          updateEstimatedGas("");
+          updateEstimatedGas(null);
           setDisable(true);
           setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
 
@@ -110,7 +95,7 @@ function Send() {
   }, [estimatedGas]);
 
 
-  const blockInvalidChar = (e) => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
+  const blockInvalidChar = e => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
 
 
   const validateAmount = () => {
@@ -156,7 +141,7 @@ function Send() {
         setErr((p) => ({ ...p, to: ERROR_MESSAGES.INCORRECT_ADDRESS }));
 
       else if (data.to === currentAccount.evmAddress)
-        setErr((p) => ({ ...p, to: "Recipient address should not your own address." }));
+        setErr((p) => ({ ...p, to: ERROR_MESSAGES.NOT_YOUR_OWN_ADDRESS}));
 
       else {
         let res = await validateAddress(data.to);
@@ -178,7 +163,7 @@ function Send() {
         setErr((p) => ({ ...p, to: ERROR_MESSAGES.INCORRECT_ADDRESS }));
 
       else if (data.to === currentAccount.nativeAddress)
-        setErr((p) => ({ ...p, to: "Recipient address should not your own address." }));
+        setErr((p) => ({ ...p, to: ERROR_MESSAGES.NOT_YOUR_OWN_ADDRESS }));
 
       else {
         let res = await validateAddress(data.to);
@@ -197,38 +182,13 @@ function Send() {
 
         if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
 
-          // let feeRes = await retriveNativeFee(apiRes.nativeApi, data.to, data.amount);
-
-          // if (feeRes.error) {
-          //   if (feeRes.data) {
-          //     setDisable(true);
-          //     toast.error("Error while getting fee.");
-          //   }
-          // } else {
-          //   setGassFee(feeRes.data);
-          //   setDisable(false);
-          // }
-
           updateLoading(true);
           sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_FEE, {amount: data.amount, account: state.currentAccount, toAddress: data.to});
         }
         else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
-          // let feeRes = await retriveEvmFee(apiRes.evmApi, data.to, data.amount);
-
-          // if (feeRes.error) {
-          //   if (feeRes.data) {
-          //     setDisable(true);
-          //     toast.error("Error while getting fee.");
-          //   }
-
-          // } else {
-          //   setGassFee(feeRes.data);
-          //   setDisable(false);
-          // }
-
-          //calculate the evm fee
           updateLoading(true);
+          //calculate the evm fee
           sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_FEE, {amount: data.amount, account: state.currentAccount, toAddress: data.to});
       }
   };
@@ -245,12 +205,12 @@ function Send() {
           setData(p => ({ ...p, amount: arr[0] + "." + slice }))
         } else {
           setData(p => ({ ...p, amount: e.target.value }))
-          updateEstimatedGas("");
+          updateEstimatedGas(null);
         }
       }
       else {
         setData(p => ({ ...p, amount: e.target.value }))
-        updateEstimatedGas("");
+        updateEstimatedGas(null);
       }
     } else {
 
@@ -259,7 +219,7 @@ function Send() {
           ...p,
           [e.target.name]: (e.target.value).trim(),
         }));
-        updateEstimatedGas("");
+        updateEstimatedGas(null);
       }
 
     }
@@ -281,69 +241,41 @@ function Send() {
           if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
             //pass the message request for evm transfer
-            // updateLoading(true);
             sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_TX, {to: data.to, amount: data.amount, account: state.currentAccount});
             setIsModalOpen(true);
-
-            // const res = await evmTransfer(apiRes.evmApi, data);
-            // if (res.error) {
-            //   setSendError(res.data);
-            //   setIsFaildOpen(true);
-            // }
-            // else {
-            //   setTxHash(res.data);
-            //   setIsModalOpen(true);
-            //   // setTimeout(() => {
-            //   //   getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-            //   // }, 3000);
-            // }
 
           } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
 
             //pass the message request for native transfer
-            // updateLoading(true);
             sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_TX, {to: data.to, amount: data.amount, account: state.currentAccount});
             setIsModalOpen(true);
-
-            // const res = await nativeTransfer(apiRes.nativeApi, data);
-            // if (res.error) {
-            //   setSendError(res.data);
-            //   setIsFaildOpen(true);
-            // }
-            // else {
-            //   setTxHash(res.data);
-            //   setIsModalOpen(true);
-            //   // setTimeout(() => {
-            //   //   getBalance(apiRes.evmApi, apiRes.nativeApi, true)
-            //   // }, 3000);
-            // }
           }
 
-        updateEstimatedGas("");
+        updateEstimatedGas(null);
 
     } catch (error) {
-      toast.error("Error occured.");
+      toast.error(ERROR_MESSAGES.ERR_OCCURED);
     }
   };
 
 
   const activeSend = (e) => {
     setActiveTab(e.target.name);
-    updateEstimatedGas("");
+    updateEstimatedGas(null);
     setDisable(true);
     setErr({ to: "", amount: "" });
     setData({ to: "", amount: "" });
   };
 
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(txHash);
-    toast.success(COPIED);
-  };
+  // const handleCopy = () => {
+  //   navigator.clipboard.writeText(txHash);
+  //   toast.success(COPIED);
+  // };
 
 
   const handle_OK_Cancel = () => {
-    updateEstimatedGas("");
+    updateEstimatedGas(null);
     setDisable(true);
     setIsModalOpen(false);
     setIsFaildOpen(false);
@@ -415,7 +347,7 @@ function Send() {
 
         </div>
         <div className={style.sendSec__transactionFee}>
-          <p>{estimatedGas ? `Estimated fee : ${estimatedGas} 5ire` : ""}</p>
+          <p>{estimatedGas ? `Estimated fee : ${estimatedGas} ${CURRENCY}` : ""}</p>
         </div>
       </div>
       <Approve onClick={handleApprove} text="Transfer" isDisable={disableBtn} />
@@ -455,7 +387,7 @@ function Send() {
           <div className="innerContact">
             <img src={FaildSwap} alt="swapFaild" width={127} height={127} draggable={false} />
             <h2 className="title">Transfer Failed!</h2>
-            <p className="transId">{sendError}</p>
+            {/* <p className="transId">{sendError}</p> */}
 
             <div className="footerbuttons">
               <ButtonComp text={"Try Again"} onClick={handle_OK_Cancel} />

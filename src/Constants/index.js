@@ -1,5 +1,6 @@
 export const EVM = "Evm";
 export const EMTY_STR = "";
+export const CURRENCY = "5ire";
 export const NATIVE = "Native";
 export const TEMP2P = "temp2p";
 export const TEMP1M = "temp1m";
@@ -26,8 +27,8 @@ export const REGEX = {
 }
 
 export const STORAGE = {
-    LOCAL:"local",
-    SESSION:"session"
+    LOCAL: "local",
+    SESSION: "session"
 }
 
 export const TX_TYPE = {
@@ -64,31 +65,33 @@ export const EVM_JSON_RPC_METHODS = {
 
 export const ERROR_MESSAGES = {
     ERR_OCCURED: "Error occured.",
-    INVALID_MNEMONIC: "Invalid mnemonic.",
     LOGOUT_ERR: "Error while logging out",
+    INVALID_MNEMONIC: "Invalid mnemonic.",
     INCORRECT_PASS: "Incorrect password.",
     INCORRECT_ADDRESS: "Incorrect address.",
     INPUT_REQUIRED: "This field is required.",
     PASS_DONT_MATCH: "Passwords do not match.",
     INSUFFICENT_BALANCE: "Insufficent Balance.",
     UNDEF_PROPERTY: "Object not has given property",
-    ENTER_AMOUNT_CORRECTLY: "Please enter amount correctly.",
     AMOUNT_CANT_BE_0: "Amount can't be 0 or less then 0",
+    ENTER_AMOUNT_CORRECTLY: "Please enter amount correctly.",
     WALLET_NAME_ALREADY_EXISTS: "Wallet name already exists.",
     NOT_VALID_JSON_RPC_METHOD: "JSON-RPC method is not valid.",
+    PASS_CREATED_SUCCESS: "Successfully created password for user.",
     ALPHANUMERIC_CHARACTERS: "Please enter alphanumeric characters only.",
     MNEMONICS_ALREADY_EXISTS: "Wallet with this mnemonic already exists.",
-    INPUT_BETWEEN_2_TO_18: "Please input account name between " + 2 + " and " + 18 + " characters.",
+    NOT_YOUR_OWN_ADDRESS: "Recipient address should not be your own address.",
     CREATE_PASS_MSG: "Password must have at least 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
-    INVAILD_ERROR_MESSAGE: "Error message must be an object.",
-    INVALID_ERROR_PAYLOAD: "Error payload is invalid, (missing required properties).",
+
     INVALID_PROPERTY: "Invalid property.",
-    INVALID_TYPE: "argument type is invalid.",
     UNDEF_DATA: "Value is null or undefined.",
+    INVALID_TYPE: "argument type is invalid.",
     NETWORK_REQUEST: "Network error try after sometime",
     TX_FAILED: "Transaction failed. some wrong happend.",
-    PASS_CREATED_SUCCESS: "Successfully created password for user.",
+    INVAILD_ERROR_MESSAGE: "Error message must be an object.",
     INVALID_RPC_OPERATION: "Message is not the part of rpc call system",
+    INVALID_ERROR_PAYLOAD: "Error payload is invalid, (missing required properties).",
+    INPUT_BETWEEN_2_TO_18: "Please input account name between " + 2 + " and " + 18 + " characters.",
 };
 
 export const SUCCESS_MESSAGES = {
@@ -114,7 +117,7 @@ export const LABELS = {
     ENTER: "Enter",
     FAILED: "failed",
     SUCCESS: "success",
-    
+
     STATE: "state",
     ISLOGIN: "isLogin",
     BALANCE: "balance",
@@ -122,7 +125,7 @@ export const LABELS = {
     NEW_ACCOUNT: "newAccount",
     ALL_ACCOUNTS: "allAccounts",
     ACCOUNT_NAME: "accountName",
-    CURRENT_NETWORK:"currentNetwork",
+    CURRENT_NETWORK: "currentNetwork",
     CURRENT_ACCOUNT: "currentAccount",
 
     ERRCODE: "errCode",
@@ -145,38 +148,19 @@ export const WS_END_POINTS = {
 };
 
 
-export const ACTIONS = {
-    setSite: "setSite",
-    setLogin: "setLogin",
-    setUIdata: "setUIdata",
-    setTxPopup: "setTxPopup",
-    toggleSite: "toggleSite",
-    setBalance: "setBalance",
-    setPassword: "setPassword",
-    pushAccounts: "pushAccounts",
-    resetBalance: "resetBalance",
-    setTxHistory: "setTxHistory",
-    toggleLoader: "toggleLoader",
-    setCurrentAcc: "setCurrentAcc",
-    setNewAccount: "setNewAccount",
-    setAllAccounts: "setAllAccounts",
-    setAccountName: "setAccountName",
-    updateTxHistory: "updateTxHistory",
-    setCurrentNetwork: "setCurrentNetwork",
-}
-
 export const MESSAGE_EVENT_LABELS = {
+    NV_TX: "nvTx",
+    NV_FEE: "nvTx",
     EVM_FEE: "evmFee",
     EVM_TX: "evmTransfer",
-    EVM_TO_NATIVE_SWAP: "evmToNativeSwap",
-    NATIVE_FEE: "nativeFee",
-    NATIVE_TX: "nativeTransfer",
-    NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
-    NV_FEE: "nvTX",
-    NV_TX: "nvTx",
     BALANCE: "getBalance",
+    NATIVE_FEE: "nativeFee",
+    LOGIN_UPDATE: "loginUpdate",
+    NATIVE_TX: "nativeTransfer",
+    NOTIFICATION: "notification",
     UPDATE_TX_HISTORY: "txupdatehistory",
-    NOTIFICATION: "notification"
+    EVM_TO_NATIVE_SWAP: "evmToNativeSwap",
+    NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
 }
 
 export const INTERNAL_EVENT_LABELS = {
@@ -203,3 +187,24 @@ export const MESSAGE_TYPE_LABELS = {
     EXTENSION_UI: "extensionUi",
     EXTENSION_BACKGROUND: "extensionBackground"
 }
+
+//need to remove
+// export const ACTIONS = {
+//     setSite: "setSite",
+//     setLogin: "setLogin",
+//     setUIdata: "setUIdata",
+//     setTxPopup: "setTxPopup",
+//     toggleSite: "toggleSite",
+//     setBalance: "setBalance",
+//     setPassword: "setPassword",
+//     pushAccounts: "pushAccounts",
+//     resetBalance: "resetBalance",
+//     setTxHistory: "setTxHistory",
+//     toggleLoader: "toggleLoader",
+//     setCurrentAcc: "setCurrentAcc",
+//     setNewAccount: "setNewAccount",
+//     setAllAccounts: "setAllAccounts",
+//     setAccountName: "setAccountName",
+//     updateTxHistory: "updateTxHistory",
+//     setCurrentNetwork: "setCurrentNetwork",
+// }

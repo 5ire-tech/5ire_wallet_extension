@@ -1,11 +1,11 @@
 import { userState } from "./initialState";
 import { isManifestV3 } from "../Scripts/utils";
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState } from "react";
 import { sessionStorage, localStorage } from "../Storage";
-import { getDataLocal, getDataSession } from "../Storage/loadstore";
-import { sendRuntimeMessage, bindRuntimeMessageListener } from "../Utility/message_helper";
+// import { getDataLocal, getDataSession } from "../Storage/loadstore";
+import {  bindRuntimeMessageListener } from "../Utility/message_helper";
 import { MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS,STORAGE} from "../Constants";
-import { isEqual, log } from "../Utility/utility";
+import { log } from "../Utility/utility";
 import Browser from "webextension-polyfill";
 
 export const AuthContext = createContext();
@@ -27,7 +27,7 @@ export default function Context({ children }) {
 
    //bind the message from background event
    bindRuntimeMessageListener((message) => {
-    log("message from the background script: ", message)
+    log("message from the background script: ", message);
     if(message.type === MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND) {
       if(message.event === MESSAGE_EVENT_LABELS.EVM_FEE || message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE) {
         (!estimatedGas) && updateEstimatedGas(message.data.fee);

@@ -99,10 +99,7 @@ export default function UseWallet() {
 
       setAuthData(dataToDispatch);
 
-      if (!isLogin) {
-        updateState(LABELS.NEW_ACCOUNT, dataToDispatch, false);
-      }
-      else {
+      if (isLogin) {
 
         dataToDispatch = {
           ...dataToDispatch,
@@ -124,6 +121,10 @@ export default function UseWallet() {
             }
           })
         })
+
+      }
+      else {
+        updateState(LABELS.NEW_ACCOUNT, dataToDispatch, false);
       }
 
       // dispatch(toggleLoader(false));
@@ -179,8 +180,8 @@ export default function UseWallet() {
             accountName: data.accName,
           }
 
+          updateState(LABELS.TX_HISTORY, { ...txHistory, [data.accName.trim()]: [] });
           updateState(LABELS.CURRENT_ACCOUNT, currentAccountDetails);
-          updateState(LABELS.TX_HISTORY, { ...txHistory, [accountName]: [] });
           updateState(LABELS.ACCOUNT_NAME, null);
 
         } else {

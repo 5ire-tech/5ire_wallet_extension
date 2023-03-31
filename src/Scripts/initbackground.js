@@ -196,6 +196,11 @@ export class InitBackground {
     });
   }
 
+  //Method called when browser window is getting close
+  bindBrowserCloseEvent = async () => {
+    Browser.onDisconnect();
+  }
+
   //event called when extension is suspended or closed
   bindExtensionUnmountEvents = async () => {
     /**

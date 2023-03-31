@@ -25,7 +25,7 @@ import CreateNewWallet from "./Pages/WelcomeScreens/CreateNewWallet";
 import ApproveTx from "./Pages/RejectNotification/RejectNotification";
 import CreateWalletChain from "./Pages/WelcomeScreens/CreateWalletChain";
 import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
-import {log} from "./Utility/utility"
+
 
 function getParameterByName(name, url = window.location.href) {
   name = name.replace(/[[\]]/g, "\\$&");
@@ -59,8 +59,6 @@ function App(props) {
     } else {
       navigate(ROUTES.DEFAULT);
     }
-
-    // console.log("isLogin : ", isLogin, "all accounts length : ",allAccounts.length, " pass : ",pass);
 
     if (!isLogin && allAccounts?.length > 0 && pass) {
       navigate(ROUTES.UNLOACK_WALLET, {

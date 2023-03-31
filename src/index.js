@@ -4,12 +4,11 @@ import React from "react";
 import Context from "./Store";
 import ReactDOM from "react-dom/client";
 import { localStorage } from "./Storage";
-import Browser from "webextension-polyfill";
 import browser from "webextension-polyfill";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { CONNECTION_NAME, EMTY_STR, LABELS } from "./Constants";
-import { getDataLocal, getDataSession } from "../src/Storage/loadstore"
+import { getDataLocal } from "../src/Storage/loadstore"
 import { sessionStorage } from "../src/Storage/index";
 
 //For Dev Enviroment Check

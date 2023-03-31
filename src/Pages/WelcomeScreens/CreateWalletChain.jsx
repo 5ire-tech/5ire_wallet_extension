@@ -1,18 +1,18 @@
 import { toast } from "react-toastify";
 import style from "./style.module.scss";
-import { AuthContext } from "../../Store";
+// import { AuthContext } from "../../Store";
 import useWallet from "../../Hooks/useWallet";
 import "react-toastify/dist/ReactToastify.css";
 import CopyIcon from "../../Assets/CopyIcon.svg";
-import { isNullorUndef } from "../../Utility/utility";
+// import { isNullorUndef } from "../../Utility/utility";
 import React, { useEffect, useState, useContext } from "react";
 import { TEMP1M, TEMP2P, NATIVE, EVM, COPIED } from "../../Constants/index.js";
 
 function CreateWalletChain() {
 
   const { walletSignUp, authData } = useWallet();
-  const { state } = useContext(AuthContext);
-  const { newAccount, isLogin} = state;
+  // const { state } = useContext(AuthContext);
+  // const { newAccount, isLogin} = state;
 
   const [data, setData] = useState({
     temp1m: "",
