@@ -5,9 +5,9 @@ import Swap from "./Pages/Swap/Swap";
 import { AuthContext } from "./Store";
 import { EMTY_STR } from "./Constants";
 import Wallet from "./Pages/Wallet/Wallet";
+import Loader from "./Pages/Loader/Loader";
 import NativeTx from "./Components/NativeTx";
 import { useEffect, useContext } from "react";
-import Loader from "./Pages/Loader/Loader";
 import OnlyContent from "./Layout/OnlyContent";
 import WelcomeLayout from "./Layout/WelcomeLayout";
 import FixWidthLayout from "./Layout/FixWidthLayout";
@@ -46,7 +46,6 @@ function App(props) {
   }, [])
 
   useEffect(() => {
-
     if (props.popupRoute && props.popupRoute?.length > 0 && isLogin) {
       navigate(`/${props.popupRoute}`);
       return;
@@ -76,7 +75,7 @@ function App(props) {
       navigate(ROUTES.DEFAULT);
     }
 
-  }, [isLogin, pass, allAccounts.length]);
+  }, [isLogin, pass]);
 
 
   return (

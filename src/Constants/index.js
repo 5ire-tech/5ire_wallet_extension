@@ -97,6 +97,7 @@ export const ERROR_MESSAGES = {
 export const SUCCESS_MESSAGES = {
     LOGIN_SUCCESS: "Login successfully.",
     LOGOUT_SUCCESS: "Logout successfully",
+    HASH_COPIED: "Transacion hash copied.",
     PASS_CREATED_SUCCESS: "Successfully created password for user.",
 };
 
@@ -113,6 +114,8 @@ export const ERRCODES = {
 
 
 export const LABELS = {
+    KEY: "key",
+    SEED: "seed",
     PASS: "pass",
     ENTER: "Enter",
     FAILED: "failed",
@@ -123,8 +126,8 @@ export const LABELS = {
     BALANCE: "balance",
     TX_HISTORY: "txHistory",
     NEW_ACCOUNT: "newAccount",
-    ALL_ACCOUNTS: "allAccounts",
     ACCOUNT_NAME: "accountName",
+    ALL_ACCOUNTS: "allAccounts",
     CURRENT_NETWORK: "currentNetwork",
     CURRENT_ACCOUNT: "currentAccount",
 

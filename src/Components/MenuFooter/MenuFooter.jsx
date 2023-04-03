@@ -185,7 +185,7 @@ function MenuFooter() {
                       ? data.to
                       : `${data?.to ? `To: ` + shortner(data.to) : EMTY_STR}`
                   }
-                  amount={`${data?.amount} ${CURRENCY}`}
+                  amount={data?.amount}
                   status={data?.status.charAt(0).toUpperCase() + data?.status.slice(1)}
                   img={Sendhistry}
                   key={index + CURRENCY}

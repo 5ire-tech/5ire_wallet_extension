@@ -87,12 +87,6 @@ export default function useAuth() {
 
   const logout = async () => {
     try {
-      // if (isManifestV3) {
-      //   await Browser.storage.session.remove(["login"]);
-      // } else {
-      //   await Browser.storage.local.remove(["login"]);
-      // }
-      // dispatch(setLogin(false));
 
       updateState(LABELS.ISLOGIN,false, true, true);
 

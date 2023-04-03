@@ -3,32 +3,32 @@ import { toast } from "react-toastify";
 import React, { useState } from "react";
 import style from "./style.module.scss";
 import { useContext, useEffect } from "react";
-import { COPIED } from "../../Constants/index";
 import useWallet from "../../Hooks/useWallet";
 import { AuthContext } from "../../Store/index";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import ButtonComp from "../ButtonComp/ButtonComp";
+import { COPIED, LABELS } from "../../Constants/index";
 import { decryptor } from "../../Helper/CryptoHelper";
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 
 
 function PrivateKey() {
-  const { state } = useContext(AuthContext);
-  const { allAccounts, currentAccount, pass } = state;
+
+  const { getKey } = useWallet();
   const [key, setKey] = useState("");
   const [seed, setSeed] = useState("");
+  const { state } = useContext(AuthContext);
   const [show, handleShow] = useState(false);
-  const { getKey } = useWallet();
-  const name = ["seed", "key"];
+  const { allAccounts, currentAccount, pass } = state;
 
   useEffect(() => {
     setKey(getKey(allAccounts[currentAccount?.index]?.temp1m, pass));
   }, [currentAccount, getKey]);
 
   const handleCopy = (e) => {
-    if (e.target.name === name[0])
+    if (e.target.name === LABELS.SEED)
       navigator.clipboard.writeText(seed);
-    else if (e.target.name === name[1])
+    else if (e.target.name === LABELS.SEED)
       navigator.clipboard.writeText(key);
     toast.success(COPIED);
   };
@@ -61,7 +61,7 @@ function PrivateKey() {
                     draggable={false}
                     src={CopyIcon}
                     alt="copyIcon"
-                    name="key"
+                    name={LABELS.KEY}
                     onClick={handleCopy}
                   />
                 </p>
@@ -81,7 +81,7 @@ function PrivateKey() {
                     draggable={false}
                     src={CopyIcon}
                     alt="copyIcon"
-                    name="seed"
+                    name={LABELS.SEED}
                     onClick={handleCopy}
                   />
                 </p>

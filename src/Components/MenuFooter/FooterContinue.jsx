@@ -1,12 +1,14 @@
 import style from "./style.module.scss";
 import { ROUTES } from "../../Routes";
 import React, { useContext } from "react";
+import { AuthContext } from "../../Store";
 import browser from "webextension-polyfill";
 import useWallet from "../../Hooks/useWallet";
 import { useNavigate } from "react-router-dom";
 import ButtonComp from "../ButtonComp/ButtonComp";
-import { HTTP_END_POINTS, LABELS } from "../../Constants/index";
 import { useDispatch, useSelector } from "react-redux";
+import { closeBoth } from "../../Utility/window.helper";
+import { HTTP_END_POINTS, LABELS } from "../../Constants/index";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
 import {
   setSite,
@@ -14,8 +16,6 @@ import {
   toggleLoader,
   toggleSite,
 } from "../../Utility/redux_helper";
-import { closeBoth } from "../../Utility/window.helper"
-import { AuthContext } from "../../Store";
 
 function FooterStepOne() {
   const { state } = useContext(AuthContext);
@@ -62,9 +62,12 @@ export const FooterStepTwo = () => {
   };
 
   const handleClick = () => {
-
-    if (isLogin) navigate(ROUTES.WALLET);
-    else navigate(ROUTES.SET_PASS + "/create");
+    if (isLogin){
+      navigate(ROUTES.WALLET);
+    } 
+    else {
+      navigate(ROUTES.SET_PASS + "/create");
+    }
   };
   return (
     <>

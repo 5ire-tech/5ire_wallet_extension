@@ -1,3 +1,5 @@
+import { log } from "../Utility/utility";
+import Browser from "webextension-polyfill";
 import { userState } from "./initialState";
 import { isManifestV3 } from "../Scripts/utils";
 import { createContext, useState } from "react";
@@ -5,8 +7,6 @@ import { sessionStorage, localStorage } from "../Storage";
 // import { getDataLocal, getDataSession } from "../Storage/loadstore";
 import {  bindRuntimeMessageListener } from "../Utility/message_helper";
 import { MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS,STORAGE} from "../Constants";
-import { log } from "../Utility/utility";
-import Browser from "webextension-polyfill";
 
 export const AuthContext = createContext();
 

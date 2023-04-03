@@ -1,12 +1,21 @@
-import React from 'react';
-import style from "./style.module.scss";
+import { useEffect } from "react";
+import BigNumber from "bignumber.js";
 import { toast } from "react-toastify";
+import style from "./style.module.scss";
+import {numFormatter} from "../../Helper/helper";
+import { SUCCESS_MESSAGES, CURRENCY } from "../../Constants";
 
 function TransectionHistry({ dateTime, img, type, to, amount, status, txHash }) {
 
+  // useEffect(()=>{
+  //   console.log("Amount before : ",amount);
+  //   let _amount = new BigNumber(Number(amount)).toFixed(6,8).toString();
+  //   console.log("Amount :::: ",_amount);
+  // },[]);
+
   const handleClick = (hash) =>{
     navigator.clipboard.writeText(hash);
-    toast.success("Transacion hash copied.");
+    toast.success(SUCCESS_MESSAGES.HASH_COPIED);
   }
 
   return (
@@ -23,7 +32,7 @@ function TransectionHistry({ dateTime, img, type, to, amount, status, txHash }) 
           </div>
         </div>
         <div className={style.transectionHistry__histry__success}>
-          <p> {amount}</p>
+          <p> {amount? `${numFormatter(new BigNumber(Number(amount)).toFixed(6,8).toString())} ${CURRENCY}`:""}</p>
           <p>
             Status : <span>{status}</span>
           </p>

@@ -1,4 +1,5 @@
 import Browser from "webextension-polyfill";
+import { numFormatter } from "../Helper/helper";
 import { GUIHandler, ExternalConnection } from "./controller";
 import { getDataLocal, ExtensionStorageHandler } from "../Storage/loadstore";
 import { CONNECTION_NAME, INTERNAL_EVENT_LABELS, DECIMALS, MESSAGE_TYPE_LABELS, STATE_CHANGE_ACTIONS, TX_TYPE, STATUS, LABELS, MESSAGE_EVENT_LABELS, AUTO_BALANCE_UPDATE_TIMER } from "../Constants";
@@ -424,33 +425,9 @@ export class RPCCalls {
       nbalance = balance_.availableBalance;
     }
 
-
-    let evmBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toString();
-    let nativeBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toString();
-
-
-    if (Number(nativeBalance) % 1 !== 0) {
-      let tempBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toFixed(6, 8).toString();
-      if (Number(tempBalance) % 1 === 0)
-        nativeBalance = parseInt(tempBalance)
-      else
-        nativeBalance = tempBalance;
-    }
-
-
-    if (Number(evmBalance) % 1 !== 0) {
-      let tempBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toFixed(6, 8).toString();
-      if (Number(tempBalance) % 1 === 0)
-        evmBalance = parseInt(tempBalance)
-      else
-        evmBalance = tempBalance;
-    }
-
-
-    let totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toString();
-    if (Number(totalBalance) % 1 !== 0)
-      totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toFixed(6, 8).toString()
-
+    let evmBalance = numFormatter(new BigNumber(w3balance).dividedBy(DECIMALS).toFixed(6, 8).toString());
+    let nativeBalance = numFormatter(new BigNumber(nbalance).dividedBy(DECIMALS).toFixed(6, 8).toString());
+    let totalBalance = numFormatter(new BigNumber(evmBalance).plus(nativeBalance).toString());
 
     const payload = {
       data: {
