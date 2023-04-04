@@ -3,6 +3,7 @@ import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
 import { Link } from "react-router-dom";
 import PlaceLogo from "../../Assets/PlaceLog.svg";
+import PrivacyPolicy from "../../Components/MenuFooter/PrivacyPolicy";
 // import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 
 function WelcomeScreen() {
@@ -15,7 +16,7 @@ function WelcomeScreen() {
             <img src={PlaceLogo} alt="placeLogo" draggable={false}/>
             <div className={style.cardWhite__cardInner__innercontact}>
               <h1>5irechain Wallet</h1>
-              {/* <p>The Decentralized Wallet</p> */}
+              <p>The Decentralized Wallet</p>
             </div>
           </div>
         </div>
@@ -28,6 +29,7 @@ function WelcomeScreen() {
           </Link>
         </div>
       </div>
+      <PrivacyPolicy/>
     </div>
   );
 }

@@ -20,6 +20,7 @@ export default function SetPasswordScreen() {
   const [show, setShow] = useState(false);
   const [error, setError] = useState(EMTY_STR);
   const [confirmError, setconfirmError] = useState(EMTY_STR);
+  const { state, updateState } = useContext(AuthContext);
   // const { state, updateState } = useContext(AuthContext);
   const [pass, setPass] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
 
@@ -69,7 +70,11 @@ export default function SetPasswordScreen() {
       setconfirmError(EMTY_STR);
 
   };
-
+  const handleCancle = () => {
+    updateState(LABELS.NEW_ACCOUNT, null, false);
+    // updateState(LABELS.ACCOUNT_NAME, null, false);
+    navigate(ROUTES.WALLET);
+  };
 
   const handleSubmit = async (e) => {
 
@@ -124,7 +129,7 @@ export default function SetPasswordScreen() {
             on your device. We recommend 12 characters, with uppercase and
             lowercase letters, symbols and numbers.
           </p>
-          <div className={style.cardWhite__beginText__passInputSec}>
+          <div className={style.cardWhite__beginText__passInputSec} style={{ marginTop: "48px" }}>
             <InputFieldSimple
               value={pass.pass}
               name={LABELS.PASS}
@@ -136,7 +141,7 @@ export default function SetPasswordScreen() {
             />
           </div>
           <p className={style.errorText}>{error ? error : ""}</p>
-          <div className={style.cardWhite__beginText__passInputSec}>
+          <div className={style.cardWhite__beginText__passInputSec} style={{ marginTop: "20px" }}>
             <InputFieldSimple
               value={pass.confirmPass}
               name="confirmPass"
@@ -148,10 +153,16 @@ export default function SetPasswordScreen() {
             />
             <p className={style.errorText}>{confirmError ? confirmError : ""}</p>
           </div>
-          <div style={{ marginTop: "30px" }}>
+          <div style={{ marginTop: "50px" }} className={style.contBtn}>
             <ButtonComp
               onClick={handleSubmit}
               text={"Continue"}
+              maxWidth={"100%"}
+            />
+             <ButtonComp
+             bordered={true}
+              onClick={handleCancle}
+              text={"Cancel"}
               maxWidth={"100%"}
             />
           </div>

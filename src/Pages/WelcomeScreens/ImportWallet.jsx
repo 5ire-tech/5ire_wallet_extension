@@ -10,6 +10,8 @@ import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { REGEX, ERROR_MESSAGES, LABELS } from "../../Constants/index";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+import PrivacyPolicy from "../../Components/MenuFooter/PrivacyPolicy";
+import TextArea from "antd/es/input/TextArea";
 
 
 
@@ -123,7 +125,7 @@ function ImportWallet() {
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Import Wallet </h1>
         </div>
-        <div className={style.cardWhite__linkOuter}>
+        <div className={style.cardWhite__importWalletlinkOuter}>
           <div>
             <InputFieldOnly
               placeholder={"Enter wallet name"}
@@ -135,8 +137,8 @@ function ImportWallet() {
             />
             <p className="errorText">{warrning.acc}</p>
           </div>
-          <div>
-            <InputFieldOnly
+          <div className="inputFieldOnly">
+            {/* <InputFieldOnly
               type="password"
               placeholder={"Enter mnemonic here"}
               placeholderBaseColor={true}
@@ -144,15 +146,17 @@ function ImportWallet() {
               name="key"
               onChange={handleChange}
               keyUp={validateKey}
-            />
+            /> */}
+            <TextArea placeholder={"Enter mnemonic here"} rows={4} />
             <p className="errorText">{warrning.key}</p>
           </div>
         </div>
         <div className={style.setPassword__footerbuttons}>
-          <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancle} />
           <ButtonComp onClick={handleClick} text={"Import"} isDisable={isDisable} />
+          <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancle} />
         </div>
       </div>
+        <PrivacyPolicy/>
     </div>
   );
 }

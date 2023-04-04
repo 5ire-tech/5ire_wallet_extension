@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store/index";
 import { useNavigate } from "react-router-dom";
@@ -14,13 +14,13 @@ function ManageWallet() {
   const navigate = useNavigate();
   const [accountData, setAccountData] = useState("");
 
-  const { state} = useContext(AuthContext);
+  const { state } = useContext(AuthContext);
   const { currentAccount, allAccounts } = state;
 
-  useEffect(()=>{
+  useEffect(() => {
     let data = allAccounts[currentAccount?.index];
     setAccountData(data);
-  },[currentAccount.index])
+  }, [currentAccount.index]);
 
   const handleCopy = (e) => {
     if (e.target.name === NATIVE) {
@@ -32,8 +32,8 @@ function ManageWallet() {
     if (e.target.name === "name") {
       navigator.clipboard.writeText(currentAccount.accountName);
     }
-    toast.success(COPIED)
-  }
+    toast.success(COPIED);
+  };
 
   return (
     <>
@@ -51,7 +51,13 @@ function ManageWallet() {
               <label>Wallet Name:</label>
               <p className={style.wallet__addressInput__copyText}>
                 <span>{accountData?.accountName}</span>
-                <img src={CopyIcon} alt="copyIcon" name="name" onClick={handleCopy} draggable={false}/>{" "}
+                <img
+                  src={CopyIcon}
+                  alt="copyIcon"
+                  name="name"
+                  onClick={handleCopy}
+                  draggable={false}
+                />{" "}
               </p>
             </div>
           </div>
@@ -60,7 +66,13 @@ function ManageWallet() {
               <label>Native Chain Address:</label>
               <p className={style.wallet__addressInput__copyText}>
                 <span>{accountData.nativeAddress}</span>
-                <img src={CopyIcon} alt="copyIcon" name={NATIVE} onClick={handleCopy} draggable={false}/>{" "}
+                <img
+                  src={CopyIcon}
+                  alt="copyIcon"
+                  name={NATIVE}
+                  onClick={handleCopy}
+                  draggable={false}
+                />{" "}
               </p>
             </div>
           </div>
@@ -69,7 +81,13 @@ function ManageWallet() {
               <label>Evm Chain Address:</label>
               <p className={style.wallet__addressInput__copyText}>
                 <span>{accountData.evmAddress}</span>
-                <img src={CopyIcon} alt="copyIcon" name={EVM} onClick={handleCopy} draggable={false} />{" "}
+                <img
+                  src={CopyIcon}
+                  alt="copyIcon"
+                  name={EVM}
+                  onClick={handleCopy}
+                  draggable={false}
+                />{" "}
               </p>
             </div>
           </div>
@@ -77,8 +95,12 @@ function ManageWallet() {
             <ButtonComp
               onClick={() => navigate(ROUTES.ENTER_PASS)}
               text="Export Private Key"
-              img={Exportprivate}
             ></ButtonComp>
+            <ButtonComp
+              bordered={true}
+              onClick={() => navigate(ROUTES.ENTER_PASS)}
+              text="Reveal Mnemonic"
+            />
           </div>
         </div>
       </div>

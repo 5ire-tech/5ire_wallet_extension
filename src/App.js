@@ -25,7 +25,9 @@ import CreateNewWallet from "./Pages/WelcomeScreens/CreateNewWallet";
 import ApproveTx from "./Pages/RejectNotification/RejectNotification";
 import CreateWalletChain from "./Pages/WelcomeScreens/CreateWalletChain";
 import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
-import {log} from "./Utility/utility"
+import { log } from "./Utility/utility";
+import History from "./Pages/History/History";
+import MyAccount from "./Pages/MyAccount/MyAccount";
 
 function getParameterByName(name, url = window.location.href) {
   name = name.replace(/[[\]]/g, "\\$&");
@@ -43,10 +45,9 @@ function App(props) {
 
   useEffect(() => {
     setState(props.data);
-  }, [])
+  }, []);
 
   useEffect(() => {
-
     if (props.popupRoute && props.popupRoute?.length > 0 && isLogin) {
       navigate(`/${props.popupRoute}`);
       return;
@@ -77,9 +78,7 @@ function App(props) {
     } else {
       navigate(ROUTES.DEFAULT);
     }
-
   }, [isLogin, pass, allAccounts.length]);
-
 
   return (
     <div className="App">
@@ -93,7 +92,7 @@ function App(props) {
             />
 
             <Route
-              path={ROUTES.SET_PASS+"/:id"}
+              path={ROUTES.SET_PASS + "/:id"}
               element={<WelcomeLayout children={<SetPasswordScreen />} />}
             />
 
@@ -101,7 +100,6 @@ function App(props) {
               path={ROUTES.UNLOACK_WALLET}
               element={<WelcomeLayout children={<UnlockWelcome />} />}
             />
-
           </>
         ) : (
           <>
@@ -110,7 +108,16 @@ function App(props) {
               path={ROUTES.WALLET}
               element={<FixWidthLayout children={<Wallet />} />}
             />
-
+            <Route
+              index
+              path={ROUTES.HISTORY_P}
+              element={<FixWidthLayout children={<History />} />}
+            />
+            <Route
+              index
+              path={ROUTES.MYACCOUNT}
+              element={<FixWidthLayout children={<MyAccount />} />}
+            />
             <Route
               index
               path={ROUTES.SWAP_APPROVE}
@@ -150,14 +157,13 @@ function App(props) {
             <Route
               index
               path={ROUTES.NATIVE_TXN}
-              element={<NativeTx  /*api={api}*/ />}
+              element={<NativeTx /*api={api}*/ />}
             />
 
             <Route
               path={ROUTES.LOGIN_APPROVE}
               element={<WelcomeLayout children={<LoginApprove />} />}
             />
-
           </>
         )}
 

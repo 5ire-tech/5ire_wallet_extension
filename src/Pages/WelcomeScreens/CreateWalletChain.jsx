@@ -9,10 +9,9 @@ import React, { useEffect, useState, useContext } from "react";
 import { TEMP1M, TEMP2P, NATIVE, EVM, COPIED } from "../../Constants/index.js";
 
 function CreateWalletChain() {
-
   const { walletSignUp, authData } = useWallet();
   const { state } = useContext(AuthContext);
-  const { newAccount, isLogin} = state;
+  const { newAccount, isLogin } = state;
 
   const [data, setData] = useState({
     temp1m: "",
@@ -31,21 +30,17 @@ function CreateWalletChain() {
 
     let res = walletSignUp();
 
-
-    if(res.error) toast.error(res.data);
-
+    if (res.error) toast.error(res.data);
   }, []);
 
   useEffect(() => {
     if (authData.temp1m) setData(authData);
     // else if (newAccount) setData(newAccount);
-    
   }, [authData]);
 
-
   const handleCopy = (e) => {
-
-    if (e.target.name === NATIVE) navigator.clipboard.writeText(data?.nativeAddress);
+    if (e.target.name === NATIVE)
+      navigator.clipboard.writeText(data?.nativeAddress);
 
     if (e.target.name === EVM) navigator.clipboard.writeText(data?.evmAddress);
 
@@ -64,7 +59,44 @@ function CreateWalletChain() {
   return (
     <div className={style.cardWhite}>
       <div className={style.cardWhite__beginText}>
-        <h1>New Wallet Details</h1>
+        <h1>Create New Wallet</h1>
+      </div>
+      <div className={style.copyButton}>
+        <button
+          className={style.cardWhite__addressInput__copyAll}
+          name={"all"}
+          onClick={handleCopy}
+        >
+          Copy All
+        </button>
+      </div>
+      <div className={style.cardWhite__addressInput}>
+        <label>EVM Chain Address:</label>
+        <p
+          className={`${style.cardWhite__addressInput__copyText} ${style.textElips}`}
+        >
+          <span>{data?.evmAddress}</span>
+          <img
+            name={EVM}
+            src={CopyIcon}
+            alt="copyIcon"
+            draggable={false}
+            onClick={handleCopy}
+          />{" "}
+        </p>
+      </div>
+      <div className={`${style.cardWhite__addressInput} ${style.textElips}`}>
+        <label>Native Chain Address:</label>
+        <p className={style.cardWhite__addressInput__copyText}>
+          <span>{data?.nativeAddress}</span>
+          <img
+            draggable={false}
+            src={CopyIcon}
+            alt="copyIcon"
+            name={NATIVE}
+            onClick={handleCopy}
+          />{" "}
+        </p>
       </div>
       <div className={style.cardWhite__addressInput}>
         <label>Mnemonic Phrase:</label>
@@ -92,33 +124,7 @@ function CreateWalletChain() {
           />{" "}
         </p>
       </div>
-      <div className={style.cardWhite__addressInput}>
-        <label>EVM Chain Address:</label>
-        <p className={style.cardWhite__addressInput__copyText}>
-          <span>{data?.evmAddress}</span>
-          <img
-            name={EVM}
-            src={CopyIcon}
-            alt="copyIcon"
-            draggable={false}
-            onClick={handleCopy}
-          />{" "}
-        </p>
-      </div>
-      <div className={style.cardWhite__addressInput}>
-        <label>Native Chain Address:</label>
-        <p className={style.cardWhite__addressInput__copyText}>
-          <span>{data?.nativeAddress}</span>
-          <img
-            draggable={false}
-            src={CopyIcon}
-            alt="copyIcon"
-            name={NATIVE}
-            onClick={handleCopy}
-          />{" "}
-        </p>
-      </div>
-      <div className={style.copyButton}><button className={style.cardWhite__addressInput__copyAll} name={"all"} onClick={handleCopy}>Copy All</button></div>
+
       {/* <div className={style.cardWhite__noteSec}>
         <h4>Note:</h4>
         <ul>

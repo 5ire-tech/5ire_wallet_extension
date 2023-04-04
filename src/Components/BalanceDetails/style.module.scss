@@ -30,11 +30,11 @@
     background-image: url("../../Assets/PNG/WalletBg.png");
     background-position: center;
     background-size: cover;
-    padding: 20px 24px;
+    padding: 12px 24px;
     &__totalBalnce {
       p {
         color: $white;
-        font-size: 18px;
+        font-size: 14px;
         font-weight: 600;
         display: flex;
         align-items: center;
@@ -71,6 +71,7 @@
         font-size: 18px;
       }
     }
+
     &__balanceCard {
       background-image: url("../../Assets/PNG/walletInnerCard.png");
       background-position: center;
@@ -78,7 +79,7 @@
       padding: 10px;
       gap: 8px;
       display: flex;
-      align-items: flex-end;
+      // align-items: flex-end;
       border-radius: 6px;
     }
   }
@@ -88,6 +89,12 @@
       background: $white;
       padding: 15px;
       border-radius: 8px;
+    }
+    &__logoFlex{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
     }
     &__innerContact {
       display: flex;
@@ -166,7 +173,7 @@
     }
   }
   &__multiSwapBtn {
-    padding: 30px 37px;
+    padding: 18px 80px;
     padding-bottom: 0;
   }
   &__sendSwapbtn {
@@ -183,7 +190,7 @@
       color: $white;
       border: 0;
       font-size: 15px;
-      padding: 14px;
+      padding: 8px;
       &__active {
         background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
         // border: 1px solid rgba(255, 255, 255, 0.5);
@@ -211,6 +218,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 10px 24px;
+    background-color:  $baseColor-Text2;
   }
   &__title {
     font-size: 24px;
