@@ -156,7 +156,6 @@ function ImportWallet() {
           <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancle} />
         </div>
       </div>
-        <PrivacyPolicy/>
     </div>
   );
 }

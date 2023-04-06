@@ -2,14 +2,13 @@ import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
 import { AuthContext } from "../../Store";
 import PlaceLogo from "../../Assets/PlaceLog.svg";
-import { useLocation, useNavigate } from "react-router-dom";
-import { LABELS, ERROR_MESSAGES} from "../../Constants/index";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { LABELS, ERROR_MESSAGES } from "../../Constants/index";
 import React, { useEffect, useState, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 import { ROUTES } from "../../Routes";
-
 
 function UnlockWelcome() {
   const navigate = useNavigate();
@@ -21,7 +20,6 @@ function UnlockWelcome() {
   const { state, updateState } = useContext(AuthContext);
   const { isLogin } = state;
 
-
   useEffect(() => {
     if (errMsg || !data) {
       setDisable(true);
@@ -30,33 +28,26 @@ function UnlockWelcome() {
     }
   }, [errMsg, data]);
 
-
   const handleChange = (e) => {
     setData(e.target.value);
     setErrorMsg("");
   };
-  
 
   const validateInput = () => {
     if (data.length === 0) {
       setErrorMsg(ERROR_MESSAGES.INPUT_REQUIRED);
       setDisable(true);
     }
-
-  }
+  };
 
   const handleClick = async (e) => {
-
-    if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
-
+    if (e.key === LABELS.ENTER || e.key === undefined) {
       let res = await verifyPass(data);
 
       if (!res.error) {
-        if (isLogin !== true)
-          updateState(LABELS.ISLOGIN, true, true, true);
+        if (isLogin !== true) updateState(LABELS.ISLOGIN, true, true, true);
         navigate(location.state?.redirectRoute || ROUTES.WALLET);
-      }
-      else {
+      } else {
         setErrorMsg(res.data);
         setDisable(true);
       }
@@ -76,24 +67,30 @@ function UnlockWelcome() {
             </div>
           </div>
         </div>
-        <div className={style.cardWhite__linkOuter}>
-          <InputFieldSimple
-            // type="password"
-            name={"key"}
-            onChange={handleChange}
-            placeholder={"Enter Password"}
-            placeholderBaseColor={true}
-            keyUp={validateInput}
-            coloredBg={true}
-          />
-          <p className={style.errorText}>{errMsg ? errMsg : ""}</p>
+        <div className={style.cardWhite__importWalletlinkOuter}>
+          <div>
+            <InputFieldSimple
+              // type="password"
+              name={"key"}
+              onChange={handleChange}
+              placeholder={"Enter Password"}
+              placeholderBaseColor={true}
+              keyUp={validateInput}
+              coloredBg={true}
+            />
+            <p className={style.errorText}>{errMsg ? errMsg : ""}</p>
+          </div>
+          <div className={style.forgotLink}>
+            <Link to="/forgotpassword">Forgot password?</Link>
+          </div>
         </div>
         <div className={style.setPassword__footerbuttons}>
-          <ButtonComp onClick={handleClick} text={"Unlock"} isDisable={isDisable} />
+          <ButtonComp
+            onClick={handleClick}
+            text={"Unlock"}
+            isDisable={isDisable}
+          />
         </div>
-        {/* <div className={style.forgotLink}>
-          <Link to="">Forgot password?</Link>
-        </div> */}
       </div>
     </div>
   );

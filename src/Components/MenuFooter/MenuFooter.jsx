@@ -252,7 +252,7 @@ function MenuFooter() {
       </Drawer>
 
       <Drawer
-      height={404}
+        height={404}
         title={
           <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             Settings
@@ -295,8 +295,8 @@ function MenuFooter() {
             </div>
           </div>
         </Link>
-        <Link to={ROUTES.MANAGE_WALLET} >
-          <div className={style.sttings} style={{ marginTop: "14px"}}>
+        <Link to={ROUTES.MANAGE_WALLET}>
+          <div className={style.sttings} style={{ marginTop: "14px" }}>
             <div className={style.sttings__left}>
               <div className={style.walletIconBorder}>
                 <img
@@ -343,7 +343,10 @@ function MenuFooter() {
       {pathname === ROUTES.NEW_WALLET_DETAILS && <FooterStepTwo />}
       {pathname === ROUTES.LOGIN_APPROVE && <ApproveLogin />}
       {pathname === ROUTES.APPROVE_TXN && <ApproveTx />}
-      {pathname === ROUTES.CREATE_WALLET && <PrivacyPolicy />}
+      {(pathname === ROUTES.CREATE_WALLET ||
+        pathname === ROUTES.UNLOACK_WALLET ||
+        pathname === ROUTES.FORGOTPASSWORD ||
+        pathname === ROUTES.IMPORT_WALLET) && <PrivacyPolicy />}
     </div>
   );
 }

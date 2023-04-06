@@ -15,6 +15,7 @@ import ModalCustom from "../ModalCustom/ModalCustom";
 import GreenCircle from "../../Assets/greencircle.svg";
 import { getCurrentTabUrl } from "../../Scripts/utils";
 import React, { useEffect, useState, useContext } from "react";
+import ThreeDot from "../../Assets/dot3.svg";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import DownArrowSuffix from "../../Assets/DownArrowSuffix.svg";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
@@ -32,8 +33,9 @@ function BalanceDetails({ mt0 }) {
   const getLocation = useLocation();
   const { state, updateState } = useContext(AuthContext);
   const [isConnected, setIsConnected] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEvmModal, setIsEvmModal] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isheaderActive, setisheaderActive] = useState(false);
   const [accountData, setAccountData] = useState({ accountName: EMTY_STR });
   const [addresses, setAddresses] = useState({
     evmAddress: EMTY_STR,
@@ -135,17 +137,31 @@ function BalanceDetails({ mt0 }) {
   const evmCancel = () => {
     setIsEvmModal(false);
   };
+  const headerActive = () => {
+    setisheaderActive(true);
+  };
+  const handle_OK = () => {
+    setisheaderActive(false);
+  };
+  const handle_Cancel = () => {
+    setisheaderActive(false);
+  };
 
   return (
     <>
-      {(pathname ===
-        ROUTES.WALLET || ROUTES.SWAP_APPROVE || ROUTES.APPROVE_TXN || pathname === ROUTES.HISTORY_P || pathname === ROUTES.MYACCOUNT) && (
+      {(pathname === ROUTES.WALLET ||
+        ROUTES.SWAP_APPROVE ||
+        ROUTES.APPROVE_TXN ||
+        pathname === ROUTES.HISTORY_P ||
+        pathname === ROUTES.MYACCOUNT) && (
         <div className={`${style.balanceDetails} ${mt0 ? mt0 : EMTY_STR}`}>
           <div className={style.balanceDetails__decoratedSec}>
             <>
               <img src={DarkLogo} alt="logo" draggable={false} />
 
-              {(pathname === ROUTES.WALLET || pathname === ROUTES.HISTORY_P || pathname === ROUTES.MYACCOUNT) && (
+              {(pathname === ROUTES.WALLET ||
+                pathname === ROUTES.HISTORY_P ||
+                pathname === ROUTES.MYACCOUNT) && (
                 <div className={style.balanceDetails__accountName}>
                   {isConnected ? (
                     <>
@@ -169,18 +185,61 @@ function BalanceDetails({ mt0 }) {
                       </span>
                     </>
                   ) : (
-                    <p>
-                      <img
-                        src={GrayCircle}
-                        alt="connectionLogo"
-                        draggable={false}
-                      />
-                      {accountData?.accountName}
-                    </p>
+                    <>
+                      <p onClick={headerActive}>
+                        <img
+                          src={GrayCircle}
+                          alt="connectionLogo"
+                          draggable={false}
+                        />
+                        {accountData?.accountName}
+                      </p>
+                    </>
                   )}
                 </div>
               )}
-
+              <ModalCustom
+                isModalOpen={isheaderActive}
+                handleOk={handle_OK}
+                handleCancel={handle_Cancel}
+              >
+                <div className={style.activeDis_Modal}>
+                  <div className={style.activeDis_Modal__modalHeading}>
+                    <h3>stake.lido.fi</h3>
+                    <p>You have 1 accounts connected to this site.</p>
+                  </div>
+                  <div className={style.activeDis_Modal__accountActive}>
+                    <div className={style.activeDis_Modal__leftSec}>
+                      <img src={DarkLogo} />
+                      <div
+                        className={style.activeDis_Modal__leftSec__accountConatct}
+                      >
+                        <h2>Account 1</h2>
+                        <p>312 ETH</p>
+                      </div>
+                    </div>
+                    <div className={style.activeDis_Modal__rytSec}>
+                      <h2>Active</h2>
+                      <img src={ThreeDot} />
+                    </div>
+                  </div>
+                  <div className={style.activeDis_Modal__accountActive}>
+                    <div className={style.activeDis_Modal__leftSec}>
+                      <img src={DarkLogo} />
+                      <div
+                        className={style.activeDis_Modal__leftSec__accountConatct}
+                      >
+                        <h2>Account 2</h2>
+                        <span>Switch to this account</span>
+                      </div>
+                    </div>
+                    <div className={style.activeDis_Modal__rytSec}>
+                      <h2>Not Active</h2>
+                      <img src={ThreeDot} />
+                    </div>
+                  </div>
+                </div>
+              </ModalCustom>
               <div className={style.balanceDetails__selectStyle}>
                 <Select
                   onChange={handleNetworkChange}
@@ -235,7 +294,7 @@ function BalanceDetails({ mt0 }) {
               </div>
             )} */}
 
-          {(pathname === ROUTES.WALLET ) && (
+          {pathname === ROUTES.WALLET && (
             <div className={style.balanceDetails__innerBalance}>
               <div className={style.balanceDetails__innerBalance__totalBalnce}>
                 <p>
@@ -351,17 +410,17 @@ function BalanceDetails({ mt0 }) {
           >
             <div className={style.balanceDetails__nativemodal}>
               <div className={style.balanceDetails__nativemodal__innerContact}>
-              <div className={style.balanceDetails__nativemodal__logoFlex}>
-                <img
-                  src={DarkLogo}
-                  width={55}
-                  height={55}
-                  alt="darkLogo"
-                  draggable={false}
-                />
-                <p className={style.balanceDetails__nativemodal__title}>
-                  5ire EVM Chain
-                </p>
+                <div className={style.balanceDetails__nativemodal__logoFlex}>
+                  <img
+                    src={DarkLogo}
+                    width={55}
+                    height={55}
+                    alt="darkLogo"
+                    draggable={false}
+                  />
+                  <p className={style.balanceDetails__nativemodal__title}>
+                    5ire EVM Chain
+                  </p>
                 </div>
                 <div className={style.balanceDetails__nativemodal__scanner}>
                   <QRCode

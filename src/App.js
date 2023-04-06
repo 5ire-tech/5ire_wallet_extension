@@ -28,6 +28,8 @@ import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
 import { log } from "./Utility/utility";
 import History from "./Pages/History/History";
 import MyAccount from "./Pages/MyAccount/MyAccount";
+import ForgotPassword from "./Pages/WelcomeScreens/ForgotPassword";
+import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
 
 function getParameterByName(name, url = window.location.href) {
   name = name.replace(/[[\]]/g, "\\$&");
@@ -99,6 +101,14 @@ function App(props) {
             <Route
               path={ROUTES.UNLOACK_WALLET}
               element={<WelcomeLayout children={<UnlockWelcome />} />}
+            />
+              <Route
+              path={ROUTES.FORGOTPASSWORD}
+              element={<WelcomeLayout children={<ForgotPassword />} />}
+            />
+               <Route
+              path={ROUTES.MAINPRIVACYPOLICY}
+              element={<WelcomeLayout children={<MainPrivacyPolicy />} />}
             />
           </>
         ) : (

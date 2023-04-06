@@ -1,10 +1,10 @@
-import Link from 'antd/es/typography/Link'
 import React from 'react'
+import { Link } from 'react-router-dom';
 import style from "./style.module.scss";
 function PrivacyPolicy() {
   return (
     <div className={style.footerPrivacy} >
-        <Link>Read Privacy Policy</Link>
+        <Link to="/mainprivacypolicy">Read Privacy Policy</Link>
     </div>
   )
 }

@@ -19,4 +19,6 @@ export const ROUTES = {
     UNLOACK_WALLET: "/unlock-wallet",
     NEW_WALLET_DETAILS: "/new-wallet-details",
     MYACCOUNT:"/my-account",
+    FORGOTPASSWORD:"/forgotpassword",
+    MAINPRIVACYPOLICY:"/mainprivacypolicy"
 }
