@@ -2,16 +2,16 @@ import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import useWallet from "../../Hooks/useWallet";
+import TextArea from "antd/es/input/TextArea";
 import { useNavigate } from "react-router-dom";
 import { isEmpty } from "../../Utility/utility";
 import { decryptor } from "../../Helper/CryptoHelper";
 import React, { useState, useEffect, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
+import PrivacyPolicy from "../../Components/MenuFooter/PrivacyPolicy";
 import { REGEX, ERROR_MESSAGES, LABELS } from "../../Constants/index";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
-import PrivacyPolicy from "../../Components/MenuFooter/PrivacyPolicy";
-import TextArea from "antd/es/input/TextArea";
 
 
 
@@ -36,7 +36,7 @@ function ImportWallet() {
         setDisable(true);
       }
     }
-  }, [data.accName, data.key, warrning])
+  }, [data.accName, data.key, warrning]);
 
   const handleChange = (e) => {
     setData((p) => ({ ...p, [e.target.name]: e.target.value }));
@@ -51,13 +51,11 @@ function ImportWallet() {
       }));
       setDisable(true);
     }
-
     else if (!REGEX.WALLET_NAME.test(data.accName)) {
 
       setWarrning(p => ({ ...p, acc: ERROR_MESSAGES.ALPHANUMERIC_CHARACTERS }))
       setDisable(true);
     }
-
     else {
       setWarrning((p) => ({ ...p, acc: "" }));
       // setDisable(false);
@@ -67,7 +65,7 @@ function ImportWallet() {
   const validateKey = () => {
     if (isEmpty(data.key)) {
       setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
-      setDisable(true)
+      setDisable(true);
     } else {
       setWarrning((p) => ({ ...p, key: "" }));
     }
@@ -75,38 +73,31 @@ function ImportWallet() {
 
   const handleClick = async (e) => {
     if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
-      if (isEmpty(data.key)) {
-        setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
-        setDisable(true);
-      } else if (isEmpty(data.accName.trim())) {
-        setWarrning((p) => ({ ...p, acc: ERROR_MESSAGES.INPUT_REQUIRED }));
-        setDisable(true);
-      } else {
-        if (!warrning.key && !warrning.acc) {
-          const match = allAccounts.find((e) => {
-            if (e.accountName === data.accName.trim()) {
-              setWarrning((p) => ({
-                ...p,
-                acc: ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS,
-              }));
-              return true;
-            } else if (decryptor(e.temp1m, pass) === data.key) {
-              setWarrning((p) => ({
-                ...p,
-                key: ERROR_MESSAGES.MNEMONICS_ALREADY_EXISTS,
-              }));
-              return true;
-            } else return false;
-          });
 
-          if (!match) {
-            let res = await importAccount(data);
-            if (res.error) setWarrning((p) => ({ ...p, key: res.data }));
-            else {
-              setWarrning({ acc: "", key: "" });
-              if (isLogin) navigate(ROUTES.WALLET);
-              else navigate(ROUTES.SET_PASS+"/import");
-            }
+      if (!warrning.key && !warrning.acc && data.key && data.accName) {
+        const match = allAccounts.find((e) => {
+          if (e.accountName === data.accName.trim()) {
+            setWarrning((p) => ({
+              ...p,
+              acc: ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS,
+            }));
+            return true;
+          } else if (decryptor(e.temp1m, pass) === data.key) {
+            setWarrning((p) => ({
+              ...p,
+              key: ERROR_MESSAGES.MNEMONICS_ALREADY_EXISTS,
+            }));
+            return true;
+          } else return false;
+        });
+
+        if (!match) {
+          let res = await importAccount(data);
+          if (res.error) setWarrning((p) => ({ ...p, key: res.data }));
+          else {
+            setWarrning({ acc: "", key: "" });
+            if (isLogin) navigate(ROUTES.WALLET);
+            else navigate(ROUTES.SET_PASS + "/import");
           }
         }
       }
@@ -147,7 +138,13 @@ function ImportWallet() {
               onChange={handleChange}
               keyUp={validateKey}
             /> */}
-            <TextArea placeholder={"Enter mnemonic here"} rows={4} />
+            <TextArea
+              placeholder={"Enter mnemonic here"}
+              rows={4}
+              onChange={handleChange}
+              onKeyUp={validateKey}
+              name="key"
+            />
             <p className="errorText">{warrning.key}</p>
           </div>
         </div>
@@ -156,7 +153,7 @@ function ImportWallet() {
           <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancle} />
         </div>
       </div>
-        <PrivacyPolicy/>
+      <PrivacyPolicy />
     </div>
   );
 }
