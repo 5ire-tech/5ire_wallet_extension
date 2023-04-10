@@ -143,6 +143,15 @@ function MenuFooter() {
         pathname === ROUTES.HISTORY_P ||
         pathname === ROUTES.MYACCOUNT) && (
         <>
+           <Link
+            to={ROUTES.WALLET} // onClick={handleHistoryOpen}
+            className={`${style.menuItems__items} ${style.menuItems__items__active}`}
+          >
+            <div className={style.menuItems__items__img}>
+              <img src={Wallet} alt="HistoryIcon" draggable={false} />
+            </div>
+            <span className={style.menuItems__items__title}>Wallet</span>
+          </Link>
           <Link
             to={ROUTES.HISTORY_P} // onClick={handleHistoryOpen}
             className={`${style.menuItems__items} ${style.menuItems__items__active}`}

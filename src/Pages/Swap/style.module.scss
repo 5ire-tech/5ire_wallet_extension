@@ -11,8 +11,9 @@
     flex-direction: column;
     gap: 8px;
     h3 {
-      color: #6a84a0;
+      color: $white;
       font-size: 12px;
+      text-align: left;
     }
     p {
       color: #0071ff;
@@ -46,6 +47,8 @@
     img {
       border-left: 1px solid #404058;
       padding-left: 10px;
+      width: 24px;
+      height: 24px;
     }
   }
   &__txFeeBalance{

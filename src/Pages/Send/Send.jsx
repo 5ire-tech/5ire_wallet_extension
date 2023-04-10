@@ -9,6 +9,7 @@ import ComplSwap from "../../Assets/DarkLogo.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import Info from "../../Assets/infoIcon.svg";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
+import logoNew from "../../Assets/logoNew.svg";
 import React, { useState, useEffect, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
@@ -385,7 +386,7 @@ function Send() {
               placeholder={"Enter Amount"}
               addonAfter={
                 <span className={style.sendSec__pasteText}>
-                  <img src={WalletCardLogo} alt="logo" draggable={false} />
+                  <img src={logoNew} alt="logo" draggable={false} />
                   5ire
                 </span>
               }

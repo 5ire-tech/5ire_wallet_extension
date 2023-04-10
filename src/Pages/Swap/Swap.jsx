@@ -12,6 +12,7 @@ import FaildSwap from "../../Assets/DarkLogo.svg";
 import React, { useState, useContext } from "react";
 import Info from "../../Assets/infoIcon.svg";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
+import logoNew from "../../Assets/logoNew.svg";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import { InputField } from "../../Components/InputField/InputFieldSimple";
@@ -334,7 +335,7 @@ function Swap() {
         <div className={style.swap__swapCopy}>
           <div className={style.swap__swapSec}>
             <h3>From {toFrom.from}</h3>
-            <span>
+            {/* <span>
               {shortner(address.fromAddress)}
               <img
                 width={15}
@@ -345,14 +346,15 @@ function Swap() {
                 name={toFrom.from}
                 onClick={handleCopy}
               />
-            </span>
+            </span> */}
+            <span>100 5ire </span>
           </div>
           <div className={style.swap__icon} onClick={handleClick}>
             <img src={SwapIcon} alt="swapIcon" draggable={false} />
           </div>
           <div className={style.swap__swapSec}>
             <h3>To {toFrom.to}</h3>
-            <span>
+            {/* <span>
               {shortner(address.toAddress)}{" "}
               <img
                 width={15}
@@ -363,7 +365,8 @@ function Swap() {
                 draggable={false}
                 onClick={handleCopy}
               />
-            </span>
+            </span> */}
+            <span>100 5ire </span>
           </div>
         </div>
         <div className={style.swap__swapAccount}>
@@ -380,7 +383,7 @@ function Swap() {
               placeholder={"Enter Amount"}
               addonAfter={
                 <span className={style.swap__pasteText}>
-                  <img src={WalletCardLogo} alt="walletLogo" draggable={false} />
+                  <img src={logoNew} alt="walletLogo" draggable={false} />
                   5ire
                 </span>
               }
