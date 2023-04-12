@@ -1,38 +1,49 @@
+import { useContext } from "react";
 import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
-import useAuth from "../../Hooks/useAuth";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../Store/index";
+import { isEmpty } from "../../Utility/utility.js"
 import ButtonComp from "../ButtonComp/ButtonComp";
-import { LABELS, ERROR_MESSAGES } from "../../Constants/index";
 import InputFieldSimple from "../InputField/InputFieldSimple.jsx";
+import { sendRuntimeMessage } from "../../Utility/message_helper.js";
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+import { LABELS, ERROR_MESSAGES, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
 
 
 function EnterPassword() {
 
   const navigate = useNavigate();
-  const { verifyPass } = useAuth();
+  const { passError, setPassError, passVerified} = useContext(AuthContext);
   const [data, setData] = useState("");
-  const [errMsg, setErrorMsg] = useState("");
+  // const [errMsg, setErrorMsg] = useState("");
   const [isDisable, setDisable] = useState(true);
 
   useEffect(() => {
-    if (errMsg || !data) {
+    if (passError || !data) {
       setDisable(true);
     } else {
       setDisable(false);
     }
-  }, [errMsg, data]);
+  }, [passError, data]);
+
+  useEffect(()=>{
+    if (passVerified) {
+      navigate(ROUTES.PVT_KEY);
+    }
+  },[passVerified]);
+
+  console.log("PassError : ",passError);
 
   const handleChange = (e) => {
     setData(e.target.value);
-    setErrorMsg("");
+    setPassError("");
   }
 
   const validateInput = () => {
-    if (data.length === 0) {
-      setErrorMsg(ERROR_MESSAGES.INPUT_REQUIRED);
+    if (isEmpty(data)) {
+      setPassError(ERROR_MESSAGES.INPUT_REQUIRED);
       setDisable(true);
     }
   }
@@ -40,16 +51,8 @@ function EnterPassword() {
   const handleClick = async (e) => {
 
     if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
-
-      let res = await verifyPass(data);
-
-      if (!res.error) {
-        // navigate(location.state?.redirectRoute || "/wallet");
-        navigate(ROUTES.PVT_KEY);
-
-      } else {
-        setErrorMsg(res.data);
-        setDisable(true);
+      if (!passError) {
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.VERIFY_USER_PASSWORD, { password: data});
       }
     }
 
@@ -77,7 +80,7 @@ function EnterPassword() {
               type="password"
               name={LABELS.PASS}
             />
-            <p className={style.errorText}>{errMsg ? errMsg : ""}</p>
+            <p className={style.errorText}>{passError ? passError : ""}</p>
             <div>
               <ButtonComp
                 onClick={handleClick}

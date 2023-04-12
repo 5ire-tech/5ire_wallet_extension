@@ -16,7 +16,10 @@ import {
   toggleLoader,
   toggleSite,
 } from "../../Utility/redux_helper";
+import { newAccountInitialState } from "../../Store/initialState";
 
+
+//Wallet of Before We begin
 function FooterStepOne() {
   const { state } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -28,7 +31,8 @@ function FooterStepOne() {
   }
 
   const handleClick = () => {
-    navigate(ROUTES.NEW_WALLET_DETAILS);
+    // navigate(ROUTES.NEW_WALLET_DETAILS);
+    navigate(ROUTES.CREATE_WALLET);
   }
 
   return (
@@ -50,25 +54,23 @@ function FooterStepOne() {
   );
 }
 
+//Footer of New wallet Detail Page
 export const FooterStepTwo = () => {
-  const { state, updateState } = useContext(AuthContext);
+  const { state, updateState, setNewAccount} = useContext(AuthContext);
   const navigate = useNavigate();
-  const { isLogin } = state;
+  // const { isLogin } = state;
 
   const handleCancle = () => {
     updateState(LABELS.NEW_ACCOUNT, null, false);
     // updateState(LABELS.ACCOUNT_NAME, null, false);
-    navigate(ROUTES.BEFORE_BEGIN);
+    navigate(ROUTES.DEFAULT);
   };
 
   const handleClick = () => {
-    if (isLogin){
-      navigate(ROUTES.WALLET);
-    } 
-    else {
-      navigate(ROUTES.SET_PASS + "/create");
-    }
+    navigate(ROUTES.WALLET);
+    setNewAccount(newAccountInitialState);
   };
+
   return (
     <>
       <div className={style.menuItems__cancleContinue}>

@@ -1,27 +1,41 @@
 import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
-import useWallet from "../../Hooks/useWallet";
 import { useNavigate } from "react-router-dom";
 import { isEmpty } from "../../Utility/utility";
-import { decryptor } from "../../Helper/CryptoHelper";
+import useWallet from "../../Hooks/useWallet";
+// import { decryptor } from "../../Helper/CryptoHelper";
 import React, { useState, useEffect, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import { REGEX, ERROR_MESSAGES, LABELS } from "../../Constants/index";
+import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+import {
+  REGEX,
+  LABELS,
+  ERROR_MESSAGES,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS,
+  EMTY_STR
+} from "../../Constants/index";
 
 
 
 function ImportWallet() {
   const navigate = useNavigate();
-  const { importAccount } = useWallet();
+  const { validMnemonic } = useWallet();
   const [isDisable, setDisable] = useState(true);
-  const { state } = useContext(AuthContext);
+  const { state, userPass, allAccounts } = useContext(AuthContext);
   const [data, setData] = useState({ accName: "", key: "" });
   const [warrning, setWarrning] = useState({ acc: "", key: "" });
+  const { isLogin } = state;
 
-  const { isLogin, allAccounts, pass } = state;
+  useEffect(() => {
+    if (isLogin) {
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.GET_ACCOUNTS, {});
+    }
+  }, []);
+
 
   useEffect(() => {
 
@@ -62,52 +76,78 @@ function ImportWallet() {
     }
   };
 
+
   const validateKey = () => {
+
     if (isEmpty(data.key)) {
       setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
-      setDisable(true)
-    } else {
-      setWarrning((p) => ({ ...p, key: "" }));
+      setDisable(true);
+    }
+    else if (!validMnemonic(data.key)) {
+      setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INVALID_MNEMONIC }));
+      setDisable(true);
+    }
+    else {
+      setWarrning((p) => ({ ...p, key: EMTY_STR }));
     }
   };
 
   const handleClick = async (e) => {
     if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
-      if (isEmpty(data.key)) {
-        setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
-        setDisable(true);
-      } else if (isEmpty(data.accName.trim())) {
-        setWarrning((p) => ({ ...p, acc: ERROR_MESSAGES.INPUT_REQUIRED }));
-        setDisable(true);
-      } else {
-        if (!warrning.key && !warrning.acc) {
-          const match = allAccounts.find((e) => {
-            if (e.accountName === data.accName.trim()) {
-              setWarrning((p) => ({
-                ...p,
-                acc: ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS,
-              }));
-              return true;
-            } else if (decryptor(e.temp1m, pass) === data.key) {
-              setWarrning((p) => ({
-                ...p,
-                key: ERROR_MESSAGES.MNEMONICS_ALREADY_EXISTS,
-              }));
-              return true;
-            } else return false;
-          });
 
-          if (!match) {
-            let res = await importAccount(data);
-            if (res.error) setWarrning((p) => ({ ...p, key: res.data }));
-            else {
-              setWarrning({ acc: "", key: "" });
-              if (isLogin) navigate(ROUTES.WALLET);
-              else navigate(ROUTES.SET_PASS+"/import");
-            }
+      if (!warrning.key && !warrning.acc && data.accName && data.key) {
+        if (userPass && !isLogin) {
+
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: userPass, opts: { mnemonic: data.key, name: data.accName.trim() } });
+          navigate(ROUTES.WALLET);
+
+        } else {
+          const match = allAccounts?.find((a) => a.accountName === data.accName.trim());
+          console.log("MAtch account name : ", match);
+          if (match) {
+            setWarrning(p => ({
+              ...p,
+              acc: ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS,
+            }));
+          }else{
+            //todo
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC, { mnemonic: data.key, name: data.accName.trim() });
+
+            navigate(ROUTES.WALLET);
           }
+
+
         }
       }
+
+      // if (!warrning.key && !warrning.acc) {
+      //   const match = allAccounts.find((e) => {
+      //     if (e.accountName === data.accName.trim()) {
+      //       setWarrning((p) => ({
+      //         ...p,
+      //         acc: ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS,
+      //       }));
+      //       return true;
+      //     } else if (decryptor(e.temp1m, pass) === data.key) {
+      //       setWarrning((p) => ({
+      //         ...p,
+      //         key: ERROR_MESSAGES.MNEMONICS_ALREADY_EXISTS,
+      //       }));
+      //       return true;
+      //     } else return false;
+      //   });
+
+      //   if (!match) {
+      //     let res = await importAccount(data);
+      //     if (res.error) setWarrning((p) => ({ ...p, key: res.data }));
+      //     else {
+      //       setWarrning({ acc: "", key: "" });
+      //       if (isLogin) navigate(ROUTES.WALLET);
+      //       else navigate(ROUTES.SET_PASS + "/import");
+      //     }
+      //   }
+      // }
+
     }
   };
 

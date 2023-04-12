@@ -1,43 +1,43 @@
+import { useContext } from "react";
 import { toast } from "react-toastify";
 import style from "./style.module.scss";
-import useWallet from "../../Hooks/useWallet";
+import { AuthContext } from "../../Store";
 import "react-toastify/dist/ReactToastify.css";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import React, { useEffect, useState } from "react";
-import { TEMP1M, TEMP2P, NATIVE, EVM, COPIED } from "../../Constants/index.js";
+import { PVT_KEY, NATIVE, EVM, COPIED, MNEMONIC } from "../../Constants/index.js";
 
 function CreateWalletChain() {
 
-  const { walletSignUp } = useWallet();
+  const { newAccount } = useContext(AuthContext);
 
-  const [data, setData] = useState({
-    temp1m: "",
-    temp2p: "",
-    evmAddress: "",
-    nativeAddress: "",
-  });
+  console.log("NewAccount ::::::::: ",newAccount);
 
-  useEffect(() => {
-    let res = walletSignUp();
-    if (res.error) toast.error(res.data);
-    else{
-      setData(res.data);
-    }
-  }, []);
+  // const [data, setData] = useState({
+  //   mnemonic: "",
+  //   evmPrivateKey: "",
+  //   evmAddress: "",
+  //   nativeAddress: "",
+  // });
+
+  // useEffect(() => {
+  //   setData(newAccount);
+
+  // }, [newAccount]);
 
 
   const handleCopy = (e) => {
 
-    if (e.target.name === NATIVE) navigator.clipboard.writeText(data?.nativeAddress);
+    if (e.target.name === NATIVE) navigator.clipboard.writeText(newAccount?.nativeAddress);
 
-    if (e.target.name === EVM) navigator.clipboard.writeText(data?.evmAddress);
+    if (e.target.name === EVM) navigator.clipboard.writeText(newAccount?.evmAddress);
 
-    if (e.target.name === TEMP1M) navigator.clipboard.writeText(data?.temp1m);
+    if (e.target.name === MNEMONIC) navigator.clipboard.writeText(newAccount?.mnemonic);
 
-    if (e.target.name === TEMP2P) navigator.clipboard.writeText(data?.temp2p);
+    if (e.target.name === PVT_KEY) navigator.clipboard.writeText(newAccount?.evmPrivateKey);
 
     if (e.target.name === "all") {
-      let string = `Mnemonic: ${data?.temp1m}\nEVM Private key: ${data?.temp2p}\nEVM Address: ${data?.evmAddress}\nNative Address: ${data?.nativeAddress}`;
+      let string = `Mnemonic: ${newAccount?.temp1m}\nEVM Private key: ${newAccount?.temp2p}\nEVM Address: ${newAccount?.evmAddress}\nNative Address: ${newAccount?.nativeAddress}`;
       navigator.clipboard.writeText(string);
     }
 
@@ -52,9 +52,9 @@ function CreateWalletChain() {
       <div className={style.cardWhite__addressInput}>
         <label>Mnemonic Phrase:</label>
         <p className={style.cardWhite__addressInput__copyText}>
-          <span>{data?.temp1m}</span>
+          <span>{newAccount?.mnemonic}</span>
           <img
-            name={TEMP1M}
+            name={"mnemonic"}
             src={CopyIcon}
             alt="copyIcon"
             draggable={false}
@@ -65,9 +65,9 @@ function CreateWalletChain() {
       <div className={style.cardWhite__addressInput}>
         <label>EVM Private Key:</label>
         <p className={style.cardWhite__addressInput__copyText}>
-          <span>{data.temp2p}</span>
+          <span>{newAccount?.evmPrivateKey}</span>
           <img
-            name={TEMP2P}
+            name={"privateKey"}
             src={CopyIcon}
             alt="copyIcon"
             draggable={false}
@@ -78,7 +78,7 @@ function CreateWalletChain() {
       <div className={style.cardWhite__addressInput}>
         <label>EVM Chain Address:</label>
         <p className={style.cardWhite__addressInput__copyText}>
-          <span>{data?.evmAddress}</span>
+          <span>{newAccount?.evmAddress}</span>
           <img
             name={EVM}
             src={CopyIcon}
@@ -91,7 +91,7 @@ function CreateWalletChain() {
       <div className={style.cardWhite__addressInput}>
         <label>Native Chain Address:</label>
         <p className={style.cardWhite__addressInput__copyText}>
-          <span>{data?.nativeAddress}</span>
+          <span>{newAccount?.nativeAddress}</span>
           <img
             draggable={false}
             src={CopyIcon}
@@ -102,15 +102,6 @@ function CreateWalletChain() {
         </p>
       </div>
       <div className={style.copyButton}><button className={style.cardWhite__addressInput__copyAll} name={"all"} onClick={handleCopy}>Copy All</button></div>
-      {/* <div className={style.cardWhite__noteSec}>
-        <h4>Note:</h4>
-        <ul>
-          <li>
-            Your private key and address can’t be recovered if you lose it.
-          </li>
-          <li> Please store it securely.</li>
-        </ul>
-      </div >*/}
     </div>
   );
 }

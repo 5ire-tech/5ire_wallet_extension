@@ -45,10 +45,18 @@ export class ExtensionStorageHandler {
     //error checker static member
     static updateStorage = async (key, data, options) => {
         try {
+
+            // console.log("KEY in UpdateStorage", key);
+            // console.log("isNullorUndef(key) ", isNullorUndef(key));
+            // console.log("!hasLength(key) ", !hasLength(key));
+            // console.log("data in UpdateStorage", data);
+
             //checks for invalid or undef argument
             isNullorUndef(key) && !hasLength(key) && new Error(new ErrorPayload(ERRCODES.INVALID_ARGU_TYPE, ERROR_MESSAGES.INVALID_TYPE)).throw();
+
             isNullorUndef(data) && new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
-            !isObject(data) && new Error(new ErrorPayload(ERRCODES.INVALID_ARGU_TYPE, ERROR_MESSAGES.INVALID_TYPE)).throw();
+
+            // !isObject(data) && new Error(new ErrorPayload(ERRCODES.INVALID_ARGU_TYPE, ERROR_MESSAGES.INVALID_TYPE)).throw();
 
 
             if (isNullorUndef(ExtensionStorageHandler.instance)) {
@@ -115,10 +123,29 @@ export class ExtensionStorageHandler {
         return await this._updateStorage(newState);
     }
 
+    //new account
+    // createOrRestore = async (message, state, options) => {
+    //     const { vault, accounts } = message;
+    //     const newState = { ...state, vault, currentAccount: accounts[0] }
+    //     console.log("New State : ", newState);
+    //     return await this._updateStorage(newState);
+    // }
+
+    //unlockWallet 
+    // unlock = async (message, state, options) => {
+    //     if (message.isLogin)
+    //         this._updateSession(LABELS.ISLOGIN, message.isLogin);
+
+    // }
+
     //************************************Internal methods***************************/
     _updateStorage = async (state) => {
         await localStorage.set({ [LABELS.STATE]: state })
         return false
     }
+
+    // _updateSession = async (key, state) => {
+    //     await sessionStorage.set({ [key]: state })
+    // }
 
 }

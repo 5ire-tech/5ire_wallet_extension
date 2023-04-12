@@ -1,5 +1,5 @@
 export const userState = {
-    pass: null,
+    vault: null,
 
     allAccounts: [],
 
@@ -10,11 +10,13 @@ export const userState = {
     },
 
     currentAccount: {
+        evmAddress: "",
         accountName: "",
-        index: ""
+        accountIndex: "",
+        nativeAddress: "",
     },
 
-    newAccount: null,
+    // newAccount: null,
 
     uiData: {},
 
@@ -24,9 +26,7 @@ export const userState = {
         totalBalance: ""
     },
 
-    currentNetwork: "QA",
-
-    accountName: "",
+    currentNetwork: "Testnet",
 
     eth_accounts: '',
 
@@ -36,4 +36,13 @@ export const userState = {
 
     isLoading: false,
 
+}
+
+export const newAccountInitialState = {
+    mnemonic: "",
+    evmPrivateKey: "",
+    evmAddress: "",
+    nativeAddress: "",
+    accountName:"",
+    accountIndex:""
 }

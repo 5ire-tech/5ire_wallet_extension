@@ -2,20 +2,26 @@ import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import { useNavigate } from "react-router-dom";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import { LABELS, REGEX, ERROR_MESSAGES } from "../../Constants/index";
+import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+import { LABELS, REGEX, ERROR_MESSAGES, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
 
 function CreateNewWallet() {
   const navigate = useNavigate();
   const [data, setData] = useState("");
   const [warrning, setWarrning] = useState("");
   const [isDisable, setDisable] = useState(true);
-  const { state, updateState } = useContext(AuthContext);
-  const { allAccounts, isLogin} = state;
+  const { state, updateState, setAccName, allAccounts } = useContext(AuthContext);
+  const { isLogin } = state;
 
+  useEffect(() => {
+    if (isLogin) {
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.GET_ACCOUNTS, {});
+    }
+  }, []);
 
   const handleChange = (e) => {
     setData(e.target.value);
@@ -24,7 +30,11 @@ function CreateNewWallet() {
 
   const validateAccName = () => {
 
-    if (data.trim().length < 2 || data.trim().length >= 19) {
+    if (data.trim().length === 0) {
+      setWarrning(ERROR_MESSAGES.INPUT_REQUIRED);
+      setDisable(true);
+    }
+    else if (data.trim().length < 2 || data.trim().length >= 19) {
       setWarrning(ERROR_MESSAGES.INPUT_BETWEEN_2_TO_18);
       setDisable(true);
     }
@@ -42,21 +52,40 @@ function CreateNewWallet() {
 
   const handleClick = () => {
 
-    if (data.trim().length === 0)
-      setWarrning(ERROR_MESSAGES.INPUT_REQUIRED);
+    if (!warrning && data.trim()) {
 
-    else {
-      if (!warrning) {
-        const match = allAccounts?.find((e) => e.accountName === data.trim());
+      if (isLogin) {
+        const match = allAccounts?.find((a) => a.accountName === data.trim());
         if (match) {
           setWarrning(ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS);
         } else {
-          updateState(LABELS.ACCOUNT_NAME, data.trim(), false);
-          navigate(ROUTES.BEFORE_BEGIN);
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.ADD_ACCOUNT, { name: data.trim() });
+          navigate(ROUTES.NEW_WALLET_DETAILS);
         }
       }
+      else {
+        setAccName(data.trim());
+        navigate(ROUTES.SET_PASS + "/create");
+      }
+
     }
-  };
+
+    // const match = allAccounts?.find((e) => e.accountName === data.trim());
+
+    // if (match) {
+    //   setWarrning(ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS);
+    // } else {
+    //   setAccName(data.trim());
+
+    //   if (isLogin) {
+
+    //   }
+    //   else
+    //     navigate(ROUTES.SET_PASS + "/create");
+
+
+  }
+
 
   const handleCancle = () => {
     updateState(LABELS.ACCOUNT_NAME, null, false);

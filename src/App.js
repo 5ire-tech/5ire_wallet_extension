@@ -13,7 +13,7 @@ import WelcomeLayout from "./Layout/WelcomeLayout";
 import FixWidthLayout from "./Layout/FixWidthLayout";
 import PrivateKey from "./Components/Setting/PrivateKey";
 import Beforebegin from "./Pages/WelcomeScreens/Beforebegin";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import EnterPassword from "./Components/Setting/EnterPassword";
 import LoginApprove from "./Pages/WelcomeScreens/LoginApprove";
 import SwapApprove from "./Pages/Swap/SwapApprove/SwapApprove";
@@ -36,20 +36,28 @@ function getParameterByName(name, url = window.location.href) {
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
-function App(props) {
+function App({ data }) {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  console.log("Location  : ", location.pathname);
+
   const { state, setState, isLoading } = useContext(AuthContext);
-  const { allAccounts, isLogin, pass } = state;
+
+  const { isLogin, vault, currentAccount } = state;
+
+  console.log("IsLogin  : ", isLogin);
+  console.log("Vault   : ", vault);
 
   useEffect(() => {
-    setState(props.data);
-  }, [])
+    setState(data);
+  }, []);
 
   useEffect(() => {
-    if (props.popupRoute && props.popupRoute?.length > 0 && isLogin) {
-      navigate(`/${props.popupRoute}`);
-      return;
-    }
+    // if (props?.popupRoute && props?.popupRoute?.length > 0 && isLogin) {
+    //   navigate(`/${props?.popupRoute}`);
+    //   return;
+    // }
 
     const route = getParameterByName("route");
 
@@ -59,23 +67,24 @@ function App(props) {
       navigate(ROUTES.DEFAULT);
     }
 
-    if (!isLogin && allAccounts?.length > 0 && pass) {
+    if (!isLogin && vault) {
       navigate(ROUTES.UNLOACK_WALLET, {
         state: {
           redirectRoute: route ? ROUTES.DEFAULT + route : EMTY_STR,
         },
       });
-    } else if (allAccounts.length <= 0) {
-      navigate(ROUTES.DEFAULT);
-    } else if (route) {
+    }
+    else if (route) {
       navigate(ROUTES.DEFAULT + route);
-    } else if (isLogin) {
+    }
+    else if (isLogin) {
       navigate(ROUTES.WALLET);
-    } else {
+    }
+    else {
       navigate(ROUTES.DEFAULT);
     }
 
-  }, [isLogin, pass]);
+  }, [isLogin,vault]);
 
 
   return (
@@ -90,7 +99,7 @@ function App(props) {
             />
 
             <Route
-              path={ROUTES.SET_PASS+"/:id"}
+              path={ROUTES.SET_PASS + "/:id"}
               element={<WelcomeLayout children={<SetPasswordScreen />} />}
             />
 

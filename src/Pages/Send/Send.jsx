@@ -7,7 +7,7 @@ import useWallet from "../../Hooks/useWallet";
 import ComplSwap from "../../Assets/DarkLogo.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
-import React, { useState, useEffect, useContext} from "react";
+import React, { useState, useEffect, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
@@ -37,7 +37,7 @@ function Send() {
   const [err, setErr] = useState({ to: "", amount: "" });
   const [data, setData] = useState({ to: "", amount: "" });
   const [activeTab, setActiveTab] = useState(NATIVE.toLowerCase());
-  const {state, estimatedGas, updateEstimatedGas, updateLoading} = useContext(AuthContext);
+  const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
   const { balance, currentAccount } = state;
 
 
@@ -141,7 +141,7 @@ function Send() {
         setErr((p) => ({ ...p, to: ERROR_MESSAGES.INCORRECT_ADDRESS }));
 
       else if (data.to === currentAccount.evmAddress)
-        setErr((p) => ({ ...p, to: ERROR_MESSAGES.NOT_YOUR_OWN_ADDRESS}));
+        setErr((p) => ({ ...p, to: ERROR_MESSAGES.NOT_YOUR_OWN_ADDRESS }));
 
       else {
         let res = await validateAddress(data.to);
@@ -180,17 +180,17 @@ function Send() {
 
   const getFee = async () => {
 
-        if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
+    if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
 
-          updateLoading(true);
-          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_FEE, {amount: data.amount, account: state.currentAccount, toAddress: data.to});
-        }
-        else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
+      updateLoading(true);
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_FEE, { amount: data.amount, account: state.currentAccount, toAddress: data.to });
+    }
+    else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
-          updateLoading(true);
-          //calculate the evm fee
-          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_FEE, {amount: data.amount, account: state.currentAccount, toAddress: data.to});
-      }
+      updateLoading(true);
+      //calculate the evm fee
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_FEE, { amount: data.amount, account: state.currentAccount, toAddress: data.to });
+    }
   };
 
 
@@ -237,21 +237,20 @@ function Send() {
 
   const handleApprove = async () => {
     try {
+      if (activeTab.toLowerCase() === EVM.toLowerCase()) {
+        
+        //pass the message request for evm transfer
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_TX, { to: data.to, amount: data.amount, account: state.currentAccount });
+        setIsModalOpen(true);
 
-          if (activeTab.toLowerCase() === EVM.toLowerCase()) {
+      } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
 
-            //pass the message request for evm transfer
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_TX, {to: data.to, amount: data.amount, account: state.currentAccount});
-            setIsModalOpen(true);
+        //pass the message request for native transfer
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_TX, { to: data.to, amount: data.amount, account: state.currentAccount });
+        setIsModalOpen(true);
+      }
 
-          } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
-
-            //pass the message request for native transfer
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_TX, {to: data.to, amount: data.amount, account: state.currentAccount});
-            setIsModalOpen(true);
-          }
-
-        updateEstimatedGas(null);
+      updateEstimatedGas(null);
 
     } catch (error) {
       toast.error(ERROR_MESSAGES.ERR_OCCURED);

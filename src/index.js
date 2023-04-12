@@ -7,9 +7,10 @@ import { localStorage } from "./Storage";
 import browser from "webextension-polyfill";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { CONNECTION_NAME, EMTY_STR, LABELS } from "./Constants";
 import { getDataLocal } from "../src/Storage/loadstore"
 import { sessionStorage } from "../src/Storage/index";
+import { CONNECTION_NAME, EMTY_STR, LABELS, MESSAGE_TYPE_LABELS} from "./Constants";
+import { bindRuntimeMessageListener } from "./Utility/message_helper";
 
 //For Dev Enviroment Check
 // const isDev = process.env.NODE_ENV === "development";
@@ -42,6 +43,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 //init the main app
 const initApp = (data) => {
+
   root.render(
     <Context>
       <MemoryRouter>
@@ -67,11 +69,26 @@ const initApp = (data) => {
   try {
     const res = await localStorage.get("popupRoute");
     browser.runtime.connect({ name: CONNECTION_NAME });
+    // let haveAccount = false; 
+
+    // bindRuntimeMessageListener((message) => {
+    //   console.log("message from the background script: ", message);
+
+    //   if (message.type === MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND) {
+    //      if (message.event === "accounts") {
+
+    //       if (message.data.length > 0) 
+    //         haveAccount = true;
+          
+    //     }
+    //   }
+
+    // })
 
     //inject the current state into main app
     const currentLocalState = await getDataLocal(LABELS.STATE);
     const loginState = await sessionStorage.get(LABELS.ISLOGIN);
-    
+
     currentLocalState.isLogin = !loginState?.isLogin ? false : currentLocalState.isLogin;
 
     initApp(currentLocalState);

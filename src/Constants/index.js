@@ -2,8 +2,8 @@ export const EVM = "Evm";
 export const EMTY_STR = "";
 export const CURRENCY = "5ire";
 export const NATIVE = "Native";
-export const TEMP2P = "temp2p";
-export const TEMP1M = "temp1m";
+export const MNEMONIC = "mnemonic";
+export const PVT_KEY = "privateKey";
 export const COPIED = "Copied!";
 export const WINDOW_WIDTH = 400;
 export const WINDOW_HEIGHT = 620;
@@ -83,6 +83,7 @@ export const ERROR_MESSAGES = {
     NOT_YOUR_OWN_ADDRESS: "Recipient address should not be your own address.",
     CREATE_PASS_MSG: "Password must have at least 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
 
+
     INVALID_PROPERTY: "Invalid property.",
     UNDEF_DATA: "Value is null or undefined.",
     INVALID_TYPE: "argument type is invalid.",
@@ -108,7 +109,8 @@ export const ERRCODES = {
     NULL_UNDEF: 4,
     NETWORK_REQUEST: 5,
     TX_FAILED: 6,
-    INVALID_ARGU_TYPE: 7
+    INVALID_ARGU_TYPE: 7,
+    // INCORRECT_PASS: 8
 }
 
 
@@ -118,12 +120,15 @@ export const LABELS = {
     SEED: "seed",
     PASS: "pass",
     ENTER: "Enter",
+    CREATE: "create",
     FAILED: "failed",
     SUCCESS: "success",
 
     STATE: "state",
+    VAULT: "vault",
     ISLOGIN: "isLogin",
     BALANCE: "balance",
+    ACCOUNTS: "accounts",
     TX_HISTORY: "txHistory",
     NEW_ACCOUNT: "newAccount",
     ACCOUNT_NAME: "accountName",
@@ -164,6 +169,17 @@ export const MESSAGE_EVENT_LABELS = {
     UPDATE_TX_HISTORY: "txupdatehistory",
     EVM_TO_NATIVE_SWAP: "evmToNativeSwap",
     NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
+
+    LOCK: "lock",
+    UNLOCK: "unlock",
+    ADD_ACCOUNT: "addAccount",
+    GET_ACCOUNTS: "getAccounts",
+    EXPORT_PRIVATE_KEY:"exportPrivatekey",
+    EXPORT_SEED_PHRASE:"exportSeedPhrase",
+    CREATE_OR_RESTORE: "createOrRestore",
+    VERIFY_USER_PASSWORD:"verifyUserPassword",
+    // LOAD_PERSIST_DATA: "loadPersistData",
+    IMPORT_BY_MNEMONIC: "importAccountByMnemonics",
 }
 
 export const INTERNAL_EVENT_LABELS = {
@@ -176,20 +192,34 @@ export const STATE_CHANGE_ACTIONS = {
     TX_HISTORY: "addNewTxHistory",
     TX_HISTORY_UPDATE: "updateTxHistory",
     CHANGE_NETWORK: "changeNetwork",
-    CHANGE_ACCOUNT: "changeAccount"
+    CHANGE_ACCOUNT: "changeAccount",
 }
 
 export const ERROR_EVENTS_LABELS = {
+    CONNFAILED: "connfailed",
     NETWORK_ERROR: "networkError",
     INSUFFICENT_BALANCE: "insufficentBalance",
-    CONNFAILED: "connfailed",
     ERROR_BALANCE_FETCH: "balance_fetch_error"
 }
 
 export const MESSAGE_TYPE_LABELS = {
     EXTENSION_UI: "extensionUi",
-    EXTENSION_BACKGROUND: "extensionBackground"
+    EXTENSION_UI_KEYRING: "extensionUiKeyring",
+    EXTENSION_BACKGROUND: "extensionBackground",
 }
+
+
+export const WALLET_TYPES = {
+    HD: "hd_wallet",
+    ETH_SIMPLE: "eth_simple",
+    IMPORTED_NATIVE: "imported_native"
+}
+
+export const KEYRING_EVENTS = {
+    STATE_CHANGED: "valut_state",
+    ACCOUNT_ADDED: "account_added"
+}
+
 
 //need to remove
 // export const ACTIONS = {

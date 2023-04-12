@@ -23,12 +23,12 @@ function FixWidthLayout({ children }) {
   return (
     <div className={`${style.fixedLayout}`}>
       <div className={style.fixedLayout__inner}>
-        {(pathname === (ROUTES.WALLET || ROUTES.SWAP_APPROVE || ROUTES.APPROVE_TXN)) && (
-          <div className={style.fixedLayout__inner__walletLayout}>
-            <div className={style.decoratedBg} style={{ textAlign: "left" }}>
-              <BalanceDetails />
-            </div>
+        {(pathname === ROUTES.WALLET || pathname === ROUTES.SWAP_APPROVE || pathname === ROUTES.APPROVE_TXN) && (
+        <div className={style.fixedLayout__inner__walletLayout}>
+          <div className={style.decoratedBg} style={{ textAlign: "left" }}>
+            <BalanceDetails />
           </div>
+        </div>
         )}
 
         {/* {pathname === "history" && (
@@ -42,7 +42,7 @@ function FixWidthLayout({ children }) {
           />
         )} */}
         <Content className={style.fixedLayout__content}>{children} </Content>
-        {(pathname === (ROUTES.WALLET || ROUTES.APPROVE_TXN)) && <MenuFooter />}
+        {(pathname === ROUTES.WALLET || pathname === ROUTES.APPROVE_TXN) && <MenuFooter />}
       </div>
     </div>
   );

@@ -4,7 +4,6 @@ import { ROUTES } from "../../Routes";
 import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
-import useWallet from "../../Hooks/useWallet";
 import { useLocation } from "react-router-dom";
 import { shortner } from "../../Helper/helper";
 import CopyIcon from "../../Assets/CopyIcon.svg";
@@ -39,26 +38,24 @@ function BalanceDetails({ mt0 }) {
   const [isConnected, setIsConnected] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEvmModal, setIsEvmModal] = useState(false);
-  const [accountData, setAccountData] = useState({ accountName: EMTY_STR });
-  const [addresses, setAddresses] = useState({
-    evmAddress: EMTY_STR,
-    nativeAddress: EMTY_STR,
-  });
+  
 
   const { pathname } = getLocation;
 
   const {
     balance,
-    allAccounts,
     currentAccount,
     currentNetwork,
     connectedSites,
   } = state;
 
+  console.log("currentAccount", currentAccount);
 
-  useEffect(() => {
-    setAccountData(allAccounts ? allAccounts[currentAccount.index] : {});
-  }, [currentAccount.index])
+
+  // useEffect(() => {
+  //   // setAccountData(allAccounts ? allAccounts[currentAccount.index] : {});
+  //   setAccDetails({ evmAddress: currentAccount.evmAddress, nativeAddress: currentAccount.nativeAddress });
+  // }, [currentAccount.evmAddress])
 
 
   useEffect(() => {
@@ -70,14 +67,15 @@ function BalanceDetails({ mt0 }) {
       }
     });
 
-    if (accountData.evmAddress && accountData?.nativeAddress) {
-      setAddresses({ evmAddress: shortner(accountData?.evmAddress), nativeAddress: shortner(accountData?.nativeAddress) });
-    }
+    // if (accountData.evmAddress && accountData?.nativeAddress) {
+    //   setAddresses({ evmAddress: shortner(accountData?.evmAddress), nativeAddress: shortner(accountData?.nativeAddress) });
+    // }
 
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.BALANCE, {});
 
-  }, [currentNetwork, accountData.accountName]);
+  }, [currentNetwork, currentAccount.evmAddress]);
 
+  console.log("Balance :::: ", balance);
 
 
   // useEffect(() => {
@@ -97,9 +95,9 @@ function BalanceDetails({ mt0 }) {
 
   const handleCopy = (e) => {
     if (e.target.name === NATIVE)
-      navigator.clipboard.writeText(accountData.nativeAddress);
+      navigator.clipboard.writeText(currentAccount.nativeAddress);
     else if (e.target.name === EVM)
-      navigator.clipboard.writeText(accountData.evmAddress);
+      navigator.clipboard.writeText(currentAccount.evmAddress);
     toast.success(COPIED);
   };
 
@@ -141,9 +139,9 @@ function BalanceDetails({ mt0 }) {
                       <>
                         <p>
                           <img src={GreenCircle} alt="connectionLogo" draggable={false} />
-                          {accountData?.accountName}
+                          {currentAccount?.accountName ? currentAccount?.accountName : ""}
                         </p>
-                        <span>{addresses.evmAddress}
+                        <span>{currentAccount.evmAddress}
                           {" "}
                           <img
                             draggable={false}
@@ -157,7 +155,7 @@ function BalanceDetails({ mt0 }) {
                       :
                       <p>
                         <img src={GrayCircle} alt="connectionLogo" draggable={false} />
-                        {accountData?.accountName}
+                        {currentAccount?.accountName ? currentAccount?.accountName : ""}
 
                       </p>
 
@@ -226,7 +224,7 @@ function BalanceDetails({ mt0 }) {
                     <p>Native Chain Balance</p>
                     <h3>
                       <img src={WalletCardLogo} draggable={false} alt="walletLogo" />
-                      {balance?.nativeBalance}
+                      {balance?.nativeBalance ? balance?.nativeBalance : ""}
                     </h3>
                   </div>
                   <div className={style.balanceDetails__innerBalance__walletQa}>
@@ -242,7 +240,7 @@ function BalanceDetails({ mt0 }) {
                     <p>EVM Chain Balance</p>
                     <h3>
                       <img src={WalletCardLogo} draggable={false} alt="balanceLogo" />
-                      {balance?.evmBalance}
+                      {balance?.evmBalance ? balance?.evmBalance : ""}
                     </h3>
                   </div>
                   <div className={style.balanceDetails__innerBalance__walletQa}>
@@ -269,7 +267,7 @@ function BalanceDetails({ mt0 }) {
                     size={200}
                     style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                     viewBox={`0 0 256 256`}
-                    value={accountData.nativeAddress}
+                    value={currentAccount?.nativeAddress ? currentAccount?.nativeAddress : ""}
                   />
                 </div>
                 <div className={style.balanceDetails__nativemodal__modalOr}>
@@ -280,7 +278,7 @@ function BalanceDetails({ mt0 }) {
                 </p>
                 <div className={style.balanceDetails__nativemodal__wrapedText}>
                   <p>
-                    {addresses.nativeAddress}
+                    {currentAccount?.nativeAddress ? shortner(currentAccount?.nativeAddress) : ""}
                     <img
                       draggable={false}
                       src={CopyIcon}
@@ -313,7 +311,7 @@ function BalanceDetails({ mt0 }) {
                     size={200}
                     style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                     viewBox={`0 0 256 256`}
-                    value={accountData.evmAddress}
+                    value={currentAccount?.evmAddress ? currentAccount.evmAddress : ""}
                   />
                 </div>
                 <div className={style.balanceDetails__nativemodal__modalOr}>
@@ -324,7 +322,7 @@ function BalanceDetails({ mt0 }) {
                 </p>
                 <div className={style.balanceDetails__nativemodal__wrapedText}>
                   <p>
-                    {addresses.evmAddress}
+                    {currentAccount?.evmAddress ? shortner(currentAccount?.evmAddress) : ""}
                     <img
                       draggable={false}
                       src={CopyIcon}

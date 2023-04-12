@@ -18,5 +18,4 @@ export const ROUTES = {
     MANAGE_WALLET: "/manage-wallet",
     UNLOACK_WALLET: "/unlock-wallet",
     NEW_WALLET_DETAILS: "/new-wallet-details",
-    
 }

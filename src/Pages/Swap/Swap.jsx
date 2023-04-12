@@ -29,7 +29,7 @@ import { isEmpty } from "../../Utility/utility";
 
 
 function Swap() {
-  const accountData = useRef(null);
+  // const accountData = useRef(null);
   const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
   const [error, setError] = useState("");
   // const [txHash, setTxHash] = useState("");
@@ -50,22 +50,22 @@ function Swap() {
   } = state;
 
 
-  useEffect(() => {
-    accountData.current = allAccounts[currentAccount.index];
-  }, [currentAccount.accountName]);
+  // useEffect(() => {
+  //   accountData.current = allAccounts[currentAccount.index];
+  // }, [currentAccount.evmAddress]);
 
   useEffect(() => {
 
     if (toFrom.from.toLowerCase() === NATIVE.toLowerCase())
       setAddress({
-        toAddress: accountData?.current?.evmAddress,
-        fromAddress: accountData?.current?.nativeAddress,
+        toAddress: currentAccount?.evmAddress,
+        fromAddress: currentAccount?.nativeAddress,
       });
 
     else if (toFrom.from.toLowerCase() === EVM.toLowerCase())
       setAddress({
-        toAddress: accountData?.current?.nativeAddress,
-        fromAddress: accountData?.current?.evmAddress,
+        toAddress: currentAccount?.nativeAddress,
+        fromAddress: currentAccount?.evmAddress,
       });
     setAmount("");
     setError("");
@@ -247,10 +247,10 @@ function Swap() {
 
   const handleCopy = (e) => {
     if (e.target.name.toLowerCase() === NATIVE.toLowerCase())
-      navigator.clipboard.writeText(accountData.current.nativeAddress);
+      navigator.clipboard.writeText(currentAccount?.nativeAddress);
 
     if (e.target.name.toLowerCase() === EVM.toLowerCase())
-      navigator.clipboard.writeText(accountData.current.evmAddress);
+      navigator.clipboard.writeText(currentAccount?.evmAddress);
 
     // if (e.target.name.toLowerCase() === "hash")
     //   navigator.clipboard.writeText(txHash);
@@ -284,7 +284,7 @@ function Swap() {
           <div className={style.swap__swapSec}>
             <h3>To {toFrom.to}</h3>
             <span>
-              {shortner(address.toAddress)}{" "}
+              {shortner(address?.toAddress)}{" "}
               <img
                 width={15}
                 height={15}
