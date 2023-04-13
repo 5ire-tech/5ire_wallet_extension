@@ -20,7 +20,7 @@ function LoginApprove() {
           <h4>Site URL</h4>
           <Link>{activeSession?.origin} </Link>
         </div>
-        <div className={style.cardWhite__cardInner__innercontact}>
+        <div className={style.cardWhite__cardInner__accessConatct}>
           <h1>Allow Access</h1>
           <span>Allow this site to login with your 5irechain wallet?</span>
         </div>

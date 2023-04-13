@@ -46,11 +46,7 @@ function FixWidthLayout({ children }) {
           />
         )} */}
         <Content className={style.fixedLayout__content}>{children} </Content>
-<<<<<<< HEAD
         {(isEqual(pathname, ROUTES.APPROVE_TXN) || isEqual(pathname, ROUTES.WALLET) || isEqual(pathname, ROUTES.HISTORY_P) || isEqual(pathname, ROUTES.MYACCOUNT)) && <MenuFooter />}
-=======
-        {(pathname === ROUTES.WALLET || pathname=== ROUTES.APPROVE_TXN || pathname=== ROUTES.HISTORY_P || pathname === ROUTES.MYACCOUNT) && <MenuFooter />}
->>>>>>> 8fe202d683c60665b10034f12d8ff718c15a95f7
       </div>
     </div>
   );

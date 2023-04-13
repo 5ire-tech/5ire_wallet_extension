@@ -126,18 +126,19 @@ export const ApproveLogin = () => {
 
   return (
     <>
-      <div className={style.menuItems__cancleContinue}>
+      <div className={`${style.menuItems__cancleContinue} approveBtn`}>
+      <ButtonComp
+          onClick={() => handleClick(true)}
+          text={"Approve"}
+          maxWidth={"100%"}
+        />
         <ButtonComp
           bordered={true}
           text={"Cancel"}
           maxWidth={"100%"}
           onClick={() => handleClick(false)}
         />
-        <ButtonComp
-          onClick={() => handleClick(true)}
-          text={"Approve"}
-          maxWidth={"100%"}
-        />
+     
       </div>
     </>
   );
@@ -160,7 +161,7 @@ export const ApproveTx = () => {
 
   return (
     <>
-      <div className={style.menuItems__cancleContinue}>
+      <div className={`${style.menuItems__cancleContinue} approveBtn`}>
         <ButtonComp
           bordered={true}
           text={"Reject"}

@@ -13,42 +13,67 @@ const paths = require("react-scripts/config/paths");
 const webpack = require("webpack");
 const configFactory = require("react-scripts/config/webpack.config");
 const ExtensionReloader = require("webpack-extension-reloader");
-const cracoConfig = require("../craco.config");
-// Create the Webpack config usings the same settings used by the "start" script of create-react-app.
-const config = configFactory("development");
+const CopyPlugin = require("copy-webpack-plugin");
 
+// Create the Webpack config usings the same settings used by the "start" script of create-react-app.
+const webpackConfig = configFactory("development");
+const env = "development";
+const Min = false
+const isChrome = true;
+
+webpackConfig.devtool = false
 // Add the webpack-extension-reloader plugin to the Webpack config.
 // It notifies and reloads the extension on code changes.
-config.plugins.push(new ExtensionReloader());
-const edited = {
-  ...config,
+
+const edited =
+{
+  ...webpackConfig,
+
   entry: {
     main: [
+      env === "development" &&
       require.resolve("react-dev-utils/webpackHotDevClient"),
       paths.appIndexJs,
     ].filter(Boolean),
     content: "./src/Scripts/content.js",
     background: "./src/Scripts/background.js",
     injected: "./src/Scripts/injected.js",
+
   },
   output: {
-    ...config.output,
+    ...webpackConfig.output,
     filename: "static/js/[name].js",
   },
   optimization: {
-    ...config.optimization,
+    ...webpackConfig.optimization,
     runtimeChunk: false,
+    minimize: Min
   },
   resolve: {
-    ...config.resolve,
+    ...webpackConfig.resolve,
     fallback: {
-      ...config.resolve.fallback,
+      ...webpackConfig.resolve.fallback,
       path: require.resolve("path-browserify"),
       crypto: require.resolve("crypto-browserify"),
       stream: require.resolve("stream-browserify"),
+      buffer: require.resolve("buffer"),
     },
   },
+  plugins: [
+    ...webpackConfig.plugins,
+    new webpack.ProvidePlugin({
+      Buffer: ["buffer", "Buffer"],
+    }),
+    new ExtensionReloader(),
+    new CopyPlugin({
+      patterns: [
+        { from: isChrome ? "./src/manifest/chrome.json" : "./src/manifest/firefox.json", to: "manifest.json" },
+      ],
+    }),
+  ],
+
 };
+
 // delete edited.devtool;
 // Start Webpack in watch mode.
 const compiler = webpack(edited);

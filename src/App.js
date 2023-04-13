@@ -92,6 +92,11 @@ function App(props) {
       <Routes>
         {!isLogin ? (
           <>
+              <Route
+              index
+              path={ROUTES.UNLOACK_WALLET}
+              element={<FixWidthLayout children={<ApproveTx />} />}
+            />
             <Route
               index
               path={ROUTES.DEFAULT}
