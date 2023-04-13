@@ -12,6 +12,8 @@ export const PORT_NAME = "WEBEXT_REDUX_TEST";
 export const UI_CONNECTION_NAME = "5IRE_EXT_UI";
 export const ACCOUNT_CHANGED_EVENT = 'accountChanged';
 export const AUTO_BALANCE_UPDATE_TIMER = 8000;
+export const TRANSACTION_STATUS_CHECK_TIMER = 2000;
+export const CURRENCY = "5ire";
 
 
 /* Regular expressions */
@@ -44,6 +46,7 @@ export const STATUS = {
     FAILED: "Failed",
     PENDING: "Pending",
     SUCCESS: "Success",
+    QUEUED: "Queued"
 };
 
 export const HTTP_METHODS = {
@@ -59,7 +62,9 @@ export const HTTP_CONTENT_TYPE = {
 };
 
 export const EVM_JSON_RPC_METHODS = {
-    GET_TX_RECIPT: "eth_getTransactionReceipt"
+    GET_TX_RECIPT: "eth_getTransactionReceipt",
+    ETH_REQUEST_ACCOUNT: "eth_requestAccounts",
+    ETH_ACCOUNTS: "eth_accounts"
 };
 
 export const ERROR_MESSAGES = {
@@ -88,13 +93,17 @@ export const ERROR_MESSAGES = {
     NETWORK_REQUEST: "Network error try after sometime",
     TX_FAILED: "Transaction failed. some wrong happend.",
     PASS_CREATED_SUCCESS: "Successfully created password for user.",
-    INVALID_RPC_OPERATION: "Message is not the part of rpc call system",
+    INVALID_RPC_OPERATION: "RPC is not the part of rpc call system",
+    INVALID_NON_RPC_TASK: "Task is not defined in non-rpc task handler class",
+    REJECTED_BY_USER: "Session is rejected by user.",
+    INVALID_METHOD: "Method is not the part of system."
 };
 
 export const SUCCESS_MESSAGES = {
     LOGIN_SUCCESS: "Login successfully.",
     LOGOUT_SUCCESS: "Logout successfully",
     PASS_CREATED_SUCCESS: "Successfully created password for user.",
+    DISCONNECTED: "Disconnected."
 };
 
 export const ERRCODES = {
@@ -116,6 +125,9 @@ export const LABELS = {
     SUCCESS: "success",
     
     STATE: "state",
+    EXTERNAL_CONTROLS: "externalControls",
+    TRANSACTION_QUEUE: "transactionQueue",
+
     ISLOGIN: "isLogin",
     BALANCE: "balance",
     TX_HISTORY: "txHistory",
@@ -127,6 +139,8 @@ export const LABELS = {
 
     ERRCODE: "errCode",
     ERRMESSAGE: "errMessage",
+
+    CONTRACT: "Contract"
 };
 
 export const HTTP_END_POINTS = {
@@ -172,16 +186,18 @@ export const MESSAGE_EVENT_LABELS = {
     NATIVE_FEE: "nativeFee",
     NATIVE_TX: "nativeTransfer",
     NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
-    NV_FEE: "nvTX",
+    NV_FEE: "nvTx",
     NV_TX: "nvTx",
     BALANCE: "getBalance",
     UPDATE_TX_HISTORY: "txupdatehistory",
-    NOTIFICATION: "notification"
+    NOTIFICATION: "notification",
+    CLOSE_POPUP_SESSION: "closePopupSession"
 }
 
 export const INTERNAL_EVENT_LABELS = {
     CONNECTION: "connection",
-    BALANCE_FETCH: "balanceFetch"
+    BALANCE_FETCH: "balanceFetch",
+    NEW_TRANSACTION_INQUEUE: "newTransactionInQueue"
 }
 
 export const STATE_CHANGE_ACTIONS = {
@@ -189,7 +205,19 @@ export const STATE_CHANGE_ACTIONS = {
     TX_HISTORY: "addNewTxHistory",
     TX_HISTORY_UPDATE: "updateTxHistory",
     CHANGE_NETWORK: "changeNetwork",
-    CHANGE_ACCOUNT: "changeAccount"
+    CHANGE_ACCOUNT: "changeAccount",
+
+    //external controls state
+    ADD_NEW_TX_TASK: "addNewTxTask",
+    ADD_NEW_CONNECTION_TASK: "addNewConnectionTask",
+    CHANGE_ACTIVE_SESSION: "changeActiveSession",
+    APP_CONNECTION_UPDATE: "appConnectionUpdate",
+    UPDATE_CURRENT_SESSION: "updateCurrentSession",
+
+    //transaction queue state
+    ADD_NEW_TRANSACTION: "addNewTransaction",
+    PROCESS_QUEUE_TRANSACTION: "processQueuedTransaction",
+    UPDATE_HISTORY_TRACK: "updateHistoryTrack"
 }
 
 export const ERROR_EVENTS_LABELS = {
@@ -200,6 +228,13 @@ export const ERROR_EVENTS_LABELS = {
 }
 
 export const MESSAGE_TYPE_LABELS = {
-    EXTENSION_UI: "extensionUi",
-    EXTENSION_BACKGROUND: "extensionBackground"
+    FEE_AND_BALANCE: "feeAndBalance",
+    INTERNAL_TX: "internalTx",
+    EXTENSION_BACKGROUND: "extensionBackground",
+    EXTERNAL_TX_APPROVAL: "externalTxApproval"
+}
+
+export const ROUTE_FOR_APPROVAL_WINDOWS  = {
+    CONNECTION_ROUTE: "login-approve",
+    APPROVE_TX: "approve-tx"
 }

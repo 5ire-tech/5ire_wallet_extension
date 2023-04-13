@@ -15,6 +15,7 @@ import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScr
 
 export default function SetPasswordScreen() {
   const params = useParams();
+
   const navigate = useNavigate();
   const { setUserPass } = useAuth();
   const [show, setShow] = useState(false);

@@ -47,13 +47,6 @@ function Swap() {
     currentNetwork
   } = state;
 
-  const {
-    evmToNativeSwap,
-    nativeToEvmSwap,
-    retriveNativeFee,
-    retriveEvmFee,
-  } = useWallet();
-
   useEffect(() => {
     accountData.current = allAccounts[currentAccount.index];
   }, [currentAccount.accountName]);
@@ -186,7 +179,7 @@ function Swap() {
             // }
 
             // updateLoading(true);
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP, {amount: amount, account: state.currentAccount});
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP, {value: amount, options: {account: state.currentAccount}});
             setIsModalOpen(true);
 
           } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
@@ -205,7 +198,7 @@ function Swap() {
             // }
 
             // updateLoading(true);
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP, {amount: amount, account: state.currentAccount});
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP, {value: amount, options: {account: state.currentAccount}});
             setIsModalOpen(true);
           }
 
@@ -232,7 +225,7 @@ function Swap() {
           // }
 
           updateLoading(true);
-          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_FEE, {amount: amount, account: state.currentAccount});
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, {value: amount, options: {account: state.currentAccount}});
         } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase()) {
 
           // let feeRes = await retriveEvmFee(apiRes.evmApi, "", amount);
@@ -247,7 +240,7 @@ function Swap() {
           //   setDisable(false);
           // }
           updateLoading(true);
-          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_FEE, {amount: amount, account: state.currentAccount});
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {value: amount, options: {account: state.currentAccount}});
         }
 
   };

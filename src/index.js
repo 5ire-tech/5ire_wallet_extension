@@ -9,8 +9,9 @@ import browser from "webextension-polyfill";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { CONNECTION_NAME, EMTY_STR, LABELS } from "./Constants";
-import { getDataLocal, getDataSession } from "../src/Storage/loadstore"
+import { getDataLocal } from "../src/Storage/loadstore"
 import { sessionStorage } from "../src/Storage/index";
+import { log } from "./Utility/utility";
 
 //For Dev Enviroment Check
 // const isDev = process.env.NODE_ENV === "development";
@@ -42,11 +43,11 @@ Number.prototype.noExponents = function () {
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 //init the main app
-const initApp = (data) => {
+const initApp = (data, externalControlsState) => {
   root.render(
     <Context>
       <MemoryRouter>
-        <App data={data} />
+        <App data={data} externalControlsState={externalControlsState} />
         <ToastContainer
           position="top-right"
           autoClose={3000}
@@ -66,16 +67,16 @@ const initApp = (data) => {
 
 (async () => {
   try {
-    const res = await localStorage.get("popupRoute");
     browser.runtime.connect({ name: CONNECTION_NAME });
 
     //inject the current state into main app
     const currentLocalState = await getDataLocal(LABELS.STATE);
+    const externalControlsState  = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
     const loginState = await sessionStorage.get(LABELS.ISLOGIN);
     
     currentLocalState.isLogin = !loginState?.isLogin ? false : currentLocalState.isLogin;
 
-    initApp(currentLocalState);
+    initApp(currentLocalState, externalControlsState);
 
   } catch (err) {
     console.log("Error in the initlization of main app: ", err);

@@ -1,11 +1,13 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, {useContext} from "react";
 import { Link } from "react-router-dom";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 import style from "./style.module.scss";
+import { AuthContext } from "../../Store";
 
 function LoginApprove() {
-  const data = useSelector((state) => state.auth.uiData);
+
+  //get the origin for approval connection
+  const { externalControlsState: {activeSession} } = useContext(AuthContext);
 
   return (
     <div className={style.cardWhite}>
@@ -16,7 +18,7 @@ function LoginApprove() {
         </div>
         <div className={style.cardWhite__cardInner__siteUrl}>
           <h4>Site URL</h4>
-          <Link>{data?.message?.origin} </Link>
+          <Link>{activeSession?.origin} </Link>
         </div>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Allow Access</h1>

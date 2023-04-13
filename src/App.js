@@ -38,17 +38,22 @@ function getParameterByName(name, url = window.location.href) {
 
 function App(props) {
   const navigate = useNavigate();
-  const { state, setState, isLoading } = useContext(AuthContext);
+  const { state, setState, isLoading, setExternalControlState, externalControlsState } = useContext(AuthContext);
   const { allAccounts, isLogin, pass } = state;
 
+
   useEffect(() => {
-    setState(props.data);
+    if(props.data && props.externalControlsState) {
+      setState(props.data);
+      setExternalControlState(props.externalControlsState);
+    }
   }, [])
 
-  useEffect(() => {
 
-    if (props.popupRoute && props.popupRoute?.length > 0 && isLogin) {
-      navigate(`/${props.popupRoute}`);
+
+  useEffect(() => {
+    if (externalControlsState.activeSession?.route && isLogin) {
+      navigate(`/${externalControlsState.activeSession.route}`);
       return;
     }
 
@@ -60,15 +65,13 @@ function App(props) {
       navigate(ROUTES.DEFAULT);
     }
 
-    // console.log("isLogin : ", isLogin, "all accounts length : ",allAccounts.length, " pass : ",pass);
-
     if (!isLogin && allAccounts?.length > 0 && pass) {
       navigate(ROUTES.UNLOACK_WALLET, {
         state: {
           redirectRoute: route ? ROUTES.DEFAULT + route : EMTY_STR,
         },
       });
-    } else if (allAccounts.length <= 0) {
+    } else if (allAccounts?.length <= 0) {
       navigate(ROUTES.DEFAULT);
     } else if (route) {
       navigate(ROUTES.DEFAULT + route);
@@ -78,7 +81,7 @@ function App(props) {
       navigate(ROUTES.DEFAULT);
     }
 
-  }, [isLogin, pass, allAccounts.length]);
+  }, [isLogin, pass, allAccounts?.length]);
 
 
   return (

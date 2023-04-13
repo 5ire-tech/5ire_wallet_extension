@@ -16,8 +16,6 @@ export const userState = {
 
     newAccount: null,
 
-    uiData: {},
-
     balance: {
         evmBalance: "",
         nativeBalance: "",
@@ -36,4 +34,16 @@ export const userState = {
 
     isLoading: false,
 
+}
+
+export const externalControls = {
+    activeSession: null,
+    connectedApps: {},
+    connectionQueue: [],
+    txQueue: []
+}
+
+export const transactionQueue = {
+    txQueue: [],
+    currentTransaction: null
 }

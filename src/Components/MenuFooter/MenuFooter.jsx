@@ -1,4 +1,5 @@
 import { Drawer } from "antd";
+import { ROUTES } from "../../Routes";
 import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
@@ -18,31 +19,38 @@ import SocialAccount from "../SocialAccount/SocialAccount";
 import ModalCloseIcon from "../../Assets/ModalCloseIcon.svg";
 import ManageCustom from "../ManageCustomtocken/ManageCustom";
 import Createaccount from "../../Assets/PNG/createaccount.png";
+import React, { useState, useContext, useEffect } from "react";
 import { ACCOUNT_CHANGED_EVENT } from "../../Scripts/constants";
 import AccountSetting from "../AccountSetting/AccountSetting.jsx";
+import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import React, { useState, useContext, useEffect, useRef } from "react";
-import { getCurrentTabUId, getCurrentTabUrl } from "../../Scripts/utils";
 import TransectionHistry from "../TransectionHistry/TransectionHistry";
-import { EMTY_STR, ERROR_MESSAGES, LABELS, TX_TYPE, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
+import { getCurrentTabUId, getCurrentTabUrl } from "../../Scripts/utils";
+import {
+  LABELS,
+  TX_TYPE,
+  CURRENCY,
+  EMTY_STR,
+  ERROR_MESSAGES,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS,
+} from "../../Constants/index";
 import FooterStepOne, {
+  ApproveTx,
   ApproveLogin,
   FooterStepTwo,
-  ApproveTx,
 } from "./FooterContinue";
-import { ROUTES } from "../../Routes";
-import { sendRuntimeMessage } from "../../Utility/message_helper";
 
 function MenuFooter() {
   const { logout } = useAuth();
   const navigate = useNavigate();
-  const { state, updateState } = useContext(AuthContext);
   const getLocation = useLocation();
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
   const [open2, setOpen2] = useState(false);
-  const [history, setHistory] = useState([]);
+  // const [history, setHistory] = useState([]);
   const [accData, setAccData] = useState([]);
+  const { state, updateState } = useContext(AuthContext);
 
   const { pathname } = getLocation;
 
@@ -88,9 +96,10 @@ function MenuFooter() {
 
   const onSelectAcc = (accId) => {
 
+    
     let acc = allAccounts.find(acc => acc.id === accId);
     updateState(LABELS.CURRENT_ACCOUNT, { accountName: acc.accountName, index: Number(acc.id) - 1 })
-
+    
     //send account details whenever account is changed
     getCurrentTabUId((id) => {
       getCurrentTabUrl((url) => {
@@ -102,16 +111,14 @@ function MenuFooter() {
 
     //fetch balance of changed account
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.BALANCE, {});
-
-
     onClose();
   };
 
   const handleHistoryOpen = () => {
-    if (txHistory.hasOwnProperty(accData.accountName)) {
-      let txData = txHistory[accData.accountName].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()));
-      setHistory(arrayReverser(txData));
-    }
+    // if (txHistory.hasOwnProperty(accData.accountName)) {
+    //   let txData = txHistory[accData.accountName].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()));
+    //   setHistory(arrayReverser(txData));
+    // }
     setOpen1(true);
   }
 
@@ -165,27 +172,31 @@ function MenuFooter() {
         open={open1}
         closeIcon={<img src={ModalCloseIcon} alt="close" draggable={false} />}
       >
-        {history?.length > 0 ? (
-          history?.map((data, index) => (
-            <TransectionHistry
-              dateTime={formatDate(data.dateTime)}
-              type={data?.type}
-              txHash={data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase() ?
-                data.txHash.mainHash : data.txHash}
-              to={
-                data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase()
-                  ? data.to
-                  : `${data?.to ? `To: ` + shortner(data.to) : EMTY_STR}`
-              }
-              amount={`${data?.amount} 5ire`}
-              status={data?.status.charAt(0).toUpperCase() + data?.status.slice(1)}
-              img={Sendhistry}
-              key={index + "5ire"}
-            />
-          ))
-        ) : (
-          <h4 className={style.noTxn}>No Transaction Found!</h4>
-        )}
+        {
+          (txHistory[accData?.accountName] ? txHistory[accData?.accountName] : []).filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase())).length > 0 ?
+            (
+              arrayReverser(txHistory[accData.accountName].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()))).map((data, index) => (
+                <TransectionHistry
+                  dateTime={formatDate(data.dateTime)}
+                  type={data?.type}
+                  txHash={data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase() ?
+                    data.txHash.mainHash : data.txHash}
+                  to={
+                    data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase()
+                      ? data.to
+                      : `${data?.to ? `To: ` + shortner(data.to) : EMTY_STR}`
+                  }
+                  amount={data?.amount}
+                  status={data?.status.charAt(0).toUpperCase() + data?.status.slice(1)}
+                  img={Sendhistry}
+                  key={index + CURRENCY}
+                />
+              ))
+            )
+            :
+            (<h4 className={style.noTxn}>No Transaction Found!</h4>)
+        }
+
       </Drawer>
 
       <Drawer

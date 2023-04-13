@@ -1,11 +1,10 @@
-import { userState } from "./initialState";
+import { userState, externalControls } from "./initialState";
 import { isManifestV3 } from "../Scripts/utils";
 import { createContext, useState, useEffect } from "react";
 import { sessionStorage, localStorage } from "../Storage";
-import { getDataLocal, getDataSession } from "../Storage/loadstore";
 import { sendRuntimeMessage, bindRuntimeMessageListener } from "../Utility/message_helper";
 import { MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS,STORAGE} from "../Constants";
-import { isEqual, log } from "../Utility/utility";
+import {  isNullorUndef, log } from "../Utility/utility";
 import Browser from "webextension-polyfill";
 
 export const AuthContext = createContext();
@@ -13,21 +12,24 @@ export const AuthContext = createContext();
 
 export default function Context({ children }) {
   const [state, setState] = useState(userState);
+  const [externalControlsState, setExternalControlState] = useState(externalControls)
   const [estimatedGas, setEstimatedGas] = useState(null);
   const [isLoading, setLoading] = useState(false);
 
 
-  Browser.storage.onChanged.addListener((changedData, area) => {
-    if(area === STORAGE.LOCAL){
+  Browser.storage.local.onChanged.addListener((changedData) => {
+
+    // console.log("changed the storage: ", changedData);
+
       //change the state whenever the local storage is updated
-       setState(changedData.state.newValue)
-    }
+       !isNullorUndef(changedData?.state) && setState(changedData.state.newValue);
+       !isNullorUndef(changedData?.externalControls) && setExternalControlState(changedData.externalControls.newValue);
   })
 
 
    //bind the message from background event
    bindRuntimeMessageListener((message) => {
-    log("message from the background script: ", message)
+    // log("message from the background script: ", message)
     if(message.type === MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND) {
       if(message.event === MESSAGE_EVENT_LABELS.EVM_FEE || message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE) {
         (!estimatedGas) && updateEstimatedGas(message.data.fee);
@@ -50,6 +52,10 @@ export default function Context({ children }) {
 
   //update the main state (also update into the persistant store)
   const updateState = (name, data, toLocal = true, toSession = false) => {
+
+
+    log("state updated by updateState: ", name, data)
+
 
     if (toSession) {
       if (isManifestV3) {
@@ -109,7 +115,9 @@ export default function Context({ children }) {
     updateState,
     setTxHistory,
     updateEstimatedGas,
-    updateLoading
+    updateLoading,
+    externalControlsState,
+    setExternalControlState
   }
 
   return (

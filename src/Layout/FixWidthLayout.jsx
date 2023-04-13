@@ -5,6 +5,7 @@ import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import BalanceDetails from "../Components/BalanceDetails/BalanceDetails";
 import MenuFooter from "../Components/MenuFooter/MenuFooter";
+import { isEqual } from "../Utility/utility";
 // import MenuRestofHeaders from "../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 
 function FixWidthLayout({ children }) {
@@ -12,9 +13,12 @@ function FixWidthLayout({ children }) {
   const getLocation = useLocation();
   const navigate = useNavigate();
 
-  const { pathname } = getLocation
+  const { pathname } = getLocation;
 
   useEffect(() => {
+
+    console.log("inside the fixed things:", pathname);
+
     if (!pathname) {
       navigate(ROUTES.WALLET);
     }
@@ -42,7 +46,7 @@ function FixWidthLayout({ children }) {
           />
         )} */}
         <Content className={style.fixedLayout__content}>{children} </Content>
-        {(pathname === (ROUTES.WALLET || ROUTES.APPROVE_TXN)) && <MenuFooter />}
+        {(isEqual(pathname, ROUTES.APPROVE_TXN) || isEqual(pathname, ROUTES.WALLET)) && <MenuFooter />}
       </div>
     </div>
   );
