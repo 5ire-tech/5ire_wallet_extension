@@ -23,6 +23,7 @@ import Createaccount from "../../Assets/PNG/createaccount.png";
 import React, { useState, useContext, useEffect } from "react";
 import { ACCOUNT_CHANGED_EVENT } from "../../Scripts/constants";
 import AccountSetting from "../AccountSetting/AccountSetting.jsx";
+<<<<<<< HEAD
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import TransectionHistry from "../TransectionHistry/TransectionHistry";
@@ -33,6 +34,17 @@ import {
   CURRENCY,
   EMTY_STR,
   ERROR_MESSAGES,
+=======
+import { Link, useNavigate, useLocation, Routes } from "react-router-dom";
+import React, { useState, useContext, useEffect, useRef } from "react";
+import { getCurrentTabUId, getCurrentTabUrl } from "../../Scripts/utils";
+import TransectionHistry from "../TransectionHistry/TransectionHistry";
+import {
+  EMTY_STR,
+  ERROR_MESSAGES,
+  LABELS,
+  TX_TYPE,
+>>>>>>> 8fe202d683c60665b10034f12d8ff718c15a95f7
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
 } from "../../Constants/index";
@@ -41,6 +53,11 @@ import FooterStepOne, {
   ApproveLogin,
   FooterStepTwo,
 } from "./FooterContinue";
+<<<<<<< HEAD
+=======
+import { ROUTES } from "../../Routes";
+import { sendRuntimeMessage } from "../../Utility/message_helper";
+>>>>>>> 8fe202d683c60665b10034f12d8ff718c15a95f7
 import PrivacyPolicy from "./PrivacyPolicy";
 
 function MenuFooter() {
@@ -96,11 +113,20 @@ function MenuFooter() {
   };
 
   const onSelectAcc = (accId) => {
+<<<<<<< HEAD
 
     
     let acc = allAccounts.find(acc => acc.id === accId);
     updateState(LABELS.CURRENT_ACCOUNT, { accountName: acc.accountName, index: Number(acc.id) - 1 })
     
+=======
+    let acc = allAccounts.find((acc) => acc.id === accId);
+    updateState(LABELS.CURRENT_ACCOUNT, {
+      accountName: acc.accountName,
+      index: Number(acc.id) - 1,
+    });
+
+>>>>>>> 8fe202d683c60665b10034f12d8ff718c15a95f7
     //send account details whenever account is changed
     getCurrentTabUId((id) => {
       getCurrentTabUrl((url) => {
@@ -118,15 +144,33 @@ function MenuFooter() {
     });
 
     //fetch balance of changed account
+<<<<<<< HEAD
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.BALANCE, {});
+=======
+    sendRuntimeMessage(
+      MESSAGE_TYPE_LABELS.EXTENSION_UI,
+      MESSAGE_EVENT_LABELS.BALANCE,
+      {}
+    );
+
+>>>>>>> 8fe202d683c60665b10034f12d8ff718c15a95f7
     onClose();
   };
 
   const handleHistoryOpen = () => {
+<<<<<<< HEAD
     // if (txHistory.hasOwnProperty(accData.accountName)) {
     //   let txData = txHistory[accData.accountName].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()));
     //   setHistory(arrayReverser(txData));
     // }
+=======
+    if (txHistory.hasOwnProperty(accData.accountName)) {
+      let txData = txHistory[accData.accountName].filter(
+        (tx) => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()
+      );
+      setHistory(arrayReverser(txData));
+    }
+>>>>>>> 8fe202d683c60665b10034f12d8ff718c15a95f7
     setOpen1(true);
   };
 
@@ -189,6 +233,7 @@ function MenuFooter() {
         open={open1}
         closeIcon={<img src={ModalCloseIcon} alt="close" draggable={false} />}
       >
+<<<<<<< HEAD
         {
           (txHistory[accData?.accountName] ? txHistory[accData?.accountName] : []).filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase())).length > 0 ?
             (
@@ -214,6 +259,34 @@ function MenuFooter() {
             (<h4 className={style.noTxn}>No Transaction Found!</h4>)
         }
 
+=======
+        {history?.length > 0 ? (
+          history?.map((data, index) => (
+            <TransectionHistry
+              dateTime={formatDate(data.dateTime)}
+              type={data?.type}
+              txHash={
+                data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase()
+                  ? data.txHash.mainHash
+                  : data.txHash
+              }
+              to={
+                data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase()
+                  ? data.to
+                  : `${data?.to ? `To: ` + shortner(data.to) : EMTY_STR}`
+              }
+              amount={`${data?.amount} 5ire`}
+              status={
+                data?.status.charAt(0).toUpperCase() + data?.status.slice(1)
+              }
+              img={Sendhistry}
+              key={index + "5ire"}
+            />
+          ))
+        ) : (
+          <h4 className={style.noTxn}>No Transaction Found!</h4>
+        )}
+>>>>>>> 8fe202d683c60665b10034f12d8ff718c15a95f7
       </Drawer>
 
       <Drawer

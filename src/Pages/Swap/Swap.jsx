@@ -432,12 +432,21 @@ function Swap() {
         <div className={style.swap__txFeeBalance}>
           <h2>TX Fee : 0.0002 5IRE</h2>
           <h3>Balance 00.0000 5IRE</h3>
+<<<<<<< HEAD
         </div>
         <div className={style.swap__inFoAccount}>
          <img src={Info}/>
           <h3>Transfer with account keep alive checks </h3>
           <Switch defaultChecked onChange={onChange} />
         </div>
+=======
+        </div>
+        <div className={style.swap__inFoAccount}>
+         <img src={Info}/>
+          <h3>Transfer with account keep alive checks </h3>
+          <Switch defaultChecked onChange={onChange} />
+        </div>
+>>>>>>> 8fe202d683c60665b10034f12d8ff718c15a95f7
         {/* <div className={style.swap__transactionFee}>
           <p>{estimatedGas ? `Estimated fee : ${estimatedGas} 5ire` : ""}</p>
         </div> */}
