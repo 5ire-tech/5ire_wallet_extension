@@ -25,7 +25,11 @@ import CreateNewWallet from "./Pages/WelcomeScreens/CreateNewWallet";
 import ApproveTx from "./Pages/RejectNotification/RejectNotification";
 import CreateWalletChain from "./Pages/WelcomeScreens/CreateWalletChain";
 import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
-import {log} from "./Utility/utility"
+import { log } from "./Utility/utility";
+import History from "./Pages/History/History";
+import MyAccount from "./Pages/MyAccount/MyAccount";
+import ForgotPassword from "./Pages/WelcomeScreens/ForgotPassword";
+import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
 
 function getParameterByName(name, url = window.location.href) {
   name = name.replace(/[[\]]/g, "\\$&");
@@ -83,7 +87,6 @@ function App(props) {
 
   }, [isLogin, pass, allAccounts?.length]);
 
-
   return (
     <div className="App">
       <Routes>
@@ -96,7 +99,7 @@ function App(props) {
             />
 
             <Route
-              path={ROUTES.SET_PASS+"/:id"}
+              path={ROUTES.SET_PASS + "/:id"}
               element={<WelcomeLayout children={<SetPasswordScreen />} />}
             />
 
@@ -104,7 +107,14 @@ function App(props) {
               path={ROUTES.UNLOACK_WALLET}
               element={<WelcomeLayout children={<UnlockWelcome />} />}
             />
-
+              <Route
+              path={ROUTES.FORGOTPASSWORD}
+              element={<WelcomeLayout children={<ForgotPassword />} />}
+            />
+               <Route
+              path={ROUTES.MAINPRIVACYPOLICY}
+              element={<WelcomeLayout children={<MainPrivacyPolicy />} />}
+            />
           </>
         ) : (
           <>
@@ -113,7 +123,16 @@ function App(props) {
               path={ROUTES.WALLET}
               element={<FixWidthLayout children={<Wallet />} />}
             />
-
+            <Route
+              index
+              path={ROUTES.HISTORY_P}
+              element={<FixWidthLayout children={<History />} />}
+            />
+            <Route
+              index
+              path={ROUTES.MYACCOUNT}
+              element={<FixWidthLayout children={<MyAccount />} />}
+            />
             <Route
               index
               path={ROUTES.SWAP_APPROVE}
@@ -153,14 +172,13 @@ function App(props) {
             <Route
               index
               path={ROUTES.NATIVE_TXN}
-              element={<NativeTx  /*api={api}*/ />}
+              element={<NativeTx /*api={api}*/ />}
             />
 
             <Route
               path={ROUTES.LOGIN_APPROVE}
               element={<WelcomeLayout children={<LoginApprove />} />}
             />
-
           </>
         )}
 

@@ -7,8 +7,10 @@ import { shortner } from "../../Helper/helper";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import ComplSwap from "../../Assets/DarkLogo.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
+import Info from "../../Assets/infoIcon.svg";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
-import React, { useState, useEffect, useContext} from "react";
+import logoNew from "../../Assets/logoNew.svg";
+import React, { useState, useEffect, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import {
@@ -22,14 +24,14 @@ import {
   ERROR_MESSAGES,
   LABELS,
   MESSAGE_TYPE_LABELS,
-  MESSAGE_EVENT_LABELS
+  MESSAGE_EVENT_LABELS,
 } from "../../Constants/index";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
-
+import { Switch } from "antd";
 
 function Send() {
-
-  const {state, estimatedGas, updateEstimatedGas, updateLoading} = useContext(AuthContext);
+  const { state, estimatedGas, updateEstimatedGas, updateLoading } =
+    useContext(AuthContext);
   const [txHash, setTxHash] = useState("");
   const [sendError, setSendError] = useState("");
   const [disableBtn, setDisable] = useState(true);
@@ -41,24 +43,23 @@ function Send() {
 
   const { validateAddress } = useWallet();
 
-  const {
-    balance,
-    currentAccount,
-    currentNetwork
-  } = state;
-
-
-
+  const { balance, currentAccount, currentNetwork } = state;
+  const onChange = (checked) => {
+    console.log(`switch to ${checked}`);
+  };
   useEffect(() => {
     setData({ to: "", amount: "" });
     setErr({ to: "", amount: "" });
   }, [currentAccount?.evmAddress, currentAccount?.nativeAddress]);
 
-
   useEffect(() => {
-
     const getData = setTimeout(() => {
-      if ((!err.to) && (!err.amount) && data.amount.length > 0 && data.to.length > 0) {
+      if (
+        !err.to &&
+        !err.amount &&
+        data.amount.length > 0 &&
+        data.to.length > 0
+      ) {
         getFee();
       } else {
         updateEstimatedGas("");
@@ -67,122 +68,96 @@ function Send() {
     }, 1000);
 
     return () => clearTimeout(getData);
-
   }, [err.to, err.amount, data.to, data.amount]);
-
 
   useEffect(() => {
     if (estimatedGas === "" || !estimatedGas) {
       setDisable(true);
     } else {
       if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-        if ((Number(data.amount) + Number(estimatedGas)) >= Number(balance.evmBalance)) {
+        if (
+          Number(data.amount) + Number(estimatedGas) >=
+          Number(balance.evmBalance)
+        ) {
           updateEstimatedGas("");
           setDisable(true);
           setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
-
         } else {
           setDisable(false);
-          setErr((p) => ({ ...p, amount: "" }))
+          setErr((p) => ({ ...p, amount: "" }));
         }
       } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
-
-        if ((Number(data.amount) + Number(estimatedGas)) >= Number(balance.nativeBalance)) {
+        if (
+          Number(data.amount) + Number(estimatedGas) >=
+          Number(balance.nativeBalance)
+        ) {
           updateEstimatedGas("");
           setDisable(true);
           setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
-
         } else {
           setDisable(false);
-          setErr((p) => ({ ...p, amount: "" }))
+          setErr((p) => ({ ...p, amount: "" }));
         }
       }
     }
   }, [estimatedGas]);
 
-
-  const blockInvalidChar = (e) => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
-
+  const blockInvalidChar = (e) =>
+    ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
 
   const validateAmount = () => {
-
     if (!data.amount)
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INPUT_REQUIRED }));
-
     else if (isNaN(data.amount))
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.ENTER_AMOUNT_CORRECTLY }));
-
     else if (Number(data.amount) <= 0)
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.AMOUNT_CANT_BE_0 }));
-
     else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-
       if (Number(data.amount) >= Number(balance.evmBalance))
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
-
-      else
-        setErr((p) => ({ ...p, amount: "" }));
-
-    }
-
-    else if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
-
+      else setErr((p) => ({ ...p, amount: "" }));
+    } else if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
       if (Number(data.amount) >= Number(balance.nativeBalance))
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
-
-      else
-        setErr((p) => ({ ...p, amount: "" }));
-
+      else setErr((p) => ({ ...p, amount: "" }));
     }
   };
-
 
   const validateToAddress = async () => {
     if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-
       if (!data.to)
         setErr((p) => ({ ...p, to: ERROR_MESSAGES.INPUT_REQUIRED }));
-
       else if (!data.to?.startsWith("0x"))
         setErr((p) => ({ ...p, to: ERROR_MESSAGES.INCORRECT_ADDRESS }));
-
       else if (data.to === currentAccount.evmAddress)
-        setErr((p) => ({ ...p, to: "Recipient address should not your own address." }));
-
+        setErr((p) => ({
+          ...p,
+          to: "Recipient address should not your own address.",
+        }));
       else {
         let res = await validateAddress(data.to);
 
-        if (res.error)
-          setErr((p) => ({ ...p, to: res.data }));
-
-        else
-          setErr((p) => ({ ...p, to: "" }));
+        if (res.error) setErr((p) => ({ ...p, to: res.data }));
+        else setErr((p) => ({ ...p, to: "" }));
       }
-    }
-
-    else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
-
+    } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
       if (!data.to)
         setErr((p) => ({ ...p, to: ERROR_MESSAGES.INPUT_REQUIRED }));
-
       else if (!data.to?.startsWith("5"))
         setErr((p) => ({ ...p, to: ERROR_MESSAGES.INCORRECT_ADDRESS }));
-
       else if (data.to === currentAccount.nativeAddress)
-        setErr((p) => ({ ...p, to: "Recipient address should not your own address." }));
-
+        setErr((p) => ({
+          ...p,
+          to: "Recipient address should not your own address.",
+        }));
       else {
         let res = await validateAddress(data.to);
 
-        if (res.error)
-          setErr((p) => ({ ...p, to: res.data }));
-
-        else
-          setErr((p) => ({ ...p, to: "" }));
+        if (res.error) setErr((p) => ({ ...p, to: res.data }));
+        else setErr((p) => ({ ...p, to: "" }));
       }
     }
   };
-
 
   const getFee = async () => {
 
@@ -198,50 +173,87 @@ function Send() {
       }
   };
 
-
   const handleChange = (e) => {
-
     if (e.target.name === "amount") {
       let arr = e.target.value.split(".");
       if (arr.length > 1) {
-
         if (arr[1].length > 18) {
           let slice = arr[1].slice(0, 18);
-          setData(p => ({ ...p, amount: arr[0] + "." + slice }))
+          setData((p) => ({ ...p, amount: arr[0] + "." + slice }));
         } else {
-          setData(p => ({ ...p, amount: e.target.value }))
+          setData((p) => ({ ...p, amount: e.target.value }));
           updateEstimatedGas("");
         }
-      }
-      else {
-        setData(p => ({ ...p, amount: e.target.value }))
+      } else {
+        setData((p) => ({ ...p, amount: e.target.value }));
         updateEstimatedGas("");
       }
     } else {
-
       if (data.to !== e.target.value.trim()) {
         setData((p) => ({
           ...p,
-          [e.target.name]: (e.target.value).trim(),
+          [e.target.name]: e.target.value.trim(),
         }));
         updateEstimatedGas("");
       }
-
     }
   };
 
-
   const handleEnter = (e) => {
-    if ((e.key === LABELS.ENTER)) {
+    if (e.key === LABELS.ENTER) {
       if (!disableBtn) {
         handleApprove();
       }
     }
   };
 
-
   const handleApprove = async () => {
     try {
+      if (activeTab.toLowerCase() === EVM.toLowerCase()) {
+        //pass the message request for evm transfer
+        // updateLoading(true);
+        sendRuntimeMessage(
+          MESSAGE_TYPE_LABELS.EXTENSION_UI,
+          MESSAGE_EVENT_LABELS.EVM_TX,
+          { to: data.to, amount: data.amount, account: state.currentAccount }
+        );
+        setIsModalOpen(true);
+
+        // const res = await evmTransfer(apiRes.evmApi, data);
+        // if (res.error) {
+        //   setSendError(res.data);
+        //   setIsFaildOpen(true);
+        // }
+        // else {
+        //   setTxHash(res.data);
+        //   setIsModalOpen(true);
+        //   // setTimeout(() => {
+        //   //   getBalance(apiRes.evmApi, apiRes.nativeApi, true);
+        //   // }, 3000);
+        // }
+      } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
+        //pass the message request for native transfer
+        // updateLoading(true);
+        sendRuntimeMessage(
+          MESSAGE_TYPE_LABELS.EXTENSION_UI,
+          MESSAGE_EVENT_LABELS.NATIVE_TX,
+          { to: data.to, amount: data.amount, account: state.currentAccount }
+        );
+        setIsModalOpen(true);
+
+        // const res = await nativeTransfer(apiRes.nativeApi, data);
+        // if (res.error) {
+        //   setSendError(res.data);
+        //   setIsFaildOpen(true);
+        // }
+        // else {
+        //   setTxHash(res.data);
+        //   setIsModalOpen(true);
+        //   // setTimeout(() => {
+        //   //   getBalance(apiRes.evmApi, apiRes.nativeApi, true)
+        //   // }, 3000);
+        // }
+      }
 
           if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
@@ -291,7 +303,6 @@ function Send() {
     }
   };
 
-
   const activeSend = (e) => {
     setActiveTab(e.target.name);
     updateEstimatedGas("");
@@ -300,12 +311,10 @@ function Send() {
     setData({ to: "", amount: "" });
   };
 
-
   const handleCopy = () => {
     navigator.clipboard.writeText(txHash);
     toast.success(COPIED);
   };
-
 
   const handle_OK_Cancel = () => {
     updateEstimatedGas("");
@@ -314,7 +323,6 @@ function Send() {
     setIsFaildOpen(false);
     setData({ to: "", amount: "" });
   };
-
 
   return (
     <>
@@ -326,9 +334,10 @@ function Send() {
               onClick={activeSend}
               name={NATIVE.toLowerCase()}
               className={`${style.sendSec__sendSwapbtn__buttons} 
-              ${activeTab === NATIVE.toLowerCase() &&
+              ${
+                activeTab === NATIVE.toLowerCase() &&
                 style.sendSec__sendSwapbtn__buttons__active
-                }
+              }
             `}
             >
               Native
@@ -336,15 +345,17 @@ function Send() {
             <button
               onClick={activeSend}
               name={EVM.toLowerCase()}
-              className={`${style.sendSec__sendSwapbtn__buttons}  ${activeTab === EVM.toLowerCase() &&
+              className={`${style.sendSec__sendSwapbtn__buttons}  ${
+                activeTab === EVM.toLowerCase() &&
                 style.sendSec__sendSwapbtn__buttons__active
-                }`}
+              }`}
             >
               EVM
             </button>
           </div>
         </div>
         <div className={style.sendSec__inputInnerSec}>
+          <div>
           <InputFieldOnly
             name="to"
             value={data.to}
@@ -355,8 +366,8 @@ function Send() {
             placeholder={"Please enter recipient address"}
           />
           <span className={style.errorText}>{err.to}</span>
-
-          <div>
+          </div>
+          <div style={{ marginTop: "14px" }}>
             <InputField
               min={"0"}
               name="amount"
@@ -370,17 +381,25 @@ function Send() {
               placeholder={"Enter Amount"}
               addonAfter={
                 <span className={style.sendSec__pasteText}>
-                  <img src={WalletCardLogo} alt="logo" draggable={false} />
+                  <img src={logoNew} alt="logo" draggable={false} />
                   5ire
                 </span>
               }
             />
             <span className={style.errorText}>{err.amount}</span>
           </div>
-
         </div>
-        <div className={style.sendSec__transactionFee}>
+        {/* <div className={style.sendSec__transactionFee}>
           <p>{estimatedGas ? `Estimated fee : ${estimatedGas} 5ire` : ""}</p>
+        </div> */}
+        <div className={style.sendSec__txFeeBalance}>
+          <h2>TX Fee : 0.0002 5IRE</h2>
+          <h3>Balance 00.0000 5IRE</h3>
+        </div>
+        <div className={style.sendSec__inFoAccount}>
+         <img src={Info}/>
+          <h3>Transfer with account keep alive checks </h3>
+          <Switch defaultChecked onChange={onChange} />
         </div>
       </div>
       <Approve onClick={handleApprove} text="Transfer" isDisable={disableBtn} />
@@ -392,7 +411,13 @@ function Send() {
       >
         <div className="swapsendModel">
           <div className="innerContact">
-            <img src={ComplSwap} alt="swapImage" width={127} height={127} draggable={false} />
+            <img
+              src={ComplSwap}
+              alt="swapImage"
+              width={127}
+              height={127}
+              draggable={false}
+            />
             <h2 className="title">Transfer Processed</h2>
             {/* <p className="transId">Your Transaction ID</p>
             <span className="address">{shortner(txHash)}</span>
@@ -418,7 +443,13 @@ function Send() {
       >
         <div className="swapsendModel">
           <div className="innerContact">
-            <img src={FaildSwap} alt="swapFaild" width={127} height={127} draggable={false} />
+            <img
+              src={FaildSwap}
+              alt="swapFaild"
+              width={127}
+              height={127}
+              draggable={false}
+            />
             <h2 className="title">Transfer Failed!</h2>
             <p className="transId">{sendError}</p>
 

@@ -36,18 +36,19 @@ function FooterStepOne() {
 
   return (
     <>
-      <div className={style.menuItems__cancleContinue}>
+      <div className={`${style.menuItems__cancleContinue } ${style.beginStyle}`}>
+      <ButtonComp
+          onClick={handleClick}
+          text={"Continue"}
+          maxWidth={"100%"}
+        />
         <ButtonComp
           onClick={handleCancle}
           bordered={true}
           text={"Cancel"}
           maxWidth={"100%"}
         />
-        <ButtonComp
-          onClick={handleClick}
-          text={"Continue"}
-          maxWidth={"100%"}
-        />
+       
       </div>
     </>
   );

@@ -10,7 +10,9 @@ import CopyIcon from "../../Assets/CopyIcon.svg";
 import ComplSwap from "../../Assets/DarkLogo.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import React, { useState, useContext } from "react";
+import Info from "../../Assets/infoIcon.svg";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
+import logoNew from "../../Assets/logoNew.svg";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import { InputField } from "../../Components/InputField/InputFieldSimple";
@@ -24,6 +26,7 @@ import {
   MESSAGE_TYPE_LABELS
 } from "../../Constants/index";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
+import { Switch } from "antd";
 
 
 function Swap() {
@@ -39,7 +42,9 @@ function Swap() {
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [toFrom, setToFrom] = useState({ from: NATIVE, to: EVM });
   const [address, setAddress] = useState({ fromAddress: "", toAddress: "" });
-
+  const onChange = (checked) => {
+    console.log(`switch to ${checked}`);
+  };
   const {
     balance,
     allAccounts,
@@ -323,7 +328,7 @@ function Swap() {
         <div className={style.swap__swapCopy}>
           <div className={style.swap__swapSec}>
             <h3>From {toFrom.from}</h3>
-            <span>
+            {/* <span>
               {shortner(address.fromAddress)}
               <img
                 width={15}
@@ -334,14 +339,15 @@ function Swap() {
                 name={toFrom.from}
                 onClick={handleCopy}
               />
-            </span>
+            </span> */}
+            <span>100 5ire </span>
           </div>
           <div className={style.swap__icon} onClick={handleClick}>
             <img src={SwapIcon} alt="swapIcon" draggable={false} />
           </div>
           <div className={style.swap__swapSec}>
             <h3>To {toFrom.to}</h3>
-            <span>
+            {/* <span>
               {shortner(address.toAddress)}{" "}
               <img
                 width={15}
@@ -352,7 +358,8 @@ function Swap() {
                 draggable={false}
                 onClick={handleCopy}
               />
-            </span>
+            </span> */}
+            <span>100 5ire </span>
           </div>
         </div>
         <div className={style.swap__swapAccount}>
@@ -369,7 +376,7 @@ function Swap() {
               placeholder={"Enter Amount"}
               addonAfter={
                 <span className={style.swap__pasteText}>
-                  <img src={WalletCardLogo} alt="walletLogo" draggable={false} />
+                  <img src={logoNew} alt="walletLogo" draggable={false} />
                   5ire
                 </span>
               }
@@ -422,9 +429,18 @@ function Swap() {
             </button>
           </div> */}
         </div>
-        <div className={style.swap__transactionFee}>
-          <p>{estimatedGas ? `Estimated fee : ${estimatedGas} 5ire` : ""}</p>
+        <div className={style.swap__txFeeBalance}>
+          <h2>TX Fee : 0.0002 5IRE</h2>
+          <h3>Balance 00.0000 5IRE</h3>
         </div>
+        <div className={style.swap__inFoAccount}>
+         <img src={Info}/>
+          <h3>Transfer with account keep alive checks </h3>
+          <Switch defaultChecked onChange={onChange} />
+        </div>
+        {/* <div className={style.swap__transactionFee}>
+          <p>{estimatedGas ? `Estimated fee : ${estimatedGas} 5ire` : ""}</p>
+        </div> */}
       </div>
       <Approve onClick={handleApprove} text="Swap" isDisable={disableBtn} />
       <ModalCustom

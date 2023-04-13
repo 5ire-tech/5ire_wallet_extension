@@ -8,11 +8,12 @@ import Browser from "webextension-polyfill";
 import Logout from "../../Assets/PNG/logout.png";
 import Import from "../../Assets/PNG/import.png";
 import Wallet from "../../Assets/WalletIcon.svg";
-import Setting from "../../Assets/PNG/setting.png";
+import PrivacyPo from "../../Assets/PrivacyPo.svg";
+import Setting from "../../Assets/setting.svg";
 import Sendhistry from "../../Assets/sendhistry.svg";
 import { arrayReverser } from "../../Utility/utility";
-import HistoryIcon from "../../Assets/PNG/histry.png";
-import Myaccount from "../../Assets/PNG/myaccount.png";
+import HistoryIcon from "../../Assets/histry.svg";
+import Myaccount from "../../Assets/myaccount.svg";
 import BackArrow from "../../Assets/PNG/arrowright.png";
 import { shortner, formatDate } from "../../Helper/helper";
 import SocialAccount from "../SocialAccount/SocialAccount";
@@ -40,6 +41,7 @@ import FooterStepOne, {
   ApproveLogin,
   FooterStepTwo,
 } from "./FooterContinue";
+import PrivacyPolicy from "./PrivacyPolicy";
 
 function MenuFooter() {
   const { logout } = useAuth();
@@ -59,7 +61,6 @@ function MenuFooter() {
   useEffect(() => {
     setAccData(allAccounts ? allAccounts[currentAccount.index] : {});
   }, [currentAccount?.accountName, allAccounts?.length]);
-
 
   const onClose1 = () => {
     setOpen1(false);
@@ -104,10 +105,17 @@ function MenuFooter() {
     getCurrentTabUId((id) => {
       getCurrentTabUrl((url) => {
         if (!(url === "chrome://extensions")) {
-          Browser.tabs.sendMessage(id, { id: ACCOUNT_CHANGED_EVENT, method: ACCOUNT_CHANGED_EVENT, response: { evmAddress: acc.evmAddress, nativeAddress: acc.nativeAddress } })
+          Browser.tabs.sendMessage(id, {
+            id: ACCOUNT_CHANGED_EVENT,
+            method: ACCOUNT_CHANGED_EVENT,
+            response: {
+              evmAddress: acc.evmAddress,
+              nativeAddress: acc.nativeAddress,
+            },
+          });
         }
-      })
-    })
+      });
+    });
 
     //fetch balance of changed account
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.BALANCE, {});
@@ -120,17 +128,25 @@ function MenuFooter() {
     //   setHistory(arrayReverser(txData));
     // }
     setOpen1(true);
-  }
-
+  };
 
   return (
     <div className={`${style.menuItems} welcomeFooter`}>
-
-      {pathname === ROUTES.WALLET && (
+      {(pathname === ROUTES.WALLET ||
+        pathname === ROUTES.HISTORY_P ||
+        pathname === ROUTES.MYACCOUNT) && (
         <>
+           <Link
+            to={ROUTES.WALLET} // onClick={handleHistoryOpen}
+            className={`${style.menuItems__items} ${style.menuItems__items__active}`}
+          >
+            <div className={style.menuItems__items__img}>
+              <img src={Wallet} alt="HistoryIcon" draggable={false} />
+            </div>
+            <span className={style.menuItems__items__title}>Wallet</span>
+          </Link>
           <Link
-            to="#"
-            onClick={handleHistoryOpen}
+            to={ROUTES.HISTORY_P} // onClick={handleHistoryOpen}
             className={`${style.menuItems__items} ${style.menuItems__items__active}`}
           >
             <div className={style.menuItems__items__img}>
@@ -140,7 +156,8 @@ function MenuFooter() {
           </Link>
 
           <Link
-            onClick={handleMyAccOpen}
+            to={ROUTES.MYACCOUNT}
+            // onClick={handleMyAccOpen}
             className={`${style.menuItems__items} ${style.menuItems__items__active}`}
           >
             <div className={style.menuItems__items__img}>
@@ -208,7 +225,9 @@ function MenuFooter() {
         placement="bottom"
         onClose={onClose}
         open={open}
-        closeIcon={<img src={ModalCloseIcon} alt="ModalCloseIcon" draggable={false} />}
+        closeIcon={
+          <img src={ModalCloseIcon} alt="ModalCloseIcon" draggable={false} />
+        }
       >
         {allAccounts?.map((data, index) => (
           <ManageCustom
@@ -234,6 +253,7 @@ function MenuFooter() {
       </Drawer>
 
       <Drawer
+        height={404}
         title={
           <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             Settings
@@ -242,12 +262,22 @@ function MenuFooter() {
         placement="bottom"
         onClose={onClose2}
         open={open2}
-        closeIcon={<img src={ModalCloseIcon} alt="ModalCloseIcon" draggable={false} />}
+        closeIcon={
+          <img src={ModalCloseIcon} alt="ModalCloseIcon" draggable={false} />
+        }
       >
         <Link to={ROUTES.MANAGE_WALLET}>
           <div className={style.sttings}>
             <div className={style.sttings__left}>
-              <div className={style.walletIconBorder}><img draggable={false} src={Wallet} width={30} height={30} alt="walletIcon" /></div>
+              <div className={style.walletIconBorder}>
+                <img
+                  draggable={false}
+                  src={Wallet}
+                  width={30}
+                  height={30}
+                  alt="walletIcon"
+                />
+              </div>
               <div className={style.sttings__left__texts}>
                 <div className={style.sttings__left__textsTop}>
                   Manage Wallet
@@ -256,10 +286,47 @@ function MenuFooter() {
             </div>
 
             <div className={style.sttings__right}>
-              <img src={BackArrow} width={8} height={15} alt="backArrow" draggable={false} />
+              <img
+                src={BackArrow}
+                width={8}
+                height={15}
+                alt="backArrow"
+                draggable={false}
+              />
             </div>
           </div>
         </Link>
+        <Link to={ROUTES.MANAGE_WALLET}>
+          <div className={style.sttings} style={{ marginTop: "14px" }}>
+            <div className={style.sttings__left}>
+              <div className={style.walletIconBorder}>
+                <img
+                  draggable={false}
+                  src={PrivacyPo}
+                  width={30}
+                  height={30}
+                  alt="walletIcon"
+                />
+              </div>
+              <div className={style.sttings__left__texts}>
+                <div className={style.sttings__left__textsTop}>
+                  Privacy Policy
+                </div>
+              </div>
+            </div>
+
+            <div className={style.sttings__right}>
+              <img
+                src={BackArrow}
+                width={8}
+                height={15}
+                alt="backArrow"
+                draggable={false}
+              />
+            </div>
+          </div>
+        </Link>
+
         <SocialAccount />
       </Drawer>
 
@@ -277,6 +344,10 @@ function MenuFooter() {
       {pathname === ROUTES.NEW_WALLET_DETAILS && <FooterStepTwo />}
       {pathname === ROUTES.LOGIN_APPROVE && <ApproveLogin />}
       {pathname === ROUTES.APPROVE_TXN && <ApproveTx />}
+      {(pathname === ROUTES.CREATE_WALLET ||
+        pathname === ROUTES.UNLOACK_WALLET ||
+        pathname === ROUTES.FORGOTPASSWORD ||
+        pathname === ROUTES.IMPORT_WALLET) && <PrivacyPolicy />}
     </div>
   );
 }

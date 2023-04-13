@@ -1,3 +1,4 @@
+@import "../../styles/__vars.scss";
 .transectionHistry {
   cursor: pointer;
   &__dateTime {
@@ -6,6 +7,54 @@
     font-weight: 400;
     line-height: 10.88px;
     margin: 5px 0px 5px 25px;
+  }
+  &__swapCopy {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  &__icon {
+    img {
+      background: #132c64;
+      padding: 9px;
+      border-radius: 25px;
+    }
+  }
+  &__rytContact {
+    width: 100%;
+    text-align: left;
+   
+    span {
+      justify-content: end;
+    }
+  }
+  &__swapSec {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 120px;
+    h3 {
+      color: $white;
+      font-size: 14px;
+    }
+    p {
+      color: #0071ff;
+      font-size: 14px;
+    }
+    span {
+      color: $white;
+      opacity: 0.6;
+      font-size: 14px;
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      justify-content:left ;
+      img {
+        cursor: pointer;
+      }
+    }
   }
   &__histry {
     background-color: #0f2046;
@@ -40,6 +89,20 @@
           color: #3cc8c8;
         }
       }
+    }
+  }
+  &__viewExplorer {
+    p {
+      background: linear-gradient(91.26deg, #0071ff 0%, #54f0d1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
+      font-size: 16px;
+      text-align: center;
+      padding-top: 38px;
+      text-decoration-line: underline;
+      text-transform: capitalize;
     }
   }
 }
