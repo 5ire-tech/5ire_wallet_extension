@@ -13,10 +13,6 @@ import logoNew from "../../Assets/logoNew.svg";
 import React, { useState, useEffect, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
-<<<<<<< HEAD
-=======
-import { connectionObj, Connection } from "../../Helper/connection.helper";
->>>>>>> 8fe202d683c60665b10034f12d8ff718c15a95f7
 import {
   InputField,
   InputFieldOnly,
@@ -45,17 +41,7 @@ function Send() {
   const [data, setData] = useState({ to: "", amount: "" });
   const [activeTab, setActiveTab] = useState(NATIVE.toLowerCase());
 
-<<<<<<< HEAD
   const { validateAddress } = useWallet();
-=======
-  const {
-    evmTransfer,
-    nativeTransfer,
-    retriveEvmFee,
-    retriveNativeFee,
-    validateAddress,
-  } = useWallet();
->>>>>>> 8fe202d683c60665b10034f12d8ff718c15a95f7
 
   const { balance, currentAccount, currentNetwork } = state;
   const onChange = (checked) => {
@@ -174,7 +160,6 @@ function Send() {
   };
 
   const getFee = async () => {
-<<<<<<< HEAD
 
         if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
           updateLoading(true);
@@ -186,57 +171,6 @@ function Send() {
           updateLoading(true);
           sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {value: data.amount, toAddress: data.to, options: {account: state.currentAccount,}});
       }
-=======
-    if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
-      // let feeRes = await retriveNativeFee(apiRes.nativeApi, data.to, data.amount);
-
-      // if (feeRes.error) {
-      //   if (feeRes.data) {
-      //     setDisable(true);
-      //     toast.error("Error while getting fee.");
-      //   }
-      // } else {
-      //   setGassFee(feeRes.data);
-      //   setDisable(false);
-      // }
-
-      updateLoading(true);
-      sendRuntimeMessage(
-        MESSAGE_TYPE_LABELS.EXTENSION_UI,
-        MESSAGE_EVENT_LABELS.NATIVE_FEE,
-        {
-          amount: data.amount,
-          account: state.currentAccount,
-          toAddress: data.to,
-        }
-      );
-    } else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-      // let feeRes = await retriveEvmFee(apiRes.evmApi, data.to, data.amount);
-
-      // if (feeRes.error) {
-      //   if (feeRes.data) {
-      //     setDisable(true);
-      //     toast.error("Error while getting fee.");
-      //   }
-
-      // } else {
-      //   setGassFee(feeRes.data);
-      //   setDisable(false);
-      // }
-
-      //calculate the evm fee
-      updateLoading(true);
-      sendRuntimeMessage(
-        MESSAGE_TYPE_LABELS.EXTENSION_UI,
-        MESSAGE_EVENT_LABELS.EVM_FEE,
-        {
-          amount: data.amount,
-          account: state.currentAccount,
-          toAddress: data.to,
-        }
-      );
-    }
->>>>>>> 8fe202d683c60665b10034f12d8ff718c15a95f7
   };
 
   const handleChange = (e) => {
@@ -321,7 +255,6 @@ function Send() {
         // }
       }
 
-<<<<<<< HEAD
           if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
             //pass the message request for evm transfer
@@ -365,9 +298,6 @@ function Send() {
 
         updateEstimatedGas("");
 
-=======
-      updateEstimatedGas("");
->>>>>>> 8fe202d683c60665b10034f12d8ff718c15a95f7
     } catch (error) {
       toast.error("Error occured.");
     }
