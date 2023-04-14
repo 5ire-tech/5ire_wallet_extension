@@ -4,7 +4,7 @@ export default function Loader() {
     return (
       <div className="loader">
         {/* <Spin size="large" /> */}
-        <img src="../../Assets/Video/loader.gif"></img>
+        <img src="../../Assets/Video/loader.gif" alt="gif"/>
       </div>
     );
 }

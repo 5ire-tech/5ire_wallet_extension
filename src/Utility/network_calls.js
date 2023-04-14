@@ -83,7 +83,7 @@ export class TransactionProcessingPayload {
 
 //for main transaction payload
 export class TransactionPayload {
-  constructor(to="", amount=0, isEvm=null, chain="QA", type="", txHash="", status=STATUS.QUEUED, intermidateHash=null, totalGas) {
+  constructor(to="", amount=0, isEvm=null, chain="QA", type="", txHash="", status=STATUS.QUEUED, intermidateHash=null, gasUsed=null) {
     this.to = to;
     this.amount = amount;
     this.isEvm = isEvm;
@@ -92,8 +92,8 @@ export class TransactionPayload {
     this.type = type;
     this.status = status;
     this.intermidateHash = intermidateHash;
-    this.totalGas = totalGas;
+    this.gasUsed = gasUsed;
     this.id = getUUID();
-    this.dateTime = new Date().toString();
+    this.timeStamp = new Date().toString();
   }
 }

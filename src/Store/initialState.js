@@ -28,11 +28,7 @@ export const userState = {
 
     eth_accounts: '',
 
-    isLogin: false,
-
-    connectedSites: [],
-
-    isLoading: false,
+    isLogin: false
 
 }
 

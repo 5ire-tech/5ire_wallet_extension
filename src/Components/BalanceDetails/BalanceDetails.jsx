@@ -28,10 +28,12 @@ import {
   EMTY_STR,
   LABELS,
 } from "../../Constants/index";
+import { log } from "../../Utility/utility";
+
 
 function BalanceDetails({ mt0 }) {
   const getLocation = useLocation();
-  const { state, updateState } = useContext(AuthContext);
+  const { state, updateState, externalControlsState } = useContext(AuthContext);
   const [isConnected, setIsConnected] = useState(false);
   const [isEvmModal, setIsEvmModal] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,26 +46,28 @@ function BalanceDetails({ mt0 }) {
 
   const { pathname } = getLocation;
 
-  const {
-    currentAccount,
-    currentNetwork,
-    balance,
-    txHistory,
-    allAccounts,
-    connectedSites,
-  } = state;
+  const { currentAccount, currentNetwork, balance, allAccounts } = state;
+  const {connectedApps} = externalControlsState;
+
 
   useEffect(() => {
     setAccountData(allAccounts ? allAccounts[currentAccount.index] : {});
   }, [currentAccount.index]);
 
+
+
   useEffect(() => {
-    getCurrentTabUrl((cv) => {
-      const isExist = connectedSites.find((ct) => ct?.origin === cv);
-      if (isExist) {
-        setIsConnected(isExist.isConnected);
+
+    //check if current app is connected with extension
+    getCurrentTabUrl((tabUrl) => {
+      const isConnectionExist = connectedApps[tabUrl];
+      
+      if (isConnectionExist?.isConnected) {
+        setIsConnected(isConnectionExist.isConnected);
       }
     });
+
+
 
     if (accountData.evmAddress && accountData?.nativeAddress) {
       setAddresses({
@@ -72,35 +76,8 @@ function BalanceDetails({ mt0 }) {
       });
     }
 
-    // //inverval id for unbind the interval
-    // let intId = null;
-
-    // connectionObj.initializeApi(HTTP_END_POINTS.TESTNET, HTTP_END_POINTS.QA, currentNetwork, false)
-    //   .then((res) => {
-    //     if (!res?.value) {
-    //       Connection.isExecuting.value = false;
-    //       getBalance(res.evmApi, res.nativeApi, true);
-
-    //       intId = setInterval(() => {
-    //         getBalance(res.evmApi, res.nativeApi, true);
-    //       }, 5000)
-
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.log("Error while getting the balance : ", err.message)
-    //   });
-
-    // return () => { intId && clearInterval(intId) }
   }, [currentNetwork, accountData.accountName]);
 
-  // useEffect(() => {
-  //   if (balance?.evmBalance === "" || balance.nativeAddress === "") {
-  //     // dispatch(toggleLoader(true));
-  //   } else {
-  //     // dispatch(toggleLoader(false));
-  //   }
-  // }, [balance?.evmBalance, balance?.nativeBalance, balance?.totalBalance]);
 
   const handleNetworkChange = (network) => {
     updateState(LABELS.CURRENT_NETWORK, network);
@@ -281,18 +258,6 @@ function BalanceDetails({ mt0 }) {
               </div>
             </>
           </div>
-          {/* {path === "swapapprove" && (
-              <div className={style.balanceDetails__conectedSec}>
-                <p className={style.balanceDetails__conectedSec__connectedField}>
-                  <img src={GreenCircle} />
-                  connected
-                </p>
-                <div className={style.balanceDetails__conectedSec__textConatct}>
-                  <p>Account 1</p>
-                  <span>0x02da....q12sd</span>
-                </div>
-              </div>
-            )} */}
 
           {pathname === ROUTES.WALLET && (
             <div className={style.balanceDetails__innerBalance}>

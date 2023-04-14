@@ -11,11 +11,11 @@ import PrivacyPolicy from "../../Components/MenuFooter/PrivacyPolicy";
 
 function CreateNewWallet() {
   const navigate = useNavigate();
-  const [data, setData, isLogin] = useState("");
+  const [data, setData] = useState("");
   const [warrning, setWarrning] = useState("");
   const [isDisable, setDisable] = useState(true);
   const { state, updateState } = useContext(AuthContext);
-  const { allAccounts } = state;
+  const { allAccounts, isLogin } = state;
 
 
   const handleChange = (e) => {
@@ -59,12 +59,14 @@ function CreateNewWallet() {
     }
   };
 
+
   const handleCancle = () => {
     updateState(LABELS.ACCOUNT_NAME, null, false);
     if (isLogin) navigate(ROUTES.WALLET);
     else navigate(ROUTES.DEFAULT);
   };
 
+  
   return (
     <>
     <div className={style.cardWhite}>

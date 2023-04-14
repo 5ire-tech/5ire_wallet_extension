@@ -53,11 +53,11 @@ export const formatNum = (num, numOfDecimals = 4) => {
 };
 
 
-export const shortner = (str) => {
-    const start = str.slice(0, 5);
+export const shortner = (str, startLength = 5, endLength=4) => {
+    const start = str.slice(0, startLength);
 
     const len = str.length;
-    const end = str.slice(len - 4, len);
+    const end = str.slice(len - endLength, len);
 
     const shortTx = `${start}....${end}`;
     return shortTx;

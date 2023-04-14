@@ -174,33 +174,11 @@ function Swap() {
 
           if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
 
-            // let res = await evmToNativeSwap(apiRes.evmApi, apiRes.nativeApi, amount);
-            // if (res.error) {
-            //   setIsFaildOpen(true);
-            //   setSwapError(res.data);
-            // } else {
-            //   setIsModalOpen(true);
-            //   setTxHash(res.data);
-            // }
-
             // updateLoading(true);
             sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP, {value: amount, options: {account: state.currentAccount}});
             setIsModalOpen(true);
 
           } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
-
-            // let res = await nativeToEvmSwap(apiRes.nativeApi, amount);
-            // // console.log("res.err : ",res.error);
-            // if (res.error) {
-            //   // console.log("error true");
-
-            //   setIsFaildOpen(true);
-            //   setSwapError(res.data);
-            // } else {
-            //   // console.log("error false");
-            //   setIsModalOpen(true);
-            //   setTxHash(res.data);
-            // }
 
             // updateLoading(true);
             sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP, {value: amount, options: {account: state.currentAccount}});
@@ -218,32 +196,10 @@ function Swap() {
 
         if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase()) {
 
-          // let feeRes = await retriveNativeFee(apiRes.nativeApi, "", amount);
-          // if (feeRes.error) {
-          //   if (feeRes.data) {
-          //     toast.error(feeRes.error);
-          //     setDisable(false);
-          //   }
-          // } else {
-          //   updateEstimatedGas(feeRes.data);
-          //   setDisable(false);
-          // }
-
           updateLoading(true);
           sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, {value: amount, options: {account: state.currentAccount}});
         } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase()) {
 
-          // let feeRes = await retriveEvmFee(apiRes.evmApi, "", amount);
-          // if (feeRes.error) {
-          //   if (feeRes.data) {
-          //     setError(feeRes.error);
-          //   } else {
-          //     toast.error("Error while getting fee.");
-          //   }
-          // } else {
-          //   updateEstimatedGas(feeRes.data);
-          //   setDisable(false);
-          // }
           updateLoading(true);
           sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {value: amount, options: {account: state.currentAccount}});
         }
@@ -430,8 +386,8 @@ function Swap() {
           </div> */}
         </div>
         <div className={style.swap__txFeeBalance}>
-          <h2>TX Fee : 0.0002 5IRE</h2>
-          <h3>Balance 00.0000 5IRE</h3>
+        <h2>{estimatedGas ? `TX Fee : ${estimatedGas} 5IRE`: ""}</h2>
+          {/* <h3>Balance 00.0000 5IRE</h3> */}
         </div>
         <div className={style.swap__inFoAccount}>
          <img src={Info}/>

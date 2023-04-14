@@ -219,17 +219,6 @@ function Send() {
         );
         setIsModalOpen(true);
 
-        // const res = await evmTransfer(apiRes.evmApi, data);
-        // if (res.error) {
-        //   setSendError(res.data);
-        //   setIsFaildOpen(true);
-        // }
-        // else {
-        //   setTxHash(res.data);
-        //   setIsModalOpen(true);
-        //   // setTimeout(() => {
-        //   //   getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-        //   // }, 3000);
         // }
       } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
         //pass the message request for native transfer
@@ -240,19 +229,6 @@ function Send() {
           { to: data.to, amount: data.amount, account: state.currentAccount }
         );
         setIsModalOpen(true);
-
-        // const res = await nativeTransfer(apiRes.nativeApi, data);
-        // if (res.error) {
-        //   setSendError(res.data);
-        //   setIsFaildOpen(true);
-        // }
-        // else {
-        //   setTxHash(res.data);
-        //   setIsModalOpen(true);
-        //   // setTimeout(() => {
-        //   //   getBalance(apiRes.evmApi, apiRes.nativeApi, true)
-        //   // }, 3000);
-        // }
       }
 
           if (activeTab.toLowerCase() === EVM.toLowerCase()) {
@@ -262,18 +238,6 @@ function Send() {
             sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TX, {to: data.to, value: data.amount, options: {account: state.currentAccount}});
             setIsModalOpen(true);
 
-            // const res = await evmTransfer(apiRes.evmApi, data);
-            // if (res.error) {
-            //   setSendError(res.data);
-            //   setIsFaildOpen(true);
-            // }
-            // else {
-            //   setTxHash(res.data);
-            //   setIsModalOpen(true);
-            //   // setTimeout(() => {
-            //   //   getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-            //   // }, 3000);
-            // }
 
           } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
 
@@ -282,18 +246,6 @@ function Send() {
             sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TX, {to: data.to, value: data.amount, options: {account: state.currentAccount}});
             setIsModalOpen(true);
 
-            // const res = await nativeTransfer(apiRes.nativeApi, data);
-            // if (res.error) {
-            //   setSendError(res.data);
-            //   setIsFaildOpen(true);
-            // }
-            // else {
-            //   setTxHash(res.data);
-            //   setIsModalOpen(true);
-            //   // setTimeout(() => {
-            //   //   getBalance(apiRes.evmApi, apiRes.nativeApi, true)
-            //   // }, 3000);
-            // }
           }
 
         updateEstimatedGas("");
@@ -393,8 +345,8 @@ function Send() {
           <p>{estimatedGas ? `Estimated fee : ${estimatedGas} 5ire` : ""}</p>
         </div> */}
         <div className={style.sendSec__txFeeBalance}>
-          <h2>TX Fee : 0.0002 5IRE</h2>
-          <h3>Balance 00.0000 5IRE</h3>
+          <h2>{estimatedGas ? `TX Fee : ${estimatedGas} 5IRE`: ""}</h2>
+          {/* <h3>Balance 00.0000 5IRE</h3> */}
         </div>
         <div className={style.sendSec__inFoAccount}>
          <img src={Info}/>

@@ -113,7 +113,8 @@ export const ERRCODES = {
     NULL_UNDEF: 4,
     NETWORK_REQUEST: 5,
     TX_FAILED: 6,
-    INVALID_ARGU_TYPE: 7
+    INVALID_ARGU_TYPE: 7,
+    FAILED_TO_CONNECT_NETWORK: 8
 }
 
 
@@ -197,7 +198,8 @@ export const MESSAGE_EVENT_LABELS = {
 export const INTERNAL_EVENT_LABELS = {
     CONNECTION: "connection",
     BALANCE_FETCH: "balanceFetch",
-    NEW_TRANSACTION_INQUEUE: "newTransactionInQueue"
+    NEW_TRANSACTION_INQUEUE: "newTransactionInQueue",
+    ERROR: "error"
 }
 
 export const STATE_CHANGE_ACTIONS = {

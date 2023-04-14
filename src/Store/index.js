@@ -70,6 +70,8 @@ export default function Context({ children }) {
         ...p,
         [name]: data
       }
+
+      
       localStorage.set({ state : dataToSet });
       return dataToSet;
     });

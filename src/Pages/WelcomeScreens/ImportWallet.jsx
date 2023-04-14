@@ -104,7 +104,7 @@ function ImportWallet() {
     }
   };
 
-  const handleCancle = () => {
+  const handleCancel = () => {
     if (isLogin) navigate(ROUTES.WALLET);
     else navigate(ROUTES.DEFAULT);
   };
@@ -150,7 +150,7 @@ function ImportWallet() {
         </div>
         <div className={style.setPassword__footerbuttons}>
           <ButtonComp onClick={handleClick} text={"Import"} isDisable={isDisable} />
-          <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancle} />
+          <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancel} />
         </div>
       </div>
     </div>

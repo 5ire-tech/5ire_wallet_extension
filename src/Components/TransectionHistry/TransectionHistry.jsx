@@ -1,78 +1,82 @@
-import React from "react";
+import React, { useContext } from "react";
 import style from "./style.module.scss";
 import { toast } from "react-toastify";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import DarkRyt from "../../Assets/darkRyt.svg";
-function TransectionHistry({
-  dateTime,
-  img,
-  type,
-  to,
-  amount,
-  status,
-  txHash,
-}) {
+import { formatDate, shortner } from "../../Helper/helper";
+import { AuthContext } from "../../Store";
+function TransectionHistry({selectedTransaction, account}) {
+
   const handleClick = (hash) => {
     navigator.clipboard.writeText(hash);
     toast.success("Transacion hash copied.");
   };
 
+  const isSwap = !!selectedTransaction?.intermidateHash;
+  const isEvm = !!selectedTransaction?.isEvm;
+
   return (
     <div
       className={style.transectionHistry}
-      name={txHash}
-      onClick={() => handleClick(txHash)}
+      name={selectedTransaction?.txHash}
+      onClick={() => handleClick(selectedTransaction?.txHash)}
     >
-      {/* <p className={style.transectionHistry__dateTime}>
-        {dateTime}
-      </p> */}
-      {/* <div className={style.transectionHistry__histry}>
-        <div className={style.transectionHistry__histry__status}>
-          <img alt="currency" src={img} draggable={false} />
-          <div>
-            <p>{type}</p>
-            <p>{to}</p>
+
+      {
+        isSwap ?
+        (
+          <div className={style.transectionHistry__swapCopy}>
+          <div className={style.transectionHistry__swapSec}>
+            <h3>{isEvm ? "Evm" : "Native"}</h3>
+            <span>{shortner(isEvm ? account.evmAddress : account.nativeAddress)}</span>
+          </div>
+          <div className={style.transectionHistry__icon} onClick={handleClick}>
+            <img src={SwapIcon} alt="swapIcon" draggable={false} />
+          </div>
+          <div className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
+          <h3>{isEvm ? "Evm" : "Native"}</h3>
+            <span>{shortner(isEvm ? account.evmAddress : account.nativeAddress)}</span>
           </div>
         </div>
-        <div className={style.transectionHistry__histry__success}>
-          <p> {amount}</p>
-          <p>
-            Status : <span>{status}</span>
-          </p>
-        </div>
-      </div> */}
-      <div className={style.transectionHistry__swapCopy}>
-        <div className={style.transectionHistry__swapSec}>
-          <h3>From Native</h3>
-          <span>0xxx0...lsh223</span>
-        </div>
-        <div className={style.transectionHistry__icon} onClick={handleClick}>
-          <img src={SwapIcon} alt="swapIcon" draggable={false} />
-        </div>
-        <div className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
-          <h3>To EVM</h3>
-          <span>#xxx0...lsh223</span>
-        </div>
-      </div>
+        ) 
+        : 
+        (
+          <div className={style.transectionHistry__swapCopy}>
+          <div className={style.transectionHistry__swapSec}>
+            <h3>From</h3>
+            <span>{shortner(isEvm ? account.evmAddress : account.nativeAddress)}</span>
+          </div>
+          <div className={style.transectionHistry__icon} onClick={handleClick}>
+            <img src={SwapIcon} alt="swapIcon" draggable={false} />
+          </div>
+          <div className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
+          <h3>To</h3>
+            <span>{selectedTransaction?.to ? shortner(selectedTransaction?.to) : "Contract Transactions"}</span>
+          </div>
+          </div>
+        )
+      }
+
+
       <div className={style.transectionHistry__swapCopy} style={{ marginTop: "29px" }}>
         <div className={style.transectionHistry__swapSec}>
           <h3>Status</h3>
-          <span>SUCCESS</span>
+          <span>{selectedTransaction?.status}</span>
         </div>
         <div className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
           <h3>Transaction ID</h3>
-          <span>#xxx0...lsh223 <img src={CopyIcon}/></span>
+          <span>{selectedTransaction?.txHash && shortner(selectedTransaction?.txHash)}<img src={CopyIcon}/></span>
         </div>
       </div>
       <div className={style.transectionHistry__swapCopy} style={{ marginTop: "29px" }}>
         <div className={style.transectionHistry__swapSec}>
           <h3>Date & Time</h3>
-          <span>02-03-2023 | 20:23</span>
+          <span>{formatDate(selectedTransaction?.timeStamp)}</span>
         </div>
         <div className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
           <h3>Fee</h3>
-          <span>0.001 5ire</span>
+          <span>{selectedTransaction?.gasUsed || "Nil"}</span>
         </div>
       </div>
       <div className={style.transectionHistry__viewExplorer}>

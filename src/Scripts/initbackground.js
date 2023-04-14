@@ -418,6 +418,7 @@ class TransactionQueue {
 
            //update the transaction after getting the confirmation
            transactionHistoryTrack.status = transactionStatus.status;
+           transactionHistoryTrack.gasUsed = transactionHistoryTrack.isEvm ? Number(transactionStatus?.gasUsed).toString() : transactionStatus?.txFee
            await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, transactionHistoryTrack, currentTransaction?.options);
 
             //dequeue the new transaction and set as active for processing
@@ -470,7 +471,7 @@ class TransactionQueue {
 }
 
 
-class ExtensionEventHandle {
+export class ExtensionEventHandle {
 
   static instance = null;
   static eventEmitter = null;
@@ -481,6 +482,7 @@ class ExtensionEventHandle {
     this.bindConnectionEvent();
     this.transactionQueue = TransactionQueue.getInstance();
     this.bindTransactionProcessingEvents();
+    this.bindErrorHandlerEvent();
   }
 
 
@@ -512,6 +514,19 @@ class ExtensionEventHandle {
   //event triggered when new transaction is added into queue
   ExtensionEventHandle.eventEmitter.on(INTERNAL_EVENT_LABELS.NEW_TRANSACTION_INQUEUE, this.transactionQueue.newTransactionAddedEventCallback);
   }
+
+
+  //bind error handler event
+  bindErrorHandlerEvent = async () => {
+    ExtensionEventHandle.eventEmitter.on(INTERNAL_EVENT_LABELS.ERROR, async (err) => {
+      try {
+        log("error catched: ", err)
+      } catch(err) {
+        log("Error in error event handler: ", err)
+      }
+    })
+  }
+
 }
 
 
@@ -583,6 +598,12 @@ export class Services {
       else {
         res = await httpRequest(rpcUrl + txHash, HTTP_METHODS.GET);
         txRecipt = res?.data?.transaction;
+
+
+        if(!isNullorUndef(txRecipt?.status)) {
+          if(isEqual(txRecipt.status.toLowerCase(), STATUS.SUCCESS.toLowerCase())) txRecipt.status = STATUS.SUCCESS;
+          if(isEqual(txRecipt.status.toLowerCase(), STATUS.FAILED.toLowerCase())) txRecipt.status = STATUS.FAILED;
+        }
       }
   
       //transform the evm status to success or fail
