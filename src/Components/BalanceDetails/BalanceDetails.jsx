@@ -187,14 +187,14 @@ function BalanceDetails({ className, textLeft, mt0 }) {
                       //   value: NETWORK.TEST_NETWORK,
                       //   label: <span className="flexedItemSelect">Testnet</span>,
                       // },
-                      {
-                        value: NETWORK.UAT,
-                        label: <span className="flexedItemSelect">{NETWORK.UAT}</span>,
-                      },
-                      {
-                        value: NETWORK.QA_NETWORK,
-                        label: <span className="flexedItemSelect">{NETWORK.QA_NETWORK}</span>,
-                      },
+                      // {
+                      //   value: NETWORK.UAT,
+                      //   label: <span className="flexedItemSelect">{NETWORK.UAT}</span>,
+                      // },
+                      // {
+                      //   value: NETWORK.QA_NETWORK,
+                      //   label: <span className="flexedItemSelect">{NETWORK.QA_NETWORK}</span>,
+                      // },
                       {
                         value: NETWORK.TEST_NETWORK,
                         label: <span className="flexedItemSelect">{NETWORK.TEST_NETWORK}</span>,
