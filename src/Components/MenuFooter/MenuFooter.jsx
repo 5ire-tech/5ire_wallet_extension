@@ -161,6 +161,7 @@ function MenuFooter() {
         {history?.length > 0 ? (
           history?.map((data, index) => (
             <TransectionHistry
+
               dateTime={formatDate(data.dateTime)}
               type={data?.type}
               txHash={data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase() ?
@@ -168,12 +169,12 @@ function MenuFooter() {
               to={
                 data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase()
                   ? data.to
-                  : `${data?.to ? `To: ` + shortner(data.to) : ""}`
+                  : `${data?.to ? `To: ` + shortner(data.to) : `Tx Hash: ` + shortner(data?.txHash)}`
               }
               amount={`${data?.amount} 5ire`}
               status={data?.status.charAt(0).toUpperCase() + data?.status.slice(1)}
               img={Sendhistry}
-              key={index + "5ire"}
+              key={index + data.txHash + "5ire"}
             />
           ))
         ) : (

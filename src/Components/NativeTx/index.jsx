@@ -24,6 +24,7 @@ function NativeTx() {
     const { addNominator, reNominate, nominatorValidatorPayout, stopValidatorNominator, unbondNominatorValidator, withdrawNominatorValidatorData, withdrawNominatorUnbonded, addValidator, bondMoreFunds, restartValidator, getBalance } = UseWallet();
     const [fee, setFee] = useState(0);
     const [fomattedMethod, setFormattedMethod] = useState('')
+    const [amountInfo, setAmountInfo] = useState(0)
 
     useEffect(() => {
         getFee()
@@ -38,10 +39,11 @@ function NativeTx() {
             }
             await getBalance(apiRes.evmApi, apiRes.nativeApi, true)
 
-            let feeData, methodName = '';
+            let feeData, methodName = '', amount = 0;
             switch (auth?.uiData?.method) {
                 case "native_add_nominator":
                     feeData = await addNominator(apiRes.nativeApi, auth?.uiData?.message, true);
+                    amount = auth?.uiData?.message?.stakeAmount;
                     methodName = "Add Nominator";
                     break;
                 case "native_renominate":
@@ -68,43 +70,59 @@ function NativeTx() {
                 case "native_unbond_validator":
                     feeData = await unbondNominatorValidator(apiRes.nativeApi, auth?.uiData?.message, true);
                     methodName = "Unbond Validator";
+
+                    amount = auth?.uiData?.message?.amount;
                     break;
 
                 case "native_unbond_nominator":
                     feeData = await unbondNominatorValidator(apiRes.nativeApi, auth?.uiData?.message, true);
                     methodName = "Unbond Nominator";
+                    amount = auth?.uiData?.message?.amount;
+
                     break;
                 case "native_withdraw_nominator":
                     feeData = await withdrawNominatorValidatorData(apiRes.nativeApi, auth?.uiData?.message, true);
                     methodName = "Send Funds";
+                    amount = auth?.uiData?.message?.amount;
+
                     break;
 
                 case "native_withdraw_validator":
                     feeData = await withdrawNominatorValidatorData(apiRes.nativeApi, auth?.uiData?.message, true);
                     methodName = "Send Funds";
+                    amount = auth?.uiData?.message?.amount;
+
                     break;
                 case "native_withdraw_nominator_unbonded":
                     feeData = await withdrawNominatorUnbonded(apiRes.nativeApi, auth?.uiData?.message, true);
                     methodName = "Withdraw Nominator Unbonded";
+                    amount = auth?.uiData?.message?.value;
                     break;
 
                 case "native_withdraw_validator_unbonded":
                     feeData = await withdrawNominatorUnbonded(apiRes.nativeApi, auth?.uiData?.message, true);
                     methodName = "Withdraw Validator Unbonded";
+                    amount = auth?.uiData?.message?.value;
+
                     break;
 
                 case "native_add_validator":
                     feeData = await addValidator(apiRes.nativeApi, auth?.uiData?.message, true);
                     methodName = "Add Validator";
+                    amount = auth?.uiData?.message?.amount;
                     break;
 
                 case "native_validator_bondmore":
                     feeData = await bondMoreFunds(apiRes.nativeApi, auth?.uiData?.message, true);
                     methodName = "Bond More Funds";
+                    amount = auth?.uiData?.message?.amount;
+
                     break;
                 case "native_nominator_bondmore":
                     feeData = await bondMoreFunds(apiRes.nativeApi, auth?.uiData?.message, true);
                     methodName = "Bond More Funds";
+                    amount = auth?.uiData?.message?.amount;
+
                     break;
                 case "native_restart_validator":
                     feeData = await restartValidator(apiRes.nativeApi, auth?.uiData?.message, true);
@@ -116,6 +134,7 @@ function NativeTx() {
 
             if (!feeData?.error && methodName) {
                 setFee(+feeData.data + extraFee);
+                setAmountInfo(amount || 0)
                 setFormattedMethod(methodName)
             } else {
                 Browser.tabs.sendMessage(auth.uiData.tabId, {
@@ -232,8 +251,8 @@ function NativeTx() {
                             isEvm: false,
                             dateTime: new Date(),
                             to: "",
-                            type: TX_TYPE?.SEND,
-                            amount: 0,
+                            type: fomattedMethod,
+                            amount: amountInfo,
                             txHash: res?.data?.txHash,
                             status: STATUS.PENDING
                         },

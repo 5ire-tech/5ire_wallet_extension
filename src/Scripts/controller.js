@@ -322,3 +322,59 @@ export async function checkTransactions(txData) {
 
 
 
+// check if transaction status and inform user using browser notification
+export async function checkPendingTxns() {
+
+  try {
+    const store = await loadStore(false);
+    const controller = Controller.getInstance(store);
+
+
+
+    //get the current redux state of application
+    const state = await store.getState();
+
+    const allAccounts = state?.auth?.accounts;
+    const pendingList = []
+    for (const acc of allAccounts) {
+      const pendingTxn = acc?.txHistory?.filter((tx => tx?.status?.toLowerCase() === STATUS?.PENDING?.toLowerCase()))
+      if (pendingTxn?.length) {
+        for (const tx of pendingTxn) {
+          pendingList.push({ ...tx, accountName: acc.accountName });
+        }
+      }
+
+    }
+
+    for (const txData of pendingList) {
+      const txHash = isObject(txData?.txHash) ? txData.txHash.mainHash : txData.txHash;
+
+      //check if transaction is swap or not
+      const isSwap = txData?.type.toLowerCase() === "swap";
+
+      //check if the current tx is evm tx or native tx
+      const rpcUrl = txData.isEVM ? state.auth.httpEndPoints[txData.chain] || "https://rpc-testnet.5ire.network" : state.auth.api[txData?.chain.toLowerCase()];
+
+
+      //check if the transaction is still pending or not
+      let txRecipt;
+      if (txData.isEVM) txRecipt = await httpRequest(rpcUrl, HTTP_METHODS.POST, JSON.stringify(new EVMRPCPayload(EVM_JSON_RPC_METHODS.GET_TX_RECIPT, [txHash])));
+      else txRecipt = await httpRequest(rpcUrl + txHash, HTTP_METHODS.GET)
+
+      //check if the tx is native or evm based
+      if (txRecipt?.result) {
+        store.dispatch(updateTxHistory({ txHash, accountName: txData.accountName, status: Boolean(parseInt(txRecipt.result.status)), isSwap }));
+        showNotification(controller, `Transaction ${Boolean(parseInt(txRecipt.result.status)) ? STATUS.SUCCESS.toLowerCase() : STATUS.FAILED.toLowerCase()} ${txHash.slice(0, 30)} ...`);
+      } else if (txRecipt?.data && txRecipt?.data?.transaction.status.toLowerCase() !== STATUS.PENDING.toLowerCase()) {
+        store.dispatch(updateTxHistory({ txHash, accountName: txData.accountName, status: txRecipt?.data?.transaction.status, isSwap }));
+        showNotification(controller, `Transaction ${txRecipt?.data?.transaction.status} ${txHash.slice(0, 30)} ...`);
+      }
+    }
+
+
+  } catch (err) {
+    console.log("Error while checking transaction status: ", err);
+  }
+}
+
+

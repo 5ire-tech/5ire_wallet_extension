@@ -160,7 +160,6 @@ const reducers = {
       if (action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash;
       return item.txHash === action.payload.txHash
     });
-
     const otherAcc = state.accounts.find(item => item.accountName === action.payload.accountName);
 
     const otherTx = otherAcc.txHistory.find((item) => {
@@ -179,7 +178,7 @@ const reducers = {
 
   toggleSite: (state, action) => {
     const siteIndex = state?.connectedSites.findIndex(
-      (st) => (st.origin = action.payload.origin)
+      (st) => (st.origin === action.payload.origin)
     );
     if (siteIndex > -1) {
       state.connectedSites[siteIndex].isConnected =

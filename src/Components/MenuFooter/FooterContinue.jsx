@@ -148,7 +148,7 @@ export const ApproveLogin = () => {
 
     if (isApproved) {
       const siteIndex = auth?.connectedSites.findIndex(
-        (st) => (st.origin = auth.uiData.message?.origin)
+        (st) => (st.origin === auth.uiData.message?.origin)
       );
 
       //if not connected but exists in state we will set connected property true

@@ -1,9 +1,10 @@
-import { CONNECTION_NAME } from "../Constants";
+import { CONNECTION_NAME, STATUS } from "../Constants";
 import {
   Controller,
   initScript,
   loadStore,
-  checkTransactions
+  checkTransactions,
+  checkPendingTxns
 } from "./controller";
 import { setNewAccount } from "../Utility/redux_helper";
 import Browser from "webextension-polyfill";
@@ -19,9 +20,9 @@ try {
     if (port.name === CONNECTION_NAME) {
       store = await loadStore();
       isInitialized = true;
-
       //set the current newAccount state to null
       const currState = await store.getState();
+
       currState.auth.newAccount && store.dispatch(setNewAccount(null));
 
       port.onDisconnect.addListener(function () {
@@ -77,6 +78,7 @@ try {
     }
 
     const controller = Controller.getInstance(store);
+
 
     const data = {
       ...message,
@@ -144,6 +146,13 @@ try {
   function txNotification(txData) {
     checkTransactions({ ...txData.data, statusCheck: txData.statusCheck });
   }
+
+  setInterval(async () => {
+    await checkPendingTxns()
+  }, 1000 * 10)
+
+
+
 
 } catch (err) {
   console.log("Error: ", err)
