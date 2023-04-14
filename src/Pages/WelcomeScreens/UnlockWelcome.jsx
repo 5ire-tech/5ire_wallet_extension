@@ -18,12 +18,10 @@ function UnlockWelcome() {
   // const location = useLocation();
 
   const [pass, setPass] = useState("");
-  // const [errMsg, setErrorMsg] = useState("");
   const [isDisable, setDisable] = useState(true);
   const { state, passError, setPassError } = useContext(AuthContext);
   const { vault } = state;
 
-  console.log("PASS ERROROROR ::: ",passError);
 
   useEffect(() => {
     if (passError || !pass) {
@@ -49,7 +47,6 @@ function UnlockWelcome() {
   }
 
   const handleClick = async (e) => {
-    console.log("CLICK..............");
     if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.UNLOCK, { password: pass, vault: vault });
     }

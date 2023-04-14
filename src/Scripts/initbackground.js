@@ -1,14 +1,13 @@
 import Web3 from "web3";
 import { isManifestV3 } from "./utils";
-import Keyring from "@polkadot/keyring";
 import { BigNumber } from "bignumber.js";
 import { u8aToHex } from "@polkadot/util";
+// import Keyring from "@polkadot/keyring";
 import { HybridKeyring } from "./5ire-keyring";
 import Browser from "webextension-polyfill";
 import { nativeMethod } from "./nativehelper";
 import { EventEmitter } from "./eventemitter";
 import { numFormatter } from "../Helper/helper";
-import { decryptor } from "../Helper/CryptoHelper";
 import { httpRequest } from "../Utility/network_calls";
 import { txNotificationStringTemplate } from "./utils";
 import { Connection } from "../Helper/connection.helper";
@@ -17,11 +16,10 @@ import { Error, ErrorPayload } from "../Utility/error_helper";
 import { sendRuntimeMessage } from "../Utility/message_helper";
 import { EVMRPCPayload, EventPayload } from "../Utility/network_calls";
 import { getDataLocal, ExtensionStorageHandler } from "../Storage/loadstore";
-import { ed25519PairFromSeed, mnemonicToMiniSecret } from "@polkadot/util-crypto";
+// import { ed25519PairFromSeed, mnemonicToMiniSecret } from "@polkadot/util-crypto";
 
 import {
   log,
-  getKey,
   isEqual,
   isObject,
   isString,
@@ -38,10 +36,10 @@ import {
   ERRCODES,
   DECIMALS,
   HTTP_METHODS,
-  KEYRING_EVENTS,
   ERROR_MESSAGES,
   CONNECTION_NAME,
   HTTP_END_POINTS,
+  // KEYRING_EVENTS,
   MESSAGE_TYPE_LABELS,
   ERROR_EVENTS_LABELS,
   EVM_JSON_RPC_METHODS,
@@ -60,7 +58,6 @@ eventEmitter.on(INTERNAL_EVENT_LABELS.CONNECTION, async () => {
   if (api?.value) return;
   RPCCalls.api = api
 
-  log("Here is the api after init: ", api);
 });
 
 // //handling the connection using the events
@@ -126,6 +123,7 @@ export class InitBackground {
     this.bindInstallandUpdateEvents();
     this.bindBackgroundStartupEvents();
     this.bindExtensionUnmountEvents();
+    // this.bindBrowserCloseEvent();
   }
 
   //bind the runtime message events
@@ -139,7 +137,6 @@ export class InitBackground {
         await this._rpcCallsMiddleware(message, localData);
         return;
       } else if (message?.type === MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING) {
-        console.log("Message : ", message);
         await this.keyringHandler.keyringHelper(message);
         return;
       }
@@ -243,11 +240,6 @@ export class InitBackground {
     });
   }
 
-  //Method called when browser window is getting close
-  bindBrowserCloseEvent = async () => {
-    Browser.onDisconnect();
-  }
-
   //event called when extension is suspended or closed
   bindExtensionUnmountEvents = async () => {
     /**
@@ -265,39 +257,6 @@ export class InitBackground {
   }
 
   /**************** Internally Used bindAllEventsthods **************************/
-
-  // keyring middleware
-  _keyringMiddleware = async (message, state) => {
-    try {
-
-      if (this.hybridKeyring[message.event]) {
-        const keyringResponse = await this._errorCheckForKeyring(message);
-
-        console.log("KeyringResponse : ", keyringResponse);
-
-        let res = new EventPayload(STATE_CHANGE_ACTIONS.CHNAGE_VAULT_KEY, message.event, keyringResponse, [], false);
-
-        this._parseKeyringRes(res);
-      } else {
-        //handle if the method is not the part of system
-        new Error(new ErrorPayload(ERRCODES.INTERNAL, ERROR_MESSAGES.INVALID_RPC_OPERATION)).throw();
-      }
-    } catch (err) {
-      console.log("Error in _keyringMiddleware: ", err);
-    }
-  }
-
-  //error boundry for all background Keyring operations
-  _errorCheckForKeyring = async (message, state) => {
-    try {
-      const keyResponse = await this.hybridKeyring[message.event](message.data);
-      return keyResponse;
-    } catch (err) {
-      console.log("Error in _errorCheckForKeyring ", err);
-      if (err.message?.errCode) return new EventPayload(null, message.event, null, [], err.message);
-      else return new EventPayload(null, message.event, null, [], new ErrorPayload(ERRCODES.INTERNAL, err.message));
-    }
-  }
 
   //rpc calls middleware
   _rpcCallsMiddleware = async (message, state) => {
@@ -324,39 +283,6 @@ export class InitBackground {
       console.log("Error in error checker: ", err);
       if (err.message?.errCode) return new EventPayload(null, message.event, null, [], err.message);
       else return new EventPayload(null, message.event, null, [], new ErrorPayload(ERRCODES.INTERNAL, err.message));
-    }
-  }
-
-
-  //parse the response receive from operation and send message accordingly to extension ui
-  _parseKeyringRes = async (response) => {
-    try {
-
-      console.log("Response : ", response);
-
-      // console.log("Response : ",response);
-      if (!response.error) {
-
-        //change the state in local storage
-        if (response.stateChangeKey) {
-          if (response.stateChangeKey === "createOrRestore") {
-            await this.services.updateLocalState(response.stateChangeKey, JSON.parse(response.payload.vault), response.payload?.options);
-          }
-        }
-
-        //send the response message to extension ui
-        if (response.eventEmit) this.services.messageToUI(response.eventEmit, response.payload)
-
-        //send the notification and if transaction is pending check the transaction status
-        if (response.payload?.notification) this._sendNotification({ data: response.payload.data, account: response.payload.options?.account })
-
-      } else {
-        console.log("in the processing the unit, error section: ", response);
-        //send the error related messages here
-        //PENDING
-      }
-    } catch (err) {
-      console.log("Error in parsing the rpc response: ", err);
     }
   }
 
@@ -440,7 +366,7 @@ export class Services {
       const connector = Connection.getConnector();
       const state = await getDataLocal("state");
       const apiConn = await connector.initializeApi(state.currentNetwork)
-      // console.log("api connection: ", apiConn);
+      console.log("api connection: ", apiConn);
       return apiConn;
     } catch (err) {
       console.log("Error while making the connection to native api: ", err.message);
@@ -678,31 +604,38 @@ export class RPCCalls {
       }
     }
 
-    const tx = {
-      to: toAddress,
-      from: account.evmAddress,
-      value: amount,
-    };
-
-    if (data?.data) {
-      tx.data = data.data;
-    }
-
-    const gasAmount = await RPCCalls.api.evmApi.eth.estimateGas(tx);
-    const gasPrice = await RPCCalls.api.evmApi.eth.getGasPrice();
-    let fee = (new BigNumber(gasPrice * gasAmount)).dividedBy(DECIMALS).toString();
+    const feeRes = await this._getEvmFee(toAddress, account.evmAddress, amount, data?.data);
 
     const payload = {
-      data: { fee }
+      data: { fee: feeRes.gasFee }
     }
     return new EventPayload(null, message.event, payload, [], null);
 
   };
 
+  _getEvmFee = async (to, from, amount, data = "") => {
+
+    const tx = {
+      to,
+      from,
+      value: amount,
+    };
+
+    if (data) tx.data = data;
+
+    const gasLimit = await RPCCalls.api.evmApi.eth.estimateGas(tx);
+    const gasPrice = await RPCCalls.api.evmApi.eth.getGasPrice();
+    const gasFee = (new BigNumber(gasPrice * gasLimit)).dividedBy(DECIMALS).toString();
+
+    return {
+      gasLimit,
+      gasPrice,
+      gasFee,
+    }
+  }
+
   //evm transfer
   evmTransfer = async (message, state) => {
-
-    console.log("MEssage inEvm Transfer : ", message);
 
     //history reference object
     let dataToDispatch = null, payload = null;
@@ -736,55 +669,28 @@ export class RPCCalls {
       }
       else {
         const amt = (new BigNumber(data.amount).multipliedBy(DECIMALS)).toString();
+        const to = Web3.utils.toChecksumAddress(data.to);
+        const value = data.isBig
+          ? data.amount
+          : (Number(amt).noExponents()).toString();
+
+        const nonce = await RPCCalls.api.evmApi.eth.getTransactionCount(
+          state.currentAccount.evmAddress,
+          STATUS.PENDING.toLowerCase()
+        );
+
+        const feeRes = await this._getEvmFee(to, state.currentAccount.evmAddress, value, data?.data);
 
         const transactions = {
-          // from: state.currentAccount.evmAddress,
-          value: data.isBig
-            ? data.amount
-            : (Number(amt).noExponents()).toString(),
-          // gas: 21000,
-          data: data?.data,
-          nonce: await RPCCalls.api.evmApi.eth.getTransactionCount(
-            state.currentAccount.evmAddress,
-            STATUS.PENDING.toLowerCase()
-          ),
-          type: '0x00'
+          to,
+          gas: 21000,
+          data: data?.data ? data.data : "0x",
+          value: "0x" + (Number(value).toString(16)),
+          nonce: "0x" + (Number(nonce).toString(16)),
+          gasLimit: "0x" + (Number(feeRes.gasLimit).toString(16)),
+          gasPrice: "0x" + (Number(feeRes.gasPrice).toString(16)),
         };
 
-
-        const gasTx = {
-          from: transactions.from,
-          value: transactions.value,
-        };
-
-        if (data.to) {
-          transactions.to = Web3.utils.toChecksumAddress(data.to);
-          gasTx.to = transactions.to;
-        }
-
-        if (transactions.data) {
-          gasTx.data = transactions.data;
-        }
-
-        const gasLimit = await RPCCalls.api.evmApi.eth.estimateGas(gasTx);
-        const gasPrice = await RPCCalls.api.evmApi.eth.getGasPrice();
-
-        transactions.gasLimit = "0x" + (Number(gasLimit).toString(16));
-        transactions.gasPrice = "0x" + (Number(gasPrice).toString(16));
-        transactions.nonce = "0x" + (Number(transactions.nonce).toString(16));
-        transactions.value = "0x" + (Number(transactions.value).toString(16));
-
-
-        console.log("Transactions : ", transactions);
-
-        // transactions.gas = gasAmount;
-
-        // let temp2p = getKey(account.temp1m, state.pass);
-
-        // const signedTx = await RPCCalls.api.evmApi.eth.accounts.signTransaction(
-        //   transactions,
-        //   temp2p
-        // );
 
         const signedTx = await this.hybridKeyring.signEthTx(state.currentAccount.evmAddress, transactions)
 
@@ -839,9 +745,6 @@ export class RPCCalls {
 
     try {
       const { data } = message;
-      const account = state.allAccounts[data.account.index]
-      if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
-
 
       dataToDispatch = {
         chain: state.currentNetwork.toLowerCase(),
@@ -856,39 +759,40 @@ export class RPCCalls {
       if (Number(data.amount) >= Number(state.balance.evmBalance) || Number(data.amount) <= 0) {
         return new EventPayload(null, ERROR_EVENTS_LABELS.INSUFFICENT_BALANCE, null, [], null);
       } else {
-        const seedAlice = mnemonicToMiniSecret(
-          decryptor(account.temp1m, state.pass)
-        );
-        const keyring = new Keyring({ type: "ed25519" });
-        const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
-        const publicKey = u8aToHex(alice.publicKey);
-        const amt = new BigNumber(data.amount).multipliedBy(DECIMALS).toString();
 
-        const transaction = {
-          to: publicKey.slice(0, 42),
-          value: (Number(amt).noExponents()).toString(),
+        const alice = this.hybridKeyring.getNativeSignerByAddress(state.currentAccount.nativeAddress);
+        const to = (u8aToHex(alice.publicKey)).slice(0, 42);
+        const amt = new BigNumber(data.amount).multipliedBy(DECIMALS).toString();
+        const from = state.currentAccount.evmAddress;
+        const nonce = await RPCCalls.api.evmApi.eth.getTransactionCount(state.currentAccount.evmAddress);
+        const feeRes = await this._getEvmFee(to, from, Math.round(data.amount));
+        const value = (Number(amt).noExponents()).toString();
+
+        const transactions = {
+          to,
           gas: 21000,
-          nonce: await RPCCalls.api.evmApi.eth.getTransactionCount(account.evmAddress),
+          nonce: "0x" + (Number(nonce).toString(16)),
+          value: "0x" + (Number(value)).toString(16),
+          gasLimit: "0x" + (Number(feeRes.gasLimit).toString(16)),
+          gasPrice: "0x" + (Number(feeRes.gasPrice).toString(16)),
         };
 
-        let temp2p = getKey(account.temp1m, state.pass);
-        const signedTx = await RPCCalls.api.evmApi.eth.accounts.signTransaction(
-          transaction,
-          temp2p
-        );
+
+        const signedTx = await this.hybridKeyring.signEthTx(state.currentAccount.evmAddress, transactions);
+
 
         //sign and send
-        const txInfo = await RPCCalls.api.evmApi.eth.sendSignedTransaction(signedTx.rawTransaction);
+        const txInfo = await RPCCalls.api.evmApi.eth.sendSignedTransaction(signedTx);
         const signHash = txInfo.transactionHash;
 
         if (signHash) {
 
           //withdraw amount
           const withdraw = await RPCCalls.api.nativeApi.tx.evm.withdraw(
-            publicKey.slice(0, 42),
+            alice.publicKey.slice(0, 42),
             (Number(amt).noExponents()).toString()
           );
-          let signRes = await withdraw.signAndSend(alice);
+          const signRes = await withdraw.signAndSend(alice);
 
           const txRecipt = await httpRequest(HTTP_END_POINTS[state.currentNetwork.toUpperCase()], HTTP_METHODS.POST, JSON.stringify(new EVMRPCPayload(EVM_JSON_RPC_METHODS.GET_TX_RECIPT, [signHash])));
 
@@ -930,16 +834,15 @@ export class RPCCalls {
 
     const { data } = message;
 
-    const account = state.allAccounts[data.account.index];
+    const account = state.currentAccount;
+
     if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
 
     const toAddress = data.toAddress ? data.toAddress : account.evmAddress;
     let transferTx;
 
-    const keyring = new Keyring({ type: "ed25519" });
-    const seedAlice = mnemonicToMiniSecret(decryptor(account.temp1m, state.pass));
-    const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
+    const signer = this.hybridKeyring.getNativeSignerByAddress(account.nativeAddress);
 
     if (toAddress?.startsWith("0x")) {
       const amt = BigNumber(data.amount).multipliedBy(DECIMALS).toString();
@@ -950,7 +853,7 @@ export class RPCCalls {
       transferTx = RPCCalls.api.nativeApi.tx.balances.transfer(toAddress, (Number(amt).noExponents()).toString());
 
     }
-    const info = await transferTx?.paymentInfo(alice);
+    const info = await transferTx?.paymentInfo(signer);
     const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS)).toString();
 
     //construct payload
@@ -969,7 +872,8 @@ export class RPCCalls {
     try {
 
       const { data } = message;
-      const account = state.allAccounts[data.account.index]
+      // const account = state.allAccounts[data.account.index]
+      const account = state.currentAccount;
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
       if (Number(data.amount) >= Number(state.balance.nativeBalance)) {
@@ -987,24 +891,16 @@ export class RPCCalls {
 
         let hash, err;
 
-        const secretSeed = mnemonicToMiniSecret(
-          decryptor(account?.temp1m, state.pass)
-        );
-        const keyring = new Keyring({ type: "ed25519" });
-        const keypair = keyring.addFromPair(ed25519PairFromSeed(secretSeed));
         const amt = new BigNumber(data.amount).multipliedBy(DECIMALS).toString();
-
-        // const transfer = nativeApi.tx.balances.transferKeepAlive(
-        //   data.to,
-        //   (Number(amt).noExponents()).toString()
-        // );
+        const signer = this.hybridKeyring.getNativeSignerByAddress(account.nativeAddress);
 
         const transfer = RPCCalls.api.nativeApi.tx.balances.transfer(data.to, (Number(amt).noExponents()).toString());
 
-        if (RPCCalls.isHttp) {
-          const txHash = await transfer.signAndSend(keypair)
-          if (txHash) {
 
+        if (RPCCalls.isHttp) {
+          const txHash = await transfer.signAndSend(signer);
+
+          if (txHash) {
 
             const hash = txHash.toHex();
             dataToDispatch.txHash = hash;
@@ -1032,7 +928,7 @@ export class RPCCalls {
 
         } else {
           //Send and sign txn
-          const { status, events, txHash } = transfer.signAndSend(keypair);
+          const { status, events, txHash } = transfer.signAndSend(signer);
 
           if (status.isInBlock) {
             if (hash !== txHash.toHex()) {
@@ -1085,7 +981,7 @@ export class RPCCalls {
     try {
 
       const { data } = message;
-      const account = state.allAccounts[data.account.index]
+      const account = state.currentAccount;
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
 
@@ -1104,13 +1000,14 @@ export class RPCCalls {
 
 
         let err, evmDepositeHash, signedHash;
-        const seedSecret = mnemonicToMiniSecret(
-          decryptor(account?.temp1m, state.pass)
-        );
+        // const seedSecret = mnemonicToMiniSecret(
+        //   decryptor(account?.temp1m, state.pass)
+        // );
 
-        const keyring = new Keyring({ type: "ed25519" });
-        const keyringPair = keyring.addFromPair(ed25519PairFromSeed(seedSecret));
+        // const keyring = new Keyring({ type: "ed25519" });
+        // const keyringPair = keyring.addFromPair(ed25519PairFromSeed(seedSecret));
         const amt = (new BigNumber(data.amount).multipliedBy(DECIMALS)).toString();
+        const signer = this.hybridKeyring.getNativeSignerByAddress(account.nativeAddress);
 
         //Deposite amount
         let deposit = await RPCCalls.api.nativeApi.tx.evm.deposit(
@@ -1122,7 +1019,7 @@ export class RPCCalls {
         if (RPCCalls.isHttp) {
 
           //Sign and Send txn for http provider
-          const txHash = await deposit.signAndSend(keyringPair);
+          const txHash = await deposit.signAndSend(signer);
           if (txHash) {
 
             const hash = txHash.toHex();
@@ -1154,7 +1051,7 @@ export class RPCCalls {
         } else {
 
           //Sign and Send txn for websocket provider
-          deposit.signAndSend(keyringPair, ({ status, events, txHash }) => {
+          deposit.signAndSend(signer, ({ status, events, txHash }) => {
             if (status.isInBlock) {
 
               if (signedHash !== txHash) {
@@ -1202,6 +1099,7 @@ export class RPCCalls {
 
 }
 
+
 export class KeyringHandler {
   constructor() {
     this.hybridKeyring = new HybridKeyring();
@@ -1213,8 +1111,6 @@ export class KeyringHandler {
 
       if (this.hybridKeyring[message.event]) {
         const keyringResponse = await this._keyringCaller(message);
-        console.log("KeyringResponse : ", keyringResponse);
-
         this._parseKeyringRes(keyringResponse);
 
       } else {
@@ -1243,8 +1139,6 @@ export class KeyringHandler {
   //parse the response recieve from operation and send message accordingly to extension ui
   _parseKeyringRes = async (response) => {
     try {
-
-      console.log("Response in parseKeyring  : ", response);
 
       if (!response.error) {
 

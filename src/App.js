@@ -13,7 +13,6 @@ import WelcomeLayout from "./Layout/WelcomeLayout";
 import FixWidthLayout from "./Layout/FixWidthLayout";
 import PrivateKey from "./Components/Setting/PrivateKey";
 import Beforebegin from "./Pages/WelcomeScreens/Beforebegin";
-import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import EnterPassword from "./Components/Setting/EnterPassword";
 import LoginApprove from "./Pages/WelcomeScreens/LoginApprove";
 import SwapApprove from "./Pages/Swap/SwapApprove/SwapApprove";
@@ -25,6 +24,7 @@ import CreateNewWallet from "./Pages/WelcomeScreens/CreateNewWallet";
 import ApproveTx from "./Pages/RejectNotification/RejectNotification";
 import CreateWalletChain from "./Pages/WelcomeScreens/CreateWalletChain";
 import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
+import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 
 
 function getParameterByName(name, url = window.location.href) {
@@ -40,51 +40,72 @@ function App({ data }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  console.log("Location  : ", location.pathname);
 
   const { state, setState, isLoading } = useContext(AuthContext);
 
-  const { isLogin, vault, currentAccount } = state;
+  const { isLogin, vault } = state;
 
-  console.log("IsLogin  : ", isLogin);
-  console.log("Vault   : ", vault);
 
-  useEffect(() => {
-    setState(data);
-  }, []);
 
   useEffect(() => {
     // if (props?.popupRoute && props?.popupRoute?.length > 0 && isLogin) {
     //   navigate(`/${props?.popupRoute}`);
     //   return;
     // }
+    setState(data);
 
     const route = getParameterByName("route");
-
+    console.log("HERE ROUTE", route)
     if (route) {
       navigate(ROUTES.DEFAULT + route);
     } else {
       navigate(ROUTES.DEFAULT);
     }
 
+    // if (!isLogin && vault) {
+    //   navigate(ROUTES.UNLOACK_WALLET, {
+    //     state: {
+    //       redirectRoute: route ? ROUTES.DEFAULT + route : EMTY_STR,
+    //     },
+    //   });
+    // }
+
+    // else if (isLogin) {
+    //   // navigate(ROUTES.WALLET);
+    // }
+    // else {
+    //   navigate(ROUTES.DEFAULT);
+    // }
+
+  }, []);
+
+  useEffect(() => {
     if (!isLogin && vault) {
+      const route = getParameterByName("route");
+
       navigate(ROUTES.UNLOACK_WALLET, {
         state: {
           redirectRoute: route ? ROUTES.DEFAULT + route : EMTY_STR,
         },
       });
     }
-    else if (route) {
+
+  }, [isLogin, vault]);
+
+  useEffect(() => {
+
+
+    const route = getParameterByName("route");
+    console.log("HERE ROUTE", route)
+    if (route) {
       navigate(ROUTES.DEFAULT + route);
-    }
-    else if (isLogin) {
-      navigate(ROUTES.WALLET);
-    }
-    else {
-      navigate(ROUTES.DEFAULT);
+    } else {
+      if (isLogin)
+        navigate(ROUTES.WALLET);
     }
 
-  }, [isLogin,vault]);
+
+  }, [isLogin]);
 
 
   return (

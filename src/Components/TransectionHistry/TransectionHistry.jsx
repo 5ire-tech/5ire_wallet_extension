@@ -7,12 +7,6 @@ import { SUCCESS_MESSAGES, CURRENCY } from "../../Constants";
 
 function TransectionHistry({ dateTime, img, type, to, amount, status, txHash }) {
 
-  // useEffect(()=>{
-  //   console.log("Amount before : ",amount);
-  //   let _amount = new BigNumber(Number(amount)).toFixed(6,8).toString();
-  //   console.log("Amount :::: ",_amount);
-  // },[]);
-
   const handleClick = (hash) =>{
     navigator.clipboard.writeText(hash);
     toast.success(SUCCESS_MESSAGES.HASH_COPIED);

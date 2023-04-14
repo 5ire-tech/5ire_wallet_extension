@@ -3,23 +3,16 @@ import * as ethers from "ethers";
 import { EventEmitter } from 'events';
 import Keyring from "@polkadot/keyring";
 import * as protector from './protector';
-import { Transaction } from "@ethereumjs/tx";
+import { TransactionFactory } from "@ethereumjs/tx";
 import EthKeyring from '@metamask/eth-hd-keyring';
 import * as utilCrypto from '@polkadot/util-crypto';
 import SimpleKeyring from '@metamask/eth-simple-keyring';
 import { WALLET_TYPES, KEYRING_EVENTS } from "../Constants";
 import { Chain, Common, Hardfork } from '@ethereumjs/common';
 import { EventPayload } from "../Utility/network_calls";
-import { STATE_CHANGE_ACTIONS, ERRCODES, ERROR_MESSAGES } from "../Constants/index";
+import { ERRCODES, ERROR_MESSAGES } from "../Constants/index";
 import { ErrorPayload, Error } from "../Utility/error_helper";
 
-// import { EventEmitter as eventEmmiter } from "./eventemitter";
-// const event_emmiter = new eventEmmiter();
-
-// //handling the connection using the events
-// event_emmiter.on(KEYRING_EVENTS.STATE_CHANGED, async () => {
-//     console.log("STATE_CHANGED  event is Here : ", KEYRING_EVENTS.STATE_CHANGED);
-// });
 
 export class HybridKeyring extends EventEmitter {
     keyrings
@@ -83,7 +76,6 @@ export class HybridKeyring extends EventEmitter {
      */
     async _persistData(password) {
         const res = await protector.encryptWithDetail(password, HybridKeyring.keyrings);
-        // console.log("Response from protector : ",res);
         this.emit(KEYRING_EVENTS.STATE_CHANGED, res);
         HybridKeyring.vault = res.vault
         return res;
@@ -212,7 +204,7 @@ export class HybridKeyring extends EventEmitter {
      * @param {string} password 
      */
     async unlock(message) {
-        // console.log("CAlling Unlock ...");
+
         let { password, vault } = message.data;
 
         vault = HybridKeyring.vault ? HybridKeyring.vault : vault;
@@ -236,7 +228,6 @@ export class HybridKeyring extends EventEmitter {
     async createOrRestore(message) {
 
         let { password, opts } = message.data;
-        console.log("create or restore :: message : ", message.data);
 
         if (!password) {
             if (HybridKeyring.password)
@@ -271,10 +262,9 @@ export class HybridKeyring extends EventEmitter {
         }
 
         const newAcc = { ...HybridKeyring.accounts[HybridKeyring.accounts.length - 1] };
-        console.log("NEW account data : ", newAcc);
 
         const key = await this._persistData(password);
-        const keyResponse = await this.exportEthAccountByAddress(newAcc.evmAddress, HybridKeyring.password);
+        const keyResponse = await this._exportEthAccountByAddress(newAcc.evmAddress, HybridKeyring.password);
 
 
         newAcc.evmPrivateKey = keyResponse ? keyResponse : "";
@@ -293,8 +283,6 @@ export class HybridKeyring extends EventEmitter {
      * @returns 
      */
     async addAccount(message) {
-        console.log("Message in addAccount ::: ", message);
-
         const { name } = message.data;
 
         if (HybridKeyring.accounts.length <= 0) {
@@ -320,7 +308,7 @@ export class HybridKeyring extends EventEmitter {
         keyring.accounts.push(newAcc);
         this.emit(KEYRING_EVENTS.ACCOUNT_ADDED, newAcc);
 
-        const keyResponse = await this.exportEthAccountByAddress(newAcc.evmAddress, HybridKeyring.password);
+        const keyResponse = await this._exportEthAccountByAddress(newAcc.evmAddress, HybridKeyring.password);
 
         newAcc.evmPrivateKey = keyResponse ? keyResponse : "";
 
@@ -596,15 +584,13 @@ export class HybridKeyring extends EventEmitter {
 
 
     async signEthTx(address, tx) {
-        console.log("Address in signEthTx : ", address);
-        console.log("TX data in signEthTx : ", tx);
 
-        // const common = new Common({ chain: Chain.Mainnet, hardfork: Hardfork.Istanbul });
+        const acc = HybridKeyring.accounts.find(acc => acc.evmAddress === address);
 
-        const acc = HybridKeyring.accounts.find(acc => acc.evmAddress === address)
+        const common = Common.custom({ chainId: 997, networkId: 1 }, { hardfork: "london" })
+        const txn = TransactionFactory.fromTxData(tx, { common });
 
-        const txn = Transaction.fromTxData(tx);
-        console.log("TX data in signEthTx 33 : ", txn);
+
         let signedTx = null;
         if (acc.type === WALLET_TYPES.HD) {
             signedTx = await HybridKeyring.ethKeyring.signTransaction(address, txn)
@@ -635,7 +621,7 @@ export class HybridKeyring extends EventEmitter {
      * @param {string} password 
      * @returns 
      */
-    async exportNativeAccountByAddress(address, password) {
+    async _exportNativeAccountByAddress(address, password) {
 
         await this.verifyPassword(password);
 
@@ -652,7 +638,6 @@ export class HybridKeyring extends EventEmitter {
             return data.private_keys[acc.accountIndex];
 
         } else if (acc.type === WALLET_TYPES.IMPORTED_NATIVE) {
-
             const data = this._getKeyringData(WALLET_TYPES.IMPORTED_NATIVE)
             return data.mnemonics[acc.accountIndex];
         } else {
@@ -666,7 +651,7 @@ export class HybridKeyring extends EventEmitter {
      * @param {string} password 
      * @returns 
      */
-    async exportEthAccountByAddress(address, password) {
+    async _exportEthAccountByAddress(address, password) {
 
         await this.verifyPassword(password);
 
@@ -686,17 +671,14 @@ export class HybridKeyring extends EventEmitter {
 
     async exportPrivatekey(message) {
         const { address } = message.data;
-        const result = await this.exportEthAccountByAddress(address, HybridKeyring.password);
+        const result = await this._exportEthAccountByAddress(address, HybridKeyring.password);
         const payload = { privateKey: result ? result : "" }
         return new EventPayload(message.event, message.event, payload, [], false);
     }
 
     async exportSeedPhrase(message) {
         const { address } = message.data;
-        console.log("Address ::: ", address);
-
-        const result = await this.exportNativeAccountByAddress(address, HybridKeyring.password);
-        console.log("Result of export Native seedss : ", result);
+        const result = await this._exportNativeAccountByAddress(address, HybridKeyring.password);
         const payload = { seedPhrase: result };
         return new EventPayload(message.event, message.event, payload, [], false);
     }

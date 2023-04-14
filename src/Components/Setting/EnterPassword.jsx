@@ -15,9 +15,8 @@ import { LABELS, ERROR_MESSAGES, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } fro
 function EnterPassword() {
 
   const navigate = useNavigate();
-  const { passError, setPassError, passVerified} = useContext(AuthContext);
   const [data, setData] = useState("");
-  // const [errMsg, setErrorMsg] = useState("");
+  const { passError, setPassError, passVerified} = useContext(AuthContext);
   const [isDisable, setDisable] = useState(true);
 
   useEffect(() => {
@@ -34,7 +33,6 @@ function EnterPassword() {
     }
   },[passVerified]);
 
-  console.log("PassError : ",passError);
 
   const handleChange = (e) => {
     setData(e.target.value);

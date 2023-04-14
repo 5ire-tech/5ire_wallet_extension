@@ -10,21 +10,7 @@ import { PVT_KEY, NATIVE, EVM, COPIED, MNEMONIC } from "../../Constants/index.js
 function CreateWalletChain() {
 
   const { newAccount } = useContext(AuthContext);
-
-  console.log("NewAccount ::::::::: ",newAccount);
-
-  // const [data, setData] = useState({
-  //   mnemonic: "",
-  //   evmPrivateKey: "",
-  //   evmAddress: "",
-  //   nativeAddress: "",
-  // });
-
-  // useEffect(() => {
-  //   setData(newAccount);
-
-  // }, [newAccount]);
-
+  
 
   const handleCopy = (e) => {
 

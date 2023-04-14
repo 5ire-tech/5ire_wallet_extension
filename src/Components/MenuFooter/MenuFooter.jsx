@@ -42,20 +42,15 @@ import FooterStepOne, {
 } from "./FooterContinue";
 
 function MenuFooter() {
-  // const { logout } = useAuth();
   const navigate = useNavigate();
   const getLocation = useLocation();
-  // const [accounts, setAccounts] = useState([]);
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
   const [open2, setOpen2] = useState(false);
-  // const [history, setHistory] = useState([]);
-  // const [accData, setAccData] = useState([]);
   const { state, updateState, allAccounts } = useContext(AuthContext);
 
   const { pathname } = getLocation;
   const { currentAccount, currentNetwork, txHistory } = state;
-
 
   const onClose1 = () => {
     setOpen1(false);
@@ -91,8 +86,8 @@ function MenuFooter() {
     // }
   };
 
-  const onSelectAcc = (accId, type) => {
-    const acc = allAccounts.find(acc => acc.accountIndex === accId);
+  const onSelectAcc = name => {
+    const acc = allAccounts.find(acc => acc.accountName === name);
     updateState(LABELS.CURRENT_ACCOUNT, acc);
 
     //send account details whenever account is changed
@@ -110,6 +105,7 @@ function MenuFooter() {
   };
 
   const handleHistoryOpen = () => {
+
     // if (txHistory.hasOwnProperty(accData.accountName)) {
     //   let txData = txHistory[accData.accountName].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()));
     //   setHistory(arrayReverser(txData));
@@ -209,7 +205,7 @@ function MenuFooter() {
           <ManageCustom
             img={Sendhistry}
             data={data}
-            active={data?.accountIndex === currentAccount?.accountIndex ? true : false}
+            active={data?.accountName === currentAccount?.accountName ? true : false}
             edited={false}
             checkValue={index}
             onSelectAcc={onSelectAcc}
@@ -219,7 +215,7 @@ function MenuFooter() {
           img={Createaccount}
           title="Create a New Wallet"
           onClick={hanldeCreateNewAcc}
-        />
+        />                  
         <AccountSetting
           img={Import}
           title="Import Wallet"

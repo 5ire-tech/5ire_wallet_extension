@@ -46,11 +46,6 @@ export class ExtensionStorageHandler {
     static updateStorage = async (key, data, options) => {
         try {
 
-            // console.log("KEY in UpdateStorage", key);
-            // console.log("isNullorUndef(key) ", isNullorUndef(key));
-            // console.log("!hasLength(key) ", !hasLength(key));
-            // console.log("data in UpdateStorage", data);
-
             //checks for invalid or undef argument
             isNullorUndef(key) && !hasLength(key) && new Error(new ErrorPayload(ERRCODES.INVALID_ARGU_TYPE, ERROR_MESSAGES.INVALID_TYPE)).throw();
 
@@ -123,20 +118,65 @@ export class ExtensionStorageHandler {
         return await this._updateStorage(newState);
     }
 
-    //new account
-    // createOrRestore = async (message, state, options) => {
-    //     const { vault, accounts } = message;
-    //     const newState = { ...state, vault, currentAccount: accounts[0] }
-    //     console.log("New State : ", newState);
-    //     return await this._updateStorage(newState);
-    // }
+    // unlockWallet 
+    unlock = async (message, state, options) => {
+        if (message.isLogin)
+            this._updateSession(LABELS.ISLOGIN, message.isLogin);
 
-    //unlockWallet 
-    // unlock = async (message, state, options) => {
-    //     if (message.isLogin)
-    //         this._updateSession(LABELS.ISLOGIN, message.isLogin);
+    }
 
-    // }
+    _txProperty = (state, accountName) => {
+        return {
+            ...state.txHistory,
+            [accountName]: []
+        };
+    }
+
+    // set the new Account
+    createOrRestore = async (message, state, options) => {
+        const { vault, newAccount } = message;
+        const currentAcc = {
+            evmAddress: newAccount.evmAddress,
+            accountName: newAccount.accountName,
+            accountIndex: newAccount.accountIndex,
+            nativeAddress: newAccount.nativeAddress,
+        }
+
+        const txHistory = this._txProperty(state, newAccount.accountName);
+        const newState = { ...state, vault, txHistory, currentAccount: currentAcc, isLogin: true }
+        return await this._updateStorage(newState);
+
+    };
+
+
+    importAccountByMnemonics = async (message, state, options) => {
+        const { newAccount, vault } = message;
+        const txHistory = this._txProperty(state, newAccount.accountName);
+        const newState = { ...state, vault, txHistory, currentAccount: newAccount }
+        return await this._updateStorage(newState);
+    };
+
+    //add hd account
+    addAccount = async (message, state, options) => {
+
+        const { newAccount, vault } = message;
+        const currentAccount = {
+            evmAddress: newAccount.evmAddress,
+            nativeAddress: newAccount.nativeAddress,
+            accountName: newAccount.accountName,
+            accountIndex: newAccount.accountIndex,
+        };
+        const txHistory = this._txProperty(state, newAccount.accountName);
+        const newState = { ...state, vault, txHistory, currentAccount }
+        return await this._updateStorage(newState);
+
+    };
+
+    //Lock the wallet
+    lock = async (message, state, options) => {
+        const newState = { ...state, isLogin: message.isLogin };
+        return await this._updateStorage(newState);
+    }
 
     //************************************Internal methods***************************/
     _updateStorage = async (state) => {
@@ -144,8 +184,8 @@ export class ExtensionStorageHandler {
         return false
     }
 
-    // _updateSession = async (key, state) => {
-    //     await sessionStorage.set({ [key]: state })
-    // }
+    _updateSession = async (key, state) => {
+        await sessionStorage.set({ [key]: state })
+    }
 
 }

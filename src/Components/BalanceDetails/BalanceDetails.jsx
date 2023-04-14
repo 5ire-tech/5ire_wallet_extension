@@ -49,14 +49,6 @@ function BalanceDetails({ mt0 }) {
     connectedSites,
   } = state;
 
-  console.log("currentAccount", currentAccount);
-
-
-  // useEffect(() => {
-  //   // setAccountData(allAccounts ? allAccounts[currentAccount.index] : {});
-  //   setAccDetails({ evmAddress: currentAccount.evmAddress, nativeAddress: currentAccount.nativeAddress });
-  // }, [currentAccount.evmAddress])
-
 
   useEffect(() => {
 
@@ -67,15 +59,10 @@ function BalanceDetails({ mt0 }) {
       }
     });
 
-    // if (accountData.evmAddress && accountData?.nativeAddress) {
-    //   setAddresses({ evmAddress: shortner(accountData?.evmAddress), nativeAddress: shortner(accountData?.nativeAddress) });
-    // }
-
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.BALANCE, {});
 
   }, [currentNetwork, currentAccount.evmAddress]);
 
-  console.log("Balance :::: ", balance);
 
 
   // useEffect(() => {

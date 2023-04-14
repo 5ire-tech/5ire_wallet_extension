@@ -30,7 +30,7 @@ function ManageWallet() {
     if (e.target.name === "name") {
       navigator.clipboard.writeText(currentAccount?.accountName);
     }
-    toast.success(COPIED)
+    toast.success(COPIED);
   }
 
   return (

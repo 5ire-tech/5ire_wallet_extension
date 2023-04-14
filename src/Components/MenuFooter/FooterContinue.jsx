@@ -9,6 +9,7 @@ import ButtonComp from "../ButtonComp/ButtonComp";
 import { useDispatch, useSelector } from "react-redux";
 import { closeBoth } from "../../Utility/window.helper";
 import { HTTP_END_POINTS, LABELS } from "../../Constants/index";
+import { newAccountInitialState } from "../../Store/initialState";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
 import {
   setSite,
@@ -16,7 +17,6 @@ import {
   toggleLoader,
   toggleSite,
 } from "../../Utility/redux_helper";
-import { newAccountInitialState } from "../../Store/initialState";
 
 
 //Wallet of Before We begin
@@ -56,12 +56,14 @@ function FooterStepOne() {
 
 //Footer of New wallet Detail Page
 export const FooterStepTwo = () => {
-  const { state, updateState, setNewAccount} = useContext(AuthContext);
+  const { state, updateState, setNewAccount } = useContext(AuthContext);
   const navigate = useNavigate();
-  // const { isLogin } = state;
+
 
   const handleCancle = () => {
     updateState(LABELS.NEW_ACCOUNT, null, false);
+    // updateState(LABELS.ISLOGIN, true, true, true);
+
     // updateState(LABELS.ACCOUNT_NAME, null, false);
     navigate(ROUTES.DEFAULT);
   };

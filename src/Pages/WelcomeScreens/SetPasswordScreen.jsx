@@ -86,15 +86,10 @@ export default function SetPasswordScreen() {
         if (params.id === LABELS.CREATE) {
 
           sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: pass.pass, opts: { name: accountName } });
-          setTimeout(() => {
-            navigate(ROUTES.NEW_WALLET_DETAILS);
-          }, 1000);
+          navigate(ROUTES.NEW_WALLET_DETAILS);
         } else {
-
-          setTimeout(() => {
-            setUserPass(pass.pass);
-            navigate(ROUTES.IMPORT_WALLET);
-          }, 1000);
+          setUserPass(pass.pass);
+          navigate(ROUTES.IMPORT_WALLET);
         }
 
       }
