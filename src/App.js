@@ -38,10 +38,8 @@ function getParameterByName(name, url = window.location.href) {
 
 function App({ data }) {
   const navigate = useNavigate();
-  const location = useLocation();
 
-
-  const { state, setState, isLoading } = useContext(AuthContext);
+  const { state, setState, isLoading, newAccount } = useContext(AuthContext);
 
   const { isLogin, vault } = state;
 
@@ -55,31 +53,16 @@ function App({ data }) {
     setState(data);
 
     const route = getParameterByName("route");
-    console.log("HERE ROUTE", route)
     if (route) {
       navigate(ROUTES.DEFAULT + route);
     } else {
       navigate(ROUTES.DEFAULT);
     }
 
-    // if (!isLogin && vault) {
-    //   navigate(ROUTES.UNLOACK_WALLET, {
-    //     state: {
-    //       redirectRoute: route ? ROUTES.DEFAULT + route : EMTY_STR,
-    //     },
-    //   });
-    // }
-
-    // else if (isLogin) {
-    //   // navigate(ROUTES.WALLET);
-    // }
-    // else {
-    //   navigate(ROUTES.DEFAULT);
-    // }
-
   }, []);
 
   useEffect(() => {
+
     if (!isLogin && vault) {
       const route = getParameterByName("route");
 
@@ -94,18 +77,10 @@ function App({ data }) {
 
   useEffect(() => {
 
+    if (isLogin && !newAccount.evmAddress)
+      navigate(ROUTES.WALLET);
 
-    const route = getParameterByName("route");
-    console.log("HERE ROUTE", route)
-    if (route) {
-      navigate(ROUTES.DEFAULT + route);
-    } else {
-      if (isLogin)
-        navigate(ROUTES.WALLET);
-    }
-
-
-  }, [isLogin]);
+  }, [isLogin, newAccount.evmAddress]);
 
 
   return (

@@ -61,16 +61,13 @@ export const FooterStepTwo = () => {
 
 
   const handleCancle = () => {
-    updateState(LABELS.NEW_ACCOUNT, null, false);
-    // updateState(LABELS.ISLOGIN, true, true, true);
-
-    // updateState(LABELS.ACCOUNT_NAME, null, false);
+    setNewAccount(newAccountInitialState);
     navigate(ROUTES.DEFAULT);
   };
 
   const handleClick = () => {
-    navigate(ROUTES.WALLET);
     setNewAccount(newAccountInitialState);
+    navigate(ROUTES.WALLET);
   };
 
   return (

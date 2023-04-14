@@ -10,7 +10,7 @@ import { PVT_KEY, NATIVE, EVM, COPIED, MNEMONIC } from "../../Constants/index.js
 function CreateWalletChain() {
 
   const { newAccount } = useContext(AuthContext);
-  
+
 
   const handleCopy = (e) => {
 
@@ -23,7 +23,7 @@ function CreateWalletChain() {
     if (e.target.name === PVT_KEY) navigator.clipboard.writeText(newAccount?.evmPrivateKey);
 
     if (e.target.name === "all") {
-      let string = `Mnemonic: ${newAccount?.temp1m}\nEVM Private key: ${newAccount?.temp2p}\nEVM Address: ${newAccount?.evmAddress}\nNative Address: ${newAccount?.nativeAddress}`;
+      let string = `Mnemonic: ${newAccount?.mnemonic}\nEVM Private key: ${newAccount?.evmPrivateKey}\nEVM Address: ${newAccount?.evmAddress}\nNative Address: ${newAccount?.nativeAddress}`;
       navigator.clipboard.writeText(string);
     }
 
@@ -36,11 +36,11 @@ function CreateWalletChain() {
         <h1>New Wallet Details</h1>
       </div>
       <div className={style.cardWhite__addressInput}>
-        <label>Mnemonic Phrase:</label>
+        <label>{!newAccount?.mnemonic && newAccount.drivePath ? "Drived Path:" : "Mnemonic Phrase:"}</label>
         <p className={style.cardWhite__addressInput__copyText}>
-          <span>{newAccount?.mnemonic}</span>
+          <span>{!newAccount.mnemonic && newAccount.drivePath ? newAccount.drivePath : newAccount.mnemonic}</span>
           <img
-            name={"mnemonic"}
+            name={MNEMONIC}
             src={CopyIcon}
             alt="copyIcon"
             draggable={false}
@@ -53,7 +53,7 @@ function CreateWalletChain() {
         <p className={style.cardWhite__addressInput__copyText}>
           <span>{newAccount?.evmPrivateKey}</span>
           <img
-            name={"privateKey"}
+            name={PVT_KEY}
             src={CopyIcon}
             alt="copyIcon"
             draggable={false}

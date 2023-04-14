@@ -292,9 +292,10 @@ export class HybridKeyring extends EventEmitter {
 
         const eth = await HybridKeyring.ethKeyring.addAccounts(1);
         //Check existing accounts in HD category
-        const existingHdAccounts = HybridKeyring.accounts.filter(acc => acc.type === WALLET_TYPES.HD).length
-        const newKr = HybridKeyring.polkaKeyring.addFromUri(this.mnemonic + "//" + existingHdAccounts);
-
+        const oldAccounts = HybridKeyring.accounts.filter(acc => acc.type === WALLET_TYPES.HD)
+        const existingHdAccounts = oldAccounts.length
+        const mainPair = HybridKeyring.polkaKeyring.getPair(oldAccounts[0]?.nativeAddress);
+        const newKr = mainPair.derive("//" + existingHdAccounts);
         const newAcc = {
             nativeAddress: newKr.address,
             evmAddress: Web3.utils.toChecksumAddress(eth[0]),
@@ -311,6 +312,7 @@ export class HybridKeyring extends EventEmitter {
         const keyResponse = await this._exportEthAccountByAddress(newAcc.evmAddress, HybridKeyring.password);
 
         newAcc.evmPrivateKey = keyResponse ? keyResponse : "";
+        newAcc.drivePath = "//" + existingHdAccounts;
 
         const response = await this._persistData(HybridKeyring.password);
 
@@ -697,8 +699,8 @@ export class HybridKeyring extends EventEmitter {
         if (data.numberOfAccounts > 1) {
 
             for (let i = 1; i < data.numberOfAccounts; i++) {
-                // const derivedPair = keyringPair.derive("//" + i);
-                const derivedPair = HybridKeyring.polkaKeyring.addFromUri(data.mnemonic + "//" + i)
+                const derivedPair = keyringPair.derive("//" + i);
+                // const derivedPair = HybridKeyring.polkaKeyring.addFromUri(data.mnemonic + "//" + i)
                 accounts.push(derivedPair.address)
             }
         }

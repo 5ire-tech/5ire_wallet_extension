@@ -144,7 +144,9 @@ export class ExtensionStorageHandler {
 
         const txHistory = this._txProperty(state, newAccount.accountName);
         const newState = { ...state, vault, txHistory, currentAccount: currentAcc, isLogin: true }
+        this._updateSession(LABELS.ISLOGIN, true);
         return await this._updateStorage(newState);
+
 
     };
 
@@ -160,12 +162,14 @@ export class ExtensionStorageHandler {
     addAccount = async (message, state, options) => {
 
         const { newAccount, vault } = message;
+
         const currentAccount = {
             evmAddress: newAccount.evmAddress,
             nativeAddress: newAccount.nativeAddress,
             accountName: newAccount.accountName,
             accountIndex: newAccount.accountIndex,
         };
+
         const txHistory = this._txProperty(state, newAccount.accountName);
         const newState = { ...state, vault, txHistory, currentAccount }
         return await this._updateStorage(newState);

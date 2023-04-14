@@ -104,10 +104,7 @@ export default function Context({ children }) {
 
   // set the new Account
   const createOrRestore = (data) => {
-
-    const { newAccount } = data;
-
-    setNewAccount(newAccount);
+    setNewAccount(data.newAccount);
   };
 
   const unlock = (data) => {

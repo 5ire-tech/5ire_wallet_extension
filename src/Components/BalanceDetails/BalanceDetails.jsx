@@ -34,7 +34,7 @@ import {
 function BalanceDetails({ mt0 }) {
 
   const getLocation = useLocation();
-  const { state, updateState } = useContext(AuthContext);
+  const { state, updateState} = useContext(AuthContext);
   const [isConnected, setIsConnected] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEvmModal, setIsEvmModal] = useState(false);
@@ -75,7 +75,6 @@ function BalanceDetails({ mt0 }) {
 
 
   const handleNetworkChange = (network) => {
-
     updateState(LABELS.CURRENT_NETWORK, network);
     updateState(balance, { evmBalance: EMTY_STR, nativeBalance: EMTY_STR, totalBalance: EMTY_STR });
   };

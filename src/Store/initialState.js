@@ -26,7 +26,7 @@ export const userState = {
         totalBalance: ""
     },
 
-    currentNetwork: "Testnet",
+    currentNetwork: "QA",
 
     eth_accounts: '',
 
