@@ -7,6 +7,10 @@ import CopyIcon from "../../Assets/CopyIcon.svg";
 import { isNullorUndef } from "../../Utility/utility";
 import React, { useEffect, useState, useContext } from "react";
 import { TEMP1M, TEMP2P, NATIVE, EVM, COPIED } from "../../Constants/index.js";
+import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
+import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
+import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx";
+import { ROUTES } from "../../Routes";
 
 function CreateWalletChain() {
   const { walletSignUp, authData } = useWallet();
@@ -58,9 +62,10 @@ function CreateWalletChain() {
 
   return (
     <div className={style.cardWhite}>
-      <div className={style.cardWhite__beginText}>
+      {/* <div className={style.cardWhite__beginText}>
         <h1>Create New Wallet</h1>
-      </div>
+      </div> */}
+      <MenuRestofHeaders backTo={ROUTES.BEFORE_BEGIN} title={"Create New Wallet"} />
       <div className={style.copyButton}>
         <button
           className={style.cardWhite__addressInput__copyAll}
@@ -102,6 +107,22 @@ function CreateWalletChain() {
         <label>Mnemonic Phrase:</label>
         <p className={style.cardWhite__addressInput__copyText}>
           <span>{data?.temp1m}</span>
+        
+              <img
+                src={EyeOpenIcon}
+                width={19}
+                height={12}
+                draggable={false}
+                alt="eyeOpen"
+              />
+           
+              <img
+                src={EyeCloseIcon}
+                width={19}
+                height={16}
+                draggable={false}
+                alt="eyeClose"
+              />
           <img
             name={TEMP1M}
             src={CopyIcon}
@@ -115,6 +136,22 @@ function CreateWalletChain() {
         <label>EVM Private Key:</label>
         <p className={style.cardWhite__addressInput__copyText}>
           <span>{data.temp2p}</span>
+
+          <img
+                src={EyeOpenIcon}
+                width={19}
+                height={12}
+                draggable={false}
+                alt="eyeOpen"
+              />
+           
+              <img
+                src={EyeCloseIcon}
+                width={19}
+                height={16}
+                draggable={false}
+                alt="eyeClose"
+              />  
           <img
             name={TEMP2P}
             src={CopyIcon}

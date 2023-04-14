@@ -6,12 +6,20 @@ import Import from "../../Assets/PNG/import.png";
 import style from "./style.module.scss";
 import { ERROR_MESSAGES } from "../../Constants/index";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ROUTES } from "../../Routes";
 import useAuth from "../../Hooks/useAuth";
 import DarkLogo from "../../Assets/DarkLogo.svg";
 import ThreeDot from "../../Assets/dot3.svg";
+import { Dropdown, Space } from "antd";
 function MyAccount() {
+  const items = [
+    {
+      key: "1",
+      label: <Link target="_blank">Delete</Link>,
+    },
+  ];
+
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -59,7 +67,17 @@ function MyAccount() {
         </div>
         <div className={style.myAccountSec__rytSec}>
           <h2>Active</h2>
-          <img src={ThreeDot} />
+          <Dropdown
+            menu={{
+              items,
+            }}
+          >
+            {/* <a onClick={(e) => e.preventDefault()}> */}
+            <Space>
+            <img src={ThreeDot} />
+            </Space>
+            {/* </a> */}
+          </Dropdown>
         </div>
       </div>
       <div className={style.myAccountSec__accountActive}>
@@ -72,7 +90,17 @@ function MyAccount() {
         </div>
         <div className={style.myAccountSec__rytSec}>
           <h2>Not Active</h2>
-          <img src={ThreeDot} />
+          <Dropdown
+            menu={{
+              items,
+            }}
+          >
+            {/* <a onClick={(e) => e.preventDefault()}> */}
+            <Space>
+            <img src={ThreeDot} />
+            </Space>
+            {/* </a> */}
+          </Dropdown>
         </div>
       </div>
     </div>
