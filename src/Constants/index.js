@@ -178,30 +178,26 @@ export const MESSAGE_EVENT_LABELS = {
     EVM_TX: "evmTransfer",
     BALANCE: "getBalance",
     NATIVE_FEE: "nativeFee",
-    LOGIN_UPDATE: "loginUpdate",
     NATIVE_TX: "nativeTransfer",
-    NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
-    NV_FEE: "nvTx",
-    NV_TX: "nvTx",
-    BALANCE: "getBalance",
-    UPDATE_TX_HISTORY: "txupdatehistory",
-    NOTIFICATION: "notification",
-    CLOSE_POPUP_SESSION: "closePopupSession",
+    LOGIN_UPDATE: "loginUpdate",
     NOTIFICATION: "notification",
     UPDATE_TX_HISTORY: "txupdatehistory",
     EVM_TO_NATIVE_SWAP: "evmToNativeSwap",
     NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
+    CLOSE_POPUP_SESSION: "closePopupSession",
+
 
     LOCK: "lock",
     UNLOCK: "unlock",
     ADD_ACCOUNT: "addAccount",
     GET_ACCOUNTS: "getAccounts",
-    EXPORT_PRIVATE_KEY:"exportPrivatekey",
-    EXPORT_SEED_PHRASE:"exportSeedPhrase",
+    FORGOT_PASS: "forgotPassByMnemonic",
     CREATE_OR_RESTORE: "createOrRestore",
-    VERIFY_USER_PASSWORD:"verifyUserPassword",
-    // LOAD_PERSIST_DATA: "loadPersistData",
+    EXPORT_PRIVATE_KEY: "exportPrivatekey",
+    EXPORT_SEED_PHRASE: "exportSeedPhrase",
+    VERIFY_USER_PASSWORD: "verifyUserPassword",
     IMPORT_BY_MNEMONIC: "importAccountByMnemonics",
+    // LOAD_PERSIST_DATA: "loadPersistData",
 }
 
 export const INTERNAL_EVENT_LABELS = {
@@ -247,7 +243,7 @@ export const MESSAGE_TYPE_LABELS = {
     EXTENSION_UI_KEYRING: "extensionUiKeyring"
 }
 
-export const ROUTE_FOR_APPROVAL_WINDOWS  = {
+export const ROUTE_FOR_APPROVAL_WINDOWS = {
     CONNECTION_ROUTE: "login-approve",
     APPROVE_TX: "approve-tx"
 }

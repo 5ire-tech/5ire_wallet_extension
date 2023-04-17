@@ -3,7 +3,6 @@ import { ROUTES } from "../../Routes";
 import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
-import useAuth from "../../Hooks/useAuth";
 import Browser from "webextension-polyfill";
 import Logout from "../../Assets/PNG/logout.png";
 import Import from "../../Assets/PNG/import.png";
@@ -66,7 +65,6 @@ function MenuFooter() {
 
   const handleMyAccOpen = () => {
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.GET_ACCOUNTS, {});
-    setOpen(true);
   };
 
   const hanldeCreateNewAcc = () => {
@@ -77,16 +75,9 @@ function MenuFooter() {
     navigate(ROUTES.IMPORT_WALLET);
   };
 
-  const handleLogout = async () => {
-    // const res = await logout();
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.LOCK, {});
-
-    // if (!res.error) {
-    //   navigate(ROUTES.UNLOACK_WALLET);
-    // } else {
-    //   toast.error(ERROR_MESSAGES.LOGOUT_ERR);
-    // }
-  };
+  // const handleLogout = async () => {
+  //   sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.LOCK, {});
+  // };
 
   const onSelectAcc = name => {
     const acc = allAccounts.find(acc => acc.accountName === name);
@@ -125,49 +116,49 @@ function MenuFooter() {
     <div className={`${style.menuItems} welcomeFooter`}>
       {(pathname === ROUTES.WALLET ||
         pathname === ROUTES.HISTORY_P ||
-        pathname === ROUTES.MYACCOUNT) && (
-        <>
-           <Link
-            to={ROUTES.WALLET} // onClick={handleHistoryOpen}
-            className={`${style.menuItems__items} ${style.menuItems__items__active}`}
-          >
-            <div className={style.menuItems__items__img}>
-              <img src={Wallet} alt="HistoryIcon" draggable={false} />
-            </div>
-            <span className={style.menuItems__items__title}>Wallet</span>
-          </Link>
-          <Link
-            to={ROUTES.HISTORY_P} // onClick={handleHistoryOpen}
-            className={`${style.menuItems__items} ${style.menuItems__items__active}`}
-          >
-            <div className={style.menuItems__items__img}>
-              <img src={HistoryIcon} alt="HistoryIcon" draggable={false} />
-            </div>
-            <span className={style.menuItems__items__title}>History</span>
-          </Link>
+        pathname === ROUTES.MY_ACCOUNT) && (
+          <>
+            <Link
+              to={ROUTES.WALLET} // onClick={handleHistoryOpen}
+              className={`${style.menuItems__items} ${style.menuItems__items__active}`}
+            >
+              <div className={style.menuItems__items__img}>
+                <img src={Wallet} alt="HistoryIcon" draggable={false} />
+              </div>
+              <span className={style.menuItems__items__title}>Wallet</span>
+            </Link>
+            <Link
+              to={ROUTES.HISTORY_P} // onClick={handleHistoryOpen}
+              className={`${style.menuItems__items} ${style.menuItems__items__active}`}
+            >
+              <div className={style.menuItems__items__img}>
+                <img src={HistoryIcon} alt="HistoryIcon" draggable={false} />
+              </div>
+              <span className={style.menuItems__items__title}>History</span>
+            </Link>
 
-          <Link
-            to={ROUTES.MYACCOUNT}
-            // onClick={handleMyAccOpen}
-            className={`${style.menuItems__items} ${style.menuItems__items__active}`}
-          >
-            <div className={style.menuItems__items__img}>
-              <img src={Myaccount} alt="Myaccount" draggable={false} />
-            </div>
-            <span className={style.menuItems__items__title}>My Accounts</span>
-          </Link>
+            <Link
+              to={ROUTES.MY_ACCOUNT}
+              onClick={handleMyAccOpen}
+              className={`${style.menuItems__items} ${style.menuItems__items__active}`}
+            >
+              <div className={style.menuItems__items__img}>
+                <img src={Myaccount} alt="Myaccount" draggable={false} />
+              </div>
+              <span className={style.menuItems__items__title}>My Accounts</span>
+            </Link>
 
-          <Link
-            onClick={() => setOpen2(true)}
-            className={`${style.menuItems__items} ${style.menuItems__items__active}`}
-          >
-            <div className={style.menuItems__items__img}>
-              <img src={Setting} alt="Setting" draggable={false} />
-            </div>
-            <span className={style.menuItems__items__title}>Settings</span>
-          </Link>
-        </>
-      )}
+            <Link
+              onClick={() => setOpen2(true)}
+              className={`${style.menuItems__items} ${style.menuItems__items__active}`}
+            >
+              <div className={style.menuItems__items__img}>
+                <img src={Setting} alt="Setting" draggable={false} />
+              </div>
+              <span className={style.menuItems__items__title}>Settings</span>
+            </Link>
+          </>
+        )}
 
       <Drawer
         title={
@@ -207,7 +198,7 @@ function MenuFooter() {
 
       </Drawer>
 
-      <Drawer
+      {/* <Drawer
         title={
           <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             My Accounts
@@ -234,14 +225,14 @@ function MenuFooter() {
           img={Createaccount}
           title="Create a New Wallet"
           onClick={hanldeCreateNewAcc}
-        />                  
+        />
         <AccountSetting
           img={Import}
           title="Import Wallet"
           onClick={handleImportAcc}
         />
         <AccountSetting img={Logout} title="Logout" onClick={handleLogout} />
-      </Drawer>
+      </Drawer> */}
 
       <Drawer
         height={404}
@@ -337,7 +328,7 @@ function MenuFooter() {
       {pathname === ROUTES.APPROVE_TXN && <ApproveTx />}
       {(pathname === ROUTES.CREATE_WALLET ||
         pathname === ROUTES.UNLOACK_WALLET ||
-        pathname === ROUTES.FORGOTPASSWORD ||
+        pathname === ROUTES.FORGOT_PASSWORD ||
         pathname === ROUTES.IMPORT_WALLET) && <PrivacyPolicy />}
     </div>
   );

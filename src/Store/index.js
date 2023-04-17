@@ -111,11 +111,13 @@ export default function Context({ children }) {
 
   // set the new Account
   const createOrRestore = (data) => {
-    setNewAccount(data.newAccount);
+    console.log("Data :::: ",data);
+    if (data?.type === "create" ) {
+      setNewAccount(data.newAccount);
+    }
   };
 
   const unlock = (data) => {
-
     if (data?.errMessage) {
       setPassError(data.errMessage);
     } else {
@@ -134,7 +136,9 @@ export default function Context({ children }) {
   };
 
   const verifyUserPassword = (data) => {
-    setPassError(data?.errMessage ? data?.errMessage : "");
+    if (data?.errCode === 3) {
+      setPassError(data?.errMessage ? data?.errMessage : "");
+    }
     setPassVerified(data?.verified ? true : false);
   }
 
@@ -170,7 +174,6 @@ export default function Context({ children }) {
     setPrivateKey,
     setPassVerified,
     updateEstimatedGas,
-    updateLoading,
     externalControlsState,
     setExternalControlState
   }

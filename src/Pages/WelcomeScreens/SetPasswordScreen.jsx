@@ -1,14 +1,16 @@
 import { ROUTES } from "../../Routes";
-// import { toast } from "react-toastify";
 import style from "./style.module.scss";
+import { AuthContext } from "../../Store";
+// import { toast } from "react-toastify";
 // import useAuth from "../../Hooks/useAuth";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { isEmpty, log} from "../../Utility/utility";
+import { isEmpty } from "../../Utility/utility";
 import React, { useContext, useEffect, useState } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
+import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
 import {
   REGEX,
   LABELS,
@@ -17,10 +19,6 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
-import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
-import { AuthContext } from "../../Store";
-
-
 
 
 export default function SetPasswordScreen() {
@@ -37,11 +35,9 @@ export default function SetPasswordScreen() {
   useEffect(() => {
 
     if (pass.confirmPass === pass.pass || pass.pass === EMTY_STR)
-
       setError(p => ({ ...p, confirmPass: EMTY_STR }))
-    else
-      if (pass.confirmPass !== EMTY_STR)
-        setError(p => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }))
+    else if (pass.confirmPass !== EMTY_STR)
+      setError(p => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }))
 
   }, [pass.pass, pass.confirmPass]);
 
@@ -95,7 +91,7 @@ export default function SetPasswordScreen() {
       if (!error.pass && !error.confirmPass && pass.pass && pass.confirmPass) {
         if (params.id === LABELS.CREATE) {
 
-          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: pass.pass, opts: { name: accountName } });
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: pass.pass, opts: { name: accountName }, type: "create" });
           navigate(ROUTES.NEW_WALLET_DETAILS);
         } else {
           setUserPass(pass.pass);
@@ -147,7 +143,7 @@ export default function SetPasswordScreen() {
               coloredBg={true}
               keyUp={validateConfirmPass}
             />
-            <p className={style.errorText}>{error.confirmPass? error.confirmPass : ""}</p>
+            <p className={style.errorText}>{error.confirmPass ? error.confirmPass : ""}</p>
           </div>
 
           <div style={{ marginTop: "50px" }} className={style.contBtn}>
@@ -156,8 +152,8 @@ export default function SetPasswordScreen() {
               text={"Continue"}
               maxWidth={"100%"}
             />
-             <ButtonComp
-             bordered={true}
+            <ButtonComp
+              bordered={true}
               onClick={handleCancel}
               text={"Cancel"}
               maxWidth={"100%"}

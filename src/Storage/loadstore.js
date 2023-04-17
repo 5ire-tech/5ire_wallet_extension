@@ -201,20 +201,37 @@ export class ExtensionStorageHandler {
 
     // set the new Account
     createOrRestore = async (message, state) => {
-        const { vault, newAccount } = message;
+        console.log("Setting New Wallet Details ......");
+        const { vault, newAccount, type} = message;
         const currentAcc = {
             evmAddress: newAccount.evmAddress,
             accountName: newAccount.accountName,
             accountIndex: newAccount.accountIndex,
             nativeAddress: newAccount.nativeAddress,
         }
-
         const txHistory = this._txProperty(state, newAccount.accountName);
+
         const newState = { ...state, vault, txHistory, currentAccount: currentAcc, isLogin: true }
         this._updateSession(LABELS.ISLOGIN, true);
         return await this._updateStorage(newState);
+    };
 
+    
+    forgotPassByMnemonic = async (message, state) => {
+        console.log("Setting New Wallet Details ......", message);
+        const { vault, newAccount, type} = message;
 
+        const currentAcc = {
+            evmAddress: newAccount.evmAddress,
+            accountName: newAccount.accountName,
+            accountIndex: newAccount.accountIndex,
+            nativeAddress: newAccount.nativeAddress,
+        }
+        const txHistory = this._txProperty(state, newAccount.accountName);
+
+        const newState = { ...state, vault, txHistory, currentAccount: currentAcc, isLogin: true }
+        this._updateSession(LABELS.ISLOGIN, true);
+        return await this._updateStorage(newState);
     };
 
 

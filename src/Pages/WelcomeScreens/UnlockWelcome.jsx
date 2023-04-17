@@ -74,7 +74,7 @@ function UnlockWelcome() {
             <p className={style.errorText}>{passError ? passError : ""}</p>
           </div>
           <div className={style.forgotLink}>
-            <Link to="/forgotpassword">Forgot password?</Link>
+            <Link to={ROUTES.FORGOT_PASSWORD}>Forgot password?</Link>
           </div>
         </div>
         <div className={style.setPassword__footerbuttons}>

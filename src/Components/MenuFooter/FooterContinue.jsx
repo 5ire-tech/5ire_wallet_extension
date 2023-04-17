@@ -60,7 +60,7 @@ function FooterStepOne() {
 
 //Footer of New wallet Detail Page
 export const FooterStepTwo = () => {
-  const { state, updateState, setNewAccount } = useContext(AuthContext);
+  const { state, setNewAccount } = useContext(AuthContext);
   const navigate = useNavigate();
 
 
