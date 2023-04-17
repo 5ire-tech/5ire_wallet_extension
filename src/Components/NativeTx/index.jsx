@@ -30,128 +30,128 @@ function NativeTx() {
         getFee()
     }, [])
 
-    function getFee() {
+    async function getFee() {
         dispatch(toggleLoader(true));
+        const apiRes = await connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.wsEndPoints.uat, auth.currentNetwork, false);
+        if (!apiRes?.value) {
+            Connection.isExecuting.value = false;
+        }
 
-        connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.wsEndPoints.uat, auth.currentNetwork, false).then(async (apiRes) => {
-            if (!apiRes?.value) {
-                Connection.isExecuting.value = false;
-            }
+        await getBalance(apiRes.evmApi, apiRes.nativeApi, true)
 
-            await getBalance(apiRes.evmApi, apiRes.nativeApi, true)
+        let feeData, methodName = '', amount = 0;
+        switch (auth?.uiData?.method) {
+            case "native_add_nominator":
+                feeData = await addNominator(apiRes.nativeApi, auth?.uiData?.message, true);
+                amount = auth?.uiData?.message?.stakeAmount;
+                methodName = "Add Nominator";
+                break;
+            case "native_renominate":
+                feeData = await reNominate(apiRes.nativeApi, auth?.uiData?.message, true);
+                methodName = "Re-Nominate";
+                break;
+            case "native_nominator_payout":
+                feeData = await nominatorValidatorPayout(apiRes.nativeApi, auth?.uiData?.message, true);
+                methodName = "Nominator Payout";
+                break;
+            case "native_validator_payout":
+                feeData = await nominatorValidatorPayout(apiRes.nativeApi, auth?.uiData?.message, true);
+                methodName = "Validator Payout";
+                break;
+            case "native_stop_validator":
+                feeData = await stopValidatorNominator(apiRes.nativeApi, auth?.uiData?.message, true);
+                methodName = "Stop Validator";
+                break;
 
-            let feeData, methodName = '', amount = 0;
-            switch (auth?.uiData?.method) {
-                case "native_add_nominator":
-                    feeData = await addNominator(apiRes.nativeApi, auth?.uiData?.message, true);
-                    amount = auth?.uiData?.message?.stakeAmount;
-                    methodName = "Add Nominator";
-                    break;
-                case "native_renominate":
-                    feeData = await reNominate(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Re-Nominate";
-                    break;
-                case "native_nominator_payout":
-                    feeData = await nominatorValidatorPayout(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Nominator Payout";
-                    break;
-                case "native_validator_payout":
-                    feeData = await nominatorValidatorPayout(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Validator Payout";
-                    break;
-                case "native_stop_validator":
-                    feeData = await stopValidatorNominator(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Stop Validator";
-                    break;
+            case "native_stop_nominator":
+                feeData = await stopValidatorNominator(apiRes.nativeApi, auth?.uiData?.message, true);
+                methodName = "Stop Nominator";
+                break;
+            case "native_unbond_validator":
+                feeData = await unbondNominatorValidator(apiRes.nativeApi, auth?.uiData?.message, true);
+                methodName = "Unbond Validator";
 
-                case "native_stop_nominator":
-                    feeData = await stopValidatorNominator(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Stop Nominator";
-                    break;
-                case "native_unbond_validator":
-                    feeData = await unbondNominatorValidator(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Unbond Validator";
+                amount = auth?.uiData?.message?.amount;
+                break;
 
-                    amount = auth?.uiData?.message?.amount;
-                    break;
+            case "native_unbond_nominator":
+                feeData = await unbondNominatorValidator(apiRes.nativeApi, auth?.uiData?.message, true);
+                methodName = "Unbond Nominator";
+                amount = auth?.uiData?.message?.amount;
 
-                case "native_unbond_nominator":
-                    feeData = await unbondNominatorValidator(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Unbond Nominator";
-                    amount = auth?.uiData?.message?.amount;
+                break;
+            case "native_withdraw_nominator":
+                feeData = await withdrawNominatorValidatorData(apiRes.nativeApi, auth?.uiData?.message, true);
+                methodName = "Send Funds";
+                amount = auth?.uiData?.message?.amount;
 
-                    break;
-                case "native_withdraw_nominator":
-                    feeData = await withdrawNominatorValidatorData(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Send Funds";
-                    amount = auth?.uiData?.message?.amount;
+                break;
 
-                    break;
+            case "native_withdraw_validator":
+                feeData = await withdrawNominatorValidatorData(apiRes.nativeApi, auth?.uiData?.message, true);
+                methodName = "Send Funds";
+                amount = auth?.uiData?.message?.amount;
 
-                case "native_withdraw_validator":
-                    feeData = await withdrawNominatorValidatorData(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Send Funds";
-                    amount = auth?.uiData?.message?.amount;
+                break;
+            case "native_withdraw_nominator_unbonded":
+                feeData = await withdrawNominatorUnbonded(apiRes.nativeApi, auth?.uiData?.message, true);
+                methodName = "Withdraw Nominator Unbonded";
+                amount = auth?.uiData?.message?.value;
+                break;
 
-                    break;
-                case "native_withdraw_nominator_unbonded":
-                    feeData = await withdrawNominatorUnbonded(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Withdraw Nominator Unbonded";
-                    amount = auth?.uiData?.message?.value;
-                    break;
+            case "native_withdraw_validator_unbonded":
+                feeData = await withdrawNominatorUnbonded(apiRes.nativeApi, auth?.uiData?.message, true);
+                methodName = "Withdraw Validator Unbonded";
+                amount = auth?.uiData?.message?.value;
 
-                case "native_withdraw_validator_unbonded":
-                    feeData = await withdrawNominatorUnbonded(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Withdraw Validator Unbonded";
-                    amount = auth?.uiData?.message?.value;
+                break;
 
-                    break;
+            case "native_add_validator":
+                feeData = await addValidator(apiRes.nativeApi, auth?.uiData?.message, true);
+                methodName = "Add Validator";
+                amount = auth?.uiData?.message?.amount;
+                break;
 
-                case "native_add_validator":
-                    feeData = await addValidator(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Add Validator";
-                    amount = auth?.uiData?.message?.amount;
-                    break;
+            case "native_validator_bondmore":
+                feeData = await bondMoreFunds(apiRes.nativeApi, auth?.uiData?.message, true);
+                methodName = "Bond More Funds";
+                amount = auth?.uiData?.message?.amount;
 
-                case "native_validator_bondmore":
-                    feeData = await bondMoreFunds(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Bond More Funds";
-                    amount = auth?.uiData?.message?.amount;
+                break;
+            case "native_nominator_bondmore":
+                feeData = await bondMoreFunds(apiRes.nativeApi, auth?.uiData?.message, true);
+                methodName = "Bond More Funds";
+                amount = auth?.uiData?.message?.amount;
 
-                    break;
-                case "native_nominator_bondmore":
-                    feeData = await bondMoreFunds(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Bond More Funds";
-                    amount = auth?.uiData?.message?.amount;
+                break;
+            case "native_restart_validator":
+                feeData = await restartValidator(apiRes.nativeApi, auth?.uiData?.message, true);
+                methodName = "Restart Validator";
+                break;
+            default:
 
-                    break;
-                case "native_restart_validator":
-                    feeData = await restartValidator(apiRes.nativeApi, auth?.uiData?.message, true);
-                    methodName = "Restart Validator";
-                    break;
-                default:
+        }
 
-            }
 
-            if (!feeData?.error && methodName) {
-                setFee(+feeData.data + extraFee);
-                setAmountInfo(amount || 0)
-                setFormattedMethod(methodName)
-            } else {
-                Browser.tabs.sendMessage(auth.uiData.tabId, {
-                    id: auth.uiData.id,
-                    response: null,
-                    error: feeData?.data,
-                });
+        if (!feeData?.error && methodName) {
+            setFee(+feeData.data + extraFee);
+            setAmountInfo(amount || 0)
+            setFormattedMethod(methodName)
+        } else {
+            Browser.tabs.sendMessage(auth.uiData.tabId, {
+                id: auth.uiData.id,
+                response: null,
+                error: feeData?.data,
+            });
 
-                setTimeout(() => {
-                    dispatch(setUIdata({}));
-                     window.close();
-                }, 300);
-            }
-            dispatch(toggleLoader(false));
+            setTimeout(() => {
+                dispatch(setUIdata({}));
+                window.close();
+            }, 300);
+        }
+        dispatch(toggleLoader(false));
 
-        })
+
 
     }
 
