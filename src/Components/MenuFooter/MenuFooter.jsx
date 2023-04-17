@@ -44,23 +44,15 @@ import FooterStepOne, {
 import PrivacyPolicy from "./PrivacyPolicy";
 
 function MenuFooter() {
-  const { logout } = useAuth();
   const navigate = useNavigate();
   const getLocation = useLocation();
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
   const [open2, setOpen2] = useState(false);
-  // const [history, setHistory] = useState([]);
-  const [accData, setAccData] = useState([]);
-  const { state, updateState } = useContext(AuthContext);
+  const { state, updateState, allAccounts } = useContext(AuthContext);
 
   const { pathname } = getLocation;
-
-  const { currentAccount, allAccounts, currentNetwork, txHistory } = state;
-
-  useEffect(() => {
-    setAccData(allAccounts ? allAccounts[currentAccount.index] : {});
-  }, [currentAccount?.accountName, allAccounts?.length]);
+  const { currentAccount, currentNetwork, txHistory } = state;
 
   const onClose1 = () => {
     setOpen1(false);
@@ -73,8 +65,8 @@ function MenuFooter() {
   };
 
   const handleMyAccOpen = () => {
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.GET_ACCOUNTS, {});
     setOpen(true);
-    // setAccData(accounts);
   };
 
   const hanldeCreateNewAcc = () => {
@@ -86,21 +78,20 @@ function MenuFooter() {
   };
 
   const handleLogout = async () => {
-    const res = await logout();
+    // const res = await logout();
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.LOCK, {});
 
-    if (!res.error) {
-      navigate(ROUTES.UNLOACK_WALLET);
-    } else {
-      toast.error(ERROR_MESSAGES.LOGOUT_ERR);
-    }
+    // if (!res.error) {
+    //   navigate(ROUTES.UNLOACK_WALLET);
+    // } else {
+    //   toast.error(ERROR_MESSAGES.LOGOUT_ERR);
+    // }
   };
 
-  const onSelectAcc = (accId) => {
+  const onSelectAcc = name => {
+    const acc = allAccounts.find(acc => acc.accountName === name);
+    updateState(LABELS.CURRENT_ACCOUNT, acc);
 
-    
-    let acc = allAccounts.find(acc => acc.id === accId);
-    updateState(LABELS.CURRENT_ACCOUNT, { accountName: acc.accountName, index: Number(acc.id) - 1 })
-    
     //send account details whenever account is changed
     getCurrentTabUId((id) => {
       getCurrentTabUrl((url) => {
@@ -190,9 +181,9 @@ function MenuFooter() {
         closeIcon={<img src={ModalCloseIcon} alt="close" draggable={false} />}
       >
         {
-          (txHistory[accData?.accountName] ? txHistory[accData?.accountName] : []).filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase())).length > 0 ?
+          (txHistory[currentAccount?.accountName] ? txHistory[currentAccount?.accountName] : []).filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase())).length > 0 ?
             (
-              arrayReverser(txHistory[accData.accountName].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()))).map((data, index) => (
+              arrayReverser(txHistory[currentAccount.accountName].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()))).map((data, index) => (
                 <TransectionHistry
                   dateTime={formatDate(data.dateTime)}
                   type={data?.type}
@@ -233,7 +224,7 @@ function MenuFooter() {
           <ManageCustom
             img={Sendhistry}
             data={data}
-            active={data?.id === accData?.id ? true : false}
+            active={data?.accountName === currentAccount?.accountName ? true : false}
             edited={false}
             checkValue={index}
             onSelectAcc={onSelectAcc}
@@ -243,7 +234,7 @@ function MenuFooter() {
           img={Createaccount}
           title="Create a New Wallet"
           onClick={hanldeCreateNewAcc}
-        />
+        />                  
         <AccountSetting
           img={Import}
           title="Import Wallet"

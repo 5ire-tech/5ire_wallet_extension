@@ -21,10 +21,11 @@ function WelcomeScreen() {
           </div>
         </div>
         <div className={style.cardWhite__linkOuter}>
-          <Link to={ROUTES.CREATE_WALLET} className="bluegradient">
+          <Link /*to={ROUTES.CREATE_WALLET}*/ to={ROUTES.BEFORE_BEGIN} className="bluegradient">
             Create a New Wallet
           </Link>
-          <Link className="grayBtn" to={ROUTES.IMPORT_WALLET}>
+          {/* <Link className="grayBtn" to={ROUTES.IMPORT_WALLET}> */}
+          <Link className="grayBtn" to={ROUTES.SET_PASS+"/import"}>
             Import Wallet
           </Link>
         </div>

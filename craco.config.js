@@ -8,6 +8,12 @@ const Min = Boolean(Number(process.env.MINI)) ? true : false
 module.exports = {
   webpack: {
     configure: (webpackConfig, { env, paths }) => {
+      const scopePluginIndex = webpackConfig.resolve.plugins.findIndex(
+        ({ constructor }) => constructor && constructor.name === 'ModuleScopePlugin'
+      );
+
+      webpackConfig.resolve.plugins.splice(scopePluginIndex, 1);
+
       return {
         ...webpackConfig,
         entry: {
@@ -37,7 +43,7 @@ module.exports = {
             path: require.resolve("path-browserify"),
             crypto: require.resolve("crypto-browserify"),
             stream: require.resolve("stream-browserify"),
-            buffer: require.resolve("buffer"),
+            buffer: require.resolve("buffer")
           },
         },
         plugins: [

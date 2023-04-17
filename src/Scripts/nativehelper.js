@@ -1,11 +1,11 @@
 import { BigNumber } from "bignumber.js";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import { Keyring } from "@polkadot/keyring";
-import { decryptor, encryptor } from "../Helper/CryptoHelper";
+import { decryptor } from "../Helper/CryptoHelper";
 import {
-  mnemonicGenerate,
+  // mnemonicGenerate,
   mnemonicToMiniSecret,
-  mnemonicValidate,
+  // mnemonicValidate,
   ed25519PairFromSeed
 } from "@polkadot/util-crypto";
 import { getDataLocal } from "../Storage/loadstore";

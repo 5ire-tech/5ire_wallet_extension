@@ -15,7 +15,7 @@ function ManageCustom({
 }) {
   return (
     <>
-      <div className={style.manageList} onClick={()=>onSelectAcc(data?.id)} >
+      <div className={style.manageList} onClick={()=>onSelectAcc(data?.accountName)} >
         <div className={style.manageList__imgcurrency} >
           <img src={img} alt="" draggable={false}/>
           <div className={style.manageList__imgcurrency_Name}>
@@ -37,7 +37,6 @@ function ManageCustom({
           name="accounts"
           checked={active}
           value={checkValue}
-          // onChange={onSelectAcc}
           className={style.checkbox}
         />
         {/* ) */}

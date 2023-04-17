@@ -4,7 +4,6 @@ import { ROUTES } from "../../Routes";
 import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
-import useWallet from "../../Hooks/useWallet";
 import { useLocation } from "react-router-dom";
 import { shortner } from "../../Helper/helper";
 import CopyIcon from "../../Assets/CopyIcon.svg";
@@ -14,21 +13,23 @@ import GrayCircle from "../../Assets/graycircle.svg";
 import ModalCustom from "../ModalCustom/ModalCustom";
 import GreenCircle from "../../Assets/greencircle.svg";
 import { getCurrentTabUrl } from "../../Scripts/utils";
-import React, { useEffect, useState, useContext } from "react";
 import ThreeDot from "../../Assets/dot3.svg";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
+import React, { useEffect, useState, useContext } from "react";
+import { sendRuntimeMessage } from "../../Utility/message_helper"
 import DownArrowSuffix from "../../Assets/DownArrowSuffix.svg";
-import { connectionObj, Connection } from "../../Helper/connection.helper";
+
 import {
-  NATIVE,
   EVM,
-  NETWORK,
   COPIED,
-  HTTP_END_POINTS,
-  EMTY_STR,
   LABELS,
+  NATIVE,
+  NETWORK,
+  EMTY_STR,
+  CURRENCY,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS,
 } from "../../Constants/index";
-import { log } from "../../Utility/utility";
 
 
 function BalanceDetails({ mt0 }) {
@@ -38,22 +39,33 @@ function BalanceDetails({ mt0 }) {
   const [isEvmModal, setIsEvmModal] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isheaderActive, setisheaderActive] = useState(false);
-  const [accountData, setAccountData] = useState({ accountName: EMTY_STR });
-  const [addresses, setAddresses] = useState({
-    evmAddress: EMTY_STR,
-    nativeAddress: EMTY_STR,
-  });
+  // const [accountData, setAccountData] = useState({ accountName: EMTY_STR });
+  // const [addresses, setAddresses] = useState({
+  //   evmAddress: EMTY_STR,
+  //   nativeAddress: EMTY_STR,
+  // });
 
-  const { pathname } = getLocation;
+  // const { pathname } = getLocation;
 
-  const { currentAccount, currentNetwork, balance, allAccounts } = state;
+  // const { currentAccount, currentNetwork, balance, allAccounts } = state;
   const {connectedApps} = externalControlsState;
 
 
-  useEffect(() => {
-    setAccountData(allAccounts ? allAccounts[currentAccount.index] : {});
-  }, [currentAccount.index]);
+  // useEffect(() => {
+  //   setAccountData(allAccounts ? allAccounts[currentAccount.index] : {});
+  // }, [currentAccount.index]);
 
+
+  
+
+  const { pathname } = getLocation;
+
+  const {
+    balance,
+    currentAccount,
+    currentNetwork,
+    connectedSites,
+  } = state;
 
 
   useEffect(() => {
@@ -67,16 +79,9 @@ function BalanceDetails({ mt0 }) {
       }
     });
 
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.BALANCE, {});
 
-
-    if (accountData.evmAddress && accountData?.nativeAddress) {
-      setAddresses({
-        evmAddress: shortner(accountData?.evmAddress),
-        nativeAddress: shortner(accountData?.nativeAddress),
-      });
-    }
-
-  }, [currentNetwork, accountData.accountName]);
+  }, [currentNetwork, currentAccount.evmAddress]);
 
 
   const handleNetworkChange = (network) => {
@@ -90,9 +95,9 @@ function BalanceDetails({ mt0 }) {
 
   const handleCopy = (e) => {
     if (e.target.name === NATIVE)
-      navigator.clipboard.writeText(accountData.nativeAddress);
+      navigator.clipboard.writeText(currentAccount.nativeAddress);
     else if (e.target.name === EVM)
-      navigator.clipboard.writeText(accountData.evmAddress);
+      navigator.clipboard.writeText(currentAccount.evmAddress);
     toast.success(COPIED);
   };
 
@@ -148,10 +153,10 @@ function BalanceDetails({ mt0 }) {
                           alt="connectionLogo"
                           draggable={false}
                         />
-                        {accountData?.accountName}
+                        {currentAccount?.accountName ? currentAccount?.accountName : ""}
                       </p>
                       <span>
-                        {addresses.evmAddress}{" "}
+                        {currentAccount.evmAddress ? currentAccount.evmAddress : ""}{" "}
                         <img
                           draggable={false}
                           src={CopyIcon}
@@ -169,7 +174,7 @@ function BalanceDetails({ mt0 }) {
                           alt="connectionLogo"
                           draggable={false}
                         />
-                        {accountData?.accountName}
+                        {currentAccount?.accountName ? currentAccount?.accountName : ""}
                       </p>
                     </>
                   )}
@@ -263,7 +268,7 @@ function BalanceDetails({ mt0 }) {
             <div className={style.balanceDetails__innerBalance}>
               <div className={style.balanceDetails__innerBalance__totalBalnce}>
                 <p>
-                  Total Balance : <span>{balance?.totalBalance} 5ire</span>
+                  Total Balance : <span>{balance?.totalBalance ? `${balance.totalBalance} ${CURRENCY}` : ""} </span>
                 </p>
               </div>
               <div className={style.balanceDetails__innerBalance__chainBalance}>
@@ -276,7 +281,7 @@ function BalanceDetails({ mt0 }) {
                     <p>Native Chain Balance</p>
                     <h3>
                       {/* <img src={WalletCardLogo} draggable={false} alt="walletLogo" /> */}
-                      {balance?.nativeBalance}
+                      {balance?.nativeBalance ? balance?.nativeBalance : ""}
                     </h3>
                   </div>
                   <div className={style.balanceDetails__innerBalance__walletQa}>
@@ -299,7 +304,7 @@ function BalanceDetails({ mt0 }) {
                     <p>EVM Chain Balance</p>
                     <h3>
                       {/* <img src={WalletCardLogo} draggable={false} alt="balanceLogo" /> */}
-                      {balance?.evmBalance}
+                      {balance?.evmBalance ? balance?.evmBalance : ""}
                     </h3>
                   </div>
                   <div className={style.balanceDetails__innerBalance__walletQa}>
@@ -341,7 +346,7 @@ function BalanceDetails({ mt0 }) {
                     size={200}
                     style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                     viewBox={`0 0 256 256`}
-                    value={accountData.nativeAddress}
+                    value={currentAccount?.nativeAddress ? currentAccount?.nativeAddress : ""}
                   />
                 </div>
                 <div className={style.balanceDetails__nativemodal__modalOr}>
@@ -352,7 +357,7 @@ function BalanceDetails({ mt0 }) {
                 </p>
                 <div className={style.balanceDetails__nativemodal__wrapedText}>
                   <p>
-                    {addresses.nativeAddress}
+                    {currentAccount?.nativeAddress ? shortner(currentAccount?.nativeAddress) : ""}
                     <img
                       draggable={false}
                       src={CopyIcon}
@@ -392,7 +397,7 @@ function BalanceDetails({ mt0 }) {
                     size={200}
                     style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                     viewBox={`0 0 256 256`}
-                    value={accountData.evmAddress}
+                    value={currentAccount?.evmAddress ? currentAccount.evmAddress : ""}
                   />
                 </div>
                 <div className={style.balanceDetails__nativemodal__modalOr}>
@@ -403,7 +408,7 @@ function BalanceDetails({ mt0 }) {
                 </p>
                 <div className={style.balanceDetails__nativemodal__wrapedText}>
                   <p>
-                    {addresses.evmAddress}
+                    {currentAccount?.evmAddress ? shortner(currentAccount?.evmAddress) : ""}
                     <img
                       draggable={false}
                       src={CopyIcon}

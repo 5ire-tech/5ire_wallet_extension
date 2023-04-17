@@ -1,25 +1,28 @@
 import style from "./style.module.scss";
 import { ROUTES } from "../../Routes";
 import React, { useContext } from "react";
+import { AuthContext } from "../../Store";
 import browser from "webextension-polyfill";
-import useWallet from "../../Hooks/useWallet";
 import { useNavigate } from "react-router-dom";
 import ButtonComp from "../ButtonComp/ButtonComp";
-import { EVM_JSON_RPC_METHODS, HTTP_END_POINTS, LABELS, STATE_CHANGE_ACTIONS, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
+import { EVM_JSON_RPC_METHODS, LABELS, STATE_CHANGE_ACTIONS, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
 import { useDispatch, useSelector } from "react-redux";
+import { newAccountInitialState } from "../../Store/initialState";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
 import {
   setUIdata,
   toggleLoader,
 } from "../../Utility/redux_helper";
-import { closeBoth } from "../../Utility/window.helper"
-import { AuthContext } from "../../Store";
+
+
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
 import { isEqual } from "../../Utility/utility";
 import { sendMessageToTab, sendRuntimeMessage } from "../../Utility/message_helper";
 import { TabMessagePayload } from "../../Utility/network_calls";
 
 
+
+//Wallet of Before We begin
 function FooterStepOne() {
   const { state } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -31,7 +34,8 @@ function FooterStepOne() {
   }
 
   const handleClick = () => {
-    navigate(ROUTES.NEW_WALLET_DETAILS);
+    // navigate(ROUTES.NEW_WALLET_DETAILS);
+    navigate(ROUTES.CREATE_WALLET);
   }
 
   return (
@@ -54,22 +58,25 @@ function FooterStepOne() {
   );
 }
 
+//Footer of New wallet Detail Page
 export const FooterStepTwo = () => {
-  const { state, updateState } = useContext(AuthContext);
+  const { state, updateState, setNewAccount } = useContext(AuthContext);
   const navigate = useNavigate();
-  const { isLogin } = state;
+
 
   const handleCancle = () => {
     updateState(LABELS.NEW_ACCOUNT, null, false);
+    // updateState(LABELS.ISLOGIN, true, true, true);
+
     // updateState(LABELS.ACCOUNT_NAME, null, false);
-    navigate(ROUTES.BEFORE_BEGIN);
+    navigate(ROUTES.DEFAULT);
   };
 
   const handleClick = () => {
-
-    if (isLogin) navigate(ROUTES.WALLET);
-    else navigate(ROUTES.SET_PASS + "/create");
+    navigate(ROUTES.WALLET);
+    setNewAccount(newAccountInitialState);
   };
+
   return (
     <>
       <div className={style.menuItems__cancleContinue}>

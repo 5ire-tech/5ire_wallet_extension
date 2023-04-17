@@ -3,7 +3,12 @@
   "version": "0.1.3",
   "private": true,
   "dependencies": {
+    "@ethereumjs/common": "^3.1.1",
+    "@ethereumjs/tx": "^4.1.1",
     "@lottiefiles/react-lottie-player": "^3.5.0",
+    "@metamask/browser-passworder": "^4.1.0",
+    "@metamask/eth-hd-keyring": "^6.0.0",
+    "@metamask/eth-simple-keyring": "^5.0.0",
     "@metamask/safe-event-emitter": "^2.0.0",
     "@polkadot/api": "^9.11.3",
     "@polkadot/keyring": "^10.2.6",
@@ -21,7 +26,8 @@
     "bignumber.js": "^9.1.1",
     "browser-event-emitter": "^1.0.2",
     "buffer": "^6.0.3",
-    "craco": "^0.0.3",
+    "craco": "0.0.3",
+    "crypto": "^1.0.1",
     "crypto-browserify": "^3.12.0",
     "ethers": "^5.7.2",
     "json-rpc-engine": "^6.1.0",
@@ -52,7 +58,8 @@
   "scripts": {
     "watch": "node ./scripts/watch",
     "start": "react-scripts start",
-    "build": "INLINE_RUNTIME_CHUNK=false BUILD_TYPE=CHROME MINI=0 craco build",
+    "reactbuild": "reatc-script build",
+    "build": "INLINE_RUNTIME_CHUNK=true BUILD_TYPE=CHROME MINI=0 GENERATE_SOURCEMAP=true REACT_APP_ENV=development craco build",
     "build:chrome": "INLINE_RUNTIME_CHUNK=false BUILD_TYPE=CHROME MINI=1 GENERATE_SOURCEMAP=false craco build",
     "build:firefox": "INLINE_RUNTIME_CHUNK=false BUILD_TYPE=FIREFOX  MINI=1 GENERATE_SOURCEMAP=false craco build",
     "test": "react-scripts test",
@@ -66,9 +73,11 @@
   },
   "browserslist": {
     "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
+      "chrome >= 67",
+      "edge >= 79",
+      "firefox >= 68",
+      "opera >= 54",
+      "safari >= 14"
     ],
     "development": [
       "last 1 chrome version",

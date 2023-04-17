@@ -4,11 +4,10 @@ import React from "react";
 import Context from "./Store";
 import ReactDOM from "react-dom/client";
 import { localStorage } from "./Storage";
-import Browser from "webextension-polyfill";
 import browser from "webextension-polyfill";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { CONNECTION_NAME, EMTY_STR, LABELS } from "./Constants";
+import { CONNECTION_NAME, EMTY_STR, LABELS} from "./Constants";
 import { getDataLocal } from "../src/Storage/loadstore"
 import { sessionStorage } from "../src/Storage/index";
 import { log } from "./Utility/utility";
@@ -73,7 +72,7 @@ const initApp = (data, externalControlsState) => {
     const currentLocalState = await getDataLocal(LABELS.STATE);
     const externalControlsState  = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
     const loginState = await sessionStorage.get(LABELS.ISLOGIN);
-    
+
     currentLocalState.isLogin = !loginState?.isLogin ? false : currentLocalState.isLogin;
 
     initApp(currentLocalState, externalControlsState);

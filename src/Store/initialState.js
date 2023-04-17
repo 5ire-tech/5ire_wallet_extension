@@ -1,5 +1,5 @@
 export const userState = {
-    pass: null,
+    vault: null,
 
     allAccounts: [],
 
@@ -10,11 +10,11 @@ export const userState = {
     },
 
     currentAccount: {
+        evmAddress: "",
         accountName: "",
-        index: ""
+        accountIndex: "",
+        nativeAddress: "",
     },
-
-    newAccount: null,
 
     balance: {
         evmBalance: "",
@@ -22,9 +22,7 @@ export const userState = {
         totalBalance: ""
     },
 
-    currentNetwork: "QA",
-
-    accountName: "",
+    currentNetwork: "Testnet",
 
     eth_accounts: '',
 
@@ -35,11 +33,19 @@ export const userState = {
 export const externalControls = {
     activeSession: null,
     connectedApps: {},
-    connectionQueue: [],
-    txQueue: []
+    connectionQueue: []
 }
 
 export const transactionQueue = {
     txQueue: [],
     currentTransaction: null
+}
+
+export const newAccountInitialState = {
+    mnemonic: "",
+    evmPrivateKey: "",
+    evmAddress: "",
+    nativeAddress: "",
+    accountName:"",
+    accountIndex:""
 }

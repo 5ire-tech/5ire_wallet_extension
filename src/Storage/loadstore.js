@@ -54,8 +54,10 @@ export class ExtensionStorageHandler {
 
             //checks for invalid or undef argument
             isNullorUndef(key) && !hasLength(key) && new Error(new ErrorPayload(ERRCODES.INVALID_ARGU_TYPE, ERROR_MESSAGES.INVALID_TYPE)).throw();
+
             isNullorUndef(data) && new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
-            !isObject(data) && new Error(new ErrorPayload(ERRCODES.INVALID_ARGU_TYPE, ERROR_MESSAGES.INVALID_TYPE)).throw();
+
+            // !isObject(data) && new Error(new ErrorPayload(ERRCODES.INVALID_ARGU_TYPE, ERROR_MESSAGES.INVALID_TYPE)).throw();
 
 
             if (isNullorUndef(ExtensionStorageHandler.instance)) {
@@ -129,12 +131,6 @@ export class ExtensionStorageHandler {
 
 
     /************************************ External Apps Control *********************/
-    // //add a new transaction task
-    // addNewTxTask = (data, state) => {
-    //     const newState = {...state};
-    //     newState.txQueue.push(data)
-    //     this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
-    // }
 
     //add a new connection task
     addNewConnectionTask = (data, state) => {
@@ -188,11 +184,77 @@ export class ExtensionStorageHandler {
         this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
     }
 
+
+    // unlockWallet 
+    unlock = async (message) => {
+        if (message.isLogin)
+            this._updateSession(LABELS.ISLOGIN, message.isLogin);
+
+    }
+
+    _txProperty = (state, accountName) => {
+        return {
+            ...state.txHistory,
+            [accountName]: []
+        };
+    }
+
+    // set the new Account
+    createOrRestore = async (message, state) => {
+        const { vault, newAccount } = message;
+        const currentAcc = {
+            evmAddress: newAccount.evmAddress,
+            accountName: newAccount.accountName,
+            accountIndex: newAccount.accountIndex,
+            nativeAddress: newAccount.nativeAddress,
+        }
+
+        const txHistory = this._txProperty(state, newAccount.accountName);
+        const newState = { ...state, vault, txHistory, currentAccount: currentAcc, isLogin: true }
+        return await this._updateStorage(newState);
+
+    };
+
+
+    importAccountByMnemonics = async (message, state) => {
+        const { newAccount, vault } = message;
+        const txHistory = this._txProperty(state, newAccount.accountName);
+        const newState = { ...state, vault, txHistory, currentAccount: newAccount }
+        return await this._updateStorage(newState);
+    };
+
+    //add hd account
+    addAccount = async (message, state) => {
+
+        const { newAccount, vault } = message;
+        const currentAccount = {
+            evmAddress: newAccount.evmAddress,
+            nativeAddress: newAccount.nativeAddress,
+            accountName: newAccount.accountName,
+            accountIndex: newAccount.accountIndex,
+        };
+        const txHistory = this._txProperty(state, newAccount.accountName);
+        const newState = { ...state, vault, txHistory, currentAccount }
+        return await this._updateStorage(newState);
+
+    };
+
+    //Lock the wallet
+    lock = async (message, state) => {
+        const newState = { ...state, isLogin: message.isLogin };
+        return await this._updateStorage(newState);
+    }
+    
+    
     //*********************************** Internal methods **************************/
     _updateStorage = async (state, key) => {
-        const checkKey = key || LABELS.STATE;
-        await localStorage.set({ [checkKey]: state })
-        return false
+            const checkKey = key || LABELS.STATE;
+            await localStorage.set({ [checkKey]: state })
+    
+        }
+
+    _updateSession = async (key, state) => {
+        await sessionStorage.set({ [key]: state })
     }
 
 }

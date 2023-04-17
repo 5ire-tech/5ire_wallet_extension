@@ -17,10 +17,6 @@ function WelcomeLayout({ children }) {
   return (
     <div className={"WelcomeLayout"}>
       <div className="WelcomeLayout__container">
-        {/* {
-          pathname === (ROUTES.BEFORE_BEGIN || ROUTES.NEW_WALLET_DETAILS || ROUTES.SET_PASS) &&
-          <div className={style.cardWhite__numberingSec}></div>
-        } */}
 
         {/* {pathname === ROUTES.BEFORE_BEGIN && (
           <div className={style.cardWhite__numberingSec}>

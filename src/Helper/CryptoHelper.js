@@ -10,7 +10,7 @@ const unpack = (str) => {
     const bytes = toBytes.slice(0, 32);
     return bytes;
   } catch (error) {
-    // console.log("erorr : ", error);
+
   }
 };
 

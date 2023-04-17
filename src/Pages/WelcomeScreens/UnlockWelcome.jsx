@@ -1,56 +1,49 @@
+import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
 import { AuthContext } from "../../Store";
 import PlaceLogo from "../../Assets/PlaceLog.svg";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LABELS, ERROR_MESSAGES } from "../../Constants/index";
 import React, { useEffect, useState, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
+import { sendRuntimeMessage } from "../../Utility/message_helper";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
-import { ROUTES } from "../../Routes";
+import { LABELS, ERROR_MESSAGES, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
+import { isEmpty } from "../../Utility/utility";
 
 function UnlockWelcome() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { verifyPass } = useAuth();
-  const [data, setData] = useState("");
-  const [errMsg, setErrorMsg] = useState("");
+  // const navigate = useNavigate();
+  // const location = useLocation();
+
+  const [pass, setPass] = useState("");
   const [isDisable, setDisable] = useState(true);
-  const { state, updateState } = useContext(AuthContext);
-  const { isLogin } = state;
+  const { state, passError, setPassError } = useContext(AuthContext);
+  const { vault } = state;
 
   useEffect(() => {
-    if (errMsg || !data) {
+    if (passError || !pass) {
       setDisable(true);
     } else {
       setDisable(false);
     }
-  }, [errMsg, data]);
+  }, [passError, pass]);
 
   const handleChange = (e) => {
-    setData(e.target.value);
-    setErrorMsg("");
+    setPass(e.target.value);
+    setPassError("");
   };
 
   const validateInput = () => {
-    if (data.length === 0) {
-      setErrorMsg(ERROR_MESSAGES.INPUT_REQUIRED);
+    if (isEmpty(pass)) {
+      setPassError(ERROR_MESSAGES.INPUT_REQUIRED);
       setDisable(true);
     }
   };
 
   const handleClick = async (e) => {
-    if (e.key === LABELS.ENTER || e.key === undefined) {
-      let res = await verifyPass(data);
-
-      if (!res.error) {
-        if (isLogin !== true) updateState(LABELS.ISLOGIN, true, true, true);
-        navigate(location.state?.redirectRoute || ROUTES.WALLET);
-      } else {
-        setErrorMsg(res.data);
-        setDisable(true);
-      }
+    if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.UNLOCK, { password: pass, vault: vault });
     }
   };
 
@@ -78,7 +71,7 @@ function UnlockWelcome() {
               keyUp={validateInput}
               coloredBg={true}
             />
-            <p className={style.errorText}>{errMsg ? errMsg : ""}</p>
+            <p className={style.errorText}>{passError ? passError : ""}</p>
           </div>
           <div className={style.forgotLink}>
             <Link to="/forgotpassword">Forgot password?</Link>

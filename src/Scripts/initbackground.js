@@ -8,37 +8,42 @@ import { hasLength, isObject, isNullorUndef, hasProperty, getKey, log, isEqual, 
 import { HTTP_END_POINTS, API, HTTP_METHODS, EVM_JSON_RPC_METHODS, ERRCODES, ERROR_MESSAGES, ERROR_EVENTS_LABELS } from "../Constants";
 import { EVMRPCPayload, EventPayload, TransactionPayload, TransactionProcessingPayload, TabMessagePayload } from "../Utility/network_calls";
 import { httpRequest } from "../Utility/network_calls";
-import { nativeMethod } from "./nativehelper";
-import { Connection } from "../Helper/connection.helper";
-import { EventEmitter } from "./eventemitter";
-import { BigNumber } from "bignumber.js";
-import { Error, ErrorPayload } from "../Utility/error_helper";
-import { u8aToHex } from "@polkadot/util";
 import Web3 from "web3";
+import { BigNumber } from "bignumber.js";
+import { u8aToHex } from "@polkadot/util";
+// import Keyring from "@polkadot/keyring";
+import { HybridKeyring } from "./5ire-keyring";
+import { nativeMethod } from "./nativehelper";
+import { EventEmitter } from "./eventemitter";
+import { numFormatter } from "../Helper/helper";
+import { txNotificationStringTemplate } from "./utils";
+import { Connection } from "../Helper/connection.helper";
+import { Error, ErrorPayload } from "../Utility/error_helper";
 import Keyring from "@polkadot/keyring";
 import { decryptor } from "../Helper/CryptoHelper";
 import { ed25519PairFromSeed, mnemonicToMiniSecret } from "@polkadot/util-crypto";
 import { sendMessageToTab, sendRuntimeMessage } from "../Utility/message_helper";
-import { txNotificationStringTemplate } from "./utils";
 
 
 //for initilization of background events
 export class InitBackground {
   //check if there is time interval binded
   static balanceTimer = null;
+
   constructor() {
     ExtensionEventHandle.initEventsAndGetInstance();
     this.injectScriptInTab();
     this.bindAllEvents();
-    this.rpcRequestProcessor = new RpcRequestProcessor.getInstance();
-    this.internalHandler = new ExternalConnection.getInstance();
+    this.rpcRequestProcessor = RpcRequestProcessor.getInstance();
+    this.internalHandler = ExternalConnection.getInstance();
     this.externalTaskHandler = new ExternalTxTasks();
+    this.keyringHandler = new KeyringHandler();
   }
 
   //init the background events
   static initBackground = () => {
     new InitBackground();
-    delete InitBackground.constructor
+    delete InitBackground.constructor;
   }
 
   /****************** Inject the script into current active tabs ******************/
@@ -76,6 +81,7 @@ export class InitBackground {
     this.bindInstallandUpdateEvents();
     this.bindBackgroundStartupEvents();
     this.bindExtensionUnmountEvents();
+    // this.bindBrowserCloseEvent();
   }
 
   //bind the runtime message events
@@ -90,6 +96,9 @@ export class InitBackground {
         return;
       } else if(message?.type === MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL) {
         await this.externalTaskHandler.processExternalTask(message, localData);
+        return;
+      } else if (message?.type === MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING) {
+        await this.keyringHandler.keyringHelper(message);
         return;
       }
 
@@ -156,6 +165,8 @@ export class InitBackground {
 
       //perform according to the port name
       if (port.name === CONNECTION_NAME) {
+        //todo
+        // this.services.messageToUI("accounts", this.hybridKeyring.getAccounts());
 
         //handle the connection emit the connection event
         ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.CONNECTION);
@@ -222,7 +233,11 @@ export class InitBackground {
     _balanceUpdate = async () => {
       const id = setInterval(async () => {
       const state = await getDataLocal(LABELS.STATE);
-      await this.rpcRequestProcessor.rpcCallsMiddleware({ event: MESSAGE_EVENT_LABELS.BALANCE, type: MESSAGE_TYPE_LABELS.FEE_AND_BALANCE}, state)
+
+      //if account is not created
+      if(!state.currentAccount) return;
+
+      await this.rpcRequestProcessor.rpcCallsMiddleware({ event: MESSAGE_EVENT_LABELS.BALANCE, type: MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, data: {options: {account: state.currentAccount}}}, state)
      }, AUTO_BALANCE_UPDATE_TIMER)
          return id;
   }
@@ -237,7 +252,7 @@ class RpcRequestProcessor {
 
     constructor() {
       if (isNullorUndef(RpcRequestProcessor.api)) ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.CONNECTION)
-      this.transactionQueue = new TransactionQueue.getInstance()
+      this.transactionQueue = TransactionQueue.getInstance()
       this.generalWalletRpc = new GeneralWalletRPC();
       this.services = new Services();
     }
@@ -630,7 +645,7 @@ export class Services {
 
       //check if the tx is native or evm based
       if (txRecipt?.status) {
-        await this.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, {txHash, status: txRecipt.status, isSwap}, {account: txData.account});
+        await this.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, { txHash, status: txRecipt.status, isSwap }, { account: txData.account });
         this._showNotification(txNotificationStringTemplate(txRecipt.status, txHash));
       }
       else this.checkTransactions(txData);
@@ -689,7 +704,10 @@ export class Services {
 export class TransactionsRPC {
 
   constructor() {
+    this.hybridKeyring = new HybridKeyring();
+    if (isNullorUndef(RpcRequestProcessor.api)) ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.CONNECTION)
     this.services = new Services();
+
   }
 
   /************************* Validator and Nominator ****************************/
@@ -793,7 +811,6 @@ export class TransactionsRPC {
   }
 
   //********************************** Evm ***************************************/
-
   //evm transfer
   evmTransfer = async (message, state) => {
 
@@ -802,61 +819,57 @@ export class TransactionsRPC {
 
     try {
       const { data, transactionHistoryTrack, contractBytecode } = message;
-      const account = state.allAccounts[data.options.account.index];
+      const {options:{account}} = data;
+
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
       transactionHistory = {
         ...transactionHistoryTrack,
         isEvm: true,
-        type: contractBytecode ? "Contract Deployement" :  TX_TYPE.SEND,
+        type: contractBytecode ? TX_TYPE.CONTRACT_DEPLOYMENT :  TX_TYPE.SEND,
         status: STATUS.PENDING
       };
 
       const tempAmount = data.isBig ? (new BigNumber(data.value).dividedBy(DECIMALS)).toString() : data.value;
-      if ((Number(tempAmount) > (Number(state.balance.evmBalance)) && data.value !== '0x0') || Number(state.balance.evmBalance) <= 0) {
+
+      if (
+        (Number(tempAmount) > (Number(state.balance.evmBalance))
+          &&
+          data.value !== '0x0')
+        ||
+        Number(state.balance.evmBalance) <= 0
+      ) {
         return new EventPayload(null, ERROR_EVENTS_LABELS.INSUFFICENT_BALANCE, null, [], null);
-      } else {
+      }
+      else {
         const amt = (new BigNumber(data.value).multipliedBy(DECIMALS)).toString();
+        const to = Web3.utils.toChecksumAddress(data.to);
+        const value = data.isBig
+          ? data.value
+          : (Number(amt).noExponents()).toString();
 
-        const transactions = {
-          from: account.evmAddress,
-          value: data.isBig
-            ? data.value
-            : (Number(amt).noExponents()).toString(),
-          gas: 21000,
-          data: contractBytecode,
-          nonce: await RpcRequestProcessor.api.evmApi.eth.getTransactionCount(
-            account.evmAddress,
-            STATUS.PENDING.toLowerCase()
-          ),
-        };
-
-
-        const gasTx = {
-          from: transactions.from,
-          value: transactions.value,
-        };
-
-        if (data.to) {
-          transactions.to = Web3.utils.toChecksumAddress(data.to);
-          gasTx.to = transactions.to;
-        }
-
-        if (transactions.data) {
-          gasTx.data = transactions.data;
-        }
-
-        const gasAmount = await RpcRequestProcessor.api.evmApi.eth.estimateGas(gasTx);
-        transactions.gas = gasAmount;
-
-        let temp2p = getKey(account.temp1m, state.pass);
-        const signedTx = await RpcRequestProcessor.api.evmApi.eth.accounts.signTransaction(
-          transactions,
-          temp2p
+        const nonce = await RpcRequestProcessor.api.evmApi.eth.getTransactionCount(
+          account.evmAddress,
+          STATUS.PENDING.toLowerCase()
         );
 
+        const feeRes = await this._getEvmFee(to, account.evmAddress, value, contractBytecode);
+
+        const transactions = {
+          to,
+          gas: 21000,
+          data: contractBytecode ? contractBytecode : "0x",
+          value: "0x" + (Number(value).toString(16)),
+          nonce: "0x" + (Number(nonce).toString(16)),
+          gasLimit: "0x" + (Number(feeRes.gasLimit).toString(16)),
+          gasPrice: "0x" + (Number(feeRes.gasPrice).toString(16)),
+        };
+
+
+        const signedTx = await this.hybridKeyring.signEthTx(account.evmAddress, transactions);
+
         //Sign And Send Transaction
-        const txInfo = await RpcRequestProcessor.api.evmApi.eth.sendSignedTransaction(signedTx.rawTransaction);
+        const txInfo = await RpcRequestProcessor.api.evmApi.eth.sendSignedTransaction(signedTx);
         const hash = txInfo.transactionHash;
 
         if (hash) {
@@ -879,7 +892,6 @@ export class TransactionsRPC {
       log("Error in EVM Transfer: ", err)
       transactionHistory.status = transactionHistory.txHash ? STATUS.PENDING : STATUS.FAILED;
 
-
       payload = {
         data: transactionHistory,
         options: {
@@ -899,60 +911,51 @@ export class TransactionsRPC {
 
     try {
       const { data, transactionHistoryTrack } = message;
-      const account = state.allAccounts[data.options.account.index];
+      const {options: {account}} = data;
+
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
       transactionHistory = {
-        ...transactionHistoryTrack,
-        isEvm: true,
-        type: TX_TYPE.SWAP,
-        status: STATUS.PENDING,
-        to: "Evm to Native"
-      };
-
+        ...transactionHistoryTrack
+      }
 
       if (Number(data.value) >= Number(state.balance.evmBalance) || Number(data.value) <= 0) {
         return new EventPayload(null, ERROR_EVENTS_LABELS.INSUFFICENT_BALANCE, null, [], null);
       } else {
-        const seedAlice = mnemonicToMiniSecret(
-          decryptor(account.temp1m, state.pass)
-        );
-        const keyring = new Keyring({ type: "ed25519" });
-        const alice = keyring.addFromPair(ed25519PairFromSeed(seedAlice));
-        const publicKey = u8aToHex(alice.publicKey);
-        const amt = new BigNumber(data.value).multipliedBy(DECIMALS).toString();
 
-        const transaction = {
-          to: publicKey.slice(0, 42),
-          value: (Number(amt).noExponents()).toString(),
+        const alice = this.hybridKeyring.getNativeSignerByAddress(account.nativeAddress);
+        const to = (u8aToHex(alice.publicKey)).slice(0, 42);
+        const amt = new BigNumber(data.value).multipliedBy(DECIMALS).toString();
+        const from = account.evmAddress;
+        const nonce = await RpcRequestProcessor.api.evmApi.eth.getTransactionCount(account.evmAddress);
+        const feeRes = await this._getEvmFee(to, from, Math.round(data.value));
+        const value = (Number(amt).noExponents()).toString();
+
+        const transactions = {
+          to,
           gas: 21000,
-          nonce: await RpcRequestProcessor.api.evmApi.eth.getTransactionCount(account.evmAddress),
+          nonce: "0x" + (Number(nonce).toString(16)),
+          value: "0x" + (Number(value)).toString(16),
+          gasLimit: "0x" + (Number(feeRes.gasLimit).toString(16)),
+          gasPrice: "0x" + (Number(feeRes.gasPrice).toString(16)),
         };
 
-        let temp2p = getKey(account.temp1m, state.pass);
-        const signedTx = await RpcRequestProcessor.api.evmApi.eth.accounts.signTransaction(
-          transaction,
-          temp2p
-        );
+
+        const signedTx = await this.hybridKeyring.signEthTx(account.evmAddress, transactions);
+
 
         //sign and send
-        const txInfo = await RpcRequestProcessor.api.evmApi.eth.sendSignedTransaction(signedTx.rawTransaction);
+        const txInfo = await RpcRequestProcessor.api.evmApi.eth.sendSignedTransaction(signedTx);
         const signHash = txInfo.transactionHash;
 
         if (signHash) {
 
           //withdraw amount
-          const withdraw = await RpcRequestProcessor.api.nativeApi.tx.evm.withdraw(
-            publicKey.slice(0, 42),
-            (Number(amt).noExponents()).toString()
-          );
-          let signRes = await withdraw.signAndSend(alice);
-
+          const withdraw = await RpcRequestProcessor.api.nativeApi.tx.evm.withdraw(to, (Number(amt).noExponents()).toString());
+          const signRes = await withdraw.signAndSend(alice);
 
           transactionHistory.txHash = signHash;
           transactionHistory.intermidateHash = signRes.toHex();
-
-
 
           payload = {
             data: transactionHistory,
@@ -976,16 +979,16 @@ export class TransactionsRPC {
   };
 
   //********************************** Native ***************************************/
-
   //native transfer
   nativeTransfer = async (message, state) => {
 
-    let transactionHistory = null, payload = null, err = null;
+    let transactionHistory = null, payload = null;
 
     try {
 
       const { data, transactionHistoryTrack } = message;
-      const account = state.allAccounts[data.options?.account.index]
+      const {options: {account}} = data;
+
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
       if (Number(data.value) >= Number(state.balance.nativeBalance)) {
@@ -999,24 +1002,18 @@ export class TransactionsRPC {
           status: STATUS.PENDING
         };
 
-        const secretSeed = mnemonicToMiniSecret(
-          decryptor(account?.temp1m, state.pass)
-        );
-        const keyring = new Keyring({ type: "ed25519" });
-        const keypair = keyring.addFromPair(ed25519PairFromSeed(secretSeed));
-        const amt = new BigNumber(data.value).multipliedBy(DECIMALS).toString();
+        let err;
 
-        // const transfer = nativeApi.tx.balances.transferKeepAlive(
-        //   data.to,
-        //   (Number(amt).noExponents()).toString()
-        // );
+        const amt = new BigNumber(data.value).multipliedBy(DECIMALS).toString();
+        const signer = this.hybridKeyring.getNativeSignerByAddress(account.nativeAddress);
 
         const transfer = RpcRequestProcessor.api.nativeApi.tx.balances.transfer(data.to, (Number(amt).noExponents()).toString());
 
         if (RpcRequestProcessor.isHttp) {
-          const txHash = await transfer.signAndSend(keypair)
+          const txHash = await transfer.signAndSend(signer)
           if (txHash) {
 
+          if (txHash) {
 
             const hash = txHash.toHex();
             transactionHistory.txHash = hash;
@@ -1035,7 +1032,7 @@ export class TransactionsRPC {
 
         } else {
           //Send and sign txn
-          const { status, events, txHash } = transfer.signAndSend(keypair);
+          const { status, events, txHash } = transfer.signAndSend(signer);
 
           if (status.isInBlock) {
               const hash = txHash.toHex();
@@ -1066,7 +1063,7 @@ export class TransactionsRPC {
             }
           }
       }
-    } catch (err) {
+    } }catch (err) {
       log("Error while native transfer: ", err);
       transactionHistory.status = isEqual(transactionHistory.txHash, "") ? STATUS.PENDING : STATUS.FAILED;
 
@@ -1089,7 +1086,8 @@ export class TransactionsRPC {
     try {
 
       const { data, transactionHistoryTrack } = message;
-      const account = state.allAccounts[data.options.account.index]
+      const {options: {account}} = data;
+
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
       if (Number(data.value) >= Number(state.balance.nativeBalance)) {
@@ -1106,13 +1104,8 @@ export class TransactionsRPC {
 
 
         let err, evmDepositeHash, signedHash;
-        const seedSecret = mnemonicToMiniSecret(
-          decryptor(account?.temp1m, state.pass)
-        );
-
-        const keyring = new Keyring({ type: "ed25519" });
-        const keyringPair = keyring.addFromPair(ed25519PairFromSeed(seedSecret));
         const amt = (new BigNumber(data.value).multipliedBy(DECIMALS)).toString();
+        const signer = this.hybridKeyring.getNativeSignerByAddress(account.nativeAddress);
 
         //Deposite amount
         let deposit = await RpcRequestProcessor.api.nativeApi.tx.evm.deposit(
@@ -1124,7 +1117,7 @@ export class TransactionsRPC {
         if (RpcRequestProcessor.isHttp) {
 
           //Sign and Send txn for http provider
-          const txHash = await deposit.signAndSend(keyringPair);
+          const txHash = await deposit.signAndSend(signer);
           if (txHash) {
 
             const hash = txHash.toHex();
@@ -1145,7 +1138,7 @@ export class TransactionsRPC {
         } else {
 
           //Sign and Send txn for websocket provider
-          deposit.signAndSend(keyringPair, ({ status, events, txHash }) => {
+          deposit.signAndSend(signer, ({ status, events, txHash }) => {
             if (status.isInBlock) {
 
               if (signedHash !== txHash) {
@@ -1193,6 +1186,28 @@ export class TransactionsRPC {
     }
   };
 
+  /**************************************** Internal Methods *****************************/
+  //internal method for getting the evm fee
+  _getEvmFee = async (to, from, amount, data = "") => {
+
+    const tx = {
+      to,
+      from,
+      value: amount,
+    };
+
+    if (data) tx.data = data;
+
+    const gasLimit = await RpcRequestProcessor.api.evmApi.eth.estimateGas(tx);
+    const gasPrice = await RpcRequestProcessor.api.evmApi.eth.getGasPrice();
+    const gasFee = (new BigNumber(gasPrice * gasLimit)).dividedBy(DECIMALS).toString();
+
+    return {
+      gasLimit,
+      gasPrice,
+      gasFee,
+    }
+  }
 }
 
 //for balance, fee and other calls
@@ -1203,8 +1218,8 @@ export class GeneralWalletRPC {
 
       let nbalance = 0;
       const { evmApi, nativeApi } = RpcRequestProcessor.api;
-  
-      const account = state.allAccounts[state.currentAccount.index];
+      const {data:{options: {account}}} = message;
+
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
   
       // Evm Balance
@@ -1263,7 +1278,8 @@ export class GeneralWalletRPC {
     evmFee = async (message, state) => {
 
     const { data } = message;
-    const account = state.allAccounts[data.options?.account.index]
+    const {options: {account}} = data;
+
     if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
     let toAddress = data.toAddress ? data.toAddress : account.nativeAddress;
@@ -1307,10 +1323,9 @@ export class GeneralWalletRPC {
     nativeFee = async (message, state) => {
 
     const { data } = message;
+    const {options: {account}} = data;
 
-    const account = state.allAccounts[data.options?.account.index];
     if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
-
 
     const toAddress = data.toAddress ? data.toAddress : account.evmAddress;
     let transferTx;
@@ -1337,4 +1352,69 @@ export class GeneralWalletRPC {
 
 
     };
+}
+
+export class KeyringHandler {
+  constructor() {
+    this.hybridKeyring = new HybridKeyring();
+    this.services = new Services();
+  }
+
+  keyringHelper = async (message) => {
+    try {
+
+      if (this.hybridKeyring[message.event]) {
+        const keyringResponse = await this._keyringCaller(message);
+        this._parseKeyringRes(keyringResponse);
+
+      } else {
+        //handle if the method is not the part of system
+        new Error(new ErrorPayload(ERRCODES.INTERNAL, ERROR_MESSAGES.INVALID_RPC_OPERATION)).throw();
+      }
+    } catch (err) {
+      console.log("Error in _keyringMiddleware: ", err);
+    }
+  }
+
+  _keyringCaller = async (message) => {
+    try {
+      const keyResponse = await this.hybridKeyring[message.event](message);
+      return keyResponse;
+
+    } catch (err) {
+      console.log("Error in _errorCheckForKeyring ", err);
+      if (err.message?.errCode) return new EventPayload(null, message.event, null, [], err.message);
+
+      else return new EventPayload(null, message.event, null, [], new ErrorPayload(ERRCODES.INTERNAL, err.message));
+    }
+  }
+
+
+  //parse the response recieve from operation and send message accordingly to extension ui
+  _parseKeyringRes = async (response) => {
+    try {
+
+      if (!response.error) {
+
+        //change the state in local storage
+        if (response.stateChangeKey) {
+
+          await this.services.updateLocalState(response.stateChangeKey, response.payload, response.payload?.options);
+
+        }
+
+        //send the response message to extension ui
+        if (response.eventEmit) this.services.messageToUI(response.eventEmit, response.payload)
+
+      } else {
+        console.log("in the processing the unit, error section: ", response);
+
+        if (Number(response?.error?.errCode) === 3) {
+          if (response.eventEmit) this.services.messageToUI(response.eventEmit, response.error)
+        }
+      }
+    } catch (err) {
+      console.log("Error in parsing the rpc response: ", err);
+    }
+  }
 }

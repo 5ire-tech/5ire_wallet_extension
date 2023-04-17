@@ -33,7 +33,7 @@ function FixWidthLayout({ children }) {
               <BalanceDetails />
             </div>
           </div>
-        )}
+       )}
 
         {/* {pathname === "history" && (
           <MenuRestofHeaders backTo={ROUTES.WALLET} title={"History"} />

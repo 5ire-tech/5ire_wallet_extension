@@ -18,7 +18,7 @@ export const formatDate = (_date) => {
             currentDate.getSeconds();
 
         time = time.split(":");
-        time[3] = time[0] < 12 ? "AM" : "PM";
+        time[3] = time[0] < 12 ? " AM" : " PM";
         time[0] = time[0] > 12 ? time[0] % 12 : time[0];
         let dateTime = date + `${time[0]}:${time[1]}:${time[2]}${time[3]}`;
 
@@ -64,26 +64,14 @@ export const shortner = (str, startLength = 5, endLength=4) => {
 };
 
 
-export
-    const noExponents = function (num) {
-        try {
-            var data = String(num).split(/[eE]/);
-            if (data.length === 1) return data[0];
-            // console.log(data);
-            let z = "";
-            let sign = num < 0 ? "-" : "";
-            let str = data[0].replace(".", "");
-            let mag = Number(data[1]) + 1;
+export const numFormatter = num => {
 
-            if (mag < 0) {
-                z = sign + "0.";
-                while (mag++) z += "0";
-                return z + str.replace(/^\-/, "");
-            }
-            mag -= str.length;
-            while (mag--) z += "0";
-            return str + z;
-        } catch (error) { }
-    };
+    if (Number(num) % 1 === 0 ) {
+        let numArr = (num.toString()).split(".");
+        return numArr[0];
+    }else{
+        return num;
+    }
+}
 
 

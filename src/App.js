@@ -5,15 +5,14 @@ import Swap from "./Pages/Swap/Swap";
 import { AuthContext } from "./Store";
 import { EMTY_STR } from "./Constants";
 import Wallet from "./Pages/Wallet/Wallet";
+import Loader from "./Pages/Loader/Loader";
 import NativeTx from "./Components/NativeTx";
 import { useEffect, useContext } from "react";
-import Loader from "./Pages/Loader/Loader";
 import OnlyContent from "./Layout/OnlyContent";
 import WelcomeLayout from "./Layout/WelcomeLayout";
 import FixWidthLayout from "./Layout/FixWidthLayout";
 import PrivateKey from "./Components/Setting/PrivateKey";
 import Beforebegin from "./Pages/WelcomeScreens/Beforebegin";
-import { Route, Routes, useNavigate } from "react-router-dom";
 import EnterPassword from "./Components/Setting/EnterPassword";
 import LoginApprove from "./Pages/WelcomeScreens/LoginApprove";
 import SwapApprove from "./Pages/Swap/SwapApprove/SwapApprove";
@@ -30,6 +29,8 @@ import History from "./Pages/History/History";
 import MyAccount from "./Pages/MyAccount/MyAccount";
 import ForgotPassword from "./Pages/WelcomeScreens/ForgotPassword";
 import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
+import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
+
 
 function getParameterByName(name, url = window.location.href) {
   name = name.replace(/[[\]]/g, "\\$&");
@@ -42,50 +43,50 @@ function getParameterByName(name, url = window.location.href) {
 
 function App(props) {
   const navigate = useNavigate();
-  const { state, setState, isLoading, setExternalControlState, externalControlsState } = useContext(AuthContext);
-  const { allAccounts, isLogin, pass } = state;
+  const { state, setState, isLoading, setExternalControlState, externalControlsState, newAccount } = useContext(AuthContext);
+  const { isLogin, vault } = state;
 
 
   useEffect(() => {
-    if(props.data && props.externalControlsState) {
+    if (props.data && props.externalControlsState) {
       setState(props.data);
       setExternalControlState(props.externalControlsState);
     }
-  }, [])
-
-
-
-  useEffect(() => {
-    if (externalControlsState.activeSession?.route && isLogin) {
-      navigate(`/${externalControlsState.activeSession.route}`);
-      return;
-    }
-
     const route = getParameterByName("route");
-
     if (route) {
       navigate(ROUTES.DEFAULT + route);
     } else {
       navigate(ROUTES.DEFAULT);
     }
+  }, []);
 
-    if (!isLogin && allAccounts?.length > 0 && pass) {
+
+  useEffect(() => {
+    const route = getParameterByName("route");
+
+    //sync the current action route with main popup
+    if (externalControlsState.activeSession?.route && isLogin) {
+      navigate(`/${externalControlsState.activeSession.route}`);
+      return;
+    }
+    else if (!isLogin && vault) {
       navigate(ROUTES.UNLOACK_WALLET, {
         state: {
           redirectRoute: route ? ROUTES.DEFAULT + route : EMTY_STR,
         },
       });
-    } else if (allAccounts?.length <= 0) {
-      navigate(ROUTES.DEFAULT);
-    } else if (route) {
-      navigate(ROUTES.DEFAULT + route);
-    } else if (isLogin) {
-      navigate(ROUTES.WALLET);
-    } else {
-      navigate(ROUTES.DEFAULT);
     }
 
-  }, [isLogin, pass, allAccounts?.length]);
+
+  }, [isLogin, vault]);
+
+
+
+  useEffect(() => {
+    if (isLogin && !newAccount?.evmAddress)
+      navigate(ROUTES.WALLET);
+  }, [isLogin, newAccount?.evmAddress]);
+
 
   return (
     <div className="App">
@@ -107,11 +108,11 @@ function App(props) {
               path={ROUTES.UNLOACK_WALLET}
               element={<WelcomeLayout children={<UnlockWelcome />} />}
             />
-              <Route
+            <Route
               path={ROUTES.FORGOTPASSWORD}
               element={<WelcomeLayout children={<ForgotPassword />} />}
             />
-               <Route
+            <Route
               path={ROUTES.MAINPRIVACYPOLICY}
               element={<WelcomeLayout children={<MainPrivacyPolicy />} />}
             />

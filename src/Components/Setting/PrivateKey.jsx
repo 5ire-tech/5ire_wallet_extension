@@ -1,44 +1,35 @@
 import { ROUTES } from "../../Routes";
 import { toast } from "react-toastify";
-import React, { useState } from "react";
 import style from "./style.module.scss";
-import { useContext, useEffect } from "react";
-import { COPIED } from "../../Constants/index";
-import useWallet from "../../Hooks/useWallet";
 import { AuthContext } from "../../Store/index";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import ButtonComp from "../ButtonComp/ButtonComp";
+import React, { useState, useContext, useEffect} from "react";
+import { COPIED, LABELS, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS} from "../../Constants/index";
 import { decryptor } from "../../Helper/CryptoHelper";
+import { sendRuntimeMessage } from "../../Utility/message_helper.js"
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 
 
 function PrivateKey() {
-  const { state } = useContext(AuthContext);
-  const { allAccounts, currentAccount, pass } = state;
-  const [key, setKey] = useState("");
-  const [seed, setSeed] = useState("");
+
+  const { state, privateKey, seedPhrase} = useContext(AuthContext);
   const [show, handleShow] = useState(false);
-  const { getKey } = useWallet();
-  const name = ["seed", "key"];
+  const { currentAccount } = state;
 
   useEffect(() => {
-    setKey(getKey(allAccounts[currentAccount?.index]?.temp1m, pass));
-  }, [currentAccount, getKey]);
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.EXPORT_PRIVATE_KEY, { address : currentAccount.evmAddress});
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE, { address : currentAccount.nativeAddress});
+    
+  }, []);
 
   const handleCopy = (e) => {
-    if (e.target.name === name[0])
-      navigator.clipboard.writeText(seed);
-    else if (e.target.name === name[1])
-      navigator.clipboard.writeText(key);
+    if (e.target.name === LABELS.SEED)
+      navigator.clipboard.writeText(seedPhrase);
+    else if (e.target.name === LABELS.KEY)
+      navigator.clipboard.writeText(privateKey);
     toast.success(COPIED);
   };
-
-  useEffect(() => {
-    if (show && !seed) {
-      let seed = (decryptor(allAccounts[currentAccount?.index]?.temp1m, pass));
-      setSeed(seed)
-    }
-  }, [show]);
 
   const handleClick = () => {
     handleShow(!show);
@@ -56,12 +47,12 @@ function PrivateKey() {
             <div className={style.wallet}>
               <div className={style.wallet__addressInput}>
                 <p className={style.wallet__addressInput__copyText}>
-                  <span>{key}</span>
+                  <span>{privateKey}</span>
                   <img
                     draggable={false}
                     src={CopyIcon}
                     alt="copyIcon"
-                    name="key"
+                    name={LABELS.KEY}
                     onClick={handleCopy}
                   />
                 </p>
@@ -76,12 +67,12 @@ function PrivateKey() {
             <div className={style.wallet} hidden={!show ? true : false}>
               <div className={style.wallet__addressInput}>
                 <p className={style.wallet__addressInput__copyText}>
-                  <span>{seed}</span>
+                  <span>{seedPhrase}</span>
                   <img
                     draggable={false}
                     src={CopyIcon}
                     alt="copyIcon"
-                    name="seed"
+                    name={LABELS.SEED}
                     onClick={handleCopy}
                   />
                 </p>

@@ -1,47 +1,55 @@
 import { ROUTES } from "../../Routes";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import style from "./style.module.scss";
-import useAuth from "../../Hooks/useAuth";
-import { AuthContext } from "../../Store";
+// import useAuth from "../../Hooks/useAuth";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { isEmpty } from "../../Utility/utility";
-import React, { useEffect, useState, useContext } from "react";
+import { isEmpty, log} from "../../Utility/utility";
+import React, { useContext, useEffect, useState } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
+import { sendRuntimeMessage } from "../../Utility/message_helper";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
-import { REGEX, LABELS, ERROR_MESSAGES, EMTY_STR } from "../../Constants/index";
+import {
+  REGEX,
+  LABELS,
+  EMTY_STR,
+  ERROR_MESSAGES,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS
+} from "../../Constants/index";
 import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
+import { AuthContext } from "../../Store";
+
+
 
 
 export default function SetPasswordScreen() {
   const params = useParams();
 
   const navigate = useNavigate();
-  const { setUserPass } = useAuth();
+  const { setUserPass, accountName } = useContext(AuthContext);
   const [show, setShow] = useState(false);
-  const [error, setError] = useState(EMTY_STR);
-  const [confirmError, setconfirmError] = useState(EMTY_STR);
   const { state, updateState } = useContext(AuthContext);
-  // const { state, updateState } = useContext(AuthContext);
+  const [error, setError] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
   const [pass, setPass] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
 
 
   useEffect(() => {
 
-    if (pass.confirmPass === pass.pass || pass.pass === EMTY_STR) {
-      setconfirmError(EMTY_STR);
-    } else {
+    if (pass.confirmPass === pass.pass || pass.pass === EMTY_STR)
 
+      setError(p => ({ ...p, confirmPass: EMTY_STR }))
+    else
       if (pass.confirmPass !== EMTY_STR)
-        setconfirmError(ERROR_MESSAGES.PASS_DONT_MATCH)
-    }
+        setError(p => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }))
+
   }, [pass.pass, pass.confirmPass]);
 
 
   const validatePass = () => {
     let errMsg = EMTY_STR;
 
-    if (pass.pass.length === 0)
+    if (isEmpty(pass.pass))
       errMsg = ERROR_MESSAGES.INPUT_REQUIRED;
 
     else if (
@@ -56,22 +64,25 @@ export default function SetPasswordScreen() {
     else
       errMsg = EMTY_STR;
 
-    setError(errMsg);
+    setError(p => ({ ...p, pass: errMsg }));
   };
 
 
   const validateConfirmPass = () => {
-    if (pass.confirmPass.length === 0)
-      setconfirmError(ERROR_MESSAGES.INPUT_REQUIRED);
+
+    if (isEmpty(pass.confirmPass))
+      setError(p => ({ ...p, confirmPass: ERROR_MESSAGES.INPUT_REQUIRED }))
 
     else if (pass.confirmPass !== pass.pass)
-      setconfirmError(ERROR_MESSAGES.PASS_DONT_MATCH);
+      setError(p => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }))
 
     else
-      setconfirmError(EMTY_STR);
+      setError(p => ({ ...p, confirmPass: EMTY_STR }))
 
   };
-  const handleCancle = () => {
+
+
+  const handleCancel = () => {
     updateState(LABELS.NEW_ACCOUNT, null, false);
     // updateState(LABELS.ACCOUNT_NAME, null, false);
     navigate(ROUTES.WALLET);
@@ -81,32 +92,16 @@ export default function SetPasswordScreen() {
 
     if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
 
-      if (isEmpty(pass.pass) && isEmpty(pass.confirmPass)) {
-        setError(ERROR_MESSAGES.INPUT_REQUIRED);
-        setconfirmError(ERROR_MESSAGES.INPUT_REQUIRED);
-      }
-      else if (isEmpty(pass.pass)) {
-        setError(ERROR_MESSAGES.INPUT_REQUIRED);
-      }
-      else if (isEmpty(pass.confirmPass)) {
-        setconfirmError(ERROR_MESSAGES.INPUT_REQUIRED);
-      }
-      else {
-        if (!error && !confirmError) {
-          let res = await setUserPass(pass.pass);
-          if (res.error)
-            toast.error(res.data);
-          else {
-            setShow(true);
-            setTimeout(() => {
-              // if (state.isLogin !== true) updateState(LABELS.ISLOGIN, true);
-              setShow(false);
-              setTimeout(() => {
-                navigate(ROUTES.WALLET);
-              }, 200);
-            }, 2000);
-          }
+      if (!error.pass && !error.confirmPass && pass.pass && pass.confirmPass) {
+        if (params.id === LABELS.CREATE) {
+
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: pass.pass, opts: { name: accountName } });
+          navigate(ROUTES.NEW_WALLET_DETAILS);
+        } else {
+          setUserPass(pass.pass);
+          navigate(ROUTES.IMPORT_WALLET);
         }
+
       }
     }
   };
@@ -132,7 +127,7 @@ export default function SetPasswordScreen() {
           </p>
           <div className={style.cardWhite__beginText__passInputSec} style={{ marginTop: "48px" }}>
             <InputFieldSimple
-              value={pass.pass}
+              value={pass?.pass}
               name={LABELS.PASS}
               onChange={handleChange}
               placeholder={"Enter Password"}
@@ -141,10 +136,10 @@ export default function SetPasswordScreen() {
               keyUp={validatePass}
             />
           </div>
-          <p className={style.errorText}>{error ? error : ""}</p>
+          <p className={style.errorText}>{error.pass ? error.pass : ""}</p>
           <div className={style.cardWhite__beginText__passInputSec} style={{ marginTop: "20px" }}>
             <InputFieldSimple
-              value={pass.confirmPass}
+              value={pass?.confirmPass}
               name="confirmPass"
               onChange={handleChange}
               placeholder={"Confirm Password"}
@@ -152,8 +147,9 @@ export default function SetPasswordScreen() {
               coloredBg={true}
               keyUp={validateConfirmPass}
             />
-            <p className={style.errorText}>{confirmError ? confirmError : ""}</p>
+            <p className={style.errorText}>{error.confirmPass? error.confirmPass : ""}</p>
           </div>
+
           <div style={{ marginTop: "50px" }} className={style.contBtn}>
             <ButtonComp
               onClick={handleSubmit}
@@ -162,19 +158,13 @@ export default function SetPasswordScreen() {
             />
              <ButtonComp
              bordered={true}
-              onClick={handleCancle}
+              onClick={handleCancel}
               text={"Cancel"}
               maxWidth={"100%"}
             />
           </div>
+
         </div>
-      </div>
-      <div className={style.menuItems__cancleContinue}>
-        {show && (
-          <div className="loader">
-            <CongratulationsScreen text={`Your Wallet is ${params.id === "create" ? "Created" : "Imported"}.`} />
-          </div>
-        )}
       </div>
     </>
   );
