@@ -33,6 +33,7 @@ function init(preloadedState) {
 
     wrapStore(store, { portName: PORT_NAME });
 
+
     // Subscribes to the redux store changes. For each state
     // change, we want to store the new state to the storage.
     store.subscribe(() => {
@@ -262,7 +263,11 @@ export class Controller {
     }
 
     this.store.dispatch(setUIdata(data));
-    await this.notificationManager.showPopup("nativeTx");
+    setTimeout(async () => {
+      //Added timeout to sync ui data with redux state and proxy store
+      await this.notificationManager.showPopup("nativeTx");
+
+    }, 1200)
   }
 
 }
