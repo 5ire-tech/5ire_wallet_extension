@@ -37,6 +37,8 @@ function NativeTx() {
             if (!apiRes?.value) {
                 Connection.isExecuting.value = false;
             }
+
+            console.log("HERE WE GOING", apiRes, auth?.uiData)
             await getBalance(apiRes.evmApi, apiRes.nativeApi, true)
 
             let feeData, methodName = '', amount = 0;
@@ -145,7 +147,7 @@ function NativeTx() {
 
                 setTimeout(() => {
                     dispatch(setUIdata({}));
-                    window.close();
+                     window.close();
                 }, 300);
             }
             dispatch(toggleLoader(false));

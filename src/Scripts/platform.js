@@ -216,40 +216,43 @@ export default class NotificationManager {
   handleClose() {
     const state = this.store.getState();
     const method = state?.auth.uiData?.message?.method;
+
     const conntectMethods = ["eth_requestAccounts",
       "eth_accounts",
       "connect"];
 
+    if (state?.auth?.uiData?.tabId) {
 
-    //for connect permission rejection evm
-    if (conntectMethods.indexOf('method') > -1) {
+      //for connect permission rejection evm
+      if (conntectMethods.indexOf('method') > -1) {
+        Browser.tabs.sendMessage(state?.auth?.uiData?.tabId, {
+          id: state?.auth.uiData?.id,
+          response: null,
+          error: "User rejected connect permission.",
+
+        });
+
+        //for transaction permission rejection evm
+      } else if (method === 'eth_sendTransaction') {
+        Browser.tabs.sendMessage(state?.auth?.uiData?.tabId, {
+          id: state?.auth?.uiData?.id,
+          response: null,
+          error: "User rejected  transaction.",
+        });
+
+      }
+
+
+      //for all other permission rejection
       Browser.tabs.sendMessage(state?.auth?.uiData?.tabId, {
         id: state?.auth.uiData?.id,
         response: null,
-        error: "User rejected connect permission.",
+        error: "Action rejected by the user",
 
       });
 
-      //for transaction permission rejection evm
-    } else if (method === 'eth_sendTransaction') {
-      Browser.tabs.sendMessage(state?.auth?.uiData?.tabId, {
-        id: state?.auth?.uiData?.id,
-        response: null,
-        error: "User rejected  transaction.",
-      });
-
+      this.store.dispatch(setUIdata({}))
     }
-
-
-    //for all other permission rejection
-    Browser.tabs.sendMessage(state?.auth?.uiData?.tabId, {
-      id: state?.auth.uiData?.id,
-      response: null,
-      error: "Action rejected by the user",
-
-    });
-
-    this.store.dispatch(setUIdata({}))
 
   }
   /**

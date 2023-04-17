@@ -139,6 +139,11 @@ try {
     isInitialized = false;
   });
 
+
+
+  Browser.runtime.onUpdateAvailable.addListener(async (data) => {
+    console.log("NEW UPDATE AVAILABLE", data)
+  });
   //init the scripts (inject the script into current webpage)
   initScript();
 
