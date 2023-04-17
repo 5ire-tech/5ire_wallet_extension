@@ -1,4 +1,3 @@
-
 import Web3 from "web3";
 import { ApiPromise } from "@polkadot/api";
 import { HttpProvider, WsProvider } from "@polkadot/rpc-provider";
@@ -8,44 +7,32 @@ import { ErrorPayload } from "../Utility/error_helper";
 
 export class Connection {
 
-    //for testnet connection
-    static nativeApi = null;
-    static evmApi = null;
-
-    //execution controlling
-    static isExecuting = { value: false }
-    static instanceConn = null;
-
+    static nativeApi = {};
+    static evmApi = {};
+    static instance = null;
 
     //get only a single instance of class
-    static getConnector() {
-        if (!Connection.instanceConn) Connection.instanceConn = new Connection();
+    static getInsatnce() {
+        if (!Connection.instance) Connection.instance = new Connection();
         delete Connection.constructor;
-        return Connection.instanceConn;
+        return Connection.instance;
     }
 
 
     //initialize and get Api
     initializeApi = async (networkMode) => {
-
         try {
-
-            if (Connection.isExecuting.value) return { error: "Already in execution.", value: true }
-
-            Connection.isExecuting.value = true;
             //create the connection
-            if (!Connection.nativeApi) Connection.nativeApi = await this.createNativeConnection(HTTP_END_POINTS[networkMode.toUpperCase()]);
-            if (!Connection.evmApi) Connection.evmApi = this.createEvmConnection(HTTP_END_POINTS[networkMode.toUpperCase()]);
-            Connection.isExecuting.value = false;
-
-                return {
-                    nativeApi: Connection.nativeApi,
-                    evmApi: Connection.evmApi
+            if (!Connection.nativeApi[networkMode]) Connection.nativeApi[networkMode] = await this.createNativeConnection(HTTP_END_POINTS[networkMode.toUpperCase()]);
+            if (!Connection.evmApi[networkMode]) Connection.evmApi[networkMode] = this.createEvmConnection(HTTP_END_POINTS[networkMode.toUpperCase()]);
+                
+            return {
+                    nativeApi: Connection.nativeApi[networkMode],
+                    evmApi: Connection.evmApi[networkMode]
                 }
 
         } catch (err) {
             ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.FAILED_TO_CONNECT_NETWORK, err.message));
-            Connection.isExecuting.value = false
             return { error: err, value: true }
         }
     }
@@ -124,5 +111,3 @@ export class Connection {
 
     }
 }
-
-export const connectionObj = Connection.getConnector();

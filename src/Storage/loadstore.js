@@ -129,7 +129,6 @@ export class ExtensionStorageHandler {
         return await this._updateStorage(newState);
     }
 
-
     /************************************ External Apps Control *********************/
 
     //add a new connection task

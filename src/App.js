@@ -48,10 +48,12 @@ function App(props) {
 
 
   useEffect(() => {
+
     if (props.data && props.externalControlsState) {
       setState(props.data);
       setExternalControlState(props.externalControlsState);
     }
+
     const route = getParameterByName("route");
     if (route) {
       navigate(ROUTES.DEFAULT + route);
@@ -60,6 +62,7 @@ function App(props) {
     }
   }, []);
 
+  
 
   useEffect(() => {
     const route = getParameterByName("route");
@@ -69,21 +72,20 @@ function App(props) {
       navigate(`/${externalControlsState.activeSession.route}`);
       return;
     }
-    else if (!isLogin && vault) {
+    
+    if (!isLogin && vault) {
       navigate(ROUTES.UNLOACK_WALLET, {
         state: {
           redirectRoute: route ? ROUTES.DEFAULT + route : EMTY_STR,
         },
       });
     }
-
-
   }, [isLogin, vault]);
 
 
 
   useEffect(() => {
-    if (isLogin && !newAccount?.evmAddress)
+    if (isLogin && !newAccount?.evmAddress && !externalControlsState.activeSession?.route)
       navigate(ROUTES.WALLET);
   }, [isLogin, newAccount?.evmAddress]);
 

@@ -5,11 +5,7 @@ import SwapIcon from "../../Assets/SwapIcon.svg";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import DarkRyt from "../../Assets/darkRyt.svg";
 import { formatDate, shortner } from "../../Helper/helper";
-import { AuthContext } from "../../Store";
-import { useEffect } from "react";
-import BigNumber from "bignumber.js";
-import {numFormatter} from "../../Helper/helper";
-import { SUCCESS_MESSAGES, CURRENCY } from "../../Constants";
+
 
 
 
@@ -42,15 +38,15 @@ function TransectionHistry({selectedTransaction, account}) {
             <img src={SwapIcon} alt="swapIcon" draggable={false} />
           </div>
           <div className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
-          <h3>{isEvm ? "Evm" : "Native"}</h3>
-            <span>{shortner(isEvm ? account.evmAddress : account.nativeAddress)}</span>
+          <h3>{!isEvm ? "Evm" : "Native"}</h3>
+            <span>{shortner(!isEvm ? account.evmAddress : account.nativeAddress)}</span>
           </div>
         </div>
         ) 
         : 
         (
           <div className={style.transectionHistry__swapCopy}>
-          <div className={style.transectionHistry__swapSec}>
+          <div className={style.transectionHistry__swapSec}> 
             <h3>From</h3>
             <span>{shortner(isEvm ? account.evmAddress : account.nativeAddress)}</span>
           </div>

@@ -39,24 +39,8 @@ function BalanceDetails({ mt0 }) {
   const [isEvmModal, setIsEvmModal] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isheaderActive, setisheaderActive] = useState(false);
-  // const [accountData, setAccountData] = useState({ accountName: EMTY_STR });
-  // const [addresses, setAddresses] = useState({
-  //   evmAddress: EMTY_STR,
-  //   nativeAddress: EMTY_STR,
-  // });
-
-  // const { pathname } = getLocation;
-
-  // const { currentAccount, currentNetwork, balance, allAccounts } = state;
   const {connectedApps} = externalControlsState;
 
-
-  // useEffect(() => {
-  //   setAccountData(allAccounts ? allAccounts[currentAccount.index] : {});
-  // }, [currentAccount.index]);
-
-
-  
 
   const { pathname } = getLocation;
 
@@ -64,7 +48,6 @@ function BalanceDetails({ mt0 }) {
     balance,
     currentAccount,
     currentNetwork,
-    connectedSites,
   } = state;
 
 
@@ -73,20 +56,21 @@ function BalanceDetails({ mt0 }) {
     //check if current app is connected with extension
     getCurrentTabUrl((tabUrl) => {
       const isConnectionExist = connectedApps[tabUrl];
-      
       if (isConnectionExist?.isConnected) {
         setIsConnected(isConnectionExist.isConnected);
       }
     });
 
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.BALANCE, {});
-
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.BALANCE, {});
   }, [currentNetwork, currentAccount.evmAddress]);
 
 
   const handleNetworkChange = (network) => {
+    //change the network
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.NETWORK_HANDLER, MESSAGE_EVENT_LABELS.NETWORK_CHANGE, {})
     updateState(LABELS.CURRENT_NETWORK, network);
-    updateState(balance, {
+        
+    updateState(LABELS.BALANCE, {
       evmBalance: EMTY_STR,
       nativeBalance: EMTY_STR,
       totalBalance: EMTY_STR,

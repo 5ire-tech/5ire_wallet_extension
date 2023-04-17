@@ -109,7 +109,7 @@ function MenuFooter() {
     });
 
     //fetch balance of changed account
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.BALANCE, {});
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.BALANCE, {});
     onClose();
   };
 

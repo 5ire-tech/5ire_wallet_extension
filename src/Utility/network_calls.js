@@ -95,5 +95,6 @@ export class TransactionPayload {
     this.gasUsed = gasUsed;
     this.id = getUUID();
     this.timeStamp = new Date().toString();
+    this.functionExecuted = null;
   }
 }

@@ -173,7 +173,7 @@ export class ExternalConnection {
     //add the dapp or website to connected list after approval
     async handleConnect(data, state) {
       const externalControls = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
-      const account = state.allAccounts[state.currentAccount.index];
+      const account = state.currentAccount;
       const isEthReq = isEqual(data?.method, EVM_JSON_RPC_METHODS.ETH_REQUEST_ACCOUNT) || isEqual(data?.method, EVM_JSON_RPC_METHODS.ETH_ACCOUNTS);
 
         const isConnected = isAlreadyConnected(externalControls.connectedApps, data.origin)
@@ -195,6 +195,8 @@ export class ExternalConnection {
       }
   
     }
+
+
 
     //handle the evm related transactions
    async handleEthTransaction(data) {
@@ -233,6 +235,4 @@ export class ExternalConnection {
       await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.APP_CONNECTION_UPDATE, {connected: false, origin: data.origin}, {localStateKey: LABELS.EXTERNAL_CONTROLS});
       sendMessageToTab(data.tabId, new TabMessagePayload(data.id, SUCCESS_MESSAGES.DISCONNECTED));
     }
-
-    /********************************* Internal methods **************************/
 }

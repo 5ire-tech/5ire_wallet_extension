@@ -17,7 +17,7 @@ function History() {
   const [open2, setOpen2] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const { state } = useContext(AuthContext);
-  const {  currentNetwork, txHistory, currentAccount, allAccounts } = state;
+  const {  currentNetwork, txHistory, currentAccount } = state;
 
   const onClose1 = () => {
     setOpen1(false);
@@ -60,7 +60,7 @@ function History() {
         open={open1}
         closeIcon={<img src={ModalCloseIcon} alt="close" draggable={false} />}
        >
-            <TransectionHistry selectedTransaction={selectedTransaction} account={allAccounts[currentAccount.index]} />
+            <TransectionHistry selectedTransaction={selectedTransaction} account={currentAccount} />
       </Drawer>
     </div>
   );

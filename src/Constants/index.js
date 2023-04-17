@@ -14,6 +14,7 @@ export const ACCOUNT_CHANGED_EVENT = 'accountChanged';
 export const AUTO_BALANCE_UPDATE_TIMER = 8000;
 export const TRANSACTION_STATUS_CHECK_TIMER = 2000;
 export const CURRENCY = "5ire";
+export const ONE_ETH_IN_GWEI=1000000000;
 
 
 /* Regular expressions */
@@ -35,7 +36,8 @@ export const STORAGE = {
 export const TX_TYPE = {
     SEND: "Transfer",
     SWAP: "Swap",
-    CONTRACT_DEPLOYMENT: "Contract Deployement"
+    CONTRACT_DEPLOYMENT: "Contract Deployement",
+    CONTRACT_EXECUTION: "Contract Execution"
 };
 
 export const NETWORK = {
@@ -181,16 +183,10 @@ export const MESSAGE_EVENT_LABELS = {
     LOGIN_UPDATE: "loginUpdate",
     NATIVE_TX: "nativeTransfer",
     NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
-    NV_FEE: "nvTx",
-    NV_TX: "nvTx",
-    BALANCE: "getBalance",
     UPDATE_TX_HISTORY: "txupdatehistory",
     NOTIFICATION: "notification",
     CLOSE_POPUP_SESSION: "closePopupSession",
-    NOTIFICATION: "notification",
-    UPDATE_TX_HISTORY: "txupdatehistory",
     EVM_TO_NATIVE_SWAP: "evmToNativeSwap",
-    NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
 
     LOCK: "lock",
     UNLOCK: "unlock",
@@ -202,6 +198,9 @@ export const MESSAGE_EVENT_LABELS = {
     VERIFY_USER_PASSWORD:"verifyUserPassword",
     // LOAD_PERSIST_DATA: "loadPersistData",
     IMPORT_BY_MNEMONIC: "importAccountByMnemonics",
+
+    //network related events
+    NETWORK_CHANGE: "networkChange"
 }
 
 export const INTERNAL_EVENT_LABELS = {
@@ -244,7 +243,8 @@ export const MESSAGE_TYPE_LABELS = {
     EXTENSION_BACKGROUND: "extensionBackground",
     EXTERNAL_TX_APPROVAL: "externalTxApproval",
     EXTENSION_UI: "extensionUi",
-    EXTENSION_UI_KEYRING: "extensionUiKeyring"
+    EXTENSION_UI_KEYRING: "extensionUiKeyring",
+    NETWORK_HANDLER: "networkHandler"
 }
 
 export const ROUTE_FOR_APPROVAL_WINDOWS  = {
