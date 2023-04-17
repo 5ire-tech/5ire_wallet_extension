@@ -38,7 +38,6 @@ function NativeTx() {
                 Connection.isExecuting.value = false;
             }
 
-            console.log("HERE WE GOING", apiRes, auth?.uiData)
             await getBalance(apiRes.evmApi, apiRes.nativeApi, true)
 
             let feeData, methodName = '', amount = 0;

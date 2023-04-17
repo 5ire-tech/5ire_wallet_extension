@@ -20,6 +20,10 @@ try {
     if (port.name === CONNECTION_NAME) {
       store = await loadStore();
       isInitialized = true;
+      setInterval(async () => {
+        await checkPendingTxns(store)
+      }, 1000 * 10)
+
       //set the current newAccount state to null
       const currState = await store.getState();
 
@@ -152,9 +156,6 @@ try {
     checkTransactions({ ...txData.data, statusCheck: txData.statusCheck });
   }
 
-  setInterval(async () => {
-    await checkPendingTxns()
-  }, 1000 * 10)
 
 
 

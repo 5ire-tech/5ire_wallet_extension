@@ -323,14 +323,10 @@ export async function checkTransactions(txData) {
 
 
 // check if transaction status and inform user using browser notification
-export async function checkPendingTxns() {
+export async function checkPendingTxns(store) {
 
   try {
-    const store = await loadStore(false);
-    const controller = Controller.getInstance(store);
-
-
-
+    // const store = await loadStore(false);
     //get the current redux state of application
     const state = await store.getState();
 
@@ -364,10 +360,8 @@ export async function checkPendingTxns() {
       //check if the tx is native or evm based
       if (txRecipt?.result) {
         store.dispatch(updateTxHistory({ txHash, accountName: txData.accountName, status: Boolean(parseInt(txRecipt.result.status)), isSwap }));
-        showNotification(controller, `Transaction ${Boolean(parseInt(txRecipt.result.status)) ? STATUS.SUCCESS.toLowerCase() : STATUS.FAILED.toLowerCase()} ${txHash.slice(0, 30)} ...`);
       } else if (txRecipt?.data && txRecipt?.data?.transaction.status.toLowerCase() !== STATUS.PENDING.toLowerCase()) {
         store.dispatch(updateTxHistory({ txHash, accountName: txData.accountName, status: txRecipt?.data?.transaction.status, isSwap }));
-        showNotification(controller, `Transaction ${txRecipt?.data?.transaction.status} ${txHash.slice(0, 30)} ...`);
       }
     }
 
