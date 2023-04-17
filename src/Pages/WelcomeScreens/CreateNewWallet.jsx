@@ -1,4 +1,4 @@
-import { ROUTES } from "../../Routes";
+import { ROUTES } from "../../Routes";              
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+import PrivacyPolicy from "../../Components/MenuFooter/PrivacyPolicy";
 import { LABELS, REGEX, ERROR_MESSAGES, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
 
 function CreateNewWallet() {
@@ -87,20 +88,23 @@ function CreateNewWallet() {
   }
 
 
+
   const handleCancle = () => {
     updateState(LABELS.ACCOUNT_NAME, null, false);
     if (isLogin) navigate(ROUTES.WALLET);
     else navigate(ROUTES.DEFAULT);
   };
 
+  
   return (
+    <>
     <div className={style.cardWhite}>
       <MenuRestofHeaders logosilver={true} title="5irechain Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Create a New Wallet</h1>
         </div>
-        <div className={style.cardWhite__linkOuter}>
+        <div className={style.cardWhite__importWalletlinkOuter}>
           <div>
             <InputFieldOnly
               value={data}
@@ -115,11 +119,12 @@ function CreateNewWallet() {
           </div>
         </div>
         <div className={style.setPassword__footerbuttons}>
+          <ButtonComp onClick={handleClick} text={"Create Wallet"} isDisable={isDisable} />
           <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancle} />
-          <ButtonComp onClick={handleClick} text={"Create"} isDisable={isDisable} />
         </div>
       </div>
     </div>
+      </>
   );
 }
 

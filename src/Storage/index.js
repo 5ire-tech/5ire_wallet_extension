@@ -1,35 +1,16 @@
 import browser from "webextension-polyfill";
 
-const getLocalStorage = key => {
-    return new Promise((resolve, reject) => {
+const getLocalStorage = async (key) => {
 
-        browser.storage.local.get(key)
-            .then(res => {
-                resolve(res[key] ? res : null);
-            })
-            .catch(err => {
-                console.log("error while getting data to local storage : ", err)
-
-                reject(err);
-            });
-
-    });
+        const localState = await browser.storage.local.get(key);
+        return localState[key] ? localState : null;
 }
 
-const setLocalStorage = (data) => {
-    return new Promise((resolve, reject) => {
-
-        browser.storage.local.set(data)
-            .then(res => {
-
-                resolve(true);
-            })
-            .catch(err => {
-                console.log("error while setting data to session storage : ", err)
-                reject(err);
-            });
-    });
+const setLocalStorage = async (data) => {
+    const status = await browser.storage.local.set(data);
+    return status;
 }
+
 
 export const setSessionStorage = data => {
     return new Promise((resolve, reject) => {

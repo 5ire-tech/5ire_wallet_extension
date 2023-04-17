@@ -1,7 +1,7 @@
 @import "../../styles/__vars.scss";
 
 .menuItems {
-  padding: 24px 28px;
+  padding: 14px 28px;
   box-shadow: 0px 3px 8px #223f7017;
   //   border: 1px solid #c4d7f8;
   background-color: #0f2046;
@@ -39,7 +39,8 @@
     }
 
     span {
-      color: #00aeef;
+      color: #ECF4FF;
+      font-size: 11px;
     }
   }
 
@@ -64,9 +65,10 @@
     display: flex;
     justify-content: space-between;
     width: 100%;
-    gap: 67px;
-    border-top: 1px solid #404058;
-    padding: 16px 37px;
+    gap: 18px;
+    // border-top: 1px solid #404058;
+    padding: 16px 23px;
+    padding-bottom: 30px;
   }
 
   &__cancleContinue1 {
@@ -108,7 +110,7 @@
 }
 
 .noTxn {
-  color: white;
+  color: rgb(255, 255, 255);
   text-align: center;
 }
 
@@ -127,5 +129,16 @@
   img {
     width: 16px;
     height: 14px;
+  }
+}
+.beginStyle{
+  flex-direction: column;
+  gap: 23px;
+}
+.footerPrivacy{
+  padding-bottom: 32px;
+  a{
+    color: $gray-8FA2B7;
+    font-size: 14px;
   }
 }

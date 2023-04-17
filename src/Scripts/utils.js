@@ -1,5 +1,7 @@
 import Browser from "webextension-polyfill";
 import { EMTY_STR } from "../Constants";
+import { isNullorUndef } from "../Utility/utility";
+import { v4 as uuid4 } from 'uuid';
 
 export const getBaseUrl = (url) => {
   const pathArray = url.split("/");
@@ -20,7 +22,7 @@ export const getCurrentTabUId = (callback) => {
   const queryInfo = { active: true, currentWindow: true };
 
   Browser.tabs.query(queryInfo).then((tabs) => {
-    callback(tabs[0].id);
+    callback(tabs[0]?.id);
   });
 };
 
@@ -56,4 +58,14 @@ export const isManifestV3 = Browser.runtime.getManifest().manifest_version === 3
 //tx notification message generator
 export const txNotificationStringTemplate = (status, hash, showHashLength = 30) => {
   return (`Transaction ${status.toLowerCase()} ${hash.slice(0, showHashLength)}...`);
+}
+
+//check if app is already is connected
+export const isAlreadyConnected = (connectedApps, origin) => {
+      return isNullorUndef(connectedApps[origin]) ? false : connectedApps[origin].isConnected;
+    }
+
+//get uuid
+export const getUUID = () => {
+  return uuid4();
 }

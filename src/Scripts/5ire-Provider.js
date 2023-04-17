@@ -1,6 +1,7 @@
 import { CONTENT_SCRIPT, INPAGE, getId } from "./constants";
 import { WindowPostMessageStream } from "./stream";
 import SafeEventEmitter from "@metamask/safe-event-emitter"
+import { HTTP_END_POINTS } from "../Constants";
 //stream for in-window communication
 const injectedStream = new WindowPostMessageStream({
   name: INPAGE,
@@ -13,13 +14,13 @@ Custom Web3 provider for interacting with the 5ire browser extension and pass to
 */
 export class FireProvider extends SafeEventEmitter {
 
-  constructor(httpHost = "https://rpc-testnet.5ire.network") {
+  constructor() {
     super();
-    this.httpHost = httpHost;
+    this.httpHost = HTTP_END_POINTS.QA;
     this.selectedAddress = null;
     this.chainId = "0x3e5";
     this.networkVersion = 997;
-    this.version = "1.0.0";
+    this.version = "1.4.0";
     this.is5ire = true
     this.connected = true;
 
@@ -85,13 +86,7 @@ export class FireProvider extends SafeEventEmitter {
       .catch((err) => cb(null, err))
   }
 
-  // subscribe(cb) {
-  //   if (cb) {
-  //     setInterval(() => {
-  //       cb("Hello")
-  //     }, 2000)
-  //   }
-  // }
+
   //requesting some data from chain
   async request(method, payload) {
     // console.log("here it is inside injected script: ", method, payload);
@@ -138,16 +133,6 @@ export class FireProvider extends SafeEventEmitter {
 
     return new Promise(async (resolve, reject) => {
       try {
-        const origin = window?.location.origin;
-        // console.log("Method and Message: ", method, message);
-        // if (method === "net_version") {
-        //   return resolve({ result: 0x3e5, method });
-        // }
-
-        // if (!this.selectedAddress && !this.conntectMethods.includes(method)) {
-        //   isCb && cb('Unauthorized: Please connnect 5ire provider.');
-        //   return reject("Unauthorized: Please connnect 5ire provider.");
-        // }
 
 
         if (this.restricted.indexOf(method) < 0) {
@@ -172,7 +157,7 @@ export class FireProvider extends SafeEventEmitter {
         }
 
 
-        if (method === "eth_requestAccounts" || method === "eth_accounts" || method === 'connect' || method === "disconnect") message = { origin, method }
+        if (method === "eth_requestAccounts" || method === "eth_accounts" || method === 'connect' || method === "disconnect") message = { method }
 
         //get a unique if for specfic handler
         const id = getId();
@@ -184,8 +169,7 @@ export class FireProvider extends SafeEventEmitter {
           isCb: isCb,
           cb: cb,
           isFull,
-          method,
-          origin,
+          method
         };
 
         // if (method === "eth_requestAccounts" || method === "eth_accounts" || method === "disconnect") {

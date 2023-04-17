@@ -1,4 +1,5 @@
-import { HTTP_METHODS, HTTP_CONTENT_TYPE, ERROR_MESSAGES } from "../Constants";
+import { HTTP_METHODS, HTTP_CONTENT_TYPE, ERROR_MESSAGES, STATUS } from "../Constants";
+import { getUUID } from "../Scripts/utils";
 import {isString} from "../Utility/utility"
 
 export async function httpRequest(url, method, payload, headers = {"Content-Type": HTTP_CONTENT_TYPE.JSON }) {
@@ -33,6 +34,8 @@ export async function httpRequest(url, method, payload, headers = {"Content-Type
       }
   }
 
+
+  //paylod for rpc response from rpc operations
   export class EventPayload {
     constructor(stateChangeKey, eventForEmitting, payload, moreEvent = [], error=null) {
       this.stateChangeKey = stateChangeKey
@@ -42,3 +45,55 @@ export async function httpRequest(url, method, payload, headers = {"Content-Type
       this.error = error
     }
   }
+
+
+  //payload creator for tab messages
+  export class TabMessagePayload {
+    constructor(id, response, error=null) {
+      this.id = id;
+      this.response = response;
+      this.error = error;
+    }
+  }
+
+
+  //create the external app request payload for saving and further processing
+export class ExternalAppsRequest {
+  constructor(requestId, tabId, message, method, origin, route, popupId) {
+    this.id = requestId;
+    this.tabId = tabId;
+    this.message = message;
+    this.method = method;
+    this.origin = origin;
+    this.route = route;
+    this.popupId = popupId;
+  }
+}
+
+//for the transaction processing payload creation
+export class TransactionProcessingPayload {
+  constructor(data, type, transactionHistoryTrack=null, contractBytecode = null, options = null) {
+    this.data = data;
+    this.type = type;
+    this.transactionHistoryTrack = transactionHistoryTrack;
+    this.contractBytecode = contractBytecode;
+    this.options = options;
+  }
+}
+
+//for main transaction payload
+export class TransactionPayload {
+  constructor(to="", amount=0, isEvm=null, chain="QA", type="", txHash="", status=STATUS.QUEUED, intermidateHash=null, gasUsed=null) {
+    this.to = to;
+    this.amount = amount;
+    this.isEvm = isEvm;
+    this.chain = chain;
+    this.txHash = txHash;
+    this.type = type;
+    this.status = status;
+    this.intermidateHash = intermidateHash;
+    this.gasUsed = gasUsed;
+    this.id = getUUID();
+    this.timeStamp = new Date().toString();
+  }
+}

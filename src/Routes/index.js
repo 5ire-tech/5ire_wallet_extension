@@ -3,6 +3,7 @@ export const ROUTES = {
     SEND: "/send",
     SWAP: "/swap",
     WALLET: "/wallet",
+    HISTORY_P : "/history",
     HISTORY: "/history",
     SETTINGS: "/setting",
     PVT_KEY: "/private-key",
@@ -18,4 +19,7 @@ export const ROUTES = {
     MANAGE_WALLET: "/manage-wallet",
     UNLOACK_WALLET: "/unlock-wallet",
     NEW_WALLET_DETAILS: "/new-wallet-details",
+    MYACCOUNT:"/my-account",
+    FORGOTPASSWORD:"/forgotpassword",
+    MAINPRIVACYPOLICY:"/mainprivacypolicy"
 }

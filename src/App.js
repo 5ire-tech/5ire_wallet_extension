@@ -24,6 +24,11 @@ import CreateNewWallet from "./Pages/WelcomeScreens/CreateNewWallet";
 import ApproveTx from "./Pages/RejectNotification/RejectNotification";
 import CreateWalletChain from "./Pages/WelcomeScreens/CreateWalletChain";
 import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
+import { log } from "./Utility/utility";
+import History from "./Pages/History/History";
+import MyAccount from "./Pages/MyAccount/MyAccount";
+import ForgotPassword from "./Pages/WelcomeScreens/ForgotPassword";
+import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
 import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 
 
@@ -36,36 +41,35 @@ function getParameterByName(name, url = window.location.href) {
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
-function App({ data }) {
+function App(props) {
   const navigate = useNavigate();
-
-  const { state, setState, isLoading, newAccount } = useContext(AuthContext);
-
+  const { state, setState, isLoading, setExternalControlState, externalControlsState, newAccount } = useContext(AuthContext);
   const { isLogin, vault } = state;
 
 
-
   useEffect(() => {
-    // if (props?.popupRoute && props?.popupRoute?.length > 0 && isLogin) {
-    //   navigate(`/${props?.popupRoute}`);
-    //   return;
-    // }
-    setState(data);
-
+    if (props.data && props.externalControlsState) {
+      setState(props.data);
+      setExternalControlState(props.externalControlsState);
+    }
     const route = getParameterByName("route");
     if (route) {
       navigate(ROUTES.DEFAULT + route);
     } else {
       navigate(ROUTES.DEFAULT);
     }
-
   }, []);
 
+
   useEffect(() => {
+    const route = getParameterByName("route");
 
-    if (!isLogin && vault) {
-      const route = getParameterByName("route");
-
+    //sync the current action route with main popup
+    if (externalControlsState.activeSession?.route && isLogin) {
+      navigate(`/${externalControlsState.activeSession.route}`);
+      return;
+    }
+    else if (!isLogin && vault) {
       navigate(ROUTES.UNLOACK_WALLET, {
         state: {
           redirectRoute: route ? ROUTES.DEFAULT + route : EMTY_STR,
@@ -73,14 +77,15 @@ function App({ data }) {
       });
     }
 
+
   }, [isLogin, vault]);
 
+
+
   useEffect(() => {
-
-    if (isLogin && !newAccount.evmAddress)
+    if (isLogin && !newAccount?.evmAddress)
       navigate(ROUTES.WALLET);
-
-  }, [isLogin, newAccount.evmAddress]);
+  }, [isLogin, newAccount?.evmAddress]);
 
 
   return (
@@ -103,7 +108,14 @@ function App({ data }) {
               path={ROUTES.UNLOACK_WALLET}
               element={<WelcomeLayout children={<UnlockWelcome />} />}
             />
-
+            <Route
+              path={ROUTES.FORGOTPASSWORD}
+              element={<WelcomeLayout children={<ForgotPassword />} />}
+            />
+            <Route
+              path={ROUTES.MAINPRIVACYPOLICY}
+              element={<WelcomeLayout children={<MainPrivacyPolicy />} />}
+            />
           </>
         ) : (
           <>
@@ -112,7 +124,16 @@ function App({ data }) {
               path={ROUTES.WALLET}
               element={<FixWidthLayout children={<Wallet />} />}
             />
-
+            <Route
+              index
+              path={ROUTES.HISTORY_P}
+              element={<FixWidthLayout children={<History />} />}
+            />
+            <Route
+              index
+              path={ROUTES.MYACCOUNT}
+              element={<FixWidthLayout children={<MyAccount />} />}
+            />
             <Route
               index
               path={ROUTES.SWAP_APPROVE}
@@ -152,14 +173,13 @@ function App({ data }) {
             <Route
               index
               path={ROUTES.NATIVE_TXN}
-              element={<NativeTx  /*api={api}*/ />}
+              element={<NativeTx /*api={api}*/ />}
             />
 
             <Route
               path={ROUTES.LOGIN_APPROVE}
               element={<WelcomeLayout children={<LoginApprove />} />}
             />
-
           </>
         )}
 

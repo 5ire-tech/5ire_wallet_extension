@@ -16,10 +16,6 @@ export const userState = {
         nativeAddress: "",
     },
 
-    // newAccount: null,
-
-    uiData: {},
-
     balance: {
         evmBalance: "",
         nativeBalance: "",
@@ -30,12 +26,19 @@ export const userState = {
 
     eth_accounts: '',
 
-    isLogin: false,
+    isLogin: false
 
-    connectedSites: [],
+}
 
-    isLoading: false,
+export const externalControls = {
+    activeSession: null,
+    connectedApps: {},
+    connectionQueue: []
+}
 
+export const transactionQueue = {
+    txQueue: [],
+    currentTransaction: null
 }
 
 export const newAccountInitialState = {

@@ -21,6 +21,7 @@ window.fire = fireProvider;
 injectedStream.on("data", (data) => {
 
   if (data?.method === "keepAlive") {
+
     setTimeout(() => {
       injectedStream.write({ method: "keepAlive" });
     }, 1000 * 30);
@@ -35,6 +36,7 @@ injectedStream.on("data", (data) => {
 
   //get specfic handler using id and resolve or reject it
   if (data.id) {
+
     const handler = fireProvider.handlers[data.id];
 
     //check if the message is related to error
@@ -65,7 +67,7 @@ injectedStream.on("data", (data) => {
       } else {
 
         handler?.isCb && handler.cb(data.response);
-        handler?.resolve(data.response);
+        handler?.resolve(data.response.result);
       }
     }
     delete fireProvider.handlers[data.id];

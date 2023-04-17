@@ -1,11 +1,13 @@
 import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
+import {validMnemonic} from "../../Hooks/useWallet";
+import TextArea from "antd/es/input/TextArea";
 import { useNavigate } from "react-router-dom";
-import useWallet from "../../Hooks/useWallet";
 import { isEmpty } from "../../Utility/utility";
 import React, { useState, useEffect, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
+import PrivacyPolicy from "../../Components/MenuFooter/PrivacyPolicy";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
@@ -22,7 +24,6 @@ import {
 
 function ImportWallet() {
   const navigate = useNavigate();
-  const { validMnemonic } = useWallet();
   const [isDisable, setDisable] = useState(true);
   const [data, setData] = useState({ accName: "", key: "" });
   const [warrning, setWarrning] = useState({ acc: "", key: "" });
@@ -47,7 +48,7 @@ function ImportWallet() {
         setDisable(true);
       }
     }
-  }, [data.accName, data.key, warrning])
+  }, [data.accName, data.key, warrning]);
 
   const handleChange = (e) => {
     setData((p) => ({ ...p, [e.target.name]: e.target.value }));
@@ -62,13 +63,11 @@ function ImportWallet() {
       }));
       setDisable(true);
     }
-
     else if (!REGEX.WALLET_NAME.test(data.accName)) {
 
       setWarrning(p => ({ ...p, acc: ERROR_MESSAGES.ALPHANUMERIC_CHARACTERS }))
       setDisable(true);
     }
-
     else {
       setWarrning((p) => ({ ...p, acc: "" }));
       // setDisable(false);
@@ -119,7 +118,7 @@ function ImportWallet() {
     }
   };
 
-  const handleCancle = () => {
+  const handleCancel = () => {
     if (isLogin) navigate(ROUTES.WALLET);
     else navigate(ROUTES.DEFAULT);
   };
@@ -131,7 +130,7 @@ function ImportWallet() {
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Import Wallet </h1>
         </div>
-        <div className={style.cardWhite__linkOuter}>
+        <div className={style.cardWhite__importWalletlinkOuter}>
           <div>
             <InputFieldOnly
               placeholder={"Enter wallet name"}
@@ -143,8 +142,8 @@ function ImportWallet() {
             />
             <p className="errorText">{warrning.acc}</p>
           </div>
-          <div>
-            <InputFieldOnly
+          <div className="inputFieldOnly">
+            {/* <InputFieldOnly
               type="password"
               placeholder={"Enter mnemonic here"}
               placeholderBaseColor={true}
@@ -152,13 +151,20 @@ function ImportWallet() {
               name="key"
               onChange={handleChange}
               keyUp={validateKey}
+            /> */}
+            <TextArea
+              placeholder={"Enter mnemonic here"}
+              rows={4}
+              onChange={handleChange}
+              onKeyUp={validateKey}
+              name="key"
             />
             <p className="errorText">{warrning.key}</p>
           </div>
         </div>
         <div className={style.setPassword__footerbuttons}>
-          <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancle} />
           <ButtonComp onClick={handleClick} text={"Import"} isDisable={isDisable} />
+          <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancel} />
         </div>
       </div>
     </div>

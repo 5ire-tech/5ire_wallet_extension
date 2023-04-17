@@ -4,7 +4,7 @@ import style from "./style.module.scss";
 // import useAuth from "../../Hooks/useAuth";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { isEmpty } from "../../Utility/utility";
+import { isEmpty, log} from "../../Utility/utility";
 import React, { useContext, useEffect, useState } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
@@ -21,11 +21,15 @@ import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScr
 import { AuthContext } from "../../Store";
 
 
+
+
 export default function SetPasswordScreen() {
   const params = useParams();
+
   const navigate = useNavigate();
   const { setUserPass, accountName } = useContext(AuthContext);
   const [show, setShow] = useState(false);
+  const { state, updateState } = useContext(AuthContext);
   const [error, setError] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
   const [pass, setPass] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
 
@@ -78,6 +82,12 @@ export default function SetPasswordScreen() {
   };
 
 
+  const handleCancel = () => {
+    updateState(LABELS.NEW_ACCOUNT, null, false);
+    // updateState(LABELS.ACCOUNT_NAME, null, false);
+    navigate(ROUTES.WALLET);
+  };
+
   const handleSubmit = async (e) => {
 
     if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
@@ -115,9 +125,9 @@ export default function SetPasswordScreen() {
             on your device. We recommend 12 characters, with uppercase and
             lowercase letters, symbols and numbers.
           </p>
-          <div className={style.cardWhite__beginText__passInputSec}>
+          <div className={style.cardWhite__beginText__passInputSec} style={{ marginTop: "48px" }}>
             <InputFieldSimple
-              value={pass.pass}
+              value={pass?.pass}
               name={LABELS.PASS}
               onChange={handleChange}
               placeholder={"Enter Password"}
@@ -126,10 +136,10 @@ export default function SetPasswordScreen() {
               keyUp={validatePass}
             />
           </div>
-          <p className={style.errorText}>{error.pass}</p>
-          <div className={style.cardWhite__beginText__passInputSec}>
+          <p className={style.errorText}>{error.pass ? error.pass : ""}</p>
+          <div className={style.cardWhite__beginText__passInputSec} style={{ marginTop: "20px" }}>
             <InputFieldSimple
-              value={pass.confirmPass}
+              value={pass?.confirmPass}
               name="confirmPass"
               onChange={handleChange}
               placeholder={"Confirm Password"}
@@ -137,23 +147,24 @@ export default function SetPasswordScreen() {
               coloredBg={true}
               keyUp={validateConfirmPass}
             />
-            <p className={style.errorText}>{error.confirmPass}</p>
+            <p className={style.errorText}>{error.confirmPass? error.confirmPass : ""}</p>
           </div>
-          <div style={{ marginTop: "30px" }}>
+
+          <div style={{ marginTop: "50px" }} className={style.contBtn}>
             <ButtonComp
               onClick={handleSubmit}
               text={"Continue"}
               maxWidth={"100%"}
             />
+             <ButtonComp
+             bordered={true}
+              onClick={handleCancel}
+              text={"Cancel"}
+              maxWidth={"100%"}
+            />
           </div>
+
         </div>
-      </div>
-      <div className={style.menuItems__cancleContinue}>
-        {show && (
-          <div className="loader">
-            <CongratulationsScreen text={`Your Wallet is ${params.id === "create" ? "Created" : "Imported"}.`} />
-          </div>
-        )}
       </div>
     </>
   );

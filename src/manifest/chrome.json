@@ -46,7 +46,7 @@
         "default": "Ctrl+Shift+K",
         "mac": "MacCtrl+Shift+K"
       },
-      "description": "Opens hello.html"
+      "description": "Opens popup.html"
     }
   },
   "content_security_policy": {

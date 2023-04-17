@@ -24,13 +24,13 @@ export function isUndef(arg) {
 
 //check if string or array has length
 export function hasLength(arg) {
-    if (isString(arg)) return arg.trim().length > 0;
-    return arg.length > 0
+    if (isString(arg)) return arg.trim()?.length > 0;
+    return arg?.length > 0
 }
 
 //check if string or array has length
 export function isEmpty(str) {
-   return str.length === 0 
+   return str?.length === 0 
 }
 
 //check if string or array has length
@@ -53,17 +53,21 @@ export function isEqual(arg1, arg2) {
 
 //slice the string to any size
 export const shortLongAddress = (data = '', startLen = 10, endLen = 10) => {
-    return `${data.substring(0, startLen)}...${data.substring(data.length - endLen, data.length)}`;
+    return `${data.substring(0, startLen)}...${data.substring(data?.length - endLen, data?.length)}`;
 };
 
 export const arrayReverser = arr => {
     const newArr = [];
-    for (let i = arr.length - 1; i >= 0; i--) {
+    for (let i = arr?.length - 1; i >= 0; i--) {
       newArr.push(arr[i]);
     }
-    return(newArr)
+    return newArr
 }
 
+//check if value is number
+export function isNumber(arg) {
+    return typeof(arg) === "number";
+}
 
 //logging utility
 export function log(...logs) {

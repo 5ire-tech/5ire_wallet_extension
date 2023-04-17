@@ -31,7 +31,7 @@ function ManageWallet() {
       navigator.clipboard.writeText(currentAccount?.accountName);
     }
     toast.success(COPIED);
-  }
+  };
 
   return (
     <>
@@ -69,8 +69,12 @@ function ManageWallet() {
             <ButtonComp
               onClick={() => navigate(ROUTES.ENTER_PASS)}
               text="Export Private Key"
-              img={Exportprivate}
             ></ButtonComp>
+            <ButtonComp
+              bordered={true}
+              onClick={() => navigate(ROUTES.ENTER_PASS)}
+              text="Reveal Mnemonic"
+            />
           </div>
         </div>
       </div>

@@ -1,28 +1,22 @@
 import Browser from "webextension-polyfill";
 import { WindowPostMessageStream } from "./stream";
 import { CONTENT_SCRIPT, INPAGE } from "./constants";
-import { isManifestV3 } from "./utils"
+import { isManifestV3 } from "./utils";
+
+
 const contentStream = new WindowPostMessageStream({
   name: CONTENT_SCRIPT,
   target: INPAGE,
 });
 
 
-// console.log("here is window object: ", window);
 
 contentStream.on("data", async (data) => {
 
-  // console.log("here is data in content: ", data);
+  if(!data?.method) return;
 
   try {
     switch (data.method) {
-      case "request":
-        contentStream.write({
-          id: data.id,
-          response: "I return back result to you",
-          error: null,
-        });
-        break;
       case "connect":
       case "eth_requestAccounts":
       case "eth_accounts":
@@ -75,14 +69,15 @@ contentStream.on("data", async (data) => {
         });
     }
   } catch (err) {
-    console.log("Error under content script", err);
+    console.log("Error in Content Script: ", err);
   }
 });
+
 
 const messageFromExtensionUI = (message, sender, cb) => {
   if (message?.id) {
     contentStream.write(message);
-    cb("I Recevie and ack");
+    cb("I Receive and ack");
   }
 };
 
@@ -91,10 +86,6 @@ const messageFromExtensionUI = (message, sender, cb) => {
  */
 Browser.runtime.onMessage.addListener(messageFromExtensionUI);
 
-
-
-// These require calls need to use require to be statically recognized by browserify
-// const path = require('path');
 
 function injectScript() {
   try {

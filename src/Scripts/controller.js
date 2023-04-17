@@ -1,63 +1,207 @@
+import { ExtensionStorageHandler } from "../Storage/loadstore";
 import Browser from "webextension-polyfill";
-import NotificationManager from "./platform";
-import { hasLength, isNullorUndef, isString } from "../Utility/utility";
+import WindowManager, {NotificationAndBedgeManager} from "./platform";
+import { ExternalAppsRequest, TabMessagePayload } from "../Utility/network_calls";
+import { isEqual, log, isNullorUndef } from "../Utility/utility";
 import {setUIdata, toggleSite} from "../Utility/redux_helper";
-import { ERRCODES, ERROR_MESSAGES, HTTP_END_POINTS, LABELS, } from "../Constants";
-import { ErrorPayload, Error } from "../Utility/error_helper";
+import { EVM_JSON_RPC_METHODS, HTTP_END_POINTS, LABELS, ROUTE_FOR_APPROVAL_WINDOWS, STATE_CHANGE_ACTIONS, ERROR_MESSAGES, SUCCESS_MESSAGES} from "../Constants";
 import { getDataLocal } from "../Storage/loadstore";
+import { sendMessageToTab } from "../Utility/message_helper";
+import { isAlreadyConnected } from "./utils";
+
+
+//control the external connections and window popup creation
+export class ExternalWindowControl {
+
+  static instance = null;
+  static pendingTask = 0;
+  static isApproved = null;
+  static eventListnerControl = [];
+
+  constructor() {
+    this.windowManager = WindowManager.getInstance(this._handleClose.bind(this));
+    this.notificationAndBedgeHandler = NotificationAndBedgeManager.getInstance();
+  }
+
+  /**
+   * get the class instance from builder function
+   * @returns {ExtensionStorageHandler}
+   */
+  static getInstance = () => {
+      if(!ExternalWindowControl.instance) {
+        ExternalWindowControl.instance = new ExternalWindowControl();
+        delete ExternalWindowControl.constructor;
+      }
+      return ExternalWindowControl.instance
+  }
+
+
+  //decress the pending task count
+  decressPendingTask = () => ExternalWindowControl.pendingTask -= 1;
+  //increase the pending task count
+  increasePendingTask = () => ExternalWindowControl.pendingTask += 1;
+
+
+  /**
+   * add the new connection request into queue
+   * @param {*} data 
+   * @param {*} state 
+   * @param {*} externalControlsState 
+   * @returns
+   */
+  newConnectionRequest = async (data, externalControlsState) => {
+    const isOriginAlreadyExist = this._checkNewRequestOrigin(externalControlsState, data.origin);
+
+    if(isOriginAlreadyExist) return;
+      //set the pending task icon on chrome extension
+      this.increasePendingTask();
+      this.notificationAndBedgeHandler.showBedge(ExternalWindowControl.pendingTask);
+
+    const newConnectionRequest = new ExternalAppsRequest(data.id, data.tabId, data.message, data.method, data.origin, data.route, null);
+    await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.ADD_NEW_CONNECTION_TASK, newConnectionRequest, {localStateKey: LABELS.EXTERNAL_CONTROLS})
+    
+    //check if activeSession is null if yes then set the active session from pending queue
+    if(!externalControlsState.activeSession) await this.changeActiveSession();
+  }
+
+  /**
+   * change the active session
+   */
+  changeActiveSession = async () => {
+    await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.CHANGE_ACTIVE_SESSION, {}, {localStateKey: LABELS.EXTERNAL_CONTROLS})
+    this.closeActiveSessionPopup();
+    
+    //show the popup after changing active session from pending queue
+    const externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+    externalControlsState.activeSession && this.activatePopupSession(externalControlsState.activeSession);
+  }
+
+  /**
+   * create and show the popup for current active session
+   */
+  activatePopupSession = async (activeSession) => {
+
+    const popupId = await this.windowManager.showPopup(activeSession.route);
+    ExternalWindowControl.eventListnerControl.push(popupId);
+    await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.UPDATE_CURRENT_SESSION, {popupId}, {localStateKey: LABELS.EXTERNAL_CONTROLS})
+  }
+
+  /**
+   * close the popup of current active session
+   */
+  closeActiveSessionPopup = async () => {
+    const {activeSession} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+
+    log("here is active session: ", activeSession);
+
+    if(activeSession?.popupId) {
+    //set the pending task icon on chrome extension
+
+    this.decressPendingTask();
+    this.notificationAndBedgeHandler.showBedge(ExternalWindowControl.pendingTask);
+      await this.windowManager.closePopup(activeSession.popupId);
+    }
+    
+  }
+
+  /*********************************** Internal methods ***********************************/
+ 
+  /**
+   * check if the currentSession and pending Tasks have the same origin or not
+   * @param {*} externalControlsState 
+   * @param {*} origin 
+   */
+  _checkNewRequestOrigin = (externalControlsState, origin) => {
+    const inCurrent = isEqual(externalControlsState.activeSession?.origin, origin) 
+    const inPending = externalControlsState.connectionQueue.find(item => item.origin === origin);
+
+    return inPending || inCurrent
+  }
+
+
+  /**
+   * callback for close event
+   */
+  _handleClose = async (windowId) =>  {
+
+    log("closed the window: ", windowId, ExternalWindowControl.eventListnerControl)
+
+    const isWindowIdFound = ExternalWindowControl.eventListnerControl.findIndex((item) => windowId === item);
+    if(isWindowIdFound >= 0) ExternalWindowControl.eventListnerControl = ExternalWindowControl.eventListnerControl.filter(item => item !== windowId);
+    else return;
+
+    const {activeSession} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+
+    //check if window is closed by close button
+    if(isNullorUndef(ExternalWindowControl.isApproved) || isEqual(ExternalWindowControl.isApproved, false)) {
+
+      activeSession?.tabId && sendMessageToTab(activeSession?.tabId, new TabMessagePayload(activeSession.id, null, ERROR_MESSAGES.REJECTED_BY_USER))
+      if(isNullorUndef(ExternalWindowControl.isApproved)) {
+        this.decressPendingTask();
+        this.notificationAndBedgeHandler.showBedge(ExternalWindowControl.pendingTask);
+      } 
+    }
+
+    //set the approve to null for next session
+    ExternalWindowControl.isApproved = null;
+
+    //change the current popup session
+    await this.changeActiveSession();
+  }
+}
 
 
 //handle the interaction with external dapps and websites
 export class ExternalConnection {
 
+  static instance = null;
+
+  constructor() {
+    this.externalWindowController = ExternalWindowControl.getInstance();
+  }
+
+  //get only singal object
+  static getInstance = () => {
+    if(!ExternalConnection.instance) {
+      ExternalConnection.instance = new ExternalConnection();
+      delete ExternalConnection.constructor;
+    }
+    return ExternalConnection.instance
+}
+
+
     //add the dapp or website to connected list after approval
-    async handleConnect(data) {
-      const state = await getDataLocal(LABELS.STATE)
+    async handleConnect(data, state) {
+      const externalControls = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
       const account = state.allAccounts[state.currentAccount.index];
-      const isEthReq =
-        data?.method === "eth_requestAccounts" ||
-        data?.method === "eth_accounts";
-  
-      const isExist = state.connectedSites.find(
-        (st) => st.origin === data.message?.origin
-      );
-  
-      // console.log("is Connected Website: ", isExist?.isConnected);
-  
-      if (isExist?.isConnected) {
-        const res = isEthReq
-          ? { method: data?.method, result: [account.evmAddress] }
+      const isEthReq = isEqual(data?.method, EVM_JSON_RPC_METHODS.ETH_REQUEST_ACCOUNT) || isEqual(data?.method, EVM_JSON_RPC_METHODS.ETH_ACCOUNTS);
+
+        const isConnected = isAlreadyConnected(externalControls.connectedApps, data.origin)
+
+      if (isConnected) {
+        const res = isEthReq ? { method: data?.method, result: [account.evmAddress] }
           : {
             result: {
               evmAddress: account.evmAddress,
               nativeAddress: account.nativeAddress,
             }
           };
-  
-        Browser.tabs.sendMessage(data.tabId, {
-          id: data.id,
-          response: res,
-          error: null,
-        });
+
+          //send the message to requester tab
+          sendMessageToTab(data.tabId, new TabMessagePayload(data.id, res));
+
       } else {
-  
-        this.store.dispatch(setUIdata(data));
-        await this.notificationManager.showPopup("loginApprove");
-  
+        await this.externalWindowController.newConnectionRequest({route: ROUTE_FOR_APPROVAL_WINDOWS.CONNECTION_ROUTE, ...data}, externalControls);
       }
+  
     }
 
     //handle the evm related transactions
    async handleEthTransaction(data) {
+      const externalControls = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
 
-    this.store.dispatch(
-      setUIdata({
-        ...data,
-        message: data?.message[0],
-      }));
+      await this.externalWindowController.newConnectionRequest({route: ROUTE_FOR_APPROVAL_WINDOWS.APPROVE_TX, ...data}, externalControls);
 
-
-    await this.notificationManager.showPopup("approveTx");
     }
 
   //handle the interaction with nominator and validator application
@@ -68,66 +212,27 @@ export class ExternalConnection {
 
 
     //inject the current net endpoint to injected global
-    async sendEndPoint(data) {
+    async sendEndPoint(data, state) {
       try {
-        const storage = this.store.getState();
+
+        log("inside the send endpoint: ", data, state)
   
-        if (data.tabId) {
+        if (data?.tabId) {
           //pass the current network http endpoint
-          Browser.tabs.sendMessage(data.tabId, {
-            id: data.id,
-            response: { result: HTTP_END_POINTS[storage.auth.currentNetwork.toUpperCase()] },
-            error: null,
-          });
+          sendMessageToTab(data.tabId, new TabMessagePayload(data.id, { result: HTTP_END_POINTS[state.currentNetwork.toUpperCase()] }))
         }
       } catch (err) {
-        //  console.log("Error while sending the endpoint for injection");
-        //handle the error message passing also
+         console.log("Error while sending the endpoint: ", err);
       }
     }
   
   
     //handle the Disconnection
     async handleDisconnect(data) {
-      this.store.dispatch(toggleSite({ origin: data.message?.origin, isConnected: false }))
-      Browser.tabs.sendMessage(data.tabId, {
-        id: data.id,
-        response: "Disconnected successfully",
-        error: null,
-      });
+      //disconnect the app
+      await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.APP_CONNECTION_UPDATE, {connected: false, origin: data.origin}, {localStateKey: LABELS.EXTERNAL_CONTROLS});
+      sendMessageToTab(data.tabId, new TabMessagePayload(data.id, SUCCESS_MESSAGES.DISCONNECTED));
     }
 
-}
-
-
-//handle the windows and notifications
-
-export class GUIHandler {
-  static instance = null
-
-  constructor() {
-    this.notificationManager = NotificationManager.getInstance();
-  }
-
-
-      //maintain only single instance
-      static getInstance(store) {
-        if(isNullorUndef(GUIHandler.instance)) GUIHandler.instance = new GUIHandler(store)
-        delete GUIHandler.constructor
-        return GUIHandler.instance
-      }
-    
-      
-      //show extension notifications
-      showNotification(message, title = "5ire", type = "basic") {
-    
-        if(!isString(message) && !hasLength(message)) new Error(new ErrorPayload(ERRCODES.CHECK_FAIL, ERROR_MESSAGES.INVALID_TYPE)).throw();
-    
-        Browser.notifications.create("", {
-          iconUrl: Browser.runtime.getURL("logo192.png"),
-          message,
-          title,
-          type,
-        });
-      }
+    /********************************* Internal methods **************************/
 }

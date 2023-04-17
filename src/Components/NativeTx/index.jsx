@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import Browser from "webextension-polyfill";
-import UseWallet from "../../Hooks/useWallet";
 import ButtonComp from "../ButtonComp/ButtonComp";
 import { shortLongAddress } from "../../Utility/utility";
 import {closeBoth} from "../../Utility/window.helper"

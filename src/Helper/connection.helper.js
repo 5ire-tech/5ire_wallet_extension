@@ -2,7 +2,9 @@
 import Web3 from "web3";
 import { ApiPromise } from "@polkadot/api";
 import { HttpProvider, WsProvider } from "@polkadot/rpc-provider";
-import { HTTP_END_POINTS } from "../Constants";
+import { ERRCODES, HTTP_END_POINTS, INTERNAL_EVENT_LABELS } from "../Constants";
+import { ExtensionEventHandle } from "../Scripts/initbackground";
+import { ErrorPayload } from "../Utility/error_helper";
 
 export class Connection {
 
@@ -42,7 +44,7 @@ export class Connection {
                 }
 
         } catch (err) {
-            console.log("Error while making connection with socket api's : ", err);
+            ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.FAILED_TO_CONNECT_NETWORK, err.message));
             Connection.isExecuting.value = false
             return { error: err, value: true }
         }
@@ -50,7 +52,7 @@ export class Connection {
 
     //create native connection
     createNativeConnection = async (networkEndpoint) => {
-        let connection;
+        let connection = null;
 
         //connection with native (Polkadot)
         if (networkEndpoint?.startsWith("ws")) {
@@ -62,9 +64,13 @@ export class Connection {
         else if (networkEndpoint?.startsWith("http")) {
             connection = await ApiPromise.create({
                 provider: new HttpProvider(networkEndpoint),
-                noInitWarn: true
+                noInitWarn: true,
+                throwOnConnect: true,
+                throwOnUnknown: true,
             });
         }
+
+
 
         //bind events for failure and reconnection
         connection.on("disconnected", async () => {

@@ -1,18 +1,19 @@
-import { log } from "../Utility/utility";
 import Browser from "webextension-polyfill";
-import { userState, newAccountInitialState } from "./initialState";
+import { userState, newAccountInitialState, externalControls } from "./initialState";
 import { isManifestV3 } from "../Scripts/utils";
 import { createContext, useState } from "react";
 import { sessionStorage, localStorage } from "../Storage";
-// import { getDataLocal, getDataSession } from "../Storage/loadstore";
-import { bindRuntimeMessageListener } from "../Utility/message_helper";
+import { sendRuntimeMessage, bindRuntimeMessageListener } from "../Utility/message_helper";
 import { MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, STORAGE, LABELS } from "../Constants";
+import { isNullorUndef, log } from "../Utility/utility";
+
+
 
 export const AuthContext = createContext();
 
-
 export default function Context({ children }) {
   const [state, setState] = useState(userState);
+  const [externalControlsState, setExternalControlState] = useState(externalControls)
   const [passError, setPassError] = useState("");
   const [privateKey, setPrivateKey] = useState("");
   const [seedPhrase, setSeedPhrase] = useState("");
@@ -25,23 +26,22 @@ export default function Context({ children }) {
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
 
 
-  Browser.storage.onChanged.addListener((changedData, area) => {
-    if (area === STORAGE.LOCAL) {
-      //change the state whenever the local storage is updated
-      setState(changedData.state.newValue)
-    }
-  });
+  Browser.storage.local.onChanged.addListener((changedData) => {
+
+    // console.log("changed the storage: ", changedData);
+    //change the state whenever the local storage is updated
+    !isNullorUndef(changedData?.state) && setState(changedData.state.newValue);
+    !isNullorUndef(changedData?.externalControls) && setExternalControlState(changedData.externalControls.newValue);
+  })
 
 
   //bind the message from background event
   bindRuntimeMessageListener((message) => {
-    log("message from the background script: ", message);
+
+    // log("message from the background script: ", message)
 
     if (message.type === MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND) {
-      if (
-        message.event === MESSAGE_EVENT_LABELS.EVM_FEE ||
-        message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE
-      ) {
+      if (message.event === MESSAGE_EVENT_LABELS.EVM_FEE || message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE) {
         (!estimatedGas) && updateEstimatedGas(message.data.fee);
 
       } if (message.event === MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE) {
@@ -59,15 +59,17 @@ export default function Context({ children }) {
       } if (message.event === MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE) {
         exportSeedPhrase(message.data);
       }
+
       //  if (message.event === MESSAGE_EVENT_LABELS.LOCK) {
       //   lock(message.data);
       // } 
       //  if (message.event === MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC) {
       //   importAccountByMnemonics(message.data);
       // } 
+
       updateLoading(false);
     }
-  })
+  });
 
 
   /********************************state update handler**************************************/
@@ -83,7 +85,11 @@ export default function Context({ children }) {
 
   //update the main state (also update into the persistant store)
   const updateState = (name, data, toLocal = true, toSession = false) => {
-    //todo
+
+
+    log("state updated by updateState: ", name, data)
+
+
     if (toSession) {
       if (isManifestV3) {
         sessionStorage.set({ [name]: data });
@@ -97,6 +103,7 @@ export default function Context({ children }) {
         ...p,
         [name]: data
       }
+
       localStorage.set({ state: dataToSet });
       return dataToSet;
     });
@@ -139,8 +146,8 @@ export default function Context({ children }) {
     setSeedPhrase(data?.seedPhrase);
   }
 
-  const values = {
 
+  const values = {
     state,
     userPass,
     passError,
@@ -158,12 +165,14 @@ export default function Context({ children }) {
     setUserPass,
     updateState,
     setPassError,
-    // setTxHistory,
     updateLoading,
     setNewAccount,
     setPrivateKey,
     setPassVerified,
     updateEstimatedGas,
+    updateLoading,
+    externalControlsState,
+    setExternalControlState
   }
 
   return (

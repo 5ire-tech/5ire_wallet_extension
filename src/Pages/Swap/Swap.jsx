@@ -3,14 +3,15 @@ import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
 import { AuthContext } from "../../Store";
-// import useWallet from "../../Hooks/useWallet";
 import { shortner } from "../../Helper/helper";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import ComplSwap from "../../Assets/DarkLogo.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import React, { useState, useContext } from "react";
+import Info from "../../Assets/infoIcon.svg";
 import WalletCardLogo from "../../Assets/walletcardLogo.svg";
+import logoNew from "../../Assets/logoNew.svg";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import { InputField } from "../../Components/InputField/InputFieldSimple";
@@ -25,6 +26,7 @@ import {
   MESSAGE_TYPE_LABELS,
 } from "../../Constants/index";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
+import { Switch } from "antd";
 import { isEmpty } from "../../Utility/utility";
 
 
@@ -41,18 +43,11 @@ function Swap() {
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [toFrom, setToFrom] = useState({ from: NATIVE, to: EVM });
   const [address, setAddress] = useState({ fromAddress: "", toAddress: "" });
+  const onChange = (checked) => {
+    console.log(`switch to ${checked}`);
+  };
+  const { balance, currentAccount} = state;
 
-  const {
-    balance,
-    allAccounts,
-    currentAccount,
-    // currentNetwork
-  } = state;
-
-
-  // useEffect(() => {
-  //   accountData.current = allAccounts[currentAccount.index];
-  // }, [currentAccount.evmAddress]);
 
   useEffect(() => {
 
@@ -123,21 +118,11 @@ function Swap() {
 
   const blockInvalidChar = e => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
 
-  const getFee = async () => {
 
-    if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase()) {
-      updateLoading(true);
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_FEE, { amount: amount, account: state.currentAccount });
-
-    } else {
-      updateLoading(true);
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_FEE, { amount: amount, account: state.currentAccount });
-    }
-
-  };
-
-
+  //validate amount
   const validateAmount = () => {
+
+    console.log("balance is here: ", balance, amount)
 
     if (amount.length === 0)
       setError(ERROR_MESSAGES.INPUT_REQUIRED);
@@ -171,20 +156,38 @@ function Swap() {
   const handleApprove = async (e) => {
     try {
 
-      if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP, { amount: amount, account: state.currentAccount });
-        setIsModalOpen(true);
+          if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
 
-      } else {
+            // updateLoading(true);
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP, {value: amount, options: {account: state.currentAccount}});
+            setIsModalOpen(true);
 
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI, MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP, { amount: amount, account: state.currentAccount });
-        setIsModalOpen(true);
-      }
+          } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
+
+            // updateLoading(true);
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP, {value: amount, options: {account: state.currentAccount}});
+            setIsModalOpen(true);
+          }
+
+      updateEstimatedGas("");
+    } catch (error) {
+      toast.error("Error occured.");
+    }
+  };
+
+  const getFee = async () => {
+
+        if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase()) {
+
+          updateLoading(true);
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, {value: amount, options: {account: state.currentAccount}});
+        } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase()) {
+
+          updateLoading(true);
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {value: amount, options: {account: state.currentAccount}});
+        }
 
       updateEstimatedGas(null);
-    } catch (error) {
-      toast.error(ERROR_MESSAGES.ERR_OCCURED);
-    }
   };
 
 
@@ -265,7 +268,7 @@ function Swap() {
         <div className={style.swap__swapCopy}>
           <div className={style.swap__swapSec}>
             <h3>From {toFrom.from}</h3>
-            <span>
+            {/* <span>
               {shortner(address.fromAddress)}
               <img
                 width={15}
@@ -276,15 +279,16 @@ function Swap() {
                 name={toFrom.from}
                 onClick={handleCopy}
               />
-            </span>
+            </span> */}
+            <span>100 5ire </span>
           </div>
           <div className={style.swap__icon} onClick={handleClick}>
             <img src={SwapIcon} alt="swapIcon" draggable={false} />
           </div>
           <div className={style.swap__swapSec}>
             <h3>To {toFrom.to}</h3>
-            <span>
-              {shortner(address?.toAddress)}{" "}
+            {/* <span>
+              {shortner(address.toAddress)}{" "}
               <img
                 width={15}
                 height={15}
@@ -294,7 +298,8 @@ function Swap() {
                 draggable={false}
                 onClick={handleCopy}
               />
-            </span>
+            </span> */}
+            <span>100 5ire </span>
           </div>
         </div>
         <div className={style.swap__swapAccount}>
@@ -311,7 +316,7 @@ function Swap() {
               placeholder={"Enter Amount"}
               addonAfter={
                 <span className={style.swap__pasteText}>
-                  <img src={WalletCardLogo} alt="walletLogo" draggable={false} />
+                  <img src={logoNew} alt="walletLogo" draggable={false} />
                   5ire
                 </span>
               }
@@ -364,9 +369,18 @@ function Swap() {
             </button>
           </div> */}
         </div>
-        <div className={style.swap__transactionFee}>
-          <p>{estimatedGas ? `Estimated fee : ${estimatedGas} ${CURRENCY}` : ""}</p>
+        <div className={style.swap__txFeeBalance}>
+        <h2>{estimatedGas ? `TX Fee : ${estimatedGas} 5IRE`: ""}</h2>
+          {/* <h3>Balance 00.0000 5IRE</h3> */}
         </div>
+        <div className={style.swap__inFoAccount}>
+         <img src={Info}/>
+          <h3>Transfer with account keep alive checks </h3>
+          <Switch defaultChecked onChange={onChange} />
+        </div>
+        {/* <div className={style.swap__transactionFee}>
+          <p>{estimatedGas ? `Estimated fee : ${estimatedGas} 5ire` : ""}</p>
+        </div> */}
       </div>
       <Approve onClick={handleApprove} text="Swap" isDisable={disableBtn} />
       <ModalCustom

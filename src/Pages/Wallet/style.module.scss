@@ -25,7 +25,7 @@
   }
 
   &__multiSwapBtn {
-    padding: 30px 37px;
+    padding: 18px 80px;
     padding-bottom: 0;
   }
   &__sendSwapbtn {
@@ -41,8 +41,8 @@
       cursor: pointer;
       color: $white;
       border: 0;
-      font-size: 15px;
-      padding: 14px;
+      font-size: 14px;
+      padding: 8px;
       &__active {
         background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
         // border: 1px solid rgba(255, 255, 255, 0.5);

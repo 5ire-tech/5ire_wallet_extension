@@ -1,5 +1,6 @@
 import Browser from "webextension-polyfill";
-import { isNullorUndef, isObject, isString } from "./utility";
+import { isNullorUndef, isObject, isString, log } from "./utility";
+
 
 //message passing helper
 export const sendRuntimeMessage = (typeLabel, eventLabel, message) => {
@@ -19,6 +20,16 @@ export const bindRuntimeMessageListener = (listner) => {
     try {
         Browser.runtime.onMessage.addListener(listner)
     } catch (err) {
-        console.log("Error while binding the listner: ", err.message);
+        console.log("Error while binding the listner: ", err);
+    }
+}
+
+
+//send message to tabs
+export const sendMessageToTab = (tabId, payload) => {
+    try {
+        Browser.tabs.sendMessage(tabId, payload);
+    } catch (err) {
+        log("Error while sending message to tabs: ", err)
     }
 }

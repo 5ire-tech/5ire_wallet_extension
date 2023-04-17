@@ -53,7 +53,7 @@ input::placeholder {
   &__input {
     background-color: $blue-08132C;
     border-radius: 12px;
-    padding: 14px 16px;
+    padding: 11px 16px;
     border: 1px solid #404058;
     color: $white;
     font-size: 14px;
@@ -80,6 +80,9 @@ input::placeholder {
   }
   &:last-child {
     margin-bottom: 0;
+  }
+  &__label:empty{
+    display: none;
   }
 }
 .mb0 {

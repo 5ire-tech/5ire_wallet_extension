@@ -1,6 +1,6 @@
 import { localStorage, sessionStorage } from ".";
 import { hasLength, isEqual, isNullorUndef, isObject, isString, log, isEmpty } from "../Utility/utility";
-import { userState } from "../Store/initialState";
+import { userState, externalControls, transactionQueue } from "../Store/initialState";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import { ERRCODES, ERROR_MESSAGES, LABELS } from "../Constants";
 
@@ -11,15 +11,21 @@ export const getDataLocal = async (key) => {
         if (!isString(key) && isEmpty(key.trim())) throw new Error("Query key is invalid");
         const localState = await localStorage.get(key);
 
-        if (!localState?.state) {
-            localStorage.set({ state: userState })
+        if (!localState?.state && isEqual(key , LABELS.STATE)) {
+            await localStorage.set({ state: userState });
             return userState;
+        } else if(!localState?.externalControls && isEqual(key , LABELS.EXTERNAL_CONTROLS)) {
+            await localStorage.set({ externalControls });
+            return externalControls
+        } else if(!localState?.transactionQueue && isEqual(key , LABELS.TRANSACTION_QUEUE)) {
+            await localStorage.set({ transactionQueue });
+            return transactionQueue
         }
 
-        return localState.state;
+        return localState[key];
 
     } catch (err) {
-        console.log("Error while setting and getting state in local storage");
+        console.log("Error while setting and getting state in local storage", err);
         return null;
     }
 }
@@ -59,8 +65,8 @@ export class ExtensionStorageHandler {
                 delete ExtensionStorageHandler.constructor
             }
 
-            const state = await getDataLocal(LABELS.STATE);
-            ExtensionStorageHandler.instance[key](data, state, options);
+            const state = await getDataLocal(options?.localStateKey || LABELS.STATE);
+            await ExtensionStorageHandler.instance[key](data, state, options);
             return false;
 
         } catch (err) {
@@ -81,23 +87,28 @@ export class ExtensionStorageHandler {
 
     //push the transactions
     addNewTxHistory = async (data, state, options) => {
+
         const newState = { ...state }
         newState.txHistory[options.account.accountName].push(data);
-        return await this._updateStorage(newState);
+        const status = await this._updateStorage(newState);
+        return status;
+
     }
 
     //update transaction
     updateTxHistory = async (data, state, options) => {
         const newState = { ...state };
         const txHistory = newState.txHistory[options.account.accountName];
+
         const txIndex = txHistory.findIndex((item) => {
-            const isTx = data.isSwap ? item.txHash.mainHash === data.txHash : item.txHash === data.txHash;
-            return isTx;
-        })
+            return item.id === data.id
+        });
+
 
         if (0 > txIndex) return false;
         //set the updated status into localstorage
-        txHistory[txIndex].status = data.status;
+        txHistory[txIndex] = data;
+        newState.txHistory[options.account.accountName] = txHistory;
 
         //update the history
         return await this._updateStorage(newState);
@@ -118,8 +129,64 @@ export class ExtensionStorageHandler {
         return await this._updateStorage(newState);
     }
 
+
+    /************************************ External Apps Control *********************/
+
+    //add a new connection task
+    addNewConnectionTask = (data, state) => {
+        const newState = {...state};
+        newState.connectionQueue.push(data)
+        this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
+    }
+
+    //update the popup id in currentTask
+    updateCurrentSession = (data, state) => {
+        const newState = {...state};
+        newState.activeSession.popupId = data.popupId || newState.activeSession.popupId;
+        newState.activeSession.route = data.route || newState.activeSession.route;
+
+        this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
+    }
+
+    //select the next task as active
+    changeActiveSession = (data, state) => {
+        const activeSession = state.connectionQueue.shift();
+        const newState = {...state, activeSession: activeSession || null};
+        this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
+    }
+
+    //update the connected status
+    appConnectionUpdate = (data, state) => {
+        const newState = {...state};
+        newState.connectedApps[data.origin] = {isConnected: data.connected}
+        this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
+    }
+
+
+    /************************************ For Transaction Queue *********************/
+    //add a new transaction task
+    addNewTransaction = (data, state) => {
+            const newState = {...state};
+            newState.txQueue.push(data)
+            this._updateStorage(newState, LABELS.TRANSACTION_QUEUE);
+        }
+    
+    //process new transaction
+    processQueuedTransaction = (data, state) => {
+        const queuedTransaction = state.txQueue.shift();
+        const newState = {...state, currentTransaction: queuedTransaction || null};
+        this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
+    }
+
+    //update the transaction track into current processing transaction
+    updateHistoryTrack = (data, state) => {
+        const newState = {...state, currentTransaction: {...state?.currentTransaction, transactionHistoryTrack: data}};
+        this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
+    }
+
+
     // unlockWallet 
-    unlock = async (message, state, options) => {
+    unlock = async (message) => {
         if (message.isLogin)
             this._updateSession(LABELS.ISLOGIN, message.isLogin);
 
@@ -133,7 +200,7 @@ export class ExtensionStorageHandler {
     }
 
     // set the new Account
-    createOrRestore = async (message, state, options) => {
+    createOrRestore = async (message, state) => {
         const { vault, newAccount } = message;
         const currentAcc = {
             evmAddress: newAccount.evmAddress,
@@ -151,7 +218,7 @@ export class ExtensionStorageHandler {
     };
 
 
-    importAccountByMnemonics = async (message, state, options) => {
+    importAccountByMnemonics = async (message, state) => {
         const { newAccount, vault } = message;
         const txHistory = this._txProperty(state, newAccount.accountName);
         const newState = { ...state, vault, txHistory, currentAccount: newAccount }
@@ -159,7 +226,7 @@ export class ExtensionStorageHandler {
     };
 
     //add hd account
-    addAccount = async (message, state, options) => {
+    addAccount = async (message, state) => {
 
         const { newAccount, vault } = message;
 
@@ -177,16 +244,18 @@ export class ExtensionStorageHandler {
     };
 
     //Lock the wallet
-    lock = async (message, state, options) => {
+    lock = async (message, state) => {
         const newState = { ...state, isLogin: message.isLogin };
         return await this._updateStorage(newState);
     }
-
-    //************************************Internal methods***************************/
-    _updateStorage = async (state) => {
-        await localStorage.set({ [LABELS.STATE]: state })
-        return false
-    }
+    
+    
+    //*********************************** Internal methods **************************/
+    _updateStorage = async (state, key) => {
+            const checkKey = key || LABELS.STATE;
+            await localStorage.set({ [checkKey]: state })
+    
+        }
 
     _updateSession = async (key, state) => {
         await sessionStorage.set({ [key]: state })

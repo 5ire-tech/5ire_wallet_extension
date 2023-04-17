@@ -33,7 +33,16 @@ function CreateWalletChain() {
   return (
     <div className={style.cardWhite}>
       <div className={style.cardWhite__beginText}>
-        <h1>New Wallet Details</h1>
+        <h1>Create New Wallet</h1>
+      </div>
+      <div className={style.copyButton}>
+        <button
+          className={style.cardWhite__addressInput__copyAll}
+          name={"all"}
+          onClick={handleCopy}
+        >
+          Copy All
+        </button>
       </div>
       <div className={style.cardWhite__addressInput}>
         <label>{!newAccount?.mnemonic && newAccount.drivePath ? "Drived Path:" : "Mnemonic Phrase:"}</label>
@@ -48,7 +57,7 @@ function CreateWalletChain() {
           />{" "}
         </p>
       </div>
-      <div className={style.cardWhite__addressInput}>
+      <div className={`${style.cardWhite__addressInput} ${style.textElips}`}>
         <label>EVM Private Key:</label>
         <p className={style.cardWhite__addressInput__copyText}>
           <span>{newAccount?.evmPrivateKey}</span>
@@ -56,13 +65,12 @@ function CreateWalletChain() {
             name={PVT_KEY}
             src={CopyIcon}
             alt="copyIcon"
-            draggable={false}
             onClick={handleCopy}
           />{" "}
         </p>
       </div>
       <div className={style.cardWhite__addressInput}>
-        <label>EVM Chain Address:</label>
+        <label>Evm Chain Address:</label>
         <p className={style.cardWhite__addressInput__copyText}>
           <span>{newAccount?.evmAddress}</span>
           <img
@@ -75,19 +83,18 @@ function CreateWalletChain() {
         </p>
       </div>
       <div className={style.cardWhite__addressInput}>
-        <label>Native Chain Address:</label>
+        <label> Native Chain Address:</label>
         <p className={style.cardWhite__addressInput__copyText}>
           <span>{newAccount?.nativeAddress}</span>
           <img
-            draggable={false}
+            name={NATIVE}
             src={CopyIcon}
             alt="copyIcon"
-            name={NATIVE}
+            draggable={false}
             onClick={handleCopy}
           />{" "}
         </p>
       </div>
-      <div className={style.copyButton}><button className={style.cardWhite__addressInput__copyAll} name={"all"} onClick={handleCopy}>Copy All</button></div>
     </div>
   );
 }
