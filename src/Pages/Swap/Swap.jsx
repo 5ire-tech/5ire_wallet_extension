@@ -28,6 +28,7 @@ import {
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { Switch } from "antd";
 import { isEmpty } from "../../Utility/utility";
+import { isEqual } from "lodash";
 
 
 function Swap() {
@@ -280,7 +281,7 @@ function Swap() {
                 onClick={handleCopy}
               />
             </span> */}
-            <span>100 5ire </span>
+            <span>{isEqual(toFrom.to, EVM) ? shortner(currentAccount.evmAddress) : shortner(currentAccount.nativeAddress)}</span>
           </div>
           <div className={style.swap__icon} onClick={handleClick}>
             <img src={SwapIcon} alt="swapIcon" draggable={false} />
@@ -299,7 +300,7 @@ function Swap() {
                 onClick={handleCopy}
               />
             </span> */}
-            <span>100 5ire </span>
+            <span>{!isEqual(toFrom.to, EVM) ? shortner(currentAccount.evmAddress) : shortner(currentAccount.nativeAddress)}</span>
           </div>
         </div>
         <div className={style.swap__swapAccount}>

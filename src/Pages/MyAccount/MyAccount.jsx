@@ -36,7 +36,6 @@ function MyAccount() {
   const { allAccounts, state, updateState } = useContext(AuthContext);
   const { balance, currentAccount } = state;
 
-  console.log("All Accounts :: ", allAccounts);
 
   const hanldeCreateNewAcc = () => {
     navigate(ROUTES.CREATE_WALLET);

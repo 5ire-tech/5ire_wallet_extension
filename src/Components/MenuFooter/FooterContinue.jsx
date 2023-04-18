@@ -96,7 +96,7 @@ export const FooterStepTwo = () => {
 //approve the connection to pass the accounts
 export const ApproveLogin = () => {
   const { state, externalControlsState } = useContext(AuthContext);
-  const account = state.allAccounts[state.currentAccount.index]
+  const account = state.currentAccount;
   const {activeSession} = externalControlsState;
   const navigate = useNavigate();
 

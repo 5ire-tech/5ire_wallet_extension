@@ -151,13 +151,15 @@ function BalanceDetails({ mt0 }) {
                         />
                         {currentAccount?.accountName ? currentAccount?.accountName : ""}
                       </p>
+
                       <span>
-                        {currentAccount.evmAddress ? currentAccount.evmAddress : ""}{" "}
+                        {currentAccount.evmAddress ? shortner(currentAccount.evmAddress) : ""}
                         <img
                           draggable={false}
                           src={CopyIcon}
                           alt="copyIcon"
                           name={EVM}
+                          style={{marginLeft: "4px", cursor: "pointer"}}
                           onClick={handleCopy}
                         />
                       </span>

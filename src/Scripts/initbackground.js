@@ -431,6 +431,9 @@ class TransactionQueue {
           //update the transaction status and other details after confirmation
            await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, transactionHistoryTrack, currentTransaction?.options);
 
+           //update the balance after transaction confirmation
+           ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.BALANCE_FETCH);
+
             //dequeue the new transaction and set as active for processing
             await this.processQueuedTransaction();
 
@@ -978,7 +981,7 @@ export class TransactionsRPC {
         } else new Error(new ErrorPayload(ERRCODES.NETWORK_REQUEST, ERROR_MESSAGES.TX_FAILED)).throw();
       }
     } catch (err) {
-      log("Error in EvmtoNative Swap: ", err)
+      log("Error in Evm to Native Swap: ", err)
       transactionHistory.status = (transactionHistory.txHash && transactionHistory.intermidateHash) ? STATUS.PENDING : STATUS.FAILED;
 
       payload = {
