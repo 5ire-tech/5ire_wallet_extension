@@ -133,7 +133,7 @@ function App(props) {
             />
             <Route
               index
-              path={ROUTES.MYACCOUNT}
+              path={ROUTES.MY_ACCOUNT}
               element={<FixWidthLayout children={<MyAccount />} />}
             />
             <Route

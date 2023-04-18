@@ -1,23 +1,22 @@
 import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
-import {validMnemonic} from "../../Hooks/useWallet";
 import TextArea from "antd/es/input/TextArea";
 import { useNavigate } from "react-router-dom";
-import { isEmpty } from "../../Utility/utility";
 import React, { useState, useEffect, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import PrivacyPolicy from "../../Components/MenuFooter/PrivacyPolicy";
+import { isEmpty, validateMnemonic } from "../../Utility/utility";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
+// import PrivacyPolicy from "../../Components/MenuFooter/PrivacyPolicy";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 import {
   REGEX,
   LABELS,
+  EMTY_STR,
   ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
-  MESSAGE_EVENT_LABELS,
-  EMTY_STR
+  MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
 
 
@@ -50,9 +49,11 @@ function ImportWallet() {
     }
   }, [data.accName, data.key, warrning]);
 
+
   const handleChange = (e) => {
     setData((p) => ({ ...p, [e.target.name]: e.target.value }));
   };
+
 
   const validateAccName = () => {
 
@@ -64,7 +65,6 @@ function ImportWallet() {
       setDisable(true);
     }
     else if (!REGEX.WALLET_NAME.test(data.accName)) {
-
       setWarrning(p => ({ ...p, acc: ERROR_MESSAGES.ALPHANUMERIC_CHARACTERS }))
       setDisable(true);
     }
@@ -81,7 +81,7 @@ function ImportWallet() {
       setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
       setDisable(true);
     }
-    else if (!validMnemonic(data.key)) {
+    else if (!validateMnemonic(data.key)) {
       setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INVALID_MNEMONIC }));
       setDisable(true);
     }
@@ -96,8 +96,9 @@ function ImportWallet() {
       if (!warrning.key && !warrning.acc && data.accName && data.key) {
         if (userPass && !isLogin) {
 
-          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: userPass, opts: { mnemonic: data.key, name: data.accName.trim() } });
-          navigate(ROUTES.WALLET);
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: userPass, opts: { mnemonic: data.key, name: data.accName.trim() }, type: "import" });
+          
+          // navigate(ROUTES.WALLET);
 
         } else {
           const match = allAccounts?.find((a) => a.accountName === data.accName.trim());
@@ -153,11 +154,11 @@ function ImportWallet() {
               keyUp={validateKey}
             /> */}
             <TextArea
-              placeholder={"Enter mnemonic here"}
               rows={4}
-              onChange={handleChange}
-              onKeyUp={validateKey}
               name="key"
+              onKeyUp={validateKey}
+              onChange={handleChange}
+              placeholder={"Enter mnemonic here"}
             />
             <p className="errorText">{warrning.key}</p>
           </div>

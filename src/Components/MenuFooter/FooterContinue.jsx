@@ -60,21 +60,18 @@ function FooterStepOne() {
 
 //Footer of New wallet Detail Page
 export const FooterStepTwo = () => {
-  const { state, updateState, setNewAccount } = useContext(AuthContext);
+  const { state, setNewAccount } = useContext(AuthContext);
   const navigate = useNavigate();
 
 
   const handleCancle = () => {
-    updateState(LABELS.NEW_ACCOUNT, null, false);
-    // updateState(LABELS.ISLOGIN, true, true, true);
-
-    // updateState(LABELS.ACCOUNT_NAME, null, false);
+    setNewAccount(newAccountInitialState);
     navigate(ROUTES.DEFAULT);
   };
 
   const handleClick = () => {
-    navigate(ROUTES.WALLET);
     setNewAccount(newAccountInitialState);
+    navigate(ROUTES.WALLET);
   };
 
   return (

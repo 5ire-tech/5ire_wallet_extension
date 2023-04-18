@@ -1,5 +1,5 @@
 import { localStorage, sessionStorage } from ".";
-import { hasLength, isEqual, isNullorUndef, isObject, isString, log, isEmpty } from "../Utility/utility";
+import { hasLength, isEqual, isNullorUndef, isObject, isString, log, isEmpty, hasProperty } from "../Utility/utility";
 import { userState, externalControls, transactionQueue } from "../Store/initialState";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import { ERRCODES, ERROR_MESSAGES, LABELS } from "../Constants";
@@ -54,16 +54,16 @@ export class ExtensionStorageHandler {
 
             //checks for invalid or undef argument
             isNullorUndef(key) && !hasLength(key) && new Error(new ErrorPayload(ERRCODES.INVALID_ARGU_TYPE, ERROR_MESSAGES.INVALID_TYPE)).throw();
-
             isNullorUndef(data) && new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
             // !isObject(data) && new Error(new ErrorPayload(ERRCODES.INVALID_ARGU_TYPE, ERROR_MESSAGES.INVALID_TYPE)).throw();
-
 
             if (isNullorUndef(ExtensionStorageHandler.instance)) {
                 ExtensionStorageHandler.instance = new ExtensionStorageHandler();
                 delete ExtensionStorageHandler.constructor
             }
+
+            if(!hasProperty(ExtensionStorageHandler.instance, key)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_PROPERTY)).throw();
 
             const state = await getDataLocal(options?.localStateKey || LABELS.STATE);
             await ExtensionStorageHandler.instance[key](data, state, options);
@@ -200,18 +200,37 @@ export class ExtensionStorageHandler {
 
     // set the new Account
     createOrRestore = async (message, state) => {
-        const { vault, newAccount } = message;
+        console.log("Setting New Wallet Details ......");
+        const { vault, newAccount, type} = message;
         const currentAcc = {
             evmAddress: newAccount.evmAddress,
             accountName: newAccount.accountName,
             accountIndex: newAccount.accountIndex,
             nativeAddress: newAccount.nativeAddress,
         }
-
         const txHistory = this._txProperty(state, newAccount.accountName);
-        const newState = { ...state, vault, txHistory, currentAccount: currentAcc, isLogin: true }
-        return await this._updateStorage(newState);
 
+        const newState = { ...state, vault, txHistory, currentAccount: currentAcc, isLogin: true }
+        this._updateSession(LABELS.ISLOGIN, true);
+        return await this._updateStorage(newState);
+    };
+
+    
+    forgotPassByMnemonic = async (message, state) => {
+        console.log("Setting New Wallet Details ......", message);
+        const { vault, newAccount, type} = message;
+
+        const currentAcc = {
+            evmAddress: newAccount.evmAddress,
+            accountName: newAccount.accountName,
+            accountIndex: newAccount.accountIndex,
+            nativeAddress: newAccount.nativeAddress,
+        }
+        const txHistory = this._txProperty(state, newAccount.accountName);
+
+        const newState = { ...state, vault, txHistory, currentAccount: currentAcc, isLogin: true }
+        this._updateSession(LABELS.ISLOGIN, true);
+        return await this._updateStorage(newState);
     };
 
 
@@ -226,12 +245,14 @@ export class ExtensionStorageHandler {
     addAccount = async (message, state) => {
 
         const { newAccount, vault } = message;
+
         const currentAccount = {
             evmAddress: newAccount.evmAddress,
             nativeAddress: newAccount.nativeAddress,
             accountName: newAccount.accountName,
             accountIndex: newAccount.accountIndex,
         };
+
         const txHistory = this._txProperty(state, newAccount.accountName);
         const newState = { ...state, vault, txHistory, currentAccount }
         return await this._updateStorage(newState);

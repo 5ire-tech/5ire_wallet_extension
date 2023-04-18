@@ -1,19 +1,31 @@
-import React from "react";
-import AccountSetting from "../../Components/AccountSetting/AccountSetting";
-import Createaccount from "../../Assets/PNG/createaccount.png";
-import Logout from "../../Assets/PNG/logout.png";
-import Import from "../../Assets/PNG/import.png";
-import style from "./style.module.scss";
-import { ERROR_MESSAGES } from "../../Constants/index";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../Routes";
-import useAuth from "../../Hooks/useAuth";
-import DarkLogo from "../../Assets/DarkLogo.svg";
+import style from "./style.module.scss";
+import React, { useContext } from "react";
+import { AuthContext } from "../../Store";
+import Browser from "webextension-polyfill";
 import ThreeDot from "../../Assets/dot3.svg";
+import { useNavigate } from "react-router-dom";
+import Import from "../../Assets/PNG/import.png";
+import Logout from "../../Assets/PNG/logout.png";
+import DarkLogo from "../../Assets/DarkLogo.svg";
+import Createaccount from "../../Assets/PNG/createaccount.png";
+import { sendRuntimeMessage } from "../../Utility/message_helper";
+import { getCurrentTabUId, getCurrentTabUrl } from "../../Scripts/utils";
+import AccountSetting from "../../Components/AccountSetting/AccountSetting";
+import {
+  LABELS,
+  MESSAGE_TYPE_LABELS,
+  ACCOUNT_CHANGED_EVENT,
+  MESSAGE_EVENT_LABELS
+} from "../../Constants/index";
+
 function MyAccount() {
-  const { logout } = useAuth();
+
   const navigate = useNavigate();
+  const { allAccounts, state, updateState } = useContext(AuthContext);
+  const { balance, currentAccount } = state;
+
+  console.log("All Accounts :: ", allAccounts);
 
   const hanldeCreateNewAcc = () => {
     navigate(ROUTES.CREATE_WALLET);
@@ -23,14 +35,35 @@ function MyAccount() {
   };
 
   const handleLogout = async () => {
-    const res = await logout();
-
-    if (!res.error) {
-      navigate(ROUTES.UNLOACK_WALLET);
-    } else {
-      toast.error(ERROR_MESSAGES.LOGOUT_ERR);
-    }
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.LOCK, {});
   };
+
+  const onSelectAcc = name => {
+    //update the current account
+    const acc = allAccounts.find(acc => acc.accountName === name);
+    updateState(LABELS.CURRENT_ACCOUNT, acc);
+
+    //fetch balance of changed account
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.BALANCE, {});
+
+    //send account details whenever account is changed
+    getCurrentTabUId((id) => {
+      getCurrentTabUrl((url) => {
+        if (!(url === "chrome://extensions")) {
+          Browser.tabs.sendMessage(id, {
+            id: ACCOUNT_CHANGED_EVENT,
+            method: ACCOUNT_CHANGED_EVENT,
+            response: {
+              evmAddress: acc.evmAddress,
+              nativeAddress: acc.nativeAddress,
+            },
+          });
+        }
+      });
+    });
+
+  };
+
   return (
     <div className={style.myAccountSec}>
       <div className={style.myAccountSec__tabAccount}>
@@ -49,32 +82,23 @@ function MyAccount() {
       <div className={style.myAccountSec__accountHeading}>
         <h3>My Accounts</h3>
       </div>
-      <div className={style.myAccountSec__accountActive}>
-        <div className={style.myAccountSec__leftSec}>
-          <img src={DarkLogo} />
-          <div className={style.myAccountSec__leftSec__accountConatct}>
-            <h2>Account 1</h2>
-            <p>312 ETH</p>
+      {
+        allAccounts?.map((data, index) =>
+          <div className={style.myAccountSec__accountActive} key={index + data?.accountIndex}>
+            <div className={style.myAccountSec__leftSec}>
+              <img src={DarkLogo} alt="logo" draggable={false} />
+              <div className={style.myAccountSec__leftSec__accountConatct}>
+                <h2>{data?.accountName}</h2>
+                <p>{data?.accountName === currentAccount?.accountName ? balance?.totalBalance : <span onClick={() => onSelectAcc(data?.accountName)} className={style.myAccountSec__switchAcc}>Switch to this account</span>}</p>
+              </div>
+            </div>
+            <div className={style.myAccountSec__rytSec}>
+              <h2>{data?.accountName === currentAccount?.accountName ? "Active" : "Not Active"}</h2>
+              <img src={ThreeDot} alt="logo" draggable={false} />
+            </div>
           </div>
-        </div>
-        <div className={style.myAccountSec__rytSec}>
-          <h2>Active</h2>
-          <img src={ThreeDot} />
-        </div>
-      </div>
-      <div className={style.myAccountSec__accountActive}>
-        <div className={style.myAccountSec__leftSec}>
-          <img src={DarkLogo} />
-          <div className={style.myAccountSec__leftSec__accountConatct}>
-            <h2>Account 1</h2>
-            <span>Switch to this account</span>
-          </div>
-        </div>
-        <div className={style.myAccountSec__rytSec}>
-          <h2>Not Active</h2>
-          <img src={ThreeDot} />
-        </div>
-      </div>
+        )
+      }
     </div>
   );
 }

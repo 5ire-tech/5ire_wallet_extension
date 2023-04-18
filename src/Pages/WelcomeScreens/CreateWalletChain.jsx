@@ -10,7 +10,9 @@ import { PVT_KEY, NATIVE, EVM, COPIED, MNEMONIC } from "../../Constants/index.js
 function CreateWalletChain() {
 
   const { newAccount } = useContext(AuthContext);
-  
+
+  console.log("newAccount ::: ",newAccount);
+
 
   const handleCopy = (e) => {
 
@@ -45,9 +47,9 @@ function CreateWalletChain() {
         </button>
       </div>
       <div className={style.cardWhite__addressInput}>
-        <label>Mnemonic Phrase:</label>
+        <label>{!newAccount?.mnemonic && newAccount.drivePath ? "Drived Path:" : "Mnemonic Phrase:"}</label>
         <p className={style.cardWhite__addressInput__copyText}>
-          <span>{newAccount?.mnemonic}</span>
+          <span>{!newAccount?.mnemonic && newAccount?.drivePath ? newAccount.drivePath : newAccount.mnemonic}</span>
           <img
             name={MNEMONIC}
             src={CopyIcon}

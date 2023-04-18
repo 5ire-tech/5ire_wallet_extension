@@ -38,8 +38,6 @@ export default function Context({ children }) {
   //bind the message from background event
   bindRuntimeMessageListener((message) => {
 
-    // log("message from the background script: ", message)
-
     if (message.type === MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND) {
       if (message.event === MESSAGE_EVENT_LABELS.EVM_FEE || message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE) {
         (!estimatedGas) && updateEstimatedGas(message.data.fee);
@@ -111,14 +109,13 @@ export default function Context({ children }) {
 
   // set the new Account
   const createOrRestore = (data) => {
-
-    const { newAccount } = data;
-
-    setNewAccount(newAccount);
+    console.log("Data :::: ",data);
+    if (data?.type === "create" ) {
+      setNewAccount(data.newAccount);
+    }
   };
 
   const unlock = (data) => {
-
     if (data?.errMessage) {
       setPassError(data.errMessage);
     } else {
@@ -137,7 +134,9 @@ export default function Context({ children }) {
   };
 
   const verifyUserPassword = (data) => {
-    setPassError(data?.errMessage ? data?.errMessage : "");
+    if (data?.errCode === 3) {
+      setPassError(data?.errMessage ? data?.errMessage : "");
+    }
     setPassVerified(data?.verified ? true : false);
   }
 
@@ -173,7 +172,6 @@ export default function Context({ children }) {
     setPrivateKey,
     setPassVerified,
     updateEstimatedGas,
-    updateLoading,
     externalControlsState,
     setExternalControlState
   }

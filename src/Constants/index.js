@@ -15,6 +15,7 @@ export const AUTO_BALANCE_UPDATE_TIMER = 8000;
 export const TRANSACTION_STATUS_CHECK_TIMER = 2000;
 export const CURRENCY = "5ire";
 export const ONE_ETH_IN_GWEI=1000000000;
+export const ZERO_CHAR = '0';
 
 
 /* Regular expressions */
@@ -180,23 +181,23 @@ export const MESSAGE_EVENT_LABELS = {
     EVM_TX: "evmTransfer",
     BALANCE: "getBalance",
     NATIVE_FEE: "nativeFee",
-    LOGIN_UPDATE: "loginUpdate",
     NATIVE_TX: "nativeTransfer",
     NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
     UPDATE_TX_HISTORY: "txupdatehistory",
-    NOTIFICATION: "notification",
     CLOSE_POPUP_SESSION: "closePopupSession",
+    LOGIN_UPDATE: "loginUpdate",
+    NOTIFICATION: "notification",
     EVM_TO_NATIVE_SWAP: "evmToNativeSwap",
 
     LOCK: "lock",
     UNLOCK: "unlock",
     ADD_ACCOUNT: "addAccount",
     GET_ACCOUNTS: "getAccounts",
-    EXPORT_PRIVATE_KEY:"exportPrivatekey",
-    EXPORT_SEED_PHRASE:"exportSeedPhrase",
+    FORGOT_PASS: "forgotPassByMnemonic",
     CREATE_OR_RESTORE: "createOrRestore",
-    VERIFY_USER_PASSWORD:"verifyUserPassword",
-    // LOAD_PERSIST_DATA: "loadPersistData",
+    EXPORT_PRIVATE_KEY: "exportPrivatekey",
+    EXPORT_SEED_PHRASE: "exportSeedPhrase",
+    VERIFY_USER_PASSWORD: "verifyUserPassword",
     IMPORT_BY_MNEMONIC: "importAccountByMnemonics",
 
     //network related events
@@ -247,7 +248,7 @@ export const MESSAGE_TYPE_LABELS = {
     NETWORK_HANDLER: "networkHandler"
 }
 
-export const ROUTE_FOR_APPROVAL_WINDOWS  = {
+export const ROUTE_FOR_APPROVAL_WINDOWS = {
     CONNECTION_ROUTE: "login-approve",
     APPROVE_TX: "approve-tx"
 }

@@ -1385,7 +1385,7 @@ export class KeyringHandler {
 
       } else {
         //handle if the method is not the part of system
-        new Error(new ErrorPayload(ERRCODES.INTERNAL, ERROR_MESSAGES.INVALID_RPC_OPERATION)).throw();
+        new Error(new ErrorPayload(ERRCODES.INTERNAL, ERROR_MESSAGES.UNDEF_PROPERTY)).throw();
       }
     } catch (err) {
       console.log("Error in _keyringMiddleware: ", err);
@@ -1411,26 +1411,20 @@ export class KeyringHandler {
     try {
 
       if (!response.error) {
-
         //change the state in local storage
-        if (response.stateChangeKey) {
-
+        if (response.stateChangeKey)
           await this.services.updateLocalState(response.stateChangeKey, response.payload, response.payload?.options);
-
-        }
-
         //send the response message to extension ui
         if (response.eventEmit) this.services.messageToUI(response.eventEmit, response.payload)
 
       } else {
         console.log("in the processing the unit, error section: ", response);
-
         if (Number(response?.error?.errCode) === 3) {
           if (response.eventEmit) this.services.messageToUI(response.eventEmit, response.error)
         }
       }
     } catch (err) {
-      console.log("Error in parsing the rpc response: ", err);
+      console.log("Error in parsing the keyring response: ", err);
     }
   }
 }

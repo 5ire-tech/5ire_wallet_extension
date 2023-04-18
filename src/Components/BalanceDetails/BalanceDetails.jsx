@@ -29,6 +29,7 @@ import {
   CURRENCY,
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
+  ZERO_CHAR,
 } from "../../Constants/index";
 
 
@@ -71,9 +72,9 @@ function BalanceDetails({ mt0 }) {
     updateState(LABELS.CURRENT_NETWORK, network);
         
     updateState(LABELS.BALANCE, {
-      evmBalance: EMTY_STR,
-      nativeBalance: EMTY_STR,
-      totalBalance: EMTY_STR,
+      evmBalance: ZERO_CHAR,
+      nativeBalance: ZERO_CHAR,
+      totalBalance: ZERO_CHAR,
     });
   };
 
@@ -119,7 +120,7 @@ function BalanceDetails({ mt0 }) {
         ROUTES.SWAP_APPROVE ||
         ROUTES.APPROVE_TXN ||
         pathname === ROUTES.HISTORY_P ||
-        pathname === ROUTES.MYACCOUNT) && (
+        pathname === ROUTES.MY_ACCOUNT) && (
         <div className={`${style.balanceDetails} ${mt0 ? mt0 : EMTY_STR}`}>
           <div className={style.balanceDetails__decoratedSec}>
             <>
@@ -127,7 +128,7 @@ function BalanceDetails({ mt0 }) {
 
               {(pathname === ROUTES.WALLET ||
                 pathname === ROUTES.HISTORY_P ||
-                pathname === ROUTES.MYACCOUNT) && (
+                pathname === ROUTES.MY_ACCOUNT) && (
                 <div className={style.balanceDetails__accountName}>
                   {isConnected ? (
                     <>

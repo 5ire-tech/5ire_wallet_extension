@@ -19,7 +19,7 @@ export const ROUTES = {
     MANAGE_WALLET: "/manage-wallet",
     UNLOACK_WALLET: "/unlock-wallet",
     NEW_WALLET_DETAILS: "/new-wallet-details",
-    MYACCOUNT:"/my-account",
-    FORGOTPASSWORD:"/forgotpassword",
+    MY_ACCOUNT:"/my-account",
+    FORGOT_PASSWORD:"/forgot-password",
     MAINPRIVACYPOLICY:"/mainprivacypolicy"
 }
