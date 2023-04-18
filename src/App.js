@@ -62,7 +62,7 @@ function App(props) {
     }
   }, []);
 
-  
+
 
   useEffect(() => {
     const route = getParameterByName("route");
@@ -72,7 +72,7 @@ function App(props) {
       navigate(`/${externalControlsState.activeSession.route}`);
       return;
     }
-    
+
     if (!isLogin && vault) {
       navigate(ROUTES.UNLOACK_WALLET, {
         state: {
@@ -114,10 +114,7 @@ function App(props) {
               path={ROUTES.FORGOT_PASSWORD}
               element={<WelcomeLayout children={<ForgotPassword />} />}
             />
-            <Route
-              path={ROUTES.MAINPRIVACYPOLICY}
-              element={<WelcomeLayout children={<MainPrivacyPolicy />} />}
-            />
+
           </>
         ) : (
           <>
@@ -202,6 +199,10 @@ function App(props) {
         <Route
           path={ROUTES.CREATE_WALLET}
           element={<WelcomeLayout children={<CreateNewWallet />} />}
+        />
+        <Route
+          path={ROUTES.PRIVACY_POLICY}
+          element={<WelcomeLayout children={<MainPrivacyPolicy />} />}
         />
       </Routes>
       {isLoading && <Loader />}
