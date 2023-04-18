@@ -4,14 +4,18 @@ import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import "react-toastify/dist/ReactToastify.css";
 import CopyIcon from "../../Assets/CopyIcon.svg";
-import React, { useEffect, useState } from "react";
 import { PVT_KEY, NATIVE, EVM, COPIED, MNEMONIC } from "../../Constants/index.js";
+import { isNullorUndef } from "../../Utility/utility";
+import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
+import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
+import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx";
+import { ROUTES } from "../../Routes";
 
 function CreateWalletChain() {
 
   const { newAccount } = useContext(AuthContext);
 
-  console.log("newAccount ::: ",newAccount);
+  console.log("newAccount ::: ", newAccount);
 
 
   const handleCopy = (e) => {
@@ -34,9 +38,10 @@ function CreateWalletChain() {
 
   return (
     <div className={style.cardWhite}>
-      <div className={style.cardWhite__beginText}>
+      {/* <div className={style.cardWhite__beginText}>
         <h1>Create New Wallet</h1>
-      </div>
+      </div> */}
+      <MenuRestofHeaders backTo={ROUTES.BEFORE_BEGIN} title={"Create New Wallet"} />
       <div className={style.copyButton}>
         <button
           className={style.cardWhite__addressInput__copyAll}
@@ -75,29 +80,59 @@ function CreateWalletChain() {
         <label>Evm Chain Address:</label>
         <p className={style.cardWhite__addressInput__copyText}>
           <span>{newAccount?.evmAddress}</span>
-          <img
+          {/* <img
             name={EVM}
             src={CopyIcon}
             alt="copyIcon"
             draggable={false}
             onClick={handleCopy}
-          />{" "}
+          />{" "} */}
+          <img
+            src={EyeOpenIcon}
+            width={19}
+            height={12}
+            draggable={false}
+            alt="eyeOpen"
+          />
+
+          <img
+            src={EyeCloseIcon}
+            width={19}
+            height={16}
+            draggable={false}
+            alt="eyeClose"
+          />
         </p>
       </div>
       <div className={style.cardWhite__addressInput}>
         <label> Native Chain Address:</label>
         <p className={style.cardWhite__addressInput__copyText}>
           <span>{newAccount?.nativeAddress}</span>
-          <img
+          {/* <img
             name={NATIVE}
             src={CopyIcon}
             alt="copyIcon"
             draggable={false}
             onClick={handleCopy}
-          />{" "}
-        </p>
-      </div>
-    </div>
+          />{ " " } */}
+          <img
+            src={EyeOpenIcon}
+            width={19}
+            height={12}
+            draggable={false}
+            alt="eyeOpen"
+          />
+
+          <img
+            src={EyeCloseIcon}
+            width={19}
+            height={16}
+            draggable={false}
+            alt="eyeClose"
+          />
+        </p >
+      </div >
+    </div >
   );
 }
 

@@ -59,11 +59,11 @@ function EnterPassword() {
   return (
     <>
       <div className={`scrollableCont`} onKeyDown={handleClick}>
-        <MenuRestofHeaders backTo={ROUTES.MANAGE_WALLET} title={""} />
+        <MenuRestofHeaders backTo={ROUTES.MANAGE_WALLET} title={"Enter Password"} />
         <div className={`flexedContent`}>
           <div className={style.enterPassword}>
             <div className={style.commonHeadeing}>
-              <h1>Enter Password</h1>
+              {/* <h1>Enter Password</h1> */}
               <p>
                 Your password is used to unlock your wallet and will allow
                 wallet to export your Private Key

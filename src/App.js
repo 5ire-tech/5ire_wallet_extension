@@ -111,7 +111,7 @@ function App(props) {
               element={<WelcomeLayout children={<UnlockWelcome />} />}
             />
             <Route
-              path={ROUTES.FORGOTPASSWORD}
+              path={ROUTES.FORGOT_PASSWORD}
               element={<WelcomeLayout children={<ForgotPassword />} />}
             />
             <Route

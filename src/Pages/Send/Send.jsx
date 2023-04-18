@@ -14,6 +14,10 @@ import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import {
+  InputField,
+  InputFieldOnly,
+} from "../../Components/InputField/InputFieldSimple";
+import {
   EVM,
   LABELS,
   NATIVE,
@@ -22,11 +26,6 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
 } from "../../Constants/index";
-
-import {
-  InputField,
-  InputFieldOnly,
-} from "../../Components/InputField/InputFieldSimple";
 
 
 function Send() {

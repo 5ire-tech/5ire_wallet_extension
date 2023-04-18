@@ -4,7 +4,6 @@ import React, { useContext } from "react";
 import { AuthContext } from "../../Store";
 import Browser from "webextension-polyfill";
 import ThreeDot from "../../Assets/dot3.svg";
-import { useNavigate } from "react-router-dom";
 import Import from "../../Assets/PNG/import.png";
 import Logout from "../../Assets/PNG/logout.png";
 import DarkLogo from "../../Assets/DarkLogo.svg";
@@ -16,10 +15,22 @@ import {
   LABELS,
   MESSAGE_TYPE_LABELS,
   ACCOUNT_CHANGED_EVENT,
-  MESSAGE_EVENT_LABELS
+  MESSAGE_EVENT_LABELS,
+  ERROR_MESSAGES
 } from "../../Constants/index";
 
+
+import { toast } from "react-toastify";
+import { Link, useNavigate } from "react-router-dom";
+import { Dropdown, Space } from "antd";
+
 function MyAccount() {
+  const items = [
+    {
+      key: "1",
+      label: <Link target="_blank">Delete</Link>,
+    },
+  ];
 
   const navigate = useNavigate();
   const { allAccounts, state, updateState } = useContext(AuthContext);
@@ -94,7 +105,18 @@ function MyAccount() {
             </div>
             <div className={style.myAccountSec__rytSec}>
               <h2>{data?.accountName === currentAccount?.accountName ? "Active" : "Not Active"}</h2>
-              <img src={ThreeDot} alt="logo" draggable={false} />
+              <Dropdown
+                menu={{
+                  items,
+                }}
+                trigger="click"
+              >
+                {/* <a onClick={(e) => e.preventDefault()}> */}
+                <Space style={{cursor: "pointer"}}>
+                  <img src={ThreeDot} alt="3dots"/>
+                </Space>
+                {/* </a> */}
+              </Dropdown>
             </div>
           </div>
         )

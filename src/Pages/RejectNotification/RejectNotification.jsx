@@ -10,13 +10,13 @@ function ApproveTx() {
   const {estimatedGas, state , externalControlsState, updateLoading} = useContext(AuthContext);
   const {activeSession} = externalControlsState;
 
-  //current account
+  //get current account
   const account = state.currentAccount;
 
 
   useEffect(() => {
     updateLoading(true);
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {value: activeSession.message?.value, toAddress: activeSession.message?.to, data: activeSession.message?.data, options: {account: state.currentAccount}});
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {amount: activeSession.message?.value, toAddress: activeSession.message?.to, data: activeSession.message?.data, options: {account: state.currentAccount,}});
   }, [])
 
   const activeDetail = () => {

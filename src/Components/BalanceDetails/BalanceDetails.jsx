@@ -1,10 +1,10 @@
-import { Select } from "antd";
+import { Dropdown, Select, Space } from "antd";
 import QRCode from "react-qr-code";
 import { ROUTES } from "../../Routes";
 import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { shortner } from "../../Helper/helper";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import WalletQr from "../../Assets/QRicon.svg";
@@ -43,6 +43,17 @@ function BalanceDetails({ mt0 }) {
   const {connectedApps} = externalControlsState;
 
 
+  const [accountData, setAccountData] = useState({ accountName: EMTY_STR });
+  const [addresses, setAddresses] = useState({
+    evmAddress: EMTY_STR,
+    nativeAddress: EMTY_STR,
+  });
+  const items = [
+    {
+      key: "1",
+      label: <Link target="_blank">Disconnected</Link>,
+    },
+  ];
   const { pathname } = getLocation;
 
   const {
@@ -179,7 +190,9 @@ function BalanceDetails({ mt0 }) {
                     <div className={style.activeDis_Modal__leftSec}>
                       <img src={DarkLogo} />
                       <div
-                        className={style.activeDis_Modal__leftSec__accountConatct}
+                        className={
+                          style.activeDis_Modal__leftSec__accountConatct
+                        }
                       >
                         <h2>Account 1</h2>
                         <p>312 ETH</p>
@@ -187,14 +200,27 @@ function BalanceDetails({ mt0 }) {
                     </div>
                     <div className={style.activeDis_Modal__rytSec}>
                       <h2>Active</h2>
-                      <img src={ThreeDot} />
+                      <Dropdown
+                        menu={{
+                          items,
+                        }}
+                        trigger="click"
+                      >
+                        {/* <a onClick={(e) => e.preventDefault()}> */}
+                        <Space style={{cursor: "pointer"}}>
+                          <img src={ThreeDot} />
+                        </Space>
+                        {/* </a> */}
+                      </Dropdown>
                     </div>
                   </div>
                   <div className={style.activeDis_Modal__accountActive}>
                     <div className={style.activeDis_Modal__leftSec}>
                       <img src={DarkLogo} />
                       <div
-                        className={style.activeDis_Modal__leftSec__accountConatct}
+                        className={
+                          style.activeDis_Modal__leftSec__accountConatct
+                        }
                       >
                         <h2>Account 2</h2>
                         <span>Switch to this account</span>
@@ -202,7 +228,17 @@ function BalanceDetails({ mt0 }) {
                     </div>
                     <div className={style.activeDis_Modal__rytSec}>
                       <h2>Not Active</h2>
-                      <img src={ThreeDot} />
+                      <Dropdown
+                        menu={{
+                          items,
+                        }}
+                      >
+                        {/* <a onClick={(e) => e.preventDefault()}> */}
+                        <Space>
+                          <img src={ThreeDot} />
+                        </Space>
+                        {/* </a> */}
+                      </Dropdown>
                     </div>
                   </div>
                 </div>

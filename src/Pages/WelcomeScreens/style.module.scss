@@ -94,7 +94,7 @@
 
   &__addressInput {
     padding: 0 18px;
-    margin-bottom: 16px;
+    margin-top: 20px;
 
     label {
       color: $white;
@@ -179,6 +179,22 @@
         padding-top: 10px;
       }
 
+      span {
+        color: #8fa2b7;
+        font-size: 18px;
+        padding-top: 10px;
+        display: flex;
+      }
+    }
+    &__accessConatct{
+      padding-top: 60px;
+      h1{
+        font-size: 18px;
+        color: $white;
+        margin: 0;
+        transform: rotate(0.01deg);
+        font-weight: 500;
+      }
       span {
         color: #8fa2b7;
         font-size: 18px;

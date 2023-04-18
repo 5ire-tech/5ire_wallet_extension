@@ -1,11 +1,12 @@
 import React from "react";
 import style from "./style.module.scss";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+import { ROUTES } from "../../Routes";
 
 function MainPrivacyPolicy() {
   return (
     <div className={style.cardWhite}>
-      <MenuRestofHeaders logosilver={true} title="5irechain Wallet" />
+      <MenuRestofHeaders backTo={ROUTES.BEFORE_BEGIN} logosilver={true} title="5irechain Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Privacy Policy</h1>

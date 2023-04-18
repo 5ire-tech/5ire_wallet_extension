@@ -11,6 +11,7 @@ import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
 import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
+import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 import {
   REGEX,
   LABELS,
@@ -31,7 +32,6 @@ export default function SetPasswordScreen() {
   const [error, setError] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
   const [pass, setPass] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
 
-
   useEffect(() => {
 
     if (pass.confirmPass === pass.pass || pass.pass === EMTY_STR)
@@ -40,7 +40,6 @@ export default function SetPasswordScreen() {
       setError(p => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }))
 
   }, [pass.pass, pass.confirmPass]);
-
 
   const validatePass = () => {
     let errMsg = EMTY_STR;
@@ -56,13 +55,10 @@ export default function SetPasswordScreen() {
       !REGEX.MIN_LENGTH.test(pass.pass)
     )
       errMsg = ERROR_MESSAGES.CREATE_PASS_MSG;
-
-    else
-      errMsg = EMTY_STR;
+    else errMsg = EMTY_STR;
 
     setError(p => ({ ...p, pass: errMsg }));
   };
-
 
   const validateConfirmPass = () => {
 
@@ -114,14 +110,20 @@ export default function SetPasswordScreen() {
   return (
     <>
       <div onKeyDown={handleSubmit} className={`${style.cardWhite}`}>
+        <MenuRestofHeaders
+          backTo={ROUTES.NEW_WALLET_DETAILS}
+          title={"Create Password"}
+        />
         <div className={style.cardWhite__beginText}>
-          <h1>Create Password</h1>
           <p>
             Your password is used to unlock your wallet and is stored securely
             on your device. We recommend 12 characters, with uppercase and
             lowercase letters, symbols and numbers.
           </p>
-          <div className={style.cardWhite__beginText__passInputSec} style={{ marginTop: "48px" }}>
+          <div
+            className={style.cardWhite__beginText__passInputSec}
+            style={{ marginTop: "48px" }}
+          >
             <InputFieldSimple
               value={pass?.pass}
               name={LABELS.PASS}
