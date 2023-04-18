@@ -1,3 +1,8 @@
+import Browser from "webextension-polyfill";
+import { CONNECTION_METHODS, ERRCODES, ERROR_MESSAGES, EXPLORERS } from "../Constants";
+import { Error, ErrorPayload } from "../Utility/error_helper";
+import { isNullorUndef, log } from "../Utility/utility";
+
 export const formatDate = (_date) => {
     try {
 
@@ -52,7 +57,7 @@ export const formatNum = (num, numOfDecimals = 4) => {
     }
 };
 
-
+//address and hash shortner from starting and ending
 export const shortner = (str, startLength = 5, endLength=4) => {
     const start = str.slice(0, startLength);
 
@@ -64,6 +69,7 @@ export const shortner = (str, startLength = 5, endLength=4) => {
 };
 
 
+//number formatter
 export const numFormatter = num => {
 
     if (Number(num) % 1 === 0 ) {
@@ -75,3 +81,31 @@ export const numFormatter = num => {
 }
 
 
+//check transaction network and generate url
+export const generateTransactionUrl = (network, txHash) => {
+try {
+
+    if(isNullorUndef(network) && isNullorUndef(txHash)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
+    const explorerUrl = EXPLORERS[network.toUpperCase()];
+    return `${explorerUrl}/${txHash}`;
+
+} catch(err) {
+    log("error while generating the url: ", err)
+}
+}
+
+
+//open new browser tab
+export const openBrowserTab = (url) => {
+    try {
+        Browser.tabs.create({ url });
+    } catch (err) {
+        log("Error while opening browser tab: ", err)
+    }
+}
+
+//check if string is included into array
+export const checkStringInclusionIntoArray = (str, strArr=CONNECTION_METHODS) => {
+    if(isNullorUndef(str) && isNullorUndef(strArr)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
+    return strArr.includes(str);
+}

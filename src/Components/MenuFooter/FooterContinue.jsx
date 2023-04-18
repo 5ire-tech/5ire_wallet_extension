@@ -1,11 +1,11 @@
 import style from "./style.module.scss";
 import { ROUTES } from "../../Routes";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../Store";
 import browser from "webextension-polyfill";
 import { useNavigate } from "react-router-dom";
 import ButtonComp from "../ButtonComp/ButtonComp";
-import { EVM_JSON_RPC_METHODS, LABELS, STATE_CHANGE_ACTIONS, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
+import { EVM_JSON_RPC_METHODS, LABELS, STATE_CHANGE_ACTIONS, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, ERROR_MESSAGES } from "../../Constants/index";
 import { useDispatch, useSelector } from "react-redux";
 import { newAccountInitialState } from "../../Store/initialState";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
@@ -19,6 +19,7 @@ import { ExtensionStorageHandler } from "../../Storage/loadstore";
 import { isEqual } from "../../Utility/utility";
 import { sendMessageToTab, sendRuntimeMessage } from "../../Utility/message_helper";
 import { TabMessagePayload } from "../../Utility/network_calls";
+import { toast } from "react-toastify";
 
 
 
@@ -151,10 +152,20 @@ export const ApproveLogin = () => {
 
 //approve the evm transactions
 export const ApproveTx = () => {
-  const { state } = useContext(AuthContext);
-  // const {activeSession} = externalControlsState;
+  const { state, externalControlsState, estimatedGas } = useContext(AuthContext);
+  const {activeSession} = externalControlsState;
+  const [disableApproval, setDisableApproval] = useState(false);
+
   const navigate = useNavigate();
 
+  //check if user has sufficent balance to make transaction
+  useEffect(() => {
+    if((Number(activeSession.message?.value) + Number(estimatedGas)) >= Number(state.balance.evmBalance)) {
+      toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+      setDisableApproval(true);
+      return;
+    }
+  }, [estimatedGas]);
 
 
   function handleClick(isApproved) {
@@ -176,6 +187,7 @@ export const ApproveTx = () => {
           onClick={() => handleClick(true)}
           text={"Approve"}
           maxWidth={"100%"}
+          isDisable={disableApproval}
         />
       </div>
     </>

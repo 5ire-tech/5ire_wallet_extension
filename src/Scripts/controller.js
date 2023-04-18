@@ -196,15 +196,20 @@ export class ExternalConnection {
   
     }
 
-
-
     //handle the evm related transactions
-   async handleEthTransaction(data) {
-      const externalControls = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+   async handleEthTransaction(data, state) {
 
+      //check if the from account is our current account
+      if(!isEqual(state.currentAccount.evmAddress, data.message?.from)) {
+          sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, ERROR_MESSAGES.ACCOUNT_ACCESS_NOT_GRANTED));
+          return;
+      }
+
+      const externalControls = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
       await this.externalWindowController.newConnectionRequest({route: ROUTE_FOR_APPROVAL_WINDOWS.APPROVE_TX, ...data}, externalControls);
 
     }
+
 
   //handle the interaction with nominator and validator application
   async handleValidatorNominatorTransactions(data) {

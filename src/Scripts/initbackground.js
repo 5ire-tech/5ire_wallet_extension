@@ -15,7 +15,7 @@ import { u8aToHex } from "@polkadot/util";
 import { HybridKeyring } from "./5ire-keyring";
 import { nativeMethod } from "./nativehelper";
 import { EventEmitter } from "./eventemitter";
-import { numFormatter } from "../Helper/helper";
+import { checkStringInclusionIntoArray, numFormatter } from "../Helper/helper";
 import { txNotificationStringTemplate } from "./utils";
 import { Connection } from "../Helper/connection.helper";
 import { Error, ErrorPayload } from "../Utility/error_helper";
@@ -89,7 +89,7 @@ export class InitBackground {
   bindRuntimeMessageEvents = async () => {
     Browser.runtime.onMessage.addListener(async (message, sender) => {
 
-      const localData = await getDataLocal("state");
+      const localData = await getDataLocal(LABELS.STATE);
 
       //checks for event from extension ui
        if(isEqual(message?.type, MESSAGE_TYPE_LABELS.INTERNAL_TX) || isEqual(message?.type, MESSAGE_TYPE_LABELS.FEE_AND_BALANCE)) {
@@ -115,9 +115,20 @@ export class InitBackground {
         tabId: sender.tab.id
       };
 
+
+      //check if the app has the permission to access requested method
+      if(!checkStringInclusionIntoArray(data.method)) {
+        const {connectedApps} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+        const isHasAccess = connectedApps[data.origin];
+        if(!isHasAccess?.isConnected) {
+          sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, ERROR_MESSAGES.ACCESS_NOT_GRANTED));
+          return;
+        }
+      }
+      
+
       //checks for event from injected script
       try {
-        
         switch (data.method) {
           case "connect":
           case "eth_requestAccounts":
@@ -385,11 +396,12 @@ class TransactionQueue {
     parseTransactionResponse = async () => {
       //perform the current active transactions 
       const transactionResponse = await this.processTransaction();
+      log("here is the swap transaction: ", transactionResponse);
       const {txHash} = transactionResponse.payload?.data;
+
 
       //check if there is error payload into response
       if(!transactionResponse.error) {
-        
         
         //if transaction is external then send the response to spefic tab
         if(transactionResponse.payload.options?.externalTransaction && txHash) {
@@ -828,8 +840,6 @@ export class TransactionsRPC {
     //history reference object
     let transactionHistory = null, payload = null;
 
-    log("here is the data: ", message);
-
     try {
       const { data, transactionHistoryTrack, contractBytecode } = message;
       const {options:{account}} = data;
@@ -853,7 +863,7 @@ export class TransactionsRPC {
         ||
         Number(state.balance.evmBalance) <= 0
       ) {
-        return new EventPayload(null, ERROR_EVENTS_LABELS.INSUFFICENT_BALANCE, null, [], null);
+        new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
       }
       else {
         const amt = (new BigNumber(data.value).multipliedBy(DECIMALS)).toString();
@@ -930,11 +940,15 @@ export class TransactionsRPC {
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
       transactionHistory = {
-        ...transactionHistoryTrack
+        ...transactionHistoryTrack,
+        isEvm: true,
+        type: TX_TYPE.SWAP,
+        status: STATUS.PENDING,
+        to: LABELS.EVM_TO_NATIVE
       }
 
       if (Number(data.value) >= Number(state.balance.evmBalance) || Number(data.value) <= 0) {
-        return new EventPayload(null, ERROR_EVENTS_LABELS.INSUFFICENT_BALANCE, null, [], null);
+        new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
       } else {
 
         const alice = this.hybridKeyring.getNativeSignerByAddress(account.nativeAddress);
@@ -1005,7 +1019,7 @@ export class TransactionsRPC {
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
       if (Number(data.value) >= Number(state.balance.nativeBalance)) {
-        return new EventPayload(null, ERROR_EVENTS_LABELS.INSUFFICENT_BALANCE, null, [], null);
+        new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
       } else {
 
         transactionHistory = {
@@ -1103,7 +1117,7 @@ export class TransactionsRPC {
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
       if (Number(data.value) >= Number(state.balance.nativeBalance)) {
-        return new EventPayload(null, ERROR_EVENTS_LABELS.INSUFFICENT_BALANCE, null, [], null);
+        new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
       } else {
 
         transactionHistory = {
@@ -1111,7 +1125,7 @@ export class TransactionsRPC {
           isEvm: false,
           type:  TX_TYPE.SWAP,
           status: STATUS.PENDING,
-          to: "Native to Evm"
+          to: LABELS.NATIVE_TO_EVM
         };
 
 

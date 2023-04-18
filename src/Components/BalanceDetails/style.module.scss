@@ -338,6 +338,7 @@
         border-bottom: 0;
     }
   }
+
   &__leftSec {
     display: flex;
     gap: 12px;
@@ -353,6 +354,7 @@
         color: #ffffff;
         font-size: 14px;
         opacity: 0.6;
+        cursor: pointer;
       }
       span {
         color: #37c4e1;
