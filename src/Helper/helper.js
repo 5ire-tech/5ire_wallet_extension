@@ -109,3 +109,8 @@ export const checkStringInclusionIntoArray = (str, strArr=CONNECTION_METHODS) =>
     if(isNullorUndef(str) && isNullorUndef(strArr)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
     return strArr.includes(str);
 }
+
+//generate the request error message string
+export const generateErrorMessage = (method, origin) => {
+    return `The request of method '${method}' for ${origin} is already pending, please check.`;
+}

@@ -8,6 +8,7 @@ import { EVM_JSON_RPC_METHODS, HTTP_END_POINTS, LABELS, ROUTE_FOR_APPROVAL_WINDO
 import { getDataLocal } from "../Storage/loadstore";
 import { sendMessageToTab } from "../Utility/message_helper";
 import { isAlreadyConnected } from "./utils";
+import { generateErrorMessage } from "../Helper/helper";
 
 
 //control the external connections and window popup creation
@@ -52,7 +53,10 @@ export class ExternalWindowControl {
   newConnectionRequest = async (data, externalControlsState) => {
     const isOriginAlreadyExist = this._checkNewRequestOrigin(externalControlsState, data.origin);
 
-    if(isOriginAlreadyExist) return;
+    if(isOriginAlreadyExist) {
+      sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, generateErrorMessage(data.method, data.origin)));
+      return;
+    }
       //set the pending task icon on chrome extension
       this.increasePendingTask();
       this.notificationAndBedgeHandler.showBedge(ExternalWindowControl.pendingTask);
@@ -200,7 +204,7 @@ export class ExternalConnection {
    async handleEthTransaction(data, state) {
 
       //check if the from account is our current account
-      if(!isEqual(state.currentAccount.evmAddress, data.message?.from)) {
+      if(!isEqual(state.currentAccount.evmAddress?.toLowerCase(), data.message?.from)) {
           sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, ERROR_MESSAGES.ACCOUNT_ACCESS_NOT_GRANTED));
           return;
       }

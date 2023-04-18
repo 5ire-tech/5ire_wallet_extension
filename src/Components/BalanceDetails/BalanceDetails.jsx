@@ -36,7 +36,7 @@ import {
 
 } from "../../Constants/index";
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
-import { isNullorUndef, log } from "../../Utility/utility";
+import { isEqual, isNullorUndef, log } from "../../Utility/utility";
 
 
 function BalanceDetails({ mt0 }) {
@@ -158,23 +158,19 @@ function BalanceDetails({ mt0 }) {
       setIsConnected(true);
   }
 
-  log("style from the main balance section: ", style)
-
   return (
     <>
-      {(pathname === ROUTES.WALLET ||
-        ROUTES.SWAP_APPROVE ||
-        ROUTES.APPROVE_TXN ||
-        pathname === ROUTES.HISTORY_P ||
-        pathname === ROUTES.MY_ACCOUNT) && (
-          <div className={`${style.balanceDetails} ${mt0 ? mt0 : EMTY_STR}`}>
+      {(isEqual(pathname, ROUTES.WALLET) || isEqual(pathname, ROUTES.SWAP_APPROVE) || isEqual(pathname, ROUTES.APPROVE_TXN) ||
+        isEqual(pathname, ROUTES.HISTORY_P) || isEqual(pathname, ROUTES.MY_ACCOUNT)) 
+        &&
+        ( <div className={`${style.balanceDetails} ${mt0 ? mt0 : EMTY_STR}`}>
             <div className={style.balanceDetails__decoratedSec}>
               <>
                 <img src={DarkLogo} alt="logo" draggable={false} />
-
-                {(pathname === ROUTES.WALLET ||
-                  pathname === ROUTES.HISTORY_P ||
-                  pathname === ROUTES.MY_ACCOUNT) && (
+                { 
+                  (isEqual(pathname, ROUTES.WALLET) || isEqual(pathname, ROUTES.HISTORY_P) || isEqual(pathname, ROUTES.MY_ACCOUNT))
+                  && 
+                  (
                     <div className={style.balanceDetails__accountName}>
                       {isConnected ? (
                         <>
@@ -282,6 +278,7 @@ function BalanceDetails({ mt0 }) {
                 </ModalCustom>
                 <div className={style.balanceDetails__selectStyle}>
                   <Select
+                    disabled={isEqual(pathname, ROUTES.APPROVE_TXN)}
                     onChange={handleNetworkChange}
                     suffixIcon={
                       <img
