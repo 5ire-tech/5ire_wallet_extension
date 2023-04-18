@@ -338,6 +338,9 @@
         border-bottom: 0;
     }
   }
+  &__switchAcc {
+    cursor: pointer;
+  }
   &__leftSec {
     display: flex;
     gap: 12px;

@@ -18,6 +18,7 @@ function CreateNewWallet() {
   const { state, updateState, setAccName, allAccounts } = useContext(AuthContext);
   const { isLogin } = state;
 
+  //todo
   useEffect(() => {
     if (isLogin) {
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.GET_ACCOUNTS, {});

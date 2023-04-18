@@ -25,30 +25,22 @@ import { Link, useNavigate } from "react-router-dom";
 import { Dropdown, Space } from "antd";
 
 function MyAccount() {
-  const items = [
-    {
-      key: "1",
-      label: <Link target="_blank">Delete</Link>,
-    },
-  ];
-
   const navigate = useNavigate();
   const { allAccounts, state, updateState } = useContext(AuthContext);
   const { balance, currentAccount } = state;
 
-  console.log("All Accounts :: ", allAccounts);
-
+  const handleRemoveAcc = () => {
+    // console.log("Remove Account called .....");
+  };
   const hanldeCreateNewAcc = () => {
     navigate(ROUTES.CREATE_WALLET);
   };
   const handleImportAcc = () => {
     navigate(ROUTES.IMPORT_WALLET);
   };
-
   const handleLogout = async () => {
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.LOCK, {});
   };
-
   const onSelectAcc = name => {
     //update the current account
     const acc = allAccounts.find(acc => acc.accountName === name);
@@ -75,6 +67,13 @@ function MyAccount() {
 
   };
 
+  const items = [
+    {
+      key: "1",
+      label: <span onClick={handleRemoveAcc}>Remove</span>,
+    },
+  ];
+
   return (
     <div className={style.myAccountSec}>
       <div className={style.myAccountSec__tabAccount}>
@@ -100,11 +99,24 @@ function MyAccount() {
               <img src={DarkLogo} alt="logo" draggable={false} />
               <div className={style.myAccountSec__leftSec__accountConatct}>
                 <h2>{data?.accountName}</h2>
-                <p>{data?.accountName === currentAccount?.accountName ? balance?.totalBalance : <span onClick={() => onSelectAcc(data?.accountName)} className={style.myAccountSec__switchAcc}>Switch to this account</span>}</p>
+                <p>{
+                  data?.accountName === currentAccount?.accountName
+                    ? balance?.totalBalance
+                    :
+                    <span onClick={() => onSelectAcc(data?.accountName)} className={style.myAccountSec__switchAcc}>
+                      Switch to this account
+                    </span>
+                }</p>
               </div>
             </div>
             <div className={style.myAccountSec__rytSec}>
-              <h2>{data?.accountName === currentAccount?.accountName ? "Active" : "Not Active"}</h2>
+              <h2>{
+                data?.accountName === currentAccount?.accountName
+                  ?
+                  LABELS.ACTIVE
+                  :
+                  LABELS.NOT_ACTIVE
+              }</h2>
               <Dropdown
                 menu={{
                   items,
@@ -112,8 +124,8 @@ function MyAccount() {
                 trigger="click"
               >
                 {/* <a onClick={(e) => e.preventDefault()}> */}
-                <Space style={{cursor: "pointer"}}>
-                  <img src={ThreeDot} alt="3dots"/>
+                <Space style={{ cursor: "pointer" }}>
+                  <img src={ThreeDot} alt="3dots" />
                 </Space>
                 {/* </a> */}
               </Dropdown>

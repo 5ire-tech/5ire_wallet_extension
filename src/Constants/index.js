@@ -1,21 +1,23 @@
 export const EVM = "Evm";
 export const EMTY_STR = "";
+export const ZERO_CHAR = '0';
+export const CURRENCY = "5ire";
 export const NATIVE = "Native";
+export const COPIED = "Copied!";
 export const MNEMONIC = "mnemonic";
 export const PVT_KEY = "privateKey";
-export const COPIED = "Copied!";
-export const WINDOW_WIDTH = 400;
-export const WINDOW_HEIGHT = 620;
-export const DECIMALS = 10 ** 18;
 export const CONNECTION_NAME = "5IRE_EXT";
 export const PORT_NAME = "WEBEXT_REDUX_TEST";
 export const UI_CONNECTION_NAME = "5IRE_EXT_UI";
 export const ACCOUNT_CHANGED_EVENT = 'accountChanged';
+
+
+export const WINDOW_WIDTH = 400;
+export const DECIMALS = 10 ** 18;
+export const WINDOW_HEIGHT = 620;
+export const ONE_ETH_IN_GWEI=1000000000;
 export const AUTO_BALANCE_UPDATE_TIMER = 8000;
 export const TRANSACTION_STATUS_CHECK_TIMER = 2000;
-export const CURRENCY = "5ire";
-export const ONE_ETH_IN_GWEI=1000000000;
-export const ZERO_CHAR = '0';
 
 
 /* Regular expressions */
@@ -37,8 +39,8 @@ export const STORAGE = {
 export const TX_TYPE = {
     SEND: "Transfer",
     SWAP: "Swap",
+    CONTRACT_EXECUTION: "Contract Execution",
     CONTRACT_DEPLOYMENT: "Contract Deployement",
-    CONTRACT_EXECUTION: "Contract Execution"
 };
 
 export const NETWORK = {
@@ -66,9 +68,9 @@ export const HTTP_CONTENT_TYPE = {
 };
 
 export const EVM_JSON_RPC_METHODS = {
+    ETH_ACCOUNTS: "eth_accounts",
     GET_TX_RECIPT: "eth_getTransactionReceipt",
     ETH_REQUEST_ACCOUNT: "eth_requestAccounts",
-    ETH_ACCOUNTS: "eth_accounts"
 };
 
 export const ERROR_MESSAGES = {
@@ -95,24 +97,23 @@ export const ERROR_MESSAGES = {
     INVALID_PROPERTY: "Invalid property.",
     UNDEF_DATA: "Value is null or undefined.",
     INVALID_TYPE: "argument type is invalid.",
+    REJECTED_BY_USER: "Session is rejected by user.",
     NETWORK_REQUEST: "Network error try after sometime",
     TX_FAILED: "Transaction failed. some wrong happend.",
-    PASS_CREATED_SUCCESS: "Successfully created password for user.",
-    INVALID_RPC_OPERATION: "RPC is not the part of rpc call system",
-    INVALID_NON_RPC_TASK: "Task is not defined in non-rpc task handler class",
-    REJECTED_BY_USER: "Session is rejected by user.",
     INVALID_METHOD: "Method is not the part of system.",
     INVAILD_ERROR_MESSAGE: "Error message must be an object.",
+    INVALID_RPC_OPERATION: "RPC is not the part of rpc call system",
+    INVALID_NON_RPC_TASK: "Task is not defined in non-rpc task handler class",
     INVALID_ERROR_PAYLOAD: "Error payload is invalid, (missing required properties).",
     INPUT_BETWEEN_2_TO_18: "Please input account name between " + 2 + " and " + 18 + " characters.",
 };
 
 export const SUCCESS_MESSAGES = {
+    DISCONNECTED: "Disconnected.",
     LOGIN_SUCCESS: "Login successfully.",
     LOGOUT_SUCCESS: "Logout successfully",
     HASH_COPIED: "Transacion hash copied.",
     PASS_CREATED_SUCCESS: "Successfully created password for user.",
-    DISCONNECTED: "Disconnected."
 };
 
 export const ERRCODES = {
@@ -134,8 +135,10 @@ export const LABELS = {
     PASS: "pass",
     ENTER: "Enter",
     CREATE: "create",
+    ACTIVE: "Active",
     FAILED: "failed",
     SUCCESS: "success",
+    NOT_ACTIVE: "Not Active",
 
     STATE: "state",
     EXTERNAL_CONTROLS: "externalControls",
@@ -182,12 +185,12 @@ export const MESSAGE_EVENT_LABELS = {
     BALANCE: "getBalance",
     NATIVE_FEE: "nativeFee",
     NATIVE_TX: "nativeTransfer",
-    NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
-    UPDATE_TX_HISTORY: "txupdatehistory",
-    CLOSE_POPUP_SESSION: "closePopupSession",
     LOGIN_UPDATE: "loginUpdate",
     NOTIFICATION: "notification",
+    NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
+    UPDATE_TX_HISTORY: "txupdatehistory",
     EVM_TO_NATIVE_SWAP: "evmToNativeSwap",
+    CLOSE_POPUP_SESSION: "closePopupSession",
 
     LOCK: "lock",
     UNLOCK: "unlock",
@@ -249,8 +252,8 @@ export const MESSAGE_TYPE_LABELS = {
 }
 
 export const ROUTE_FOR_APPROVAL_WINDOWS = {
+    APPROVE_TX: "approve-tx",
     CONNECTION_ROUTE: "login-approve",
-    APPROVE_TX: "approve-tx"
 }
 
 
@@ -265,24 +268,3 @@ export const KEYRING_EVENTS = {
     ACCOUNT_ADDED: "account_added"
 }
 
-
-//need to remove
-// export const ACTIONS = {
-//     setSite: "setSite",
-//     setLogin: "setLogin",
-//     setUIdata: "setUIdata",
-//     setTxPopup: "setTxPopup",
-//     toggleSite: "toggleSite",
-//     setBalance: "setBalance",
-//     setPassword: "setPassword",
-//     pushAccounts: "pushAccounts",
-//     resetBalance: "resetBalance",
-//     setTxHistory: "setTxHistory",
-//     toggleLoader: "toggleLoader",
-//     setCurrentAcc: "setCurrentAcc",
-//     setNewAccount: "setNewAccount",
-//     setAllAccounts: "setAllAccounts",
-//     setAccountName: "setAccountName",
-//     updateTxHistory: "updateTxHistory",
-//     setCurrentNetwork: "setCurrentNetwork",
-// }
