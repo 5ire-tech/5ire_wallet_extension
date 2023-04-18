@@ -411,16 +411,18 @@ export class HybridKeyring extends EventEmitter {
 
     /**
     * Remove account by address. Address can be natvie or eth.
-    * @param {string} password 
-    * @param {string} address 
+    * @param {object} message 
     */
-    async removeAccount(password, address) {
+    async removeAccount(message) {
+        console.log("Message ::: ", message);
+        const { address } = message?.data;
+        const password = message?.data?.password ? message?.data?.password : HybridKeyring.password;
 
-        await this._verifyPassword(password)
+        await this._verifyPassword(password);
         const info = HybridKeyring.accounts.find(acc => acc.evmAddress === address || acc.nativeAddress === address);
 
         if (!info)
-            // throw ("No account exist with this address")
+
             throw new Error("No account exist with this address");
 
         const keyring = this._getKeyringData(info.type)
@@ -443,9 +445,14 @@ export class HybridKeyring extends EventEmitter {
         HybridKeyring.accounts = HybridKeyring.accounts.filter(acc => acc.evmAddress !== info.evmAddress)
 
         //Persist state
-        await this._persistData(HybridKeyring.password)
+        const prsistRes = await this._persistData(HybridKeyring.password)
+        const payload = {
+            vault: prsistRes.vault,
+            accounts: HybridKeyring.accounts
+        }
 
-
+        // return accounts
+        return new EventPayload(message.event, message.event, payload, [], false);
     }
 
     /**

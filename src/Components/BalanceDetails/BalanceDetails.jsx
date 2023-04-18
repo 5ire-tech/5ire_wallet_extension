@@ -114,7 +114,6 @@ function BalanceDetails({ mt0 }) {
 
   };
 
-
   const handleCopy = (e) => {
     if (e.target.name === NATIVE)
       navigator.clipboard.writeText(currentAccount.nativeAddress);

@@ -21,5 +21,5 @@ export const ROUTES = {
     NEW_WALLET_DETAILS: "/new-wallet-details",
     MY_ACCOUNT:"/my-account",
     FORGOT_PASSWORD:"/forgot-password",
-    MAINPRIVACYPOLICY:"/mainprivacypolicy"
+    PRIVACY_POLICY:"/privacy-policy"
 }

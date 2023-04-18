@@ -9,15 +9,15 @@ import ModalCloseIcon from "../../Assets/ModalCloseIcon.svg";
 import { AuthContext } from "../../Store";
 import TransectionHistry from "../../Components/TransectionHistry/TransectionHistry";
 import { formatDate, shortner } from "../../Helper/helper";
-import { CURRENCY, EMTY_STR,  TX_TYPE } from "../../Constants/index";
-import {log, hasProperty} from "../../Utility/utility"
+import { CURRENCY, EMTY_STR, TX_TYPE } from "../../Constants/index";
+import { log, hasProperty } from "../../Utility/utility"
 
 function History() {
   const [open1, setOpen1] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const { state } = useContext(AuthContext);
-  const {  currentNetwork, txHistory, currentAccount } = state;
+  const { currentNetwork, txHistory, currentAccount } = state;
 
   const onClose1 = () => {
     setOpen1(false);
@@ -38,29 +38,29 @@ function History() {
     <div className={style.historySec}>
       <div className={style.historySec__historyHead}>
         <h3>Transaction History</h3>
-    </div>
+      </div>
 
-        {
-          (txHistory[currentAccount?.accountName] && txHistory[currentAccount?.accountName].length > 0) ?
-            (
-              arrayReverser(txHistory[currentAccount?.accountName].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()))).map((data, index) => (
-                <HistoryItem historyItem={data} handleHistoryOpen={handleHistoryOpen} key={CURRENCY + index} index={index} />
-              ))
-            ) : (<h4 className={style.noTxn}>No Transaction Found!</h4>)
-        }
+      {
+        (txHistory[currentAccount?.accountName] && txHistory[currentAccount?.accountName].length > 0) ?
+          (
+            arrayReverser(txHistory[currentAccount?.accountName].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()))).map((data, index) => (
+              <HistoryItem historyItem={data} handleHistoryOpen={handleHistoryOpen} key={CURRENCY + index} index={index} />
+            ))
+          ) : (<h4 className={style.noTxn}>No Transaction Found!</h4>)
+      }
 
       <Drawer
         title={
           <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            {selectedTransaction ? selectedTransaction.type: ""}
+            {selectedTransaction ? selectedTransaction.type : ""}
           </span>
         }
         placement="bottom"
         onClose={onClose1}
         open={open1}
         closeIcon={<img src={ModalCloseIcon} alt="close" draggable={false} />}
-       >
-            <TransectionHistry selectedTransaction={selectedTransaction} account={currentAccount} />
+      >
+        <TransectionHistry selectedTransaction={selectedTransaction} account={currentAccount} />
       </Drawer>
     </div>
   );

@@ -217,7 +217,6 @@ export class ExtensionStorageHandler {
 
     
     forgotPassByMnemonic = async (message, state) => {
-        console.log("Setting New Wallet Details ......", message);
         const { vault, newAccount, type} = message;
 
         const currentAcc = {
@@ -262,6 +261,13 @@ export class ExtensionStorageHandler {
     //Lock the wallet
     lock = async (message, state) => {
         const newState = { ...state, isLogin: message.isLogin };
+        return await this._updateStorage(newState);
+    }
+
+    //
+    removeAccount = async (message, state) => {
+        console.log("Message in local remove account::: ",message);
+        const newState = { ...state,vault: message.vault };
         return await this._updateStorage(newState);
     }
     

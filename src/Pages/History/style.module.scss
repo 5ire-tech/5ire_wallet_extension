@@ -1,4 +1,5 @@
 @import "../../styles/__vars.scss";
+
 .historySec {
   &__historyHead {
     h3 {
@@ -12,8 +13,10 @@
       padding: 16px 25px;
     }
   }
+
   &__historyTimeDate {
     background: $baseColor-Text2;
+
     p {
       color: $white;
       font-size: 10px;
@@ -21,48 +24,64 @@
       text-align: left;
     }
   }
+
   &__historyMarketSwap {
     display: flex;
     justify-content: space-between;
     padding: 10px 20px;
     align-items: center;
+
     &__leftSide {
       display: flex;
       gap: 10px;
       align-items: center;
     }
+
     &__leftContact {
       text-align: left;
       cursor: pointer;
+
       h3 {
         color: $white;
         font-size: 14px;
       }
+
       p {
         opacity: 0.6;
         color: $white;
         font-size: 12px;
       }
     }
+
     &__rytSide {
       text-align: right;
+
       h3 {
         color: $white;
         font-size: 14px;
       }
+
       p {
         color: $white;
         font-size: 10px;
       }
     }
   }
+
   &__pending {
     color: #fab629;
   }
-  &__success{
+
+  &__success {
     color: #3CC8C8;
   }
-  &__failed{
+
+  &__failed {
     color: #FF6332;
   }
+}
+
+.noTxn {
+  color: rgb(255, 255, 255);
+  text-align: center;
 }

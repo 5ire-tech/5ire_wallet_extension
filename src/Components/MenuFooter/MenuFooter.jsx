@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import Browser from "webextension-polyfill";
+import PrivacyPolicy from "./PrivacyPolicy";
 import Logout from "../../Assets/PNG/logout.png";
 import Import from "../../Assets/PNG/import.png";
 import Wallet from "../../Assets/WalletIcon.svg";
@@ -40,7 +41,6 @@ import FooterStepOne, {
   ApproveLogin,
   FooterStepTwo,
 } from "./FooterContinue";
-import PrivacyPolicy from "./PrivacyPolicy";
 
 function MenuFooter() {
   const navigate = useNavigate();
@@ -278,7 +278,7 @@ function MenuFooter() {
             </div>
           </div>
         </Link>
-        <Link to={ROUTES.MANAGE_WALLET}>
+        <Link to={ROUTES.PRIVACY_POLICY}>
           <div className={style.sttings} style={{ marginTop: "14px" }}>
             <div className={style.sttings__left}>
               <div className={style.walletIconBorder}>

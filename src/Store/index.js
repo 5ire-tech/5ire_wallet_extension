@@ -42,19 +42,22 @@ export default function Context({ children }) {
       if (message.event === MESSAGE_EVENT_LABELS.EVM_FEE || message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE) {
         (!estimatedGas) && updateEstimatedGas(message.data.fee);
 
-      } if (message.event === MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE) {
+      } else if (message.event === MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE) {
         createOrRestore(message.data);
-      } if (message.event === MESSAGE_EVENT_LABELS.UNLOCK) {
+      } else if (message.event === MESSAGE_EVENT_LABELS.UNLOCK) {
         unlock(message.data);
-      } if (message.event === MESSAGE_EVENT_LABELS.ADD_ACCOUNT) {
+      } else if (message.event === MESSAGE_EVENT_LABELS.ADD_ACCOUNT) {
         addAccount(message.data);
-      } if (message.event === MESSAGE_EVENT_LABELS.GET_ACCOUNTS) {
+      } else if (
+        message.event === MESSAGE_EVENT_LABELS.GET_ACCOUNTS ||
+        message.event === MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT
+      ) {
         getAccounts(message.data);
-      } if (message.event === MESSAGE_EVENT_LABELS.VERIFY_USER_PASSWORD) {
+      } else if (message.event === MESSAGE_EVENT_LABELS.VERIFY_USER_PASSWORD) {
         verifyUserPassword(message.data);
-      } if (message.event === MESSAGE_EVENT_LABELS.EXPORT_PRIVATE_KEY) {
+      } else if (message.event === MESSAGE_EVENT_LABELS.EXPORT_PRIVATE_KEY) {
         exportPrivatekey(message.data);
-      } if (message.event === MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE) {
+      } else if (message.event === MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE) {
         exportSeedPhrase(message.data);
       }
 
@@ -109,8 +112,8 @@ export default function Context({ children }) {
 
   // set the new Account
   const createOrRestore = (data) => {
-    console.log("Data :::: ",data);
-    if (data?.type === "create" ) {
+  
+    if (data?.type === "create") {
       setNewAccount(data.newAccount);
     }
   };
@@ -130,7 +133,8 @@ export default function Context({ children }) {
   };
 
   const getAccounts = (data) => {
-    setAllAccounts(data);
+    // console.log("Data : ", data);
+    setAllAccounts(data?.accounts ? data.accounts : data);
   };
 
   const verifyUserPassword = (data) => {
