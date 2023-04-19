@@ -26,7 +26,7 @@ import {
   MESSAGE_TYPE_LABELS
 } from "../../Constants/index";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
-import { Switch } from "antd";
+import { Switch, Tooltip } from "antd";
 
 
 function Swap() {
@@ -434,7 +434,9 @@ function Swap() {
           <h3>Balance 00.0000 5IRE</h3>
         </div>
         <div className={style.swap__inFoAccount}>
-         <img src={Info}/>
+        <Tooltip title="5irechain requires a minimum of 1 5ire token to keep your wallet active">
+          <img src={Info} />
+          </Tooltip>
           <h3>Transfer with account keep alive checks </h3>
           <Switch defaultChecked onChange={onChange} />
         </div>

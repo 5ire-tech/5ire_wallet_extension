@@ -40,7 +40,7 @@
         align-items: center;
         gap: 8px;
         span {
-          font-size: 24px;
+          font-size: 22px;
         }
       }
     }
@@ -66,7 +66,7 @@
       }
       h3 {
         color: #f7faff;
-        font-size: 18px;
+        font-size: 16px;
         display: inline-block;
         width: 112px;
         white-space: nowrap;
@@ -186,11 +186,12 @@
     border-radius: 12px;
     background: #0e1e41;
     border: 1px solid #102658;
+    padding: 3px;
     &__buttons {
       background: #0e1e41;
       // border-radius: 12px 0 0px 12px;
       width: 100%;
-      border-radius: 12px;
+      border-radius: 7px;
       cursor: pointer;
       color: $white;
       border: 0;
@@ -206,6 +207,11 @@
   }
   &__accountName {
     text-align: left;
+    &:hover{
+      padding: 10px;
+      border-radius: 22px;
+      background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
+    }
     p {
       color: $white;
       font-size: 15px;

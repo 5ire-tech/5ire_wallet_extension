@@ -25,7 +25,7 @@
   }
 
   &__multiSwapBtn {
-    padding: 18px 80px;
+    padding: 16px 80px;
     padding-bottom: 0;
   }
   &__sendSwapbtn {
@@ -33,6 +33,7 @@
     border-radius: 12px;
     background: #0e1e41;
     border: 1px solid #102658;
+    padding: 3px;
     &__buttons {
       background: #0e1e41;
       // border-radius: 12px 0 0px 12px;
@@ -43,11 +44,18 @@
       border: 0;
       font-size: 14px;
       padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
       &__active {
         background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
         // border: 1px solid rgba(255, 255, 255, 0.5);
         border: 1px solid #13d3e1;
         // border-radius: 0px 12px 12px 0px;
+        img{
+          filter: contrast(100);
+        }
       }
     }
   }

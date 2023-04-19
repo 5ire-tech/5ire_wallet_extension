@@ -215,6 +215,7 @@
 .ant-drawer {
   &-body {
     padding: 20px 0 !important;
+    padding-bottom: 0;
   }
   &-wrapper-body {
     padding: 15px 28px !important;
@@ -223,7 +224,7 @@
     border-radius: 30px 30px 0px 0px;
   }
   &-header {
-    padding: 0 0 21px 0 !important;
+    padding: 0 0 10px 0 !important;
     border-bottom: 1px solid #707070 !important;
     &-title {
       display: flex;
@@ -361,11 +362,11 @@
 .ant-drawer-title {
   span {
     height: 40px;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 20px;
     line-height: 40px;
     text-align: center;
-    background: linear-gradient(91.26deg, #0071ff 0%, #54f0d1 50%);
+    background: linear-gradient(91.26deg, #0071FF 0%, #54F0D1 100%);
     background-clip: border-box;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -421,4 +422,10 @@
 
 .approveBtn{
   flex-direction: column;
+}
+
+:where(.css-mxhywb).ant-tooltip .ant-tooltip-inner {
+  background: #0080fbfc ;
+  border-radius: 6px;
+  font-size: 12px;
 }

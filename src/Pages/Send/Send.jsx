@@ -27,7 +27,7 @@ import {
   MESSAGE_EVENT_LABELS,
 } from "../../Constants/index";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
-import { Switch } from "antd";
+import { Switch, Tooltip } from "antd";
 
 function Send() {
   const { state, estimatedGas, updateEstimatedGas, updateLoading } =
@@ -160,17 +160,30 @@ function Send() {
   };
 
   const getFee = async () => {
-
-        if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
-          updateLoading(true);
-          sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, {value: data.amount, toAddress: data.to, options: {account: state.currentAccount,}});
+    if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
+      updateLoading(true);
+      sendRuntimeMessage(
+        MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
+        MESSAGE_EVENT_LABELS.NATIVE_FEE,
+        {
+          value: data.amount,
+          toAddress: data.to,
+          options: { account: state.currentAccount },
         }
-        else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-
-          //calculate the evm fee
-          updateLoading(true);
-          sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {value: data.amount, toAddress: data.to, options: {account: state.currentAccount,}});
-      }
+      );
+    } else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
+      //calculate the evm fee
+      updateLoading(true);
+      sendRuntimeMessage(
+        MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
+        MESSAGE_EVENT_LABELS.EVM_FEE,
+        {
+          value: data.amount,
+          toAddress: data.to,
+          options: { account: state.currentAccount },
+        }
+      );
+    }
   };
 
   const handleChange = (e) => {
@@ -255,49 +268,61 @@ function Send() {
         // }
       }
 
-          if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-
-            //pass the message request for evm transfer
-            // updateLoading(true);
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TX, {to: data.to, value: data.amount, options: {account: state.currentAccount}});
-            setIsModalOpen(true);
-
-            // const res = await evmTransfer(apiRes.evmApi, data);
-            // if (res.error) {
-            //   setSendError(res.data);
-            //   setIsFaildOpen(true);
-            // }
-            // else {
-            //   setTxHash(res.data);
-            //   setIsModalOpen(true);
-            //   // setTimeout(() => {
-            //   //   getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-            //   // }, 3000);
-            // }
-
-          } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
-
-            //pass the message request for native transfer
-            // updateLoading(true);
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TX, {to: data.to, value: data.amount, options: {account: state.currentAccount}});
-            setIsModalOpen(true);
-
-            // const res = await nativeTransfer(apiRes.nativeApi, data);
-            // if (res.error) {
-            //   setSendError(res.data);
-            //   setIsFaildOpen(true);
-            // }
-            // else {
-            //   setTxHash(res.data);
-            //   setIsModalOpen(true);
-            //   // setTimeout(() => {
-            //   //   getBalance(apiRes.evmApi, apiRes.nativeApi, true)
-            //   // }, 3000);
-            // }
+      if (activeTab.toLowerCase() === EVM.toLowerCase()) {
+        //pass the message request for evm transfer
+        // updateLoading(true);
+        sendRuntimeMessage(
+          MESSAGE_TYPE_LABELS.INTERNAL_TX,
+          MESSAGE_EVENT_LABELS.EVM_TX,
+          {
+            to: data.to,
+            value: data.amount,
+            options: { account: state.currentAccount },
           }
+        );
+        setIsModalOpen(true);
 
-        updateEstimatedGas("");
+        // const res = await evmTransfer(apiRes.evmApi, data);
+        // if (res.error) {
+        //   setSendError(res.data);
+        //   setIsFaildOpen(true);
+        // }
+        // else {
+        //   setTxHash(res.data);
+        //   setIsModalOpen(true);
+        //   // setTimeout(() => {
+        //   //   getBalance(apiRes.evmApi, apiRes.nativeApi, true);
+        //   // }, 3000);
+        // }
+      } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
+        //pass the message request for native transfer
+        // updateLoading(true);
+        sendRuntimeMessage(
+          MESSAGE_TYPE_LABELS.INTERNAL_TX,
+          MESSAGE_EVENT_LABELS.NATIVE_TX,
+          {
+            to: data.to,
+            value: data.amount,
+            options: { account: state.currentAccount },
+          }
+        );
+        setIsModalOpen(true);
 
+        // const res = await nativeTransfer(apiRes.nativeApi, data);
+        // if (res.error) {
+        //   setSendError(res.data);
+        //   setIsFaildOpen(true);
+        // }
+        // else {
+        //   setTxHash(res.data);
+        //   setIsModalOpen(true);
+        //   // setTimeout(() => {
+        //   //   getBalance(apiRes.evmApi, apiRes.nativeApi, true)
+        //   // }, 3000);
+        // }
+      }
+
+      updateEstimatedGas("");
     } catch (error) {
       toast.error("Error occured.");
     }
@@ -356,16 +381,16 @@ function Send() {
         </div>
         <div className={style.sendSec__inputInnerSec}>
           <div>
-          <InputFieldOnly
-            name="to"
-            value={data.to}
-            coloredBg={true}
-            onChange={handleChange}
-            keyUp={validateToAddress}
-            placeholderBaseColor={true}
-            placeholder={"Please enter recipient address"}
-          />
-          <span className={style.errorText}>{err.to}</span>
+            <InputFieldOnly
+              name="to"
+              value={data.to}
+              coloredBg={true}
+              onChange={handleChange}
+              keyUp={validateToAddress}
+              placeholderBaseColor={true}
+              placeholder={"Please enter recipient address"}
+            />
+            <span className={style.errorText}>{err.to}</span>
           </div>
           <div style={{ marginTop: "14px" }}>
             <InputField
@@ -397,7 +422,9 @@ function Send() {
           <h3>Balance 00.0000 5IRE</h3>
         </div>
         <div className={style.sendSec__inFoAccount}>
-         <img src={Info}/>
+          <Tooltip title="5irechain requires a minimum of 1 5ire token to keep your wallet active">
+          <img src={Info} />
+          </Tooltip>
           <h3>Transfer with account keep alive checks </h3>
           <Switch defaultChecked onChange={onChange} />
         </div>
