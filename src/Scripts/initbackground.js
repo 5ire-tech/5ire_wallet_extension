@@ -857,9 +857,7 @@ export class TransactionsRPC {
       const tempAmount = data.isBig ? (new BigNumber(data.value).dividedBy(DECIMALS)).toString() : data.value;
 
       if (
-        (Number(tempAmount) > (Number(state.balance.evmBalance))
-          &&
-          data.value !== '0x0')
+        (Number(tempAmount) > (Number(state.balance.evmBalance)) && data.value !== '0x0')
         ||
         Number(state.balance.evmBalance) <= 0
       ) {

@@ -44,9 +44,6 @@ function Swap() {
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [toFrom, setToFrom] = useState({ from: NATIVE, to: EVM });
   const [address, setAddress] = useState({ fromAddress: "", toAddress: "" });
-  const onChange = (checked) => {
-    console.log(`switch to ${checked}`);
-  };
   const { balance, currentAccount} = state;
 
 
@@ -153,6 +150,11 @@ function Swap() {
     }
   };
 
+
+  //set the ed toggler state
+  const onChangeToggler = (checked) => {
+    console.log(`switch to ${checked}`);
+  };
 
   const handleApprove = async (e) => {
     try {
@@ -377,7 +379,7 @@ function Swap() {
         <div className={style.swap__inFoAccount}>
          <img src={Info}/>
           <h3>Transfer with account keep alive checks </h3>
-          <Switch defaultChecked onChange={onChange} />
+          <Switch defaultChecked onChange={onChangeToggler} />
         </div>
         {/* <div className={style.swap__transactionFee}>
           <p>{estimatedGas ? `Estimated fee : ${estimatedGas} 5ire` : ""}</p>

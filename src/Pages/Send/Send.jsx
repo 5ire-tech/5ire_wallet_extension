@@ -39,9 +39,7 @@ function Send() {
   const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
 
   const { balance, currentAccount, currentNetwork } = state;
-  const onChange = (checked) => {
-    console.log(`switch to ${checked}`);
-  };
+
   useEffect(() => {
     setData({ to: "", amount: "" });
     setErr({ to: "", amount: "" });
@@ -64,6 +62,7 @@ function Send() {
 
     return () => clearTimeout(getData);
   }, [err.to, err.amount, data.to, data.amount]);
+
 
   useEffect(() => {
     if (!estimatedGas) {
@@ -91,6 +90,12 @@ function Send() {
       }
     }
   }, [estimatedGas]);
+
+
+  //set the ED toggler state
+  const onChangeToggler = (checked) => {
+    console.log(`switch to ${checked}`);
+  };
 
 
   const blockInvalidChar = e => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
@@ -337,7 +342,7 @@ function Send() {
         <div className={style.sendSec__inFoAccount}>
           <img src={Info} />
           <h3>Transfer with account keep alive checks </h3>
-          <Switch defaultChecked onChange={onChange} />
+          <Switch defaultChecked onChange={onChangeToggler} />
         </div>
       </div>
       <Approve onClick={handleApprove} text="Transfer" isDisable={disableBtn} />
