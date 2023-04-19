@@ -1,5 +1,5 @@
 import { Layout } from "antd";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import style from "../../Layout/style.module.scss";
 import footerstyle from "../MenuFooter/style.module.scss"
 import pageStyle from "../../Pages/RejectNotification/style.module.scss"
@@ -25,31 +25,34 @@ function NativeTx() {
     const [fee, setFee] = useState(0);
     const [fomattedMethod, setFormattedMethod] = useState('')
     const [amountInfo, setAmountInfo] = useState(0)
+    const [retry, setRetry] = useState(false)
+
+
+    const feeCallback = useCallback(async () => {
+        await getFee()
+    }, [auth?.uiData?.method])
 
     useEffect(() => {
-        loadFee()
+        dispatch(toggleLoader(true));
+        setTimeout(() => { feeCallback() }, 1000)
     }, [])
 
-    function loadFee() {
+    useEffect(() => {
+        if (retry) {
+            getFee()
+        }
+    }, [retry])
+
+
+    async function getFee() {
         dispatch(toggleLoader(true));
 
-        connectionObj.initializeApi(auth.httpEndPoints.testnet, auth.httpEndPoints.qa, auth.httpEndPoints.uat, auth.currentNetwork, false).then(async (apiRes) => {
-            if (!apiRes?.value) {
-                Connection.isExecuting.value = false;
-            }
-            await getFee(apiRes)
-        }).catch(() => {
-            dispatch(toggleLoader(false));
+        const apiRes = await connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.wsEndPoints.uat, auth.currentNetwork, false);
+        if (!apiRes?.value) {
+            Connection.isExecuting.value = false;
+        }
 
-        })
 
-    }
-    async function getFee(apiRes) {
-        // dispatch(toggleLoader(true));
-        // const apiRes = await connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.wsEndPoints.uat, auth.currentNetwork, false);
-        // if (!apiRes?.value) {
-        //     Connection.isExecuting.value = false;
-        // }
 
         await getBalance(apiRes.evmApi, apiRes.nativeApi, true)
 
@@ -148,22 +151,24 @@ function NativeTx() {
 
         }
 
-
         if (!feeData?.error && methodName) {
             setFee(+feeData.data + extraFee);
             setAmountInfo(amount || 0)
             setFormattedMethod(methodName)
         } else {
-            Browser.tabs.sendMessage(auth.uiData.tabId, {
-                id: auth.uiData.id,
-                response: null,
-                error: feeData?.data,
-            });
-
-            setTimeout(() => {
+            if (feeData) {
+                Browser.tabs.sendMessage(auth.uiData.tabId, {
+                    id: auth.uiData.id,
+                    response: null,
+                    error: feeData?.data,
+                });
                 dispatch(setUIdata({}));
-                window.close();
-            }, 300);
+                setTimeout(() => {
+                    window.close();
+                }, 300);
+            } else {
+                setRetry(true)
+            }
         }
         dispatch(toggleLoader(false));
     }
@@ -298,7 +303,9 @@ function NativeTx() {
                 error: "User rejected  transaction.",
             });
             dispatch(setUIdata({}));
-            window.close();
+            setTimeout(() => {
+                window.close();
+            }, 500);
         }
 
         //false the popup
