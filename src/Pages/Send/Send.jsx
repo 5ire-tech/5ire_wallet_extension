@@ -408,6 +408,7 @@ function Send() {
         isModalOpen={isModalOpen}
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
+        centered
       >
         <div className="swapsendModel">
           <div className="innerContact">
@@ -440,6 +441,7 @@ function Send() {
         isModalOpen={isFaildOpen}
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
+        centered
       >
         <div className="swapsendModel">
           <div className="innerContact">

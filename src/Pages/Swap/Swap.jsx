@@ -447,6 +447,7 @@ function Swap() {
         isModalOpen={isModalOpen}
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
+        centered
       >
         <div className="swapsendModel">
           <div className="innerContact">
@@ -476,6 +477,7 @@ function Swap() {
         isModalOpen={isFaildOpen}
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
+        centered
       >
         <div className="swapsendModel">
           <div className="innerContact">
