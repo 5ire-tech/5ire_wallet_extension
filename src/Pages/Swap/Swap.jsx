@@ -377,7 +377,7 @@ function Swap() {
           {/* <h3>Balance 00.0000 5IRE</h3> */}
         </div>
         <div className={style.swap__inFoAccount}>
-         <img src={Info}/>
+         <img src={Info} alt="infoIcon"/>
           <h3>Transfer with account keep alive checks </h3>
           <Switch defaultChecked onChange={onChangeToggler} />
         </div>
