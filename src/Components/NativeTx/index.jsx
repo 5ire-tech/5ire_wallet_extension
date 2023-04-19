@@ -27,15 +27,29 @@ function NativeTx() {
     const [amountInfo, setAmountInfo] = useState(0)
 
     useEffect(() => {
-        getFee()
+        loadFee()
     }, [])
 
-    async function getFee() {
+    function loadFee() {
         dispatch(toggleLoader(true));
-        const apiRes = await connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.wsEndPoints.uat, auth.currentNetwork, false);
-        if (!apiRes?.value) {
-            Connection.isExecuting.value = false;
-        }
+
+        connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.wsEndPoints.uat, auth.currentNetwork, false).then(async (apiRes) => {
+            if (!apiRes?.value) {
+                Connection.isExecuting.value = false;
+            }
+            await getFee(apiRes)
+        }).catch(() => {
+            dispatch(toggleLoader(false));
+
+        })
+
+    }
+    async function getFee(apiRes) {
+        // dispatch(toggleLoader(true));
+        // const apiRes = await connectionObj.initializeApi(auth.wsEndPoints.testnet, auth.wsEndPoints.qa, auth.wsEndPoints.uat, auth.currentNetwork, false);
+        // if (!apiRes?.value) {
+        //     Connection.isExecuting.value = false;
+        // }
 
         await getBalance(apiRes.evmApi, apiRes.nativeApi, true)
 
@@ -53,10 +67,12 @@ function NativeTx() {
             case "native_nominator_payout":
                 feeData = await nominatorValidatorPayout(apiRes.nativeApi, auth?.uiData?.message, true);
                 methodName = "Nominator Payout";
+                amount = auth?.uiData?.message?.amount;
                 break;
             case "native_validator_payout":
                 feeData = await nominatorValidatorPayout(apiRes.nativeApi, auth?.uiData?.message, true);
                 methodName = "Validator Payout";
+                amount = auth?.uiData?.message?.amount;
                 break;
             case "native_stop_validator":
                 feeData = await stopValidatorNominator(apiRes.nativeApi, auth?.uiData?.message, true);
@@ -133,6 +149,7 @@ function NativeTx() {
         }
 
 
+
         if (!feeData?.error && methodName) {
             setFee(+feeData.data + extraFee);
             setAmountInfo(amount || 0)
@@ -150,9 +167,6 @@ function NativeTx() {
             }, 300);
         }
         dispatch(toggleLoader(false));
-
-
-
     }
 
 
@@ -275,7 +289,7 @@ function NativeTx() {
                 setTimeout(() => {
                     dispatch(setUIdata({}));
                     window.close();
-                }, 300);
+                }, 1000);
             })
 
         } else {

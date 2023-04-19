@@ -4,10 +4,11 @@ import useWallet from "../../Hooks/useWallet";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { decryptor } from "../../Helper/CryptoHelper";
-import {INPUT,REGEX_WALLET_NAME} from "../../Constants/index";
+import { INPUT, REGEX_WALLET_NAME } from "../../Constants/index";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+import CongratulationsScreen from "./CongratulationsScreen";
 
 
 
@@ -19,6 +20,7 @@ function ImportWallet() {
   const [data, setData] = useState({ accName: "", key: "" });
   const { accounts, pass } = useSelector((state) => state.auth);
   const [warrning, setWarrning] = useState({ acc: "", key: "" });
+  const [show, setShow] = useState(false)
 
   useEffect(() => {
 
@@ -76,43 +78,50 @@ function ImportWallet() {
 
   const handleClick = async (e) => {
     if ((e.key === "Enter") || (e.key === undefined)) {
-    if (data.key.length === 0) {
-      setWarrning((p) => ({ ...p, key: INPUT.REQUIRED }));
-      setDisable(true);
-    } else if (data.accName.trim().length === 0) {
-      setWarrning((p) => ({ ...p, acc: INPUT.REQUIRED }));
-      setDisable(true);
-    } else {
-      if (!warrning.key && !warrning.acc) {
-        const match = accounts.find((e) => {
-          if (e.accountName === data.accName.trim()) {
-            setWarrning((p) => ({
-              ...p,
-              acc: "Wallet name already exists.",
-            }));
-            return true;
-          } else if (decryptor(e.temp1m, pass) === data.key) {
-            setWarrning((p) => ({
-              ...p,
-              key: "Wallet with this mnemonic already exists.",
-            }));
-            return true;
-          } else return false;
-        });
+      if (data.key.length === 0) {
+        setWarrning((p) => ({ ...p, key: INPUT.REQUIRED }));
+        setDisable(true);
+      } else if (data.accName.trim().length === 0) {
+        setWarrning((p) => ({ ...p, acc: INPUT.REQUIRED }));
+        setDisable(true);
+      } else {
+        if (!warrning.key && !warrning.acc) {
+          const match = accounts.find((e) => {
+            if (e.accountName === data.accName.trim()) {
+              setWarrning((p) => ({
+                ...p,
+                acc: "Wallet name already exists.",
+              }));
+              return true;
+            } else if (decryptor(e.temp1m, pass) === data.key) {
+              setWarrning((p) => ({
+                ...p,
+                key: "Wallet with this mnemonic already exists.",
+              }));
+              return true;
+            } else return false;
+          });
 
-        if (!match) {
-          let res = await importAccount(data);
-          if (res.error) setWarrning((p) => ({ ...p, key: res.data }));
-          else {
-            setWarrning({ acc: "", key: "" });
-            if (isLogin) navigate("/wallet");
-            else navigate("/setPassword/import");
+          if (!match) {
+            let res = await importAccount(data);
+            if (res.error) setWarrning((p) => ({ ...p, key: res.data }));
+            else {
+              setWarrning({ acc: "", key: "" });
+              if (isLogin) {
+                setShow(true)
+                setTimeout(() => {
+                  setShow(false)
+                  navigate("/wallet");
+
+                }, 2000)
+              }
+              else navigate("/setPassword/import");
+            }
           }
         }
       }
     }
-  }
-};
+  };
 
   const handleCancle = () => {
     if (isLogin) navigate("/wallet");
@@ -155,6 +164,12 @@ function ImportWallet() {
           <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancle} />
           <ButtonComp onClick={handleClick} text={"Import"} isDisable={isDisable} />
         </div>
+
+        {isLogin && show && (
+          <div className="loader">
+            <CongratulationsScreen text={`Your Wallet is Imported`} />
+          </div>
+        )}
       </div>
     </div>
   );

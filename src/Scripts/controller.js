@@ -17,6 +17,7 @@ import { isManifestV3 } from "./utils";
 import { httpRequest, EVMRPCPayload } from "../Utility/network_calls";
 import { isObject, isNullorUndef, isHasLength } from "../Utility/utility"
 import { HTTP_METHODS, PORT_NAME, EVM_JSON_RPC_METHODS, STATUS } from "../Constants";
+import { formatNum, noExponents } from "../Helper/helper";
 
 
 
@@ -307,13 +308,17 @@ export async function checkTransactions(txData) {
     let txRecipt;
     if (txData.isEVM) txRecipt = await httpRequest(rpcUrl, HTTP_METHODS.POST, JSON.stringify(new EVMRPCPayload(EVM_JSON_RPC_METHODS.GET_TX_RECIPT, [txHash])));
     else txRecipt = await httpRequest(rpcUrl + txHash, HTTP_METHODS.GET)
-
     //check if the tx is native or evm based
     if (txRecipt?.result) {
       store.dispatch(updateTxHistory({ txHash, accountName, status: Boolean(parseInt(txRecipt.result.status)), isSwap }));
       showNotification(controller, `Transaction ${Boolean(parseInt(txRecipt.result.status)) ? STATUS.SUCCESS.toLowerCase() : STATUS.FAILED.toLowerCase()} ${txHash.slice(0, 30)} ...`);
     } else if (txRecipt?.data && txRecipt?.data?.transaction.status.toLowerCase() !== STATUS.PENDING.toLowerCase()) {
-      store.dispatch(updateTxHistory({ txHash, accountName, status: txRecipt?.data?.transaction.status, isSwap }));
+      let amount
+      if (txRecipt?.data?.transaction?.sectionmethod === "staking.Rewarded") {
+        amount = formatNum(Number(noExponents(Number(txRecipt?.data?.transaction?.value))) / 10 ** 18, 6);
+      }
+
+      store.dispatch(updateTxHistory({ txHash, accountName, status: txRecipt?.data?.transaction.status, isSwap, amount }));
       showNotification(controller, `Transaction ${txRecipt?.data?.transaction.status} ${txHash.slice(0, 30)} ...`);
     }
     else if (!txRecipt?.internalServer) checkTransactions(txData)
@@ -366,7 +371,11 @@ export async function checkPendingTxns(store) {
       if (txRecipt?.result) {
         store.dispatch(updateTxHistory({ txHash, accountName: txData.accountName, status: Boolean(parseInt(txRecipt.result.status)), isSwap }));
       } else if (txRecipt?.data && txRecipt?.data?.transaction.status.toLowerCase() !== STATUS.PENDING.toLowerCase()) {
-        store.dispatch(updateTxHistory({ txHash, accountName: txData.accountName, status: txRecipt?.data?.transaction.status, isSwap }));
+        let amount
+        if (txRecipt?.data?.transaction?.sectionmethod === "staking.Rewarded") {
+          amount = formatNum(Number(noExponents(Number(txRecipt?.data?.transaction?.value))) / 10 ** 18, 6);
+        }
+        store.dispatch(updateTxHistory({ txHash, accountName: txData.accountName, status: txRecipt?.data?.transaction.status, isSwap, amount }));
       }
     }
 

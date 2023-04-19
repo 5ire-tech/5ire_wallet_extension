@@ -12,7 +12,7 @@ function LoginApprove() {
       <MenuRestofHeaders logosilver={true} title="5irechain Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
-          <h1>Login Request</h1>
+          <h1>Access Request</h1>
         </div>
         <div className={style.cardWhite__cardInner__siteUrl}>
           <h4>Site URL</h4>

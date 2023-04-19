@@ -22,7 +22,7 @@ try {
       isInitialized = true;
       setInterval(async () => {
         await checkPendingTxns(store)
-      }, 1000 * 10)
+      }, 1000 * 6)
 
       //set the current newAccount state to null
       const currState = await store.getState();

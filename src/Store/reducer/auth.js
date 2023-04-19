@@ -167,6 +167,11 @@ const reducers = {
       return item.txHash === action.payload.txHash
     })
 
+    if (action?.payload?.amount) {
+      if (currentTx) currentTx.amount = action?.payload?.amount
+      if (otherTx) otherTx.amount = action?.payload?.amount
+    }
+
     if (currentTx) currentTx.status = typeof (action.payload.status) === "string" ? action.payload.status : action.payload.status ? STATUS.SUCCESS : STATUS.FAILED;
     if (otherTx) otherTx.status = typeof (action.payload.status) === "string" ? action.payload.status : action.payload.status ? STATUS.SUCCESS : STATUS.FAILED;
 
