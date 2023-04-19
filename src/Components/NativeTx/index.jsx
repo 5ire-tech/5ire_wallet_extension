@@ -149,7 +149,6 @@ function NativeTx() {
         }
 
 
-        console.log(":HERE DATA", methodName, feeData)
         if (!feeData?.error && methodName) {
             setFee(+feeData.data + extraFee);
             setAmountInfo(amount || 0)
@@ -163,7 +162,7 @@ function NativeTx() {
 
             setTimeout(() => {
                 dispatch(setUIdata({}));
-                // window.close();
+                window.close();
             }, 300);
         }
         dispatch(toggleLoader(false));
