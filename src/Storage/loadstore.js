@@ -11,13 +11,13 @@ export const getDataLocal = async (key) => {
         if (!isString(key) && isEmpty(key.trim())) throw new Error("Query key is invalid");
         const localState = await localStorage.get(key);
 
-        if (!localState?.state && isEqual(key , LABELS.STATE)) {
+        if (!localState?.state && isEqual(key, LABELS.STATE)) {
             await localStorage.set({ state: userState });
             return userState;
-        } else if(!localState?.externalControls && isEqual(key , LABELS.EXTERNAL_CONTROLS)) {
+        } else if (!localState?.externalControls && isEqual(key, LABELS.EXTERNAL_CONTROLS)) {
             await localStorage.set({ externalControls });
             return externalControls
-        } else if(!localState?.transactionQueue && isEqual(key , LABELS.TRANSACTION_QUEUE)) {
+        } else if (!localState?.transactionQueue && isEqual(key, LABELS.TRANSACTION_QUEUE)) {
             await localStorage.set({ transactionQueue });
             return transactionQueue
         }
@@ -63,7 +63,7 @@ export class ExtensionStorageHandler {
                 delete ExtensionStorageHandler.constructor
             }
 
-            if(!hasProperty(ExtensionStorageHandler.instance, key)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_PROPERTY)).throw();
+            if (!hasProperty(ExtensionStorageHandler.instance, key)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_PROPERTY)).throw();
 
             const state = await getDataLocal(options?.localStateKey || LABELS.STATE);
             await ExtensionStorageHandler.instance[key](data, state, options);
@@ -133,14 +133,14 @@ export class ExtensionStorageHandler {
 
     //add a new connection task
     addNewConnectionTask = (data, state) => {
-        const newState = {...state};
+        const newState = { ...state };
         newState.connectionQueue.push(data)
         this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
     }
 
     //update the popup id in currentTask
     updateCurrentSession = (data, state) => {
-        const newState = {...state};
+        const newState = { ...state };
         newState.activeSession.popupId = data.popupId || newState.activeSession.popupId;
         newState.activeSession.route = data.route || newState.activeSession.route;
 
@@ -150,14 +150,14 @@ export class ExtensionStorageHandler {
     //select the next task as active
     changeActiveSession = (data, state) => {
         const activeSession = state.connectionQueue.shift();
-        const newState = {...state, activeSession: activeSession || null};
+        const newState = { ...state, activeSession: activeSession || null };
         this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
     }
 
     //update the connected status
     appConnectionUpdate = (data, state) => {
-        const newState = {...state};
-        newState.connectedApps[data.origin] = {isConnected: data.connected}
+        const newState = { ...state };
+        newState.connectedApps[data.origin] = { isConnected: data.connected }
         this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
     }
 
@@ -165,21 +165,21 @@ export class ExtensionStorageHandler {
     /************************************ For Transaction Queue *********************/
     //add a new transaction task
     addNewTransaction = (data, state) => {
-            const newState = {...state};
-            newState.txQueue.push(data)
-            this._updateStorage(newState, LABELS.TRANSACTION_QUEUE);
-        }
-    
+        const newState = { ...state };
+        newState.txQueue.push(data)
+        this._updateStorage(newState, LABELS.TRANSACTION_QUEUE);
+    }
+
     //process new transaction
     processQueuedTransaction = (data, state) => {
         const queuedTransaction = state.txQueue.shift();
-        const newState = {...state, currentTransaction: queuedTransaction || null};
+        const newState = { ...state, currentTransaction: queuedTransaction || null };
         this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
     }
 
     //update the transaction track into current processing transaction
     updateHistoryTrack = (data, state) => {
-        const newState = {...state, currentTransaction: {...state?.currentTransaction, transactionHistoryTrack: data}};
+        const newState = { ...state, currentTransaction: { ...state?.currentTransaction, transactionHistoryTrack: data } };
         this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
     }
 
@@ -201,7 +201,7 @@ export class ExtensionStorageHandler {
     // set the new Account
     createOrRestore = async (message, state) => {
         console.log("Setting New Wallet Details ......");
-        const { vault, newAccount, type} = message;
+        const { vault, newAccount, type } = message;
         const currentAcc = {
             evmAddress: newAccount.evmAddress,
             accountName: newAccount.accountName,
@@ -215,9 +215,9 @@ export class ExtensionStorageHandler {
         return await this._updateStorage(newState);
     };
 
-    
+
     forgotPassByMnemonic = async (message, state) => {
-        const { vault, newAccount, type} = message;
+        const { vault, newAccount, type } = message;
 
         const currentAcc = {
             evmAddress: newAccount.evmAddress,
@@ -225,7 +225,7 @@ export class ExtensionStorageHandler {
             accountIndex: newAccount.accountIndex,
             nativeAddress: newAccount.nativeAddress,
         }
-        const txHistory = this._txProperty(state, newAccount.accountName);
+        const txHistory = this._txProperty({ txHistory: {} }, newAccount.accountName);
 
         const newState = { ...state, vault, txHistory, currentAccount: currentAcc, isLogin: true }
         this._updateSession(LABELS.ISLOGIN, true);
@@ -264,20 +264,19 @@ export class ExtensionStorageHandler {
         return await this._updateStorage(newState);
     }
 
-    //
+    // remove specific account 
     removeAccount = async (message, state) => {
-        console.log("Message in local remove account::: ",message);
-        const newState = { ...state,vault: message.vault };
+        const newState = { ...state, vault: message.vault };
         return await this._updateStorage(newState);
     }
-    
-    
+
+
     //*********************************** Internal methods **************************/
     _updateStorage = async (state, key) => {
-            const checkKey = key || LABELS.STATE;
-            await localStorage.set({ [checkKey]: state })
-    
-        }
+        const checkKey = key || LABELS.STATE;
+        await localStorage.set({ [checkKey]: state })
+
+    }
 
     _updateSession = async (key, state) => {
         await sessionStorage.set({ [key]: state })

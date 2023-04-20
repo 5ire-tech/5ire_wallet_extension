@@ -1,28 +1,29 @@
 import { Drawer } from "antd";
 import { ROUTES } from "../../Routes";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import Browser from "webextension-polyfill";
 import PrivacyPolicy from "./PrivacyPolicy";
-import Logout from "../../Assets/PNG/logout.png";
-import Import from "../../Assets/PNG/import.png";
+import Setting from "../../Assets/setting.svg";
+// import Logout from "../../Assets/PNG/logout.png";
+// import Import from "../../Assets/PNG/import.png";
 import Wallet from "../../Assets/WalletIcon.svg";
 import PrivacyPo from "../../Assets/PrivacyPo.svg";
-import Setting from "../../Assets/setting.svg";
-import Sendhistry from "../../Assets/sendhistry.svg";
-import { arrayReverser } from "../../Utility/utility";
 import HistoryIcon from "../../Assets/histry.svg";
 import Myaccount from "../../Assets/myaccount.svg";
+import Sendhistry from "../../Assets/sendhistry.svg";
+import { openBrowserTab } from "../../Helper/helper";
+import { arrayReverser } from "../../Utility/utility";
 import BackArrow from "../../Assets/PNG/arrowright.png";
 import { shortner, formatDate } from "../../Helper/helper";
 import SocialAccount from "../SocialAccount/SocialAccount";
 import ModalCloseIcon from "../../Assets/ModalCloseIcon.svg";
-import ManageCustom from "../ManageCustomtocken/ManageCustom";
-import Createaccount from "../../Assets/PNG/createaccount.png";
+// import ManageCustom from "../ManageCustomtocken/ManageCustom";
+// import Createaccount from "../../Assets/PNG/createaccount.png";
 import React, { useState, useContext, useEffect } from "react";
 import { ACCOUNT_CHANGED_EVENT } from "../../Scripts/constants";
-import AccountSetting from "../AccountSetting/AccountSetting.jsx";
+// import AccountSetting from "../AccountSetting/AccountSetting.jsx";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import TransectionHistry from "../TransectionHistry/TransectionHistry";
@@ -32,9 +33,10 @@ import {
   TX_TYPE,
   CURRENCY,
   EMTY_STR,
-  ERROR_MESSAGES,
+  // ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
+  SOCIAL_LINKS
 } from "../../Constants/index";
 import FooterStepOne, {
   ApproveTx,
@@ -45,7 +47,7 @@ import FooterStepOne, {
 function MenuFooter() {
   const navigate = useNavigate();
   const getLocation = useLocation();
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
   const [open2, setOpen2] = useState(false);
   const { state, updateState, allAccounts } = useContext(AuthContext);
@@ -59,58 +61,58 @@ function MenuFooter() {
   const onClose2 = () => {
     setOpen2(false);
   };
-  const onClose = () => {
-    setOpen(false);
-  };
+  // const onClose = () => {
+  //   setOpen(false);
+  // };
 
   const handleMyAccOpen = () => {
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.GET_ACCOUNTS, {});
   };
 
-  const hanldeCreateNewAcc = () => {
-    navigate(ROUTES.CREATE_WALLET);
-  };
+  // const hanldeCreateNewAcc = () => {
+  //   navigate(ROUTES.CREATE_WALLET);
+  // };
 
-  const handleImportAcc = () => {
-    navigate(ROUTES.IMPORT_WALLET);
-  };
+  // const handleImportAcc = () => {
+  //   navigate(ROUTES.IMPORT_WALLET);
+  // };
 
   // const handleLogout = async () => {
   //   sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.LOCK, {});
   // };
 
-  const onSelectAcc = name => {
-    const acc = allAccounts.find(acc => acc.accountName === name);
-    updateState(LABELS.CURRENT_ACCOUNT, acc);
+  // const onSelectAcc = name => {
+  //   const acc = allAccounts.find(acc => acc.accountName === name);
+  //   updateState(LABELS.CURRENT_ACCOUNT, acc);
 
-    //send account details whenever account is changed
-    getCurrentTabUId((id) => {
-      getCurrentTabUrl((url) => {
-        if (!(url === "chrome://extensions")) {
-          Browser.tabs.sendMessage(id, {
-            id: ACCOUNT_CHANGED_EVENT,
-            method: ACCOUNT_CHANGED_EVENT,
-            response: {
-              evmAddress: acc.evmAddress,
-              nativeAddress: acc.nativeAddress,
-            },
-          });
-        }
-      });
-    });
+  //   //send account details whenever account is changed
+  //   getCurrentTabUId((id) => {
+  //     getCurrentTabUrl((url) => {
+  //       if (!(url === "chrome://extensions")) {
+  //         Browser.tabs.sendMessage(id, {
+  //           id: ACCOUNT_CHANGED_EVENT,
+  //           method: ACCOUNT_CHANGED_EVENT,
+  //           response: {
+  //             evmAddress: acc.evmAddress,
+  //             nativeAddress: acc.nativeAddress,
+  //           },
+  //         });
+  //       }
+  //     });
+  //   });
 
-    //fetch balance of changed account
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.BALANCE, {});
-    onClose();
-  };
+  //   //fetch balance of changed account
+  //   sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.BALANCE, {});
+  //   onClose();
+  // };
 
-  const handleHistoryOpen = () => {
-    // if (txHistory.hasOwnProperty(accData.accountName)) {
-    //   let txData = txHistory[accData.accountName].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()));
-    //   setHistory(arrayReverser(txData));
-    // }
-    setOpen1(true);
-  };
+  // const handleHistoryOpen = () => {
+  //   // if (txHistory.hasOwnProperty(accData.accountName)) {
+  //   //   let txData = txHistory[accData.accountName].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()));
+  //   //   setHistory(arrayReverser(txData));
+  //   // }
+  //   setOpen1(true);
+  // };
 
   return (
     <div className={`${style.menuItems} welcomeFooter`}>
@@ -278,36 +280,36 @@ function MenuFooter() {
             </div>
           </div>
         </Link>
-        <Link to={ROUTES.PRIVACY_POLICY}>
-          <div className={style.sttings} style={{ marginTop: "14px" }}>
-            <div className={style.sttings__left}>
-              <div className={style.walletIconBorder}>
-                <img
-                  draggable={false}
-                  src={PrivacyPo}
-                  width={30}
-                  height={30}
-                  alt="walletIcon"
-                />
-              </div>
-              <div className={style.sttings__left__texts}>
-                <div className={style.sttings__left__textsTop}>
-                  Privacy Policy
-                </div>
-              </div>
-            </div>
-
-            <div className={style.sttings__right}>
+        {/* <Link to={ROUTES.PRIVACY_POLICY}> */}
+        <div className={style.sttings} style={{ marginTop: "14px" }} onClick={() => openBrowserTab(SOCIAL_LINKS.POLICY)}>
+          <div className={style.sttings__left}>
+            <div className={style.walletIconBorder}>
               <img
-                src={BackArrow}
-                width={8}
-                height={15}
-                alt="backArrow"
                 draggable={false}
+                src={PrivacyPo}
+                width={30}
+                height={30}
+                alt="walletIcon"
               />
             </div>
+            <div className={style.sttings__left__texts}>
+              <div className={style.sttings__left__textsTop}>
+                Privacy Policy
+              </div>
+            </div>
           </div>
-        </Link>
+
+          <div className={style.sttings__right}>
+            <img
+              src={BackArrow}
+              width={8}
+              height={15}
+              alt="backArrow"
+              draggable={false}
+            />
+          </div>
+        </div>
+        {/* </Link> */}
 
         <SocialAccount />
       </Drawer>

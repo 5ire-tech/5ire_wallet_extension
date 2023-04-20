@@ -3,33 +3,31 @@ import { userState, newAccountInitialState, externalControls, initialExternalNat
 import { isManifestV3 } from "../Scripts/utils";
 import { createContext, useState } from "react";
 import { sessionStorage, localStorage } from "../Storage";
-import { sendRuntimeMessage, bindRuntimeMessageListener } from "../Utility/message_helper";
-import { MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, STORAGE, LABELS } from "../Constants";
+import { bindRuntimeMessageListener } from "../Utility/message_helper";
+import { MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, LABELS } from "../Constants";
 import { isNullorUndef, log } from "../Utility/utility";
-
 
 
 export const AuthContext = createContext();
 
 export default function Context({ children }) {
+
   const [state, setState] = useState(userState);
-  const [externalControlsState, setExternalControlState] = useState(externalControls)
   const [passError, setPassError] = useState("");
+  const [userPass, setUserPass] = useState(null);
+  const [isLoading, setLoading] = useState(false);
   const [privateKey, setPrivateKey] = useState("");
   const [seedPhrase, setSeedPhrase] = useState("");
-  const [passVerified, setPassVerified] = useState(false);
-  const [allAccounts, setAllAccounts] = useState([]);
-  const [isLoading, setLoading] = useState(false);
-  const [userPass, setUserPass] = useState(null);
   const [accountName, setAccName] = useState(null);
+  const [allAccounts, setAllAccounts] = useState([]);
   const [estimatedGas, setEstimatedGas] = useState(null);
   const [externalNativeTxDetails, setExternalNativeTxDetails] = useState(initialExternalNativeTransaction);
+  const [passVerified, setPassVerified] = useState(false);
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
-
+  const [externalControlsState, setExternalControlState] = useState(externalControls)
+  
 
   Browser.storage.local.onChanged.addListener((changedData) => {
-
-    // console.log("changed the storage: ", changedData);
     //change the state whenever the local storage is updated
     !isNullorUndef(changedData?.state) && setState(changedData.state.newValue);
     !isNullorUndef(changedData?.externalControls) && setExternalControlState(changedData.externalControls.newValue);
@@ -83,9 +81,7 @@ export default function Context({ children }) {
   //update the main state (also update into the persistant store)
   const updateState = (name, data, toLocal = true, toSession = false) => {
 
-
     log("state updated by updateState: ", name, data)
-
 
     if (toSession) {
       if (isManifestV3) {
@@ -108,7 +104,7 @@ export default function Context({ children }) {
 
   // set the new Account
   const createOrRestore = (data) => {
-  
+
     if (data?.type === "create") {
       setNewAccount(data.newAccount);
     }
@@ -148,6 +144,12 @@ export default function Context({ children }) {
     setSeedPhrase(data?.seedPhrase);
   }
 
+  // remove entries of history of specific account from TxHistory
+  const removeHistory = (accName) => {
+    const newTx = { ...state.txHistory };
+    delete newTx[accName];
+    updateState(LABELS.TX_HISTORY, newTx)
+  }
 
   const values = {
     //data
@@ -174,6 +176,7 @@ export default function Context({ children }) {
     setPassError,
     updateLoading,
     setNewAccount,
+    removeHistory,
     setPrivateKey,
     setPassVerified,
     updateEstimatedGas,

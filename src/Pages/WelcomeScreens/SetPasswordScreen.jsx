@@ -77,7 +77,7 @@ export default function SetPasswordScreen() {
   const handleCancel = () => {
     updateState(LABELS.NEW_ACCOUNT, null, false);
     // updateState(LABELS.ACCOUNT_NAME, null, false);
-    navigate(ROUTES.WALLET);
+    navigate(ROUTES.DEFAULT);
   };
 
   const handleSubmit = async (e) => {

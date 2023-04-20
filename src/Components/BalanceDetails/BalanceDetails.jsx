@@ -3,14 +3,14 @@ import { ROUTES } from "../../Routes";
 import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
-import Browser, { urlbar } from "webextension-polyfill";
+import Browser from "webextension-polyfill";
 import ThreeDot from "../../Assets/dot3.svg";
 import { shortner } from "../../Helper/helper";
 import { Dropdown, Select, Space } from "antd";
 import WalletQr from "../../Assets/QRicon.svg";
+import { useLocation } from "react-router-dom";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import DarkLogo from "../../Assets/DarkLogo.svg";
-import { Link, useLocation } from "react-router-dom";
 import GrayCircle from "../../Assets/graycircle.svg";
 import ModalCustom from "../ModalCustom/ModalCustom";
 import GreenCircle from "../../Assets/greencircle.svg";
@@ -18,6 +18,8 @@ import React, { useEffect, useState, useContext } from "react";
 import DownArrowSuffix from "../../Assets/DownArrowSuffix.svg";
 // import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
+import { ExtensionStorageHandler } from "../../Storage/loadstore";
+import { isEqual, isNullorUndef, log } from "../../Utility/utility";
 import { getCurrentTabUId, getCurrentTabUrl } from "../../Scripts/utils";
 
 import {
@@ -35,8 +37,6 @@ import {
   STATE_CHANGE_ACTIONS,
 
 } from "../../Constants/index";
-import { ExtensionStorageHandler } from "../../Storage/loadstore";
-import { isEqual, isNullorUndef, log } from "../../Utility/utility";
 
 
 function BalanceDetails({ mt0 }) {

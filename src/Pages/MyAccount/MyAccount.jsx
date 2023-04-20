@@ -30,7 +30,7 @@ function MyAccount() {
   const [accounts, setAccounts] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [addressToRemove, setAddressToRemove] = useState(null);
-  const { allAccounts, state, updateState } = useContext(AuthContext);
+  const { allAccounts, state, updateState, removeHistory} = useContext(AuthContext);
   const { balance, currentAccount } = state;
 
 
@@ -56,6 +56,7 @@ function MyAccount() {
         });
 
         updateState(LABELS.CURRENT_ACCOUNT, accounts[index - 1]);
+        removeHistory(accounts[index].accountName);
         sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.BALANCE, {});
 
       }
