@@ -56,7 +56,6 @@ function BalanceDetails({ mt0 }) {
     balance,
     currentAccount,
     currentNetwork,
-    txHistory,
   } = state;
 
 

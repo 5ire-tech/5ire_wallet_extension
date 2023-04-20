@@ -15,9 +15,10 @@ export const ACCOUNT_CHANGED_EVENT = 'accountChanged';
 export const WINDOW_WIDTH = 400;
 export const DECIMALS = 10 ** 18;
 export const WINDOW_HEIGHT = 620;
-export const ONE_ETH_IN_GWEI=1000000000;
+export const ONE_ETH_IN_GWEI = 1000000000;
 export const AUTO_BALANCE_UPDATE_TIMER = 8000;
 export const TRANSACTION_STATUS_CHECK_TIMER = 2000;
+export const EXISTENTIAL_DEPOSITE = 1;
 
 
 /* Regular expressions */
@@ -100,7 +101,7 @@ export const ERROR_MESSAGES = {
     UNDEF_DATA: "Value is null or undefined.",
     INVALID_TYPE: "argument type is invalid.",
     REJECTED_BY_USER: "Session is rejected by user.",
-    UNABLE_TO_REMOVE_ACC:"Unable to remove the account.",
+    UNABLE_TO_REMOVE_ACC: "Unable to remove the account.",
     NETWORK_REQUEST: "Network error try after sometime",
     TX_FAILED: "Transaction failed. some wrong happend.",
     INVALID_METHOD: "Method is not the part of system.",
@@ -138,9 +139,10 @@ export const LABELS = {
     SEED: "seed",
     PASS: "pass",
     ENTER: "Enter",
-    CREATE: "create",
     ACTIVE: "Active",
+    CREATE: "create",
     FAILED: "failed",
+    AMOUNT: "amount",
     SUCCESS: "success",
     NOT_ACTIVE: "Not Active",
 
@@ -174,6 +176,13 @@ export const HTTP_END_POINTS = {
     QA: "https://qa-http-nodes.5ire.network",
     TESTNET: "https://rpc-testnet.5ire.network"
 };
+
+export const SOCIAL_LINKS = {
+    POLICY: "https://5ire-wallet-extension.s3.amazonaws.com/5ire-wallet-extension-privacy-policy.pdf",
+    LINKDIN: "https://www.linkedin.com/company/5irechain/",
+    INSTAGRAM: "https://www.instagram.com/5irechain/",
+    FACEBOOK: "https://www.facebook.com/5irechain/",
+}
 
 export const API = {
     TESTNET: "https://explorer-api.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
@@ -210,7 +219,7 @@ export const MESSAGE_EVENT_LABELS = {
     UNLOCK: "unlock",
     ADD_ACCOUNT: "addAccount",
     GET_ACCOUNTS: "getAccounts",
-    REMOVE_ACCOUNT : "removeAccount",
+    REMOVE_ACCOUNT: "removeAccount",
     FORGOT_PASS: "forgotPassByMnemonic",
     CREATE_OR_RESTORE: "createOrRestore",
     EXPORT_PRIVATE_KEY: "exportPrivatekey",

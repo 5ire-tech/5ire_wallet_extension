@@ -1,65 +1,48 @@
-import { useEffect, useRef } from "react";
+import { Switch } from "antd";
+import { useEffect } from "react";
 import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
 import { AuthContext } from "../../Store";
+import Info from "../../Assets/infoIcon.svg";
+import logoNew from "../../Assets/logoNew.svg";
 import { shortner } from "../../Helper/helper";
 import SwapIcon from "../../Assets/SwapIcon.svg";
-import CopyIcon from "../../Assets/CopyIcon.svg";
 import ComplSwap from "../../Assets/DarkLogo.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import React, { useState, useContext } from "react";
-import Info from "../../Assets/infoIcon.svg";
-import WalletCardLogo from "../../Assets/walletcardLogo.svg";
-import logoNew from "../../Assets/logoNew.svg";
+// import CopyIcon from "../../Assets/CopyIcon.svg";
+import { isEmpty, isEqual } from "../../Utility/utility";
+// import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
+import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import { InputField } from "../../Components/InputField/InputFieldSimple";
 import {
   EVM,
   NATIVE,
-  COPIED, 
+  COPIED,
   LABELS,
-  CURRENCY,
   ERROR_MESSAGES,
-  MESSAGE_EVENT_LABELS,
   MESSAGE_TYPE_LABELS,
+  EXISTENTIAL_DEPOSITE,
+  MESSAGE_EVENT_LABELS,
 } from "../../Constants/index";
-import { sendRuntimeMessage } from "../../Utility/message_helper";
-import { Switch } from "antd";
-import { isEmpty } from "../../Utility/utility";
-import { isEqual } from "lodash";
 
 
 function Swap() {
-  // const accountData = useRef(null);
-  const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
+  const [isEd, setEd] = useState(true);
   const [error, setError] = useState("");
-  // const [txHash, setTxHash] = useState("");
-  // const [gassFee, setGassFee] = useState("");
-  // const [swapErr, setSwapError] = useState("");
   const [amount, setAmount] = useState("");
   const [disableBtn, setDisable] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [toFrom, setToFrom] = useState({ from: NATIVE, to: EVM });
-  const [address, setAddress] = useState({ fromAddress: "", toAddress: "" });
-  const { balance, currentAccount} = state;
+  const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
+  const { balance, currentAccount } = state;
 
 
   useEffect(() => {
-
-    if (toFrom.from.toLowerCase() === NATIVE.toLowerCase())
-      setAddress({
-        toAddress: currentAccount?.evmAddress,
-        fromAddress: currentAccount?.nativeAddress,
-      });
-
-    else if (toFrom.from.toLowerCase() === EVM.toLowerCase())
-      setAddress({
-        toAddress: currentAccount?.nativeAddress,
-        fromAddress: currentAccount?.evmAddress,
-      });
     setAmount("");
     setError("");
 
@@ -79,15 +62,16 @@ function Swap() {
 
     return () => clearTimeout(getData);
 
-  }, [amount, error]);
+  }, [amount, error, isEd]);
 
 
   useEffect(() => {
     if (!estimatedGas) setDisable(true);
 
     else {
+      console.log("Is ED ::: ", isEd);
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
-        if ((Number(amount) + Number(estimatedGas)) >= Number(balance.evmBalance)) {
+        if ((Number(amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0)) >= Number(balance.evmBalance)) {
           updateEstimatedGas(null);
           setDisable(true);
           setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
@@ -99,7 +83,7 @@ function Swap() {
 
       } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
 
-        if ((Number(amount) + Number(estimatedGas)) >= Number(balance.nativeBalance)) {
+        if ((Number(amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0)) >= Number(balance.nativeBalance)) {
           updateEstimatedGas(null);
           setDisable(true);
           setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
@@ -113,14 +97,18 @@ function Swap() {
     }
   }, [estimatedGas]);
 
-
   const blockInvalidChar = e => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
 
+  //set the ED toggler state
+  const onChangeToggler = (checked) => {
+    console.log(`switch to ${checked}`);
+    setEd(checked);
+    updateEstimatedGas(null);
+    setError("");
+  };
 
   //validate amount
   const validateAmount = () => {
-
-    console.log("balance is here: ", balance, amount)
 
     if (amount.length === 0)
       setError(ERROR_MESSAGES.INPUT_REQUIRED);
@@ -150,27 +138,21 @@ function Swap() {
     }
   };
 
-
-  //set the ed toggler state
-  const onChangeToggler = (checked) => {
-    console.log(`switch to ${checked}`);
-  };
-
   const handleApprove = async (e) => {
     try {
 
-          if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
+      if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
 
-            // updateLoading(true);
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP, {value: amount, options: {account: state.currentAccount}});
-            setIsModalOpen(true);
+        // updateLoading(true);
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP, { value: amount, options: { account: state.currentAccount } });
+        setIsModalOpen(true);
 
-          } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
+      } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
 
-            // updateLoading(true);
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP, {value: amount, options: {account: state.currentAccount}});
-            setIsModalOpen(true);
-          }
+        // updateLoading(true);
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP, { value: amount, options: { account: state.currentAccount } });
+        setIsModalOpen(true);
+      }
 
       updateEstimatedGas("");
     } catch (error) {
@@ -180,23 +162,22 @@ function Swap() {
 
   const getFee = async () => {
 
-        if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase()) {
+    if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase()) {
 
-          updateLoading(true);
-          sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, {value: amount, options: {account: state.currentAccount}});
-        } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase()) {
+      updateLoading(true);
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, { value: amount, options: { account: state.currentAccount } });
+    } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase()) {
 
-          updateLoading(true);
-          sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {value: amount, options: {account: state.currentAccount}});
-        }
+      updateLoading(true);
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, { value: amount, options: { account: state.currentAccount } });
+    }
 
-      updateEstimatedGas(null);
+    updateEstimatedGas(null);
   };
 
-
   const handleChange = (e) => {
-    let val = e.target.value;
-    let arr = val.split(".");
+    const val = e.target.value;
+    const arr = val.split(".");
 
     if (arr.length > 1) {
 
@@ -373,11 +354,11 @@ function Swap() {
           </div> */}
         </div>
         <div className={style.swap__txFeeBalance}>
-        <h2>{estimatedGas ? `TX Fee : ${estimatedGas} 5IRE`: ""}</h2>
+          <h2>{estimatedGas ? `TX Fee : ${estimatedGas} 5IRE` : ""}</h2>
           {/* <h3>Balance 00.0000 5IRE</h3> */}
         </div>
         <div className={style.swap__inFoAccount}>
-         <img src={Info} alt="infoIcon"/>
+          <img src={Info} alt="infoIcon" />
           <h3>Transfer with account keep alive checks </h3>
           <Switch defaultChecked onChange={onChangeToggler} />
         </div>
