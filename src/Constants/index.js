@@ -170,6 +170,7 @@ export const LABELS = {
     CONTRACT: "Contract",
     EVM_TO_NATIVE: "Evm to Native",
     NATIVE_TO_EVM: "Native to Evm"
+    
 };
 
 export const HTTP_END_POINTS = {

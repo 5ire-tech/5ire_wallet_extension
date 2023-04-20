@@ -1,39 +1,28 @@
 import { Drawer } from "antd";
 import { ROUTES } from "../../Routes";
-// import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
-import Browser from "webextension-polyfill";
 import PrivacyPolicy from "./PrivacyPolicy";
 import Setting from "../../Assets/setting.svg";
-// import Logout from "../../Assets/PNG/logout.png";
-// import Import from "../../Assets/PNG/import.png";
 import Wallet from "../../Assets/WalletIcon.svg";
-import PrivacyPo from "../../Assets/PrivacyPo.svg";
 import HistoryIcon from "../../Assets/histry.svg";
+import PrivacyPo from "../../Assets/PrivacyPo.svg";
 import Myaccount from "../../Assets/myaccount.svg";
+import React, { useState, useContext } from "react";
 import Sendhistry from "../../Assets/sendhistry.svg";
 import { openBrowserTab } from "../../Helper/helper";
+import { Link, useLocation } from "react-router-dom";
 import { arrayReverser } from "../../Utility/utility";
 import BackArrow from "../../Assets/PNG/arrowright.png";
 import { shortner, formatDate } from "../../Helper/helper";
 import SocialAccount from "../SocialAccount/SocialAccount";
 import ModalCloseIcon from "../../Assets/ModalCloseIcon.svg";
-// import ManageCustom from "../ManageCustomtocken/ManageCustom";
-// import Createaccount from "../../Assets/PNG/createaccount.png";
-import React, { useState, useContext, useEffect } from "react";
-import { ACCOUNT_CHANGED_EVENT } from "../../Scripts/constants";
-// import AccountSetting from "../AccountSetting/AccountSetting.jsx";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
-import { Link, useNavigate, useLocation } from "react-router-dom";
 import TransectionHistry from "../TransectionHistry/TransectionHistry";
-import { getCurrentTabUId, getCurrentTabUrl } from "../../Scripts/utils";
 import {
-  LABELS,
   TX_TYPE,
   CURRENCY,
   EMTY_STR,
-  // ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
   SOCIAL_LINKS
@@ -45,12 +34,10 @@ import FooterStepOne, {
 } from "./FooterContinue";
 
 function MenuFooter() {
-  const navigate = useNavigate();
   const getLocation = useLocation();
-  // const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
   const [open2, setOpen2] = useState(false);
-  const { state, updateState, allAccounts } = useContext(AuthContext);
+  const { state } = useContext(AuthContext);
 
   const { pathname } = getLocation;
   const { currentAccount, currentNetwork, txHistory } = state;
@@ -58,61 +45,15 @@ function MenuFooter() {
   const onClose1 = () => {
     setOpen1(false);
   };
+
   const onClose2 = () => {
     setOpen2(false);
   };
-  // const onClose = () => {
-  //   setOpen(false);
-  // };
 
   const handleMyAccOpen = () => {
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.GET_ACCOUNTS, {});
   };
 
-  // const hanldeCreateNewAcc = () => {
-  //   navigate(ROUTES.CREATE_WALLET);
-  // };
-
-  // const handleImportAcc = () => {
-  //   navigate(ROUTES.IMPORT_WALLET);
-  // };
-
-  // const handleLogout = async () => {
-  //   sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.LOCK, {});
-  // };
-
-  // const onSelectAcc = name => {
-  //   const acc = allAccounts.find(acc => acc.accountName === name);
-  //   updateState(LABELS.CURRENT_ACCOUNT, acc);
-
-  //   //send account details whenever account is changed
-  //   getCurrentTabUId((id) => {
-  //     getCurrentTabUrl((url) => {
-  //       if (!(url === "chrome://extensions")) {
-  //         Browser.tabs.sendMessage(id, {
-  //           id: ACCOUNT_CHANGED_EVENT,
-  //           method: ACCOUNT_CHANGED_EVENT,
-  //           response: {
-  //             evmAddress: acc.evmAddress,
-  //             nativeAddress: acc.nativeAddress,
-  //           },
-  //         });
-  //       }
-  //     });
-  //   });
-
-  //   //fetch balance of changed account
-  //   sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.BALANCE, {});
-  //   onClose();
-  // };
-
-  // const handleHistoryOpen = () => {
-  //   // if (txHistory.hasOwnProperty(accData.accountName)) {
-  //   //   let txData = txHistory[accData.accountName].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()));
-  //   //   setHistory(arrayReverser(txData));
-  //   // }
-  //   setOpen1(true);
-  // };
 
   return (
     <div className={`${style.menuItems} welcomeFooter`}>
@@ -200,41 +141,6 @@ function MenuFooter() {
 
       </Drawer>
 
-      {/* <Drawer
-        title={
-          <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            My Accounts
-          </span>
-        }
-        placement="bottom"
-        onClose={onClose}
-        open={open}
-        closeIcon={
-          <img src={ModalCloseIcon} alt="ModalCloseIcon" draggable={false} />
-        }
-      >
-        {allAccounts?.map((data, index) => (
-          <ManageCustom
-            img={Sendhistry}
-            data={data}
-            active={data?.accountName === currentAccount?.accountName ? true : false}
-            edited={false}
-            checkValue={index}
-            onSelectAcc={onSelectAcc}
-          />
-        ))}
-        <AccountSetting
-          img={Createaccount}
-          title="Create a New Wallet"
-          onClick={hanldeCreateNewAcc}
-        />
-        <AccountSetting
-          img={Import}
-          title="Import Wallet"
-          onClick={handleImportAcc}
-        />
-        <AccountSetting img={Logout} title="Logout" onClick={handleLogout} />
-      </Drawer> */}
 
       <Drawer
         height={404}
@@ -314,16 +220,6 @@ function MenuFooter() {
         <SocialAccount />
       </Drawer>
 
-      {/* {(path === "" ||
-        path === "createNewWallet" ||
-        path === "unlockWallet" ||
-        path === "importWallet") && (
-          <div className={style.menuItems__needHelp}>
-            <p>
-              Need help? Contact <a>Support</a>
-            </p>
-          </div>
-        )} */}
       {pathname === ROUTES.BEFORE_BEGIN && <FooterStepOne />}
       {pathname === ROUTES.NEW_WALLET_DETAILS && <FooterStepTwo />}
       {pathname === ROUTES.LOGIN_APPROVE && <ApproveLogin />}
