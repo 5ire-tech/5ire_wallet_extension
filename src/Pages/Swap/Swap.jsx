@@ -7,7 +7,7 @@ import Info from "../../Assets/infoIcon.svg";
 import logoNew from "../../Assets/logoNew.svg";
 import { shortner } from "../../Helper/helper";
 import SwapIcon from "../../Assets/SwapIcon.svg";
-import ComplSwap from "../../Assets/DarkLogo.svg";
+import ComplSwap from "../../Assets/succeslogo.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import React, { useState, useContext } from "react";
 // import CopyIcon from "../../Assets/CopyIcon.svg";
@@ -379,8 +379,10 @@ function Swap() {
           <div className="innerContact">
             <img src={ComplSwap} alt="swapIcon" width={127} height={127} draggable={false} />
             <h2 className="title">Swap Processed</h2>
-            {/* <p className="transId">Your Swapped Transaction ID</p>
-            <span className="address">
+             <p className="transId">Your Swapped Transaction ID</p>
+            <h3 className="hashTag">0ADX0SSD123211HJGT12641673653OL126416736GT12</h3>
+
+           {/* <span className="address">
               {txHash ? shortner(txHash) : ""}
               <img
                 width={15}

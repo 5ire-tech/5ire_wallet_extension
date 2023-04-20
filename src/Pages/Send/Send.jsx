@@ -5,7 +5,7 @@ import Approve from "../Approve/Approve";
 import { AuthContext } from "../../Store";
 import Info from "../../Assets/infoIcon.svg";
 import logoNew from "../../Assets/logoNew.svg";
-import ComplSwap from "../../Assets/DarkLogo.svg";
+import ComplSwap from "../../Assets/succeslogo.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import { validateAddress } from "../../Utility/utility";
 import React, { useState, useEffect, useContext } from "react";
@@ -343,9 +343,10 @@ function Send() {
               draggable={false}
             />
             <h2 className="title">Transfer Processed</h2>
-            {/* <p className="transId">Your Transaction ID</p>
-            <span className="address">{shortner(txHash)}</span>
-            <img
+            <p className="transId">Your Transaction ID</p>
+            <h3 className="hashTag">0ADX0SSD123211HJGT12641673653OL126416736GT12</h3>
+            {/* <span className="address">{shortner(txHash)}</span> */}
+            {/* <img
               draggable={false}
               src={CopyIcon}
               alt="copyIcon"

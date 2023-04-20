@@ -109,7 +109,7 @@
     }
   }
   textarea{
-    height: 90px;
+    height: 70px;
   }
 }
 .ant-input-group-wrapper {
@@ -194,6 +194,13 @@
     .transId {
       color: #8fa2b7;
       font-size: 14px;
+    }
+    .hashTag{
+      font-size: 16px;
+      color: #fff;
+      text-align: center;
+    padding-bottom: 20px;
+    width: 100%;
     }
     .address {
       color: $white;

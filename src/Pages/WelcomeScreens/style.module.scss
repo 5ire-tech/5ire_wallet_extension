@@ -129,7 +129,12 @@
     }
 
     &__copyAll {
-      background: linear-gradient(114.15deg, #0DA6C2 20.67%, #0E39C6 89.64%, #0E39C6 89.64%);
+      background: linear-gradient(
+        114.15deg,
+        #0da6c2 20.67%,
+        #0e39c6 89.64%,
+        #0e39c6 89.64%
+      );
       border: 1px solid rgba(255, 255, 255, 0.5);
       border-radius: 12px;
       color: $white;
@@ -187,9 +192,9 @@
         display: flex;
       }
     }
-    &__accessConatct{
+    &__accessConatct {
       padding-top: 60px;
-      h1{
+      h1 {
         font-size: 18px;
         color: $white;
         margin: 0;
@@ -219,7 +224,7 @@
       }
 
       a {
-        color: #1098FC;
+        color: #1098fc;
         font-size: 18px;
         word-break: break-all;
       }
@@ -233,7 +238,7 @@
     gap: 25px;
     display: flex;
   }
-  &__importWalletlinkOuter{
+  &__importWalletlinkOuter {
     padding-top: 33px;
     display: flex;
     flex-direction: column;
@@ -308,7 +313,9 @@
       margin: 36px 0 10px;
       flex-direction: column;
     }
-
+    &__forGotBtn {
+      margin-top: 0;
+    }
     &__secretPharse {
       &__grayText {
         font-size: 16px;
@@ -354,7 +361,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: transparent linear-gradient(180deg, #00aeef1a 0%, #367cc71a 100%) 0% 0% no-repeat padding-box;
+        background: transparent
+          linear-gradient(180deg, #00aeef1a 0%, #367cc71a 100%) 0% 0% no-repeat
+          padding-box;
         border: 1px solid #00aeef;
         margin: 0 auto;
         cursor: pointer;
@@ -429,11 +438,11 @@
     font-size: 14px;
   }
 }
-.privacyPolicyText{
+.privacyPolicyText {
   color: $white;
-transform: rotate(0.21deg);
-font-size: 16px;
-line-height: 24px;
+  transform: rotate(0.21deg);
+  font-size: 16px;
+  line-height: 24px;
 }
 .congratScreen {
   background: #08132c;
@@ -443,11 +452,10 @@ line-height: 24px;
 }
 
 .currentItem {
-  background-color: $inputBg  !important;
+  background-color: $inputBg !important;
 }
 
 .token {
-
   // &__symbol_dec{
   //     display: flex;
   //     gap: 20px;
@@ -511,15 +519,15 @@ line-height: 24px;
   color: $red;
   position: absolute;
 }
-.textElips{
-  span{
+.textElips {
+  span {
     width: 240px;
     white-space: nowrap;
-    overflow: hidden ;
+    overflow: hidden;
     text-overflow: ellipsis;
   }
 }
-.contBtn{
+.contBtn {
   display: flex;
   flex-direction: column;
   gap: 23px;
