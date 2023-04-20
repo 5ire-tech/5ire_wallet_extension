@@ -2,6 +2,7 @@ import Browser from "webextension-polyfill";
 import { WindowPostMessageStream } from "./stream";
 import { CONTENT_SCRIPT, INPAGE } from "./constants";
 import { isManifestV3 } from "./utils";
+import { SIGNER_METHODS } from "../Constants";
 
 
 const contentStream = new WindowPostMessageStream({
@@ -37,22 +38,11 @@ contentStream.on("data", async (data) => {
           Browser.runtime.sendMessage(data);
         }
         break;
+      case SIGNER_METHODS.SIGN_PAYLOAD:
+      case SIGNER_METHODS.SIGN_RAW:
+        Browser.runtime.sendMessage(data);
+        break;
       case "get_endPoint":
-      case "native_add_nominator":
-      case "native_renominate":
-      case "native_nominator_payout":
-      case "native_validator_payout":
-      case "native_stop_validator":
-      case "native_stop_nominator":
-      case "native_unbond_validator":
-      case "native_unbond_nominator":
-      case "native_withdraw_nominator":
-      case "native_withdraw_validator":
-      case "native_withdraw_nominator_unbonded":
-      case "native_add_validator":
-      case "native_validator_bondmore":
-      case "native_restart_validator":
-      case "native_nominator_bondmore":
         Browser.runtime.sendMessage(data);
         break;
       case "keepAlive":
@@ -87,6 +77,7 @@ const messageFromExtensionUI = (message, sender, cb) => {
 Browser.runtime.onMessage.addListener(messageFromExtensionUI);
 
 
+//firefox injection
 function injectScript() {
   try {
     const container = document.head || document.documentElement;

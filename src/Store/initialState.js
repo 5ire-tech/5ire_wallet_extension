@@ -49,3 +49,11 @@ export const newAccountInitialState = {
     accountName:"",
     accountIndex:""
 }
+
+//initial state for external native transaction
+export const initialExternalNativeTransaction = {
+method: "",
+fee: "", 
+args: "",
+txHash: ""
+}

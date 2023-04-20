@@ -2,9 +2,9 @@ import Browser from "webextension-polyfill";
 import { ExternalConnection, ExternalWindowControl } from "./controller";
 import {NotificationAndBedgeManager} from "./platform";
 import { getDataLocal, ExtensionStorageHandler } from "../Storage/loadstore";
-import { CONNECTION_NAME, INTERNAL_EVENT_LABELS, DECIMALS, MESSAGE_TYPE_LABELS, STATE_CHANGE_ACTIONS, TX_TYPE, STATUS, LABELS, MESSAGE_EVENT_LABELS, AUTO_BALANCE_UPDATE_TIMER, TRANSACTION_STATUS_CHECK_TIMER, ONE_ETH_IN_GWEI } from "../Constants";
+import { CONNECTION_NAME, INTERNAL_EVENT_LABELS, DECIMALS, MESSAGE_TYPE_LABELS, STATE_CHANGE_ACTIONS, TX_TYPE, STATUS, LABELS, MESSAGE_EVENT_LABELS, AUTO_BALANCE_UPDATE_TIMER, TRANSACTION_STATUS_CHECK_TIMER, ONE_ETH_IN_GWEI, SIGNER_METHODS } from "../Constants";
 import { isManifestV3 } from "./utils";
-import { hasLength, isObject, isNullorUndef, hasProperty, getKey, log, isEqual, isString } from "../Utility/utility";
+import { hasLength, isObject, isNullorUndef, hasProperty, log, isEqual, isString } from "../Utility/utility";
 import { HTTP_END_POINTS, API, HTTP_METHODS, EVM_JSON_RPC_METHODS, ERRCODES, ERROR_MESSAGES, ERROR_EVENTS_LABELS } from "../Constants";
 import { EVMRPCPayload, EventPayload, TransactionPayload, TransactionProcessingPayload, TabMessagePayload } from "../Utility/network_calls";
 import { httpRequest } from "../Utility/network_calls";
@@ -23,7 +23,8 @@ import Keyring from "@polkadot/keyring";
 import { decryptor } from "../Helper/CryptoHelper";
 import { ed25519PairFromSeed, mnemonicToMiniSecret } from "@polkadot/util-crypto";
 import { sendMessageToTab, sendRuntimeMessage } from "../Utility/message_helper";
-
+import { TypeRegistry } from "@polkadot/types"
+import {assert, compactToU8a, isHex, u8aConcat, u8aEq, u8aWrapBytes} from "@polkadot/util"
 
 //for initilization of background events
 export class InitBackground {
@@ -105,6 +106,8 @@ export class InitBackground {
         this.networkHandler.handleNetworkRelatedTasks(message, localData);
       }
 
+
+      try {
       //check if message is array or onject
       message.message = hasLength(message.message) ? message.message[0] : message.message;
 
@@ -117,7 +120,7 @@ export class InitBackground {
 
 
       //check if the app has the permission to access requested method
-      if(!checkStringInclusionIntoArray(data.method)) {
+      if(!checkStringInclusionIntoArray(data?.method)) {
         const {connectedApps} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
         const isHasAccess = connectedApps[data.origin];
         if(!isHasAccess?.isConnected) {
@@ -125,10 +128,8 @@ export class InitBackground {
           return;
         }
       }
-      
 
       //checks for event from injected script
-      try {
         switch (data.method) {
           case "connect":
           case "eth_requestAccounts":
@@ -144,23 +145,9 @@ export class InitBackground {
           case "get_endPoint":
             await this.internalHandler.sendEndPoint(data, localData);
             break;
-  
-          case "native_add_nominator":
-          case "native_renominate":
-          case "native_nominator_payout":
-          case "native_validator_payout":
-          case "native_stop_validator":
-          case "native_stop_nominator":
-          case "native_unbond_validator":
-          case "native_unbond_nominator":
-          case "native_withdraw_nominator":
-          case "native_withdraw_validator":
-          case "native_withdraw_nominator_unbonded":
-          case "native_add_validator":
-          case "native_validator_bondmore":
-          case "native_restart_validator":
-          case "native_nominator_bondmore":
-            await this.internalHandler.handleValidatorNominatorTransactions(data, localData);
+            case SIGNER_METHODS.SIGN_PAYLOAD:
+            case SIGNER_METHODS.SIGN_RAW:
+            await this.internalHandler.handleNativeSigner(data, localData);
             break;
           default: sendMessageToTab(data.tabId, new TabMessagePayload(data.message.id, null, ERROR_MESSAGES.INVALID_METHOD))
         }
@@ -277,7 +264,11 @@ class RpcRequestProcessor {
 
           if (isEqual(message.type, MESSAGE_TYPE_LABELS.FEE_AND_BALANCE)) {
               if(hasProperty(this.generalWalletRpc, message.event)) {
+
+                log("message is here: ", message)
+
                 rpcResponse = await this.generalWalletRpc[message.event](message, state);
+
                 this.parseGeneralRpc(rpcResponse);
               } else new Error(new ErrorPayload(ERRCODES.INTERNAL, ERROR_MESSAGES.INVALID_RPC_OPERATION)).throw();
           
@@ -294,13 +285,14 @@ class RpcRequestProcessor {
 
     //parse and send the message related to fee and balance
     parseGeneralRpc = async (rpcResponse) => {
+
         if(!rpcResponse.error) {
           //change the state in local storage
-          if (!isNullorUndef(rpcResponse.stateChangeKey)) await this.services.updateLocalState(rpcResponse.stateChangeKey, rpcResponse.payload.data, rpcResponse.payload?.options)
+          if (rpcResponse.stateChangeKey) await this.services.updateLocalState(rpcResponse.stateChangeKey, rpcResponse.payload.data, rpcResponse.payload?.options)
           //send the response message to extension ui
           if (rpcResponse.eventEmit) this.services.messageToUI(rpcResponse.eventEmit, rpcResponse.payload.data)
         } else {
-          //handle the balance fetch and fee rpc errors
+          // this.services.messageToUI(rpcResponse.eventEmit, rpcResponse.payload.error)
         }
     }
 
@@ -430,6 +422,7 @@ class TransactionQueue {
         if(currentTransaction && isEqual(currentTransaction.transactionHistoryTrack.status, STATUS.PENDING)) {
           const {transactionHistoryTrack: {txHash, isEvm, chain}} = currentTransaction;
           const transactionStatus = await this.services.getTransactionStatus(txHash, isEvm, chain);
+
 
           //if transaction status is found ether Failed or Success
           if(transactionStatus?.status) {
@@ -572,14 +565,15 @@ class ExternalTxTasks {
 
   constructor() {
     this.transactionQueueHandler = TransactionQueue.getInstance();
+    this.nativeSignerhandler = new NativeSigner();
   }
 
   //process and check external task (connection, tx approval)
-  processExternalTask = async (message, localState) => {
-      if(isEqual(message.event, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION)) await this.closePopupSession(message, localState)
-      else {
-        if(isEqual(MESSAGE_EVENT_LABELS.EVM_TX, message.event)) await this.externalEvmTransaction(message, localState)
-      }
+  processExternalTask = async (message, state) => {
+
+      if(isEqual(message.event, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION)) await this.closePopupSession(message, state)
+      else if(isEqual(MESSAGE_EVENT_LABELS.EVM_TX, message.event)) await this.externalEvmTransaction(message, state);
+      else if(isEqual(MESSAGE_EVENT_LABELS.NATIVE_SIGNER, message.event)) await this.nativeSigner(message, state)
   }
 
   //handle the evm external transaction
@@ -594,12 +588,23 @@ class ExternalTxTasks {
 
 
   //handle the nominator and validator transaction
-  nominatorAndValidatorTransactions = async () => {
-    //PENDING
+  nativeSigner = async (message, state) => {
+    const {activeSession} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+
+    //check if the requested method is supported by the handler
+    if(hasProperty(this.nativeSignerhandler, activeSession?.method)) {
+      if(message.data?.approve) {
+        const signerRes = await this.nativeSignerhandler[activeSession.method](activeSession.message, state);
+        if(!signerRes.error) sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, {result: signerRes.payload.data}));
+        else if(signerRes.error) sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, null, signerRes.error.errMessage));
+      }
+    }
+    //close the popup
+    await this.closePopupSession(message);
   }
 
   //close the current popup session
-  closePopupSession = async (message, localState) => {
+  closePopupSession = async (message) => {
     log("into the popup close session: ", message)
     ExternalWindowControl.isApproved = message.data?.approve;
     const externalWindowControl = ExternalWindowControl.getInstance();
@@ -733,106 +738,6 @@ export class TransactionsRPC {
 
   }
 
-  /************************* Validator and Nominator ****************************/
-  //for validator and nominator transactions
-  //PENDING
-  nvTx = async (message, state) => {
-
-    let feeData, methodName = '';
-    const {
-      addNominator,
-      reNominate,
-      nominatorValidatorPayout,
-      stopValidatorNominator,
-      unbondNominatorValidator,
-      withdrawNominatorValidatorData,
-      withdrawNominatorUnbonded,
-      addValidator,
-      bondMoreFunds,
-      restartValidator
-    } = await nativeMethod();
-
-    const api = NetworkHandler.api[state.currentNetwork.toLowerCase()];
-
-    const { uiData } = state;
-    switch (uiData?.method) {
-      case "native_add_nominator":
-        feeData = await addNominator(api.nativeApi, uiData?.message, message.data.isFee);
-        methodName = "Add Nominator";
-        break;
-      case "native_renominate":
-        feeData = await reNominate(api.nativeApi, uiData?.message, message.data.isFee);
-        methodName = "Re-Nominate";
-        break;
-      case "native_nominator_payout":
-        feeData = await nominatorValidatorPayout(api.nativeApi, uiData?.message, message.data.isFee);
-        methodName = "Nominator Payout";
-        break;
-      case "native_validator_payout":
-        feeData = await nominatorValidatorPayout(api.nativeApi, uiData?.message, message.data.isFee);
-        methodName = "Validator Payout";
-        break;
-      case "native_stop_validator":
-        feeData = await stopValidatorNominator(api.nativeApi, uiData?.message, message.data.isFee);
-        methodName = "Stop Validator";
-        break;
-
-      case "native_stop_nominator":
-        feeData = await stopValidatorNominator(api.nativeApi, uiData?.message, message.data.isFee);
-        methodName = "Stop Nominator";
-        break;
-      case "native_unbond_validator":
-        feeData = await unbondNominatorValidator(api.nativeApi, uiData?.message, message.data.isFee);
-        methodName = "Unbond Validator";
-        break;
-
-      case "native_unbond_nominator":
-        feeData = await unbondNominatorValidator(api.nativeApi, uiData?.message, message.data.isFee);
-        methodName = "Unbond Nominator";
-        break;
-      case "native_withdraw_nominator":
-        feeData = await withdrawNominatorValidatorData(api.nativeApi, uiData?.message, message.data.isFee);
-        methodName = "Send Funds";
-        break;
-
-      case "native_withdraw_validator":
-        feeData = await withdrawNominatorValidatorData(api.nativeApi, uiData?.message, message.data.isFee);
-        methodName = "Send Funds";
-        break;
-      case "native_withdraw_nominator_unbonded":
-        feeData = await withdrawNominatorUnbonded(api.nativeApi, uiData?.message, message.data.isFee);
-        methodName = "Withdraw Nominator Unbonded";
-        break;
-
-      case "native_add_validator":
-        feeData = await addValidator(api.nativeApi, uiData?.message, message.data.isFee);
-        methodName = "Add Validator";
-        break;
-
-      case "native_validator_bondmore":
-      case "native_nominator_bondmore":
-        feeData = await bondMoreFunds(api.nativeApi, uiData?.message, message.data.isFee);
-        methodName = "Bond More Funds";
-        break;
-      case "native_restart_validator":
-        feeData = await restartValidator(api.nativeApi, uiData?.message, message.data.isFee);
-        methodName = "Restart Validator";
-        break;
-      default:
-
-    }
-
-
-    if ((!feeData?.error) && methodName) {
-      if (feeData.error?.errCode) return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, null, message.event, null, [], feeData?.error);
-    } else {
-      return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, message.event, null, [], null);
-
-    }
-
-
-  }
-
   //********************************** Evm ***************************************/
   //evm transfer
   evmTransfer = async (message, state) => {
@@ -841,6 +746,7 @@ export class TransactionsRPC {
     let transactionHistory = null, payload = null;
 
     try {
+  
       const { data, transactionHistoryTrack, contractBytecode } = message;
       const {options:{account}} = data;
       const { evmApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
@@ -1382,6 +1288,101 @@ export class GeneralWalletRPC {
 
 
     };
+
+
+  //external native transaction fee
+  externalNativeTransactionArgsAndGas = async (message, state) => {
+    const {activeSession} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+    const {nativeApi:api} = NetworkHandler.api[state.currentNetwork.toLowerCase()];
+
+      const hex = activeSession.message?.method;
+
+      const DEFAULT_INFO = {
+          decoded: null,
+          extrinsicCall: null,
+          extrinsicError: null,
+          extrinsicFn: null,
+          extrinsicHex: null,
+          extrinsicKey: 'none',
+          extrinsicPayload: null,
+          isCall: true
+      };
+
+
+      try {
+          assert(isHex(hex), 'Expected a hex-encoded call');
+
+          let extrinsicCall, extrinsicPayload = null, decoded = null, isCall = false;
+
+          try {
+              // cater for an extrinsic input
+              const tx = api.tx(hex);
+
+              // ensure that the full data matches here
+              assert(tx.toHex() === hex, 'Cannot decode data as extrinsic, length mismatch');
+
+              decoded = tx;
+              extrinsicCall = api.createType('Call', decoded.method);
+          } catch(e) {
+              try {
+                  // attempt to decode as Call
+                  extrinsicCall = api.createType('Call', hex);
+
+                  const callHex = extrinsicCall.toHex();
+
+                  if (callHex === hex) {
+                      // all good, we have a call
+                      isCall = true;
+                  } else if (hex.startsWith(callHex)) {
+                      // this could be an un-prefixed payload...
+                      const prefixed = u8aConcat(compactToU8a(extrinsicCall.encodedLength), hex);
+
+                      extrinsicPayload = api.createType('ExtrinsicPayload', prefixed);
+
+                      assert(u8aEq(extrinsicPayload.toU8a(), prefixed), 'Unable to decode data as un-prefixed ExtrinsicPayload');
+
+                      extrinsicCall = api.createType('Call', extrinsicPayload.method.toHex());
+                  } else {
+                      throw new Error(new ErrorPayload(ERRCODES.INTERNAL, "Unable to decode data as Call, length mismatch in supplied data"));
+                  }
+              } catch {
+                  // final attempt, we try this as-is as a (prefixed) payload
+                  extrinsicPayload = api.createType('ExtrinsicPayload', hex);
+
+                  assert(extrinsicPayload.toHex() === hex, 'Unable to decode input data as Call, Extrinsic or ExtrinsicPayload');
+                  extrinsicCall = api.createType('Call', extrinsicPayload.method.toHex());
+              }
+          }
+
+          const { method, section } = api.registry.findMetaCall(extrinsicCall.callIndex);
+          const extrinsicFn = api.tx[section][method];
+          // const extrinsicKey = extrinsicCall.callIndex.toString();
+
+          if (!decoded) {
+              decoded = extrinsicFn(...extrinsicCall.args);
+          }
+
+          const info = await decoded?.paymentInfo(this.hybridKeyring.getNativeSignerByAddress(state.currentAccount.nativeAddress));
+          const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
+          const params = decoded.method.toJSON()?.args;
+    
+
+          const payload = {
+            method: `${section}.${method}`,
+            estimatedGas: fee, 
+            args: params,
+            txHash: decoded.hash.toHex()
+          }
+
+
+          return new EventPayload(null, message.event, {data: payload}, [], null)
+
+      } catch (err) {
+        log("error formatting and getting the native external ", err)
+        return new EventPayload(null, message.event, null, [], new ErrorPayload(err.message?.errCode || ERRCODES.INTERNAL, err.message?.errMessage || ERROR_MESSAGES.EXTERNAL_NATIVE_TRANSACTION_ERROR))
+      }
+  }
+
 }
 
 //keyring handler
@@ -1493,4 +1494,55 @@ class NetworkHandler {
     NetworkHandler.api[currentNetwork.toLowerCase()] = api;
     log("all api is here: ", NetworkHandler.api);
   }
+}
+
+//for the nominator and validator and other native transactions
+export class NativeSigner {
+
+  constructor() {
+    this.hybridKeyring = new HybridKeyring();
+  }
+
+  signPayload = async (payload, state) => {
+    try {
+
+      const account = state.currentAccount;
+      const pair = this.hybridKeyring.getNativeSignerByAddress(account.nativeAddress);
+
+      let registry;
+      const isJsonPayload = (value) => {
+        return value?.genesisHash !== undefined;
+      }
+
+      if (isJsonPayload(payload)) {
+        registry = new TypeRegistry();
+        registry.setSignedExtensions(payload.signedExtensions);
+        // }
+      } else {
+        // for non-payload, just create a registry to use
+        registry = new TypeRegistry();
+      }
+
+      const result = registry.createType('ExtrinsicPayload', payload, { version: payload.version }).sign(pair);
+      return new EventPayload(null, null, {data: result}, [], null);
+
+    } catch (err) {
+      log("error while signing the payload: ", err)
+      return new EventPayload(null, null, null, [], ErrorPayload(ERRCODES.SIGNER_ERROR, ERROR_MESSAGES.SINGER_ERROR));
+    }
+  }
+
+  signRaw = async (payload, state) => {
+    try {
+      const account = state.currentAccount;
+      const pair = this.hybridKeyring.getNativeSignerByAddress(account.nativeAddress);
+      const result = { signature: u8aToHex(pair.sign(u8aWrapBytes(payload))) };
+      return new EventPayload(null, null, {data: result}, [], null);
+
+    } catch (err) {
+      log("error while signing the raw: ", err)
+      return new EventPayload(null, null, null, [], new ErrorPayload(ERRCODES.SIGNER_ERROR, ERROR_MESSAGES.SINGER_ERROR));
+    }
+  }
+
 }

@@ -68,6 +68,7 @@ export class ExternalWindowControl {
     if(!externalControlsState.activeSession) await this.changeActiveSession();
   }
 
+  
   /**
    * change the active session
    */
@@ -215,10 +216,10 @@ export class ExternalConnection {
     }
 
 
-  //handle the interaction with nominator and validator application
-  async handleValidatorNominatorTransactions(data) {
-    this.store.dispatch(setUIdata(data));
-    await this.notificationManager.showPopup("nativeTx");
+  //handle the signing of native transaction
+  async handleNativeSigner(data, state) {
+        const externalControls = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+        await this.externalWindowController.newConnectionRequest({route: ROUTE_FOR_APPROVAL_WINDOWS.NATIVE_TX, ...data}, externalControls);
   }
 
 

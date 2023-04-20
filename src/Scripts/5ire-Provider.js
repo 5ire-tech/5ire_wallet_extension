@@ -1,7 +1,7 @@
 import { CONTENT_SCRIPT, INPAGE, getId } from "./constants";
 import { WindowPostMessageStream } from "./stream";
 import SafeEventEmitter from "@metamask/safe-event-emitter"
-import { HTTP_END_POINTS } from "../Constants";
+import { HTTP_END_POINTS, SIGNER_METHODS } from "../Constants";
 //stream for in-window communication
 const injectedStream = new WindowPostMessageStream({
   name: INPAGE,
@@ -55,7 +55,8 @@ export class FireProvider extends SafeEventEmitter {
       "eth_sendTransaction",
       "disconnect",
       ...this.conntectMethods,
-      ...this.stakingMethods
+      ...this.stakingMethods,
+      ...Object.values(SIGNER_METHODS)
     ];
 
 
@@ -92,6 +93,24 @@ export class FireProvider extends SafeEventEmitter {
     // console.log("here it is inside injected script: ", method, payload);
     return await this.passReq(method, payload);
   }
+
+  /*********************************** Native Signer Handlers **********************************/
+    /**
+   * for sign transaction payload
+   * @param {object} payload 
+   */
+    async signPayload(payload) {
+      return await this.passReq(SIGNER_METHODS.SIGN_PAYLOAD, payload);
+    }
+  
+    /**
+   * for sign raw transaction
+   * @param {object} payload 
+   */
+    async signRaw(payload) {
+      return await this.passReq(SIGNER_METHODS.SIGN_RAW, payload);
+  
+    }
 
 
   //for checking JSON-RPC headers
@@ -175,6 +194,7 @@ export class FireProvider extends SafeEventEmitter {
         // if (method === "eth_requestAccounts" || method === "eth_accounts" || method === "disconnect") {
         //   message = { origin, method };
         // }
+        
         const transportRequestMessage = {
           id,
           message,

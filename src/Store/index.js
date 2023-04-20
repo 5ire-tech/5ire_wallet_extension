@@ -1,5 +1,5 @@
 import Browser from "webextension-polyfill";
-import { userState, newAccountInitialState, externalControls } from "./initialState";
+import { userState, newAccountInitialState, externalControls, initialExternalNativeTransaction } from "./initialState";
 import { isManifestV3 } from "../Scripts/utils";
 import { createContext, useState } from "react";
 import { sessionStorage, localStorage } from "../Storage";
@@ -23,6 +23,7 @@ export default function Context({ children }) {
   const [userPass, setUserPass] = useState(null);
   const [accountName, setAccName] = useState(null);
   const [estimatedGas, setEstimatedGas] = useState(null);
+  const [externalNativeTxDetails, setExternalNativeTxDetails] = useState(initialExternalNativeTransaction);
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
 
 
@@ -41,7 +42,9 @@ export default function Context({ children }) {
     if (message.type === MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND) {
       if (message.event === MESSAGE_EVENT_LABELS.EVM_FEE || message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE) {
         (!estimatedGas) && updateEstimatedGas(message.data.fee);
-
+      } else if(message.event === MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS) {
+        log("data is here: ", message)
+        setExternalNativeTxDetails(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE) {
         createOrRestore(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.UNLOCK) {
@@ -60,13 +63,6 @@ export default function Context({ children }) {
       } else if (message.event === MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE) {
         exportSeedPhrase(message.data);
       }
-
-      //  if (message.event === MESSAGE_EVENT_LABELS.LOCK) {
-      //   lock(message.data);
-      // } 
-      //  if (message.event === MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC) {
-      //   importAccountByMnemonics(message.data);
-      // } 
 
       updateLoading(false);
     }
@@ -154,6 +150,7 @@ export default function Context({ children }) {
 
 
   const values = {
+    //data
     state,
     userPass,
     passError,
@@ -165,7 +162,11 @@ export default function Context({ children }) {
     accountName,
     estimatedGas,
     passVerified,
+    externalControlsState,
+    externalNativeTxDetails,
 
+    //data setters
+    setExternalNativeTxDetails,
     setState,
     setAccName,
     setUserPass,
@@ -176,7 +177,6 @@ export default function Context({ children }) {
     setPrivateKey,
     setPassVerified,
     updateEstimatedGas,
-    externalControlsState,
     setExternalControlState
   }
 

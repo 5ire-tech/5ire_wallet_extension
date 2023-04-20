@@ -172,7 +172,7 @@ function App(props) {
             <Route
               index
               path={ROUTES.NATIVE_TXN}
-              element={<NativeTx /*api={api}*/ />}
+              element={<NativeTx />}
             />
 
             <Route

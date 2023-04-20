@@ -73,6 +73,11 @@ export const EVM_JSON_RPC_METHODS = {
     ETH_REQUEST_ACCOUNT: "eth_requestAccounts",
 };
 
+export const SIGNER_METHODS = {
+    SIGN_PAYLOAD: "signPayload",
+    SIGN_RAW: "signRaw"
+};
+
 export const ERROR_MESSAGES = {
     ERR_OCCURED: "Error occured.",
     LOGOUT_ERR: "Error while logging out",
@@ -94,6 +99,8 @@ export const ERROR_MESSAGES = {
     CREATE_PASS_MSG: "Password must have at least 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
     ACCESS_NOT_GRANTED: "The requested method has not been authorized by the user",
     ACCOUNT_ACCESS_NOT_GRANTED: "The requested account has not been authorized by the user",
+    SINGER_ERROR: "Error while signing the the raw/payload",
+    EXTERNAL_NATIVE_TRANSACTION_ERROR: "Error while external native transaction.",
 
 
     INVALID_PROPERTY: "Invalid property.",
@@ -128,7 +135,8 @@ export const ERRCODES = {
     TX_FAILED: 6,
     INVALID_ARGU_TYPE: 7,
     FAILED_TO_CONNECT_NETWORK: 8,
-    INSUFFICENT_BALANCE: 9
+    INSUFFICENT_BALANCE: 9,
+    SIGNER_ERROR: 10
 }
 
 
@@ -192,8 +200,8 @@ export const WS_END_POINTS = {
 
 
 export const MESSAGE_EVENT_LABELS = {
-    NV_TX: "nvTx",
-    NV_FEE: "nvTx",
+    NATIVE_SIGNER: "nativeSigner",
+    EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS: "externalNativeTransactionArgsAndGas",
     EVM_FEE: "evmFee",
     EVM_TX: "evmTransfer",
     BALANCE: "getBalance",
@@ -269,6 +277,7 @@ export const MESSAGE_TYPE_LABELS = {
 export const ROUTE_FOR_APPROVAL_WINDOWS = {
     APPROVE_TX: "approve-tx",
     CONNECTION_ROUTE: "login-approve",
+    NATIVE_TX: "native-tx"
 }
 
 
@@ -285,3 +294,8 @@ export const KEYRING_EVENTS = {
     ACCOUNT_ADDED: "account_added"
 }
 
+
+//third party url
+export const THRID_PARTY_APIS = {
+    ESD: "https://www.4byte.directory/api/v1/signatures/?hex_signature="
+}
