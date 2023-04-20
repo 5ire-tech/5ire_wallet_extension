@@ -6,7 +6,6 @@ import { isNullorUndef, log } from "../Utility/utility";
 import { sessionStorage, localStorage } from "../Storage";
 import { bindRuntimeMessageListener } from "../Utility/message_helper";
 import { MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, LABELS } from "../Constants";
-import { userState, newAccountInitialState, externalControls } from "./initialState";
 
 
 export const AuthContext = createContext();

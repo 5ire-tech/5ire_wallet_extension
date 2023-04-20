@@ -1,4 +1,4 @@
-import { Switch } from "antd";
+import { Switch, Tooltip } from "antd";
 import { toast } from "react-toastify";
 import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
@@ -27,7 +27,6 @@ import {
   MESSAGE_EVENT_LABELS,
   EXISTENTIAL_DEPOSITE,
 } from "../../Constants/index";
-
 
 function Send() {
 
@@ -319,7 +318,9 @@ function Send() {
           {/* <h3>Balance 00.0000 5IRE</h3> */}
         </div>
         <div className={style.sendSec__inFoAccount}>
-          <img src={Info} alt="infoIcon" />
+          <Tooltip title="5irechain requires a minimum of 1 5ire token to keep your wallet active">
+          <img src={Info} />
+          </Tooltip>
           <h3>Transfer with account keep alive checks </h3>
           <Switch defaultChecked name="EdToggler" onChange={onChangeToggler} />
         </div>
@@ -330,6 +331,7 @@ function Send() {
         isModalOpen={isModalOpen}
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
+        centered
       >
         <div className="swapsendModel">
           <div className="innerContact">
@@ -362,6 +364,7 @@ function Send() {
         isModalOpen={isFaildOpen}
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
+        centered
       >
         <div className="swapsendModel">
           <div className="innerContact">

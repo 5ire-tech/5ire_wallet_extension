@@ -381,6 +381,7 @@ function BalanceDetails({ mt0 }) {
               isModalOpen={isModalOpen}
               handleOk={handleOk}
               handleCancel={handleCancel}
+              centered
             >
               <div className={style.balanceDetails__nativemodal}>
                 <div className={style.balanceDetails__nativemodal__innerContact}>
@@ -432,6 +433,7 @@ function BalanceDetails({ mt0 }) {
               isModalOpen={isEvmModal}
               handleOk={evmOk}
               handleCancel={evmCancel}
+              centered
             >
               <div className={style.balanceDetails__nativemodal}>
                 <div className={style.balanceDetails__nativemodal__innerContact}>

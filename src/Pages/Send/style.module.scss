@@ -1,14 +1,14 @@
 @import "../../styles/__vars.scss";
 
 .sendSec {
-  padding: 14px 25px;
+  padding: 13px 25px;
   &__sourceLabel {
     display: flex;
     gap: 30px;
     align-items: center;
     label {
       color: $white;
-      font-size: 16px;
+      font-size: 15px;
       white-space: nowrap;
     }
   }
@@ -27,12 +27,13 @@
     max-width: 134px;
     margin: auto;
     margin-right: 0;
+    padding: 3px;
     &__buttons {
       background: #0e1e41;
       // border-radius: 12px 0 0px 12px;
       width: 100%;
       // max-width: 62px;
-      border-radius: 12px;
+      border-radius: 7px;
       cursor: pointer;
       color: $white;
       border: 0;

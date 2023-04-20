@@ -1,4 +1,3 @@
-import { Switch } from "antd";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import style from "./style.module.scss";
@@ -28,6 +27,7 @@ import {
   EXISTENTIAL_DEPOSITE,
   MESSAGE_EVENT_LABELS,
 } from "../../Constants/index";
+import { Switch, Tooltip } from "antd";
 
 
 function Swap() {
@@ -358,7 +358,9 @@ function Swap() {
           {/* <h3>Balance 00.0000 5IRE</h3> */}
         </div>
         <div className={style.swap__inFoAccount}>
-          <img src={Info} alt="infoIcon" />
+        <Tooltip title="5irechain requires a minimum of 1 5ire token to keep your wallet active">
+          <img src={Info} />
+          </Tooltip>
           <h3>Transfer with account keep alive checks </h3>
           <Switch defaultChecked onChange={onChangeToggler} />
         </div>
@@ -371,6 +373,7 @@ function Swap() {
         isModalOpen={isModalOpen}
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
+        centered
       >
         <div className="swapsendModel">
           <div className="innerContact">
@@ -400,6 +403,7 @@ function Swap() {
         isModalOpen={isFaildOpen}
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
+        centered
       >
         <div className="swapsendModel">
           <div className="innerContact">

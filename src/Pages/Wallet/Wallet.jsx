@@ -2,7 +2,8 @@ import Send from "../Send/Send";
 import Swap from "../Swap/Swap.jsx";
 import React, { useState } from "react";
 import style from "./style.module.scss";
-
+import SwapLogo from "../../Assets/swaptab.svg";
+import TransferLogo from "../../Assets/transfertab.svg";
 function Wallet() {
 
   const [activeTab, setActiveTab] = useState("send");
@@ -25,7 +26,7 @@ function Wallet() {
                 }
             `}
             >
-              Transfer
+              <img src={TransferLogo}/>Transfer
             </button>
             <button
               onClick={activeSwap}
@@ -33,7 +34,7 @@ function Wallet() {
                 style.wallet__sendSwapbtn__buttons__active
                 }`}
             >
-              Swap
+           <img src={SwapLogo}/>   Swap
             </button>
           </div>
         </div>
