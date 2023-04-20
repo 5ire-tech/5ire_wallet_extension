@@ -20,8 +20,6 @@ window.fire = fireProvider;
 //data streams from injected script throught the window messaging api
 injectedStream.on("data", (data) => {
 
-  console.log("here is response: ", data);
-
   if (data?.method === "keepAlive") {
 
     setTimeout(() => {

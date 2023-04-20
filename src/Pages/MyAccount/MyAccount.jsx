@@ -10,7 +10,7 @@ import Logout from "../../Assets/PNG/logout.png";
 import DarkLogo from "../../Assets/DarkLogo.svg";
 import React, { useContext, useState, useEffect } from "react";
 import Createaccount from "../../Assets/PNG/createaccount.png";
-import { sendRuntimeMessage } from "../../Utility/message_helper";
+import { sendMessageToTab, sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import { getCurrentTabUId, getCurrentTabUrl } from "../../Scripts/utils";
 import AccountSetting from "../../Components/AccountSetting/AccountSetting";
@@ -21,8 +21,12 @@ import {
   MESSAGE_TYPE_LABELS,
   ACCOUNT_CHANGED_EVENT,
   MESSAGE_EVENT_LABELS,
+  RESTRICTED_URLS,
 } from "../../Constants/index";
 import { toast } from "react-toastify";
+import { isEqual } from "../../Utility/utility";
+import { TabMessagePayload } from "../../Utility/network_calls";
+import { checkStringInclusionIntoArray, sendEventToTab } from "../../Helper/helper";
 
 
 function MyAccount() {
@@ -30,7 +34,8 @@ function MyAccount() {
   const [accounts, setAccounts] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [addressToRemove, setAddressToRemove] = useState(null);
-  const { allAccounts, state, updateState, removeHistory} = useContext(AuthContext);
+  const { allAccounts, state, updateState, removeHistory, externalControlsState} = useContext(AuthContext);
+  const { connectedApps } = externalControlsState;
   const { balance, currentAccount } = state;
 
 
@@ -95,25 +100,10 @@ function MyAccount() {
   const updateCurrentAccount = (acc) => {
 
     updateState(LABELS.CURRENT_ACCOUNT, acc);  
-
     //fetch balance of changed account
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.BALANCE, {});
-    
       //send account details whenever account is changed
-      getCurrentTabUId((id) => {
-        getCurrentTabUrl((url) => {
-          if (!(url === "chrome://extensions")) {
-            Browser.tabs.sendMessage(id, {
-              id: ACCOUNT_CHANGED_EVENT,
-              method: ACCOUNT_CHANGED_EVENT,
-              response: {
-                evmAddress: acc.evmAddress,
-                nativeAddress: acc.nativeAddress,
-              },
-            });
-          }
-        });
-      });
+      sendEventToTab(new TabMessagePayload(ACCOUNT_CHANGED_EVENT, {evmAddress: acc.evmAddress, nativeAddress: acc.nativeAddress}, ACCOUNT_CHANGED_EVENT), connectedApps)
   }
 
 

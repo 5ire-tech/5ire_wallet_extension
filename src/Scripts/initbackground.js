@@ -115,7 +115,7 @@ export class InitBackground {
       const data = {
         ...message,
         origin: sender.origin,
-        tabId: sender.tab.id
+        tabId: sender?.tab?.id
       };
 
 
@@ -124,7 +124,7 @@ export class InitBackground {
         const {connectedApps} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
         const isHasAccess = connectedApps[data.origin];
         if(!isHasAccess?.isConnected) {
-          sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, ERROR_MESSAGES.ACCESS_NOT_GRANTED));
+          data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, ERROR_MESSAGES.ACCESS_NOT_GRANTED));
           return;
         }
       }
@@ -145,11 +145,11 @@ export class InitBackground {
           case "get_endPoint":
             await this.internalHandler.sendEndPoint(data, localData);
             break;
-            case SIGNER_METHODS.SIGN_PAYLOAD:
-            case SIGNER_METHODS.SIGN_RAW:
+          case SIGNER_METHODS.SIGN_PAYLOAD:
+          case SIGNER_METHODS.SIGN_RAW:
             await this.internalHandler.handleNativeSigner(data, localData);
             break;
-          default: sendMessageToTab(data.tabId, new TabMessagePayload(data.message.id, null, ERROR_MESSAGES.INVALID_METHOD))
+          default: data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.message.id, null, ERROR_MESSAGES.INVALID_METHOD))
         }
 
       } catch (err) {
@@ -264,11 +264,7 @@ class RpcRequestProcessor {
 
           if (isEqual(message.type, MESSAGE_TYPE_LABELS.FEE_AND_BALANCE)) {
               if(hasProperty(this.generalWalletRpc, message.event)) {
-
-                log("message is here: ", message)
-
                 rpcResponse = await this.generalWalletRpc[message.event](message, state);
-
                 this.parseGeneralRpc(rpcResponse);
               } else new Error(new ErrorPayload(ERRCODES.INTERNAL, ERROR_MESSAGES.INVALID_RPC_OPERATION)).throw();
           

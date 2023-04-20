@@ -1,6 +1,8 @@
 import Browser from "webextension-polyfill";
-import { CONNECTION_METHODS, ERRCODES, ERROR_MESSAGES, EXPLORERS } from "../Constants";
+import { CONNECTION_METHODS, ERRCODES, ERROR_MESSAGES, EXPLORERS, RESTRICTED_URLS } from "../Constants";
+import { getCurrentTabUId, getCurrentTabUrl } from "../Scripts/utils";
 import { Error, ErrorPayload } from "../Utility/error_helper";
+import { sendMessageToTab } from "../Utility/message_helper";
 import { isNullorUndef, log } from "../Utility/utility";
 
 export const formatDate = (_date) => {
@@ -113,4 +115,15 @@ export const checkStringInclusionIntoArray = (str, strArr=CONNECTION_METHODS) =>
 //generate the request error message string
 export const generateErrorMessage = (method, origin) => {
     return `The request of method '${method}' for ${origin} is already pending, please check.`;
+}
+
+//send event to the connected tab
+export const sendEventToTab = (tabMessagePayload, connectedApps) => {
+    getCurrentTabUId((id) => {
+        getCurrentTabUrl((url) => {
+          if (!checkStringInclusionIntoArray(url, RESTRICTED_URLS) && connectedApps[url]?.isConnected) {
+          sendMessageToTab(id, tabMessagePayload)
+        }
+        });
+      });
 }

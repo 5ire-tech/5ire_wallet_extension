@@ -303,6 +303,9 @@ export const KEYRING_EVENTS = {
     ACCOUNT_ADDED: "account_added"
 }
 
+//restricted url
+export const RESTRICTED_URLS = ["chrome://extensions"]
+
 
 //third party url
 export const THRID_PARTY_APIS = {
