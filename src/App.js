@@ -1,4 +1,5 @@
 import "./App.scss";
+import History from "./Pages/History/History";
 import { ROUTES } from "./Routes";
 import Send from "./Pages/Send/Send";
 import Swap from "./Pages/Swap/Swap";
@@ -10,6 +11,7 @@ import NativeTx from "./Components/NativeTx";
 import { useEffect, useContext } from "react";
 import OnlyContent from "./Layout/OnlyContent";
 import WelcomeLayout from "./Layout/WelcomeLayout";
+import MyAccount from "./Pages/MyAccount/MyAccount";
 import FixWidthLayout from "./Layout/FixWidthLayout";
 import PrivateKey from "./Components/Setting/PrivateKey";
 import Beforebegin from "./Pages/WelcomeScreens/Beforebegin";
@@ -24,13 +26,11 @@ import CreateNewWallet from "./Pages/WelcomeScreens/CreateNewWallet";
 import ApproveTx from "./Pages/RejectNotification/RejectNotification";
 import CreateWalletChain from "./Pages/WelcomeScreens/CreateWalletChain";
 import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
-import { log } from "./Utility/utility";
-import History from "./Pages/History/History";
-import MyAccount from "./Pages/MyAccount/MyAccount";
 import ForgotPassword from "./Pages/WelcomeScreens/ForgotPassword";
 import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
-import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 
+// import { log } from "./Utility/utility";
 
 function getParameterByName(name, url = window.location.href) {
   name = name.replace(/[[\]]/g, "\\$&");
