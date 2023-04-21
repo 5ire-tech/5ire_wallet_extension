@@ -275,7 +275,6 @@ export class ExtensionStorageHandler {
     _updateStorage = async (state, key) => {
         const checkKey = key || LABELS.STATE;
         await localStorage.set({ [checkKey]: state })
-
     }
 
     _updateSession = async (key, state) => {

@@ -1,17 +1,18 @@
 import Browser from "webextension-polyfill";
 import { userState, newAccountInitialState, externalControls, initialExternalNativeTransaction } from "./initialState";
 import { isManifestV3 } from "../Scripts/utils";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { isNullorUndef, log } from "../Utility/utility";
 import { sessionStorage, localStorage } from "../Storage";
 import { bindRuntimeMessageListener } from "../Utility/message_helper";
-import { MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, LABELS } from "../Constants";
-
+import { MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, LABELS, ACCOUNT_CHANGED_EVENT, TABS_EVENT } from "../Constants";
+import { sendEventToTab } from "../Helper/helper";
+import { TabMessagePayload } from "../Utility/network_calls";
 
 export const AuthContext = createContext();
 
-export default function Context({ children }) {
 
+export default function Context({ children }) {
   const [state, setState] = useState(userState);
   const [passError, setPassError] = useState("");
   const [userPass, setUserPass] = useState(null);
@@ -25,7 +26,7 @@ export default function Context({ children }) {
   const [passVerified, setPassVerified] = useState(false);
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
   const [externalControlsState, setExternalControlState] = useState(externalControls)
-  
+
 
   Browser.storage.local.onChanged.addListener((changedData) => {
     //change the state whenever the local storage is updated
@@ -41,7 +42,6 @@ export default function Context({ children }) {
       if (message.event === MESSAGE_EVENT_LABELS.EVM_FEE || message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE) {
         (!estimatedGas) && updateEstimatedGas(message.data.fee);
       } else if(message.event === MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS) {
-        log("data is here: ", message)
         setExternalNativeTxDetails(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE) {
         createOrRestore(message.data);
@@ -49,6 +49,11 @@ export default function Context({ children }) {
         unlock(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.ADD_ACCOUNT) {
         addAccount(message.data);
+        //send account details whenever account is changed
+        sendEventToTab(new TabMessagePayload(TABS_EVENT.ACCOUNT_CHANGE_EVENT, {result: {evmAddress: state.currentAccount.evmAddress, nativeAddress: state.currentAccount.nativeAddress}}, null, TABS_EVENT.ACCOUNT_CHANGE_EVENT), externalControlsState.connectedApps);
+      } else if(message.event === MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC) {
+        //send account details whenever account is changed
+        sendEventToTab(new TabMessagePayload(TABS_EVENT.ACCOUNT_CHANGE_EVENT, {result: {evmAddress: state.currentAccount.evmAddress, nativeAddress: state.currentAccount.nativeAddress}}, null, TABS_EVENT.ACCOUNT_CHANGE_EVENT), externalControlsState.connectedApps);
       } else if (
         message.event === MESSAGE_EVENT_LABELS.GET_ACCOUNTS ||
         message.event === MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT

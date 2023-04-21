@@ -399,7 +399,7 @@ export class HybridKeyring extends EventEmitter {
             };
 
             // return newAcc
-            return new EventPayload(message.event, message.event, payload, [], false);
+            return new EventPayload(null, message.event, payload, [], false);
 
         } catch (error) {
             console.log("error in import account by mnemonic : ", error);

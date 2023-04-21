@@ -49,14 +49,14 @@ export class EventPayload {
 
 //payload creator for tab messages
 export class TabMessagePayload {
-  constructor(id, response, method=null, error = null) {
+  constructor(id, response, method=null, event=null, error = null) {
     this.id = id;
     this.response = response;
+    this.event = event;
     this.method = method
     this.error = error;
   }
 }
-
 
 //create the external app request payload for saving and further processing
 export class ExternalAppsRequest {

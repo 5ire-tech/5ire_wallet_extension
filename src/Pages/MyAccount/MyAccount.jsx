@@ -12,7 +12,7 @@ import React, { useContext, useState, useEffect } from "react";
 import Createaccount from "../../Assets/PNG/createaccount.png";
 import { sendMessageToTab, sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
-import { getCurrentTabUId, getCurrentTabUrl } from "../../Scripts/utils";
+import { getCurrentTabDetails } from "../../Scripts/utils";
 import AccountSetting from "../../Components/AccountSetting/AccountSetting";
 import {
   LABELS,
@@ -22,6 +22,7 @@ import {
   ACCOUNT_CHANGED_EVENT,
   MESSAGE_EVENT_LABELS,
   RESTRICTED_URLS,
+  TABS_EVENT,
 } from "../../Constants/index";
 import { toast } from "react-toastify";
 import { isEqual } from "../../Utility/utility";
@@ -96,14 +97,14 @@ function MyAccount() {
     updateCurrentAccount(acc);
   };
   
+
   //update the current account
   const updateCurrentAccount = (acc) => {
-
     updateState(LABELS.CURRENT_ACCOUNT, acc);  
     //fetch balance of changed account
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.BALANCE, {});
-      //send account details whenever account is changed
-      sendEventToTab(new TabMessagePayload(ACCOUNT_CHANGED_EVENT, {evmAddress: acc.evmAddress, nativeAddress: acc.nativeAddress}, ACCOUNT_CHANGED_EVENT), connectedApps)
+    //send account details whenever account is changed
+    sendEventToTab(new TabMessagePayload(TABS_EVENT.ACCOUNT_CHANGE_EVENT, {result: {evmAddress: acc.evmAddress, nativeAddress: acc.nativeAddress}}, null, TABS_EVENT.ACCOUNT_CHANGE_EVENT), connectedApps);
   }
 
 

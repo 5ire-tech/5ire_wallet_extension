@@ -9,9 +9,6 @@ export const PVT_KEY = "privateKey";
 export const CONNECTION_NAME = "5IRE_EXT";
 export const PORT_NAME = "WEBEXT_REDUX_TEST";
 export const UI_CONNECTION_NAME = "5IRE_EXT_UI";
-export const ACCOUNT_CHANGED_EVENT = 'accountChanged';
-
-
 export const WINDOW_WIDTH = 400;
 export const DECIMALS = 10 ** 18;
 export const WINDOW_HEIGHT = 620;
@@ -19,6 +16,16 @@ export const ONE_ETH_IN_GWEI = 1000000000;
 export const AUTO_BALANCE_UPDATE_TIMER = 8000;
 export const TRANSACTION_STATUS_CHECK_TIMER = 2000;
 export const EXISTENTIAL_DEPOSITE = 1;
+
+
+
+//tabs event
+export const TABS_EVENT = {
+    ACCOUNT_CHANGE_EVENT: "accountChange",
+    NETWORK_CHANGE_EVENT: "networkChange",
+    WALLET_CONNECTED_EVENT: "walletConnected",
+    WALLET_DISCONNECTED_EVEN: "walletDisconnected"
+}
 
 
 /* Regular expressions */

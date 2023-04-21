@@ -10,20 +10,11 @@ export const getBaseUrl = (url) => {
   return protocol + "//" + host;
 };
 
-export const getCurrentTabUrl = (callback) => {
+//get the current tab details
+export const getCurrentTabDetails = async () => {
   const queryInfo = { active: true, currentWindow: true };
-
-  Browser.tabs.query(queryInfo).then((tabs) => {
-    callback(getBaseUrl(tabs[0]?.url));
-  });
-};
-
-export const getCurrentTabUId = (callback) => {
-  const queryInfo = { active: true, currentWindow: true };
-
-  Browser.tabs.query(queryInfo).then((tabs) => {
-    callback(tabs[0]?.id);
-  });
+  const tabsDetails = await Browser.tabs.query(queryInfo);
+  return {tabId: tabsDetails[0]?.id, tabUrl: getBaseUrl(tabsDetails[0]?.url)};
 };
 
 

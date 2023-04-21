@@ -5,7 +5,7 @@ import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import Browser from "webextension-polyfill";
 import ThreeDot from "../../Assets/dot3.svg";
-import { shortner } from "../../Helper/helper";
+import { sendEventToTab, shortner } from "../../Helper/helper";
 import { Dropdown, Select, Space } from "antd";
 import WalletQr from "../../Assets/QRicon.svg";
 import { useLocation } from "react-router-dom";
@@ -20,7 +20,7 @@ import DownArrowSuffix from "../../Assets/DownArrowSuffix.svg";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
 import { isEqual, isNullorUndef, log } from "../../Utility/utility";
-import { getCurrentTabUId, getCurrentTabUrl } from "../../Scripts/utils";
+import { getCurrentTabDetails } from "../../Scripts/utils";
 
 import {
   EVM,
@@ -35,8 +35,11 @@ import {
   MESSAGE_EVENT_LABELS,
   ACCOUNT_CHANGED_EVENT,
   STATE_CHANGE_ACTIONS,
+  TABS_EVENT,
+  HTTP_END_POINTS,
 
 } from "../../Constants/index";
+import { TabMessagePayload } from "../../Utility/network_calls";
 
 
 function BalanceDetails({ mt0 }) {
@@ -61,12 +64,12 @@ function BalanceDetails({ mt0 }) {
 
   useEffect(() => {
     //check if current app is connected with extension
-    getCurrentTabUrl((tabUrl) => {
-      const isConnectionExist = connectedApps[tabUrl];
+    getCurrentTabDetails().then((tabDetails) => {
+      const isConnectionExist = connectedApps[tabDetails.tabUrl];
       if (isConnectionExist?.isConnected) {
         setIsConnected(isConnectionExist.isConnected);
       }
-      setUrl(tabUrl);
+      setUrl(tabDetails.tabUrl);
       setNewSite(isNullorUndef(isConnectionExist));
     });
 
@@ -75,7 +78,8 @@ function BalanceDetails({ mt0 }) {
   }, [currentNetwork, currentAccount.evmAddress]);
 
 
-  const handleNetworkChange = (network) => {
+  //network change handler
+  const handleNetworkChange = async (network) => {
     //change the network
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.NETWORK_HANDLER, MESSAGE_EVENT_LABELS.NETWORK_CHANGE, {})
     updateState(LABELS.CURRENT_NETWORK, network);
@@ -85,8 +89,13 @@ function BalanceDetails({ mt0 }) {
       nativeBalance: ZERO_CHAR,
       totalBalance: ZERO_CHAR,
     });
+
+    //send the network change event to current opned tab if its connected
+   sendEventToTab(new TabMessagePayload(TABS_EVENT.NETWORK_CHANGE_EVENT, {result: {network, url: HTTP_END_POINTS[network.toUpperCase()]}}, null, TABS_EVENT.NETWORK_CHANGE_EVENT), connectedApps)
   };
 
+
+  //account change handler
   const onSelectAcc = name => {
     //update the current account
     const acc = allAccounts.find(acc => acc.accountName === name);
@@ -96,20 +105,7 @@ function BalanceDetails({ mt0 }) {
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.BALANCE, {});
 
     //send account details whenever account is changed
-    getCurrentTabUId((id) => {
-      getCurrentTabUrl((url) => {
-        if (!(url === "chrome://extensions")) {
-          Browser.tabs.sendMessage(id, {
-            id: ACCOUNT_CHANGED_EVENT,
-            method: ACCOUNT_CHANGED_EVENT,
-            response: {
-              evmAddress: acc.evmAddress,
-              nativeAddress: acc.nativeAddress,
-            },
-          });
-        }
-      });
-    });
+    sendEventToTab(new TabMessagePayload(TABS_EVENT.ACCOUNT_CHANGE_EVENT, {result: {evmAddress: acc.evmAddress, nativeAddress: acc.nativeAddress}}, null, TABS_EVENT.ACCOUNT_CHANGE_EVENT), connectedApps);
 
   };
 
@@ -148,14 +144,21 @@ function BalanceDetails({ mt0 }) {
 
   //handle the disconnect
   const handleDisconnect = async () => {
-      await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.APP_CONNECTION_UPDATE, { connected: false, origin: url }, { localStateKey: LABELS.EXTERNAL_CONTROLS });
+      const isAnyError = await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.APP_CONNECTION_UPDATE, { connected: false, origin: url }, { localStateKey: LABELS.EXTERNAL_CONTROLS });
       setIsConnected(false);
+
+      //send the disconnect event to extension
+      !isAnyError && sendEventToTab(new TabMessagePayload(TABS_EVENT.WALLET_DISCONNECTED_EVEN, {result: null}, null, TABS_EVENT.WALLET_DISCONNECTED_EVEN), connectedApps);
+
   }
 
   //handle the connect
   const handleConnect = async () => {
-      await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.APP_CONNECTION_UPDATE, { connected: true, origin: url }, { localStateKey: LABELS.EXTERNAL_CONTROLS });
+      const isAnyError = await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.APP_CONNECTION_UPDATE, { connected: true, origin: url }, { localStateKey: LABELS.EXTERNAL_CONTROLS });
       setIsConnected(true);
+
+      //send the disconnect event to extension
+      !isAnyError && sendEventToTab(new TabMessagePayload(TABS_EVENT.WALLET_CONNECTED_EVENT, {result: {evmAddress: currentAccount.evmAddress, nativeAddress: currentAccount.nativeAddress}}, null, TABS_EVENT.WALLET_CONNECTED_EVENT), connectedApps, true);
   }
 
   return (

@@ -243,6 +243,6 @@ export class ExternalConnection {
     async handleDisconnect(data) {
       //disconnect the app
       await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.APP_CONNECTION_UPDATE, {connected: false, origin: data.origin}, {localStateKey: LABELS.EXTERNAL_CONTROLS});
-      sendMessageToTab(data.tabId, new TabMessagePayload(data.id, SUCCESS_MESSAGES.DISCONNECTED));
+      sendMessageToTab(data.tabId, new TabMessagePayload(data.id, {result: []}));
     }
 }
