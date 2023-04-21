@@ -33,6 +33,9 @@
     display: flex;
     gap: 12px;
     align-items: center;
+    img{
+      width: 33px;
+    }
     &__accountConatct {
       text-align: left;
       h2 {

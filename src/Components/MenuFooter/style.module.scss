@@ -22,6 +22,7 @@
     color: $gray;
     text-decoration: none;
     transition: 0.3s all;
+    opacity: 50%;
 
     &__active,
     &:hover {
@@ -29,13 +30,16 @@
         filter: none;
       }
 
-      span {
-        color: $baseText-00AEEF;
-      }
+      // span {
+      //   color: $baseText-00AEEF;
+      // }
     }
 
     &__img {
       // filter: grayscale(1);
+    }
+    &__active{
+      opacity: 100%;
     }
 
     span {

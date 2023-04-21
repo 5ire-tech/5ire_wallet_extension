@@ -113,7 +113,7 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
       text-fill-color: transparent;
-      font-size: 24px;
+      font-size: 20px;
     }
     &__modalOr {
       background-color: #dfe2e4;
@@ -211,6 +211,7 @@
       padding: 10px;
       border-radius: 22px;
       background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
+      transition: 0.3s all;
     }
     p {
       color: $white;

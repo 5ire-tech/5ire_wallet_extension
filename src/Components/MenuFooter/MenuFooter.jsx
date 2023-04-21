@@ -60,48 +60,48 @@ function MenuFooter() {
       {(pathname === ROUTES.WALLET ||
         pathname === ROUTES.HISTORY_P ||
         pathname === ROUTES.MY_ACCOUNT) && (
-          <>
-            <Link
-              to={ROUTES.WALLET} // onClick={handleHistoryOpen}
-              className={`${style.menuItems__items} ${style.menuItems__items__active}`}
-            >
-              <div className={style.menuItems__items__img}>
-                <img src={Wallet} alt="HistoryIcon" draggable={false} />
-              </div>
-              <span className={style.menuItems__items__title}>Wallet</span>
-            </Link>
-            <Link
-              to={ROUTES.HISTORY_P} // onClick={handleHistoryOpen}
-              className={`${style.menuItems__items} ${style.menuItems__items__active}`}
-            >
-              <div className={style.menuItems__items__img}>
-                <img src={HistoryIcon} alt="HistoryIcon" draggable={false} />
-              </div>
-              <span className={style.menuItems__items__title}>History</span>
-            </Link>
+        <>
+           <Link
+            to={ROUTES.WALLET} // onClick={handleHistoryOpen}
+            className={`${style.menuItems__items} ${pathname === ROUTES.WALLET ?style.menuItems__items__active:''}`}
+          >
+            <div className={style.menuItems__items__img}>
+              <img src={Wallet} alt="HistoryIcon" draggable={false} />
+            </div>
+            <span className={style.menuItems__items__title}>Wallet</span>
+          </Link>
+          <Link
+            to={ROUTES.HISTORY_P} // onClick={handleHistoryOpen}
+            className={`${style.menuItems__items} ${pathname === ROUTES.HISTORY_P ? style.menuItems__items__active:''}`}
+          >
+            <div className={style.menuItems__items__img}>
+              <img src={HistoryIcon} alt="HistoryIcon" draggable={false} />
+            </div>
+            <span className={style.menuItems__items__title}>History</span>
+          </Link>
 
-            <Link
-              to={ROUTES.MY_ACCOUNT}
-              onClick={handleMyAccOpen}
-              className={`${style.menuItems__items} ${style.menuItems__items__active}`}
-            >
-              <div className={style.menuItems__items__img}>
-                <img src={Myaccount} alt="Myaccount" draggable={false} />
-              </div>
-              <span className={style.menuItems__items__title}>My Accounts</span>
-            </Link>
+          <Link
+            to={ROUTES.MY_ACCOUNT}
+            onClick={handleMyAccOpen}
+            className={`${style.menuItems__items} ${pathname === ROUTES.MY_ACCOUNT ? style.menuItems__items__active:''}`}
+          >
+            <div className={style.menuItems__items__img}>
+              <img src={Myaccount} alt="Myaccount" draggable={false} />
+            </div>
+            <span className={style.menuItems__items__title}>My Accounts</span>
+          </Link>
 
-            <Link
-              onClick={() => setOpen2(true)}
-              className={`${style.menuItems__items} ${style.menuItems__items__active}`}
-            >
-              <div className={style.menuItems__items__img}>
-                <img src={Setting} alt="Setting" draggable={false} />
-              </div>
-              <span className={style.menuItems__items__title}>Settings</span>
-            </Link>
-          </>
-        )}
+          <Link
+            onClick={() => setOpen2(true)}
+            className={`${style.menuItems__items} ${pathname === ROUTES.MANAGE_WALLET ? style.menuItems__items__active:''}`}
+          >
+            <div className={style.menuItems__items__img}>
+              <img src={Setting} alt="Setting" draggable={false} />
+            </div>
+            <span className={style.menuItems__items__title}>Settings</span>
+          </Link>
+        </>
+      )}
 
       <Drawer
         title={
