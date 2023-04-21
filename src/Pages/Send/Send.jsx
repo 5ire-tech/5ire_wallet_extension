@@ -9,7 +9,6 @@ import ComplSwap from "../../Assets/succeslogo.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import { validateAddress } from "../../Utility/utility";
 import React, { useState, useEffect, useContext } from "react";
-// import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
@@ -21,7 +20,6 @@ import {
   EVM,
   LABELS,
   NATIVE,
-  CURRENCY,
   ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,

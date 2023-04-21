@@ -1,30 +1,27 @@
+import Web3 from "web3";
+import { isManifestV3 } from "./utils";
+import { BigNumber } from "bignumber.js";
+import { u8aToHex } from "@polkadot/util";
 import Browser from "webextension-polyfill";
+import { EventEmitter } from "./eventemitter";
+import { TypeRegistry } from "@polkadot/types";
+import { HybridKeyring } from "./5ire-keyring";
+import { txNotificationStringTemplate } from "./utils";
+import { NotificationAndBedgeManager } from "./platform";
 import { ExternalConnection, ExternalWindowControl } from "./controller";
-import {NotificationAndBedgeManager} from "./platform";
 import { getDataLocal, ExtensionStorageHandler } from "../Storage/loadstore";
 import { CONNECTION_NAME, INTERNAL_EVENT_LABELS, DECIMALS, MESSAGE_TYPE_LABELS, STATE_CHANGE_ACTIONS, TX_TYPE, STATUS, LABELS, MESSAGE_EVENT_LABELS, AUTO_BALANCE_UPDATE_TIMER, TRANSACTION_STATUS_CHECK_TIMER, ONE_ETH_IN_GWEI, SIGNER_METHODS, TABS_EVENT } from "../Constants";
-import { isManifestV3 } from "./utils";
 import { hasLength, isObject, isNullorUndef, hasProperty, log, isEqual, isString } from "../Utility/utility";
 import { HTTP_END_POINTS, API, HTTP_METHODS, EVM_JSON_RPC_METHODS, ERRCODES, ERROR_MESSAGES, ERROR_EVENTS_LABELS } from "../Constants";
 import { EVMRPCPayload, EventPayload, TransactionPayload, TransactionProcessingPayload, TabMessagePayload } from "../Utility/network_calls";
 import { httpRequest } from "../Utility/network_calls";
-import Web3 from "web3";
-import { BigNumber } from "bignumber.js";
-import { u8aToHex } from "@polkadot/util";
-// import Keyring from "@polkadot/keyring";
-import { HybridKeyring } from "./5ire-keyring";
-import { nativeMethod } from "./nativehelper";
-import { EventEmitter } from "./eventemitter";
 import { checkStringInclusionIntoArray, numFormatter } from "../Helper/helper";
-import { txNotificationStringTemplate } from "./utils";
 import { Connection } from "../Helper/connection.helper";
-import { Error, ErrorPayload } from "../Utility/error_helper";
-import Keyring from "@polkadot/keyring";
-import { decryptor } from "../Helper/CryptoHelper";
-import { ed25519PairFromSeed, mnemonicToMiniSecret } from "@polkadot/util-crypto";
+import { Error, ErrorPayload } from "../Utility/error_helper"
 import { sendMessageToTab, sendRuntimeMessage } from "../Utility/message_helper";
-import { TypeRegistry } from "@polkadot/types"
-import {assert, compactToU8a, isHex, u8aConcat, u8aEq, u8aWrapBytes} from "@polkadot/util"
+import { assert, compactToU8a, isHex, u8aConcat, u8aEq, u8aWrapBytes } from "@polkadot/util"
+// import Keyring from "@polkadot/keyring";
+// import { nativeMethod } from "./nativehelper";
 
 //for initilization of background events
 export class InitBackground {
@@ -32,10 +29,10 @@ export class InitBackground {
   static balanceTimer = null;
 
   constructor() {
+    this.bindAllEvents();
+    this.injectScriptInTab();
     ExtensionEventHandle.initEventsAndGetInstance();
     this.networkHandler = NetworkHandler.getInstance();
-    this.injectScriptInTab();
-    this.bindAllEvents();
     this.rpcRequestProcessor = RpcRequestProcessor.getInstance();
     this.internalHandler = ExternalConnection.getInstance();
     this.externalTaskHandler = new ExternalTxTasks();
@@ -78,11 +75,11 @@ export class InitBackground {
   /****************** Events Bindings ******************/
   //bind all events
   bindAllEvents = () => {
-    this.bindRuntimeMessageEvents();
     this.bindPopupEvents();
+    this.bindRuntimeMessageEvents();
     this.bindInstallandUpdateEvents();
-    this.bindBackgroundStartupEvents();
     this.bindExtensionUnmountEvents();
+    this.bindBackgroundStartupEvents();
     // this.bindBrowserCloseEvent();
   }
 
@@ -93,31 +90,31 @@ export class InitBackground {
       const localData = await getDataLocal(LABELS.STATE);
 
       //checks for event from extension ui
-       if(isEqual(message?.type, MESSAGE_TYPE_LABELS.INTERNAL_TX) || isEqual(message?.type, MESSAGE_TYPE_LABELS.FEE_AND_BALANCE)) {
+      if (isEqual(message?.type, MESSAGE_TYPE_LABELS.INTERNAL_TX) || isEqual(message?.type, MESSAGE_TYPE_LABELS.FEE_AND_BALANCE)) {
         await this.rpcRequestProcessor.rpcCallsMiddleware(message, localData);
         return;
-      } else if(message?.type === MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL) {
+      } else if (message?.type === MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL) {
         await this.externalTaskHandler.processExternalTask(message, localData);
         return;
       } else if (message?.type === MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING) {
         await this.keyringHandler.keyringHelper(message);
         return;
-      } else if(message?.type === MESSAGE_TYPE_LABELS.NETWORK_HANDLER) {
+      } else if (message?.type === MESSAGE_TYPE_LABELS.NETWORK_HANDLER) {
         this.networkHandler.handleNetworkRelatedTasks(message, localData);
         return;
       }
 
 
       try {
-      //check if message is array or onject
-      message.message = hasLength(message.message) ? message.message[0] : message.message;
+        //check if message is array or onject
+        message.message = hasLength(message.message) ? message.message[0] : message.message;
 
-      //data for futher proceeding
-      const data = {
-        ...message,
-        origin: sender.origin,
-        tabId: sender?.tab?.id
-      };
+        //data for futher proceeding
+        const data = {
+          ...message,
+          origin: sender.origin,
+          tabId: sender?.tab?.id
+        };
 
       //check if the app has the permission to access requested method
       if(!checkStringInclusionIntoArray(data?.method)) {
@@ -126,10 +123,9 @@ export class InitBackground {
         if(!isHasAccess?.isConnected) {
           data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, ERROR_MESSAGES.ACCESS_NOT_GRANTED));
           return;
-        }
-      }
+        }}
 
-      //checks for event from injected script
+        //checks for event from injected script
         switch (data.method) {
           case "connect":
           case "eth_requestAccounts":
@@ -151,8 +147,7 @@ export class InitBackground {
             break;
           default: data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.message.id, null, ERROR_MESSAGES.INVALID_METHOD))
         }
-
-      } catch (err) {
+    } catch (err) {
         console.log("Error while external operation: ", err);
       }
     });
@@ -237,251 +232,250 @@ export class InitBackground {
 
 //process the trans 
 class RpcRequestProcessor {
-    static instance = null;
-    static isHttp = true;
+  static instance = null;
+  static isHttp = true;
 
-    constructor() {
-      this.transactionQueue = TransactionQueue.getInstance()
-      this.generalWalletRpc = new GeneralWalletRPC();
-      this.services = new Services();
-      ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.CONNECTION);
+  constructor() {
+    this.transactionQueue = TransactionQueue.getInstance()
+    this.generalWalletRpc = new GeneralWalletRPC();
+    this.services = new Services();
+    ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.CONNECTION);
+  }
+
+  //access only single instance
+  static getInstance = () => {
+    if (!RpcRequestProcessor.instance) {
+      RpcRequestProcessor.instance = new RpcRequestProcessor();
+      delete RpcRequestProcessor.constructor
     }
+    return RpcRequestProcessor.instance;
+  }
 
-    //access only single instance
-    static getInstance = () => {
-      if(!RpcRequestProcessor.instance) {
-        RpcRequestProcessor.instance = new RpcRequestProcessor();
-        delete RpcRequestProcessor.constructor
+
+  //rpc calls middleware
+  rpcCallsMiddleware = async (message, state) => {
+    let rpcResponse = null;
+    try {
+
+      if (isEqual(message.type, MESSAGE_TYPE_LABELS.FEE_AND_BALANCE)) {
+        if (hasProperty(this.generalWalletRpc, message.event)) {
+          rpcResponse = await this.generalWalletRpc[message.event](message, state);
+          this.parseGeneralRpc(rpcResponse);
+        } else new Error(new ErrorPayload(ERRCODES.INTERNAL, ERROR_MESSAGES.INVALID_RPC_OPERATION)).throw();
+
+      } else if (isEqual(message?.type, MESSAGE_TYPE_LABELS.INTERNAL_TX)) {
+        this.processTransactionRequest(message)
       }
-      return RpcRequestProcessor.instance;
+    } catch (err) {
+      log("error while processing the gas and balance request: ", err);
+      rpcResponse = new EventPayload(null, null, null, [], new ErrorPayload(err.message?.errCode || ERRCODES.INTERNAL, err.message?.errMessage || err.message));
+      this.parseGeneralRpc(rpcResponse)
     }
+  }
 
 
-    //rpc calls middleware
-    rpcCallsMiddleware = async (message, state) => {
-      let rpcResponse = null;
-        try {
+  //parse and send the message related to fee and balance
+  parseGeneralRpc = async (rpcResponse) => {
 
-          if (isEqual(message.type, MESSAGE_TYPE_LABELS.FEE_AND_BALANCE)) {
-              if(hasProperty(this.generalWalletRpc, message.event)) {
-                rpcResponse = await this.generalWalletRpc[message.event](message, state);
-                this.parseGeneralRpc(rpcResponse);
-              } else new Error(new ErrorPayload(ERRCODES.INTERNAL, ERROR_MESSAGES.INVALID_RPC_OPERATION)).throw();
-          
-            } else if(isEqual(message?.type, MESSAGE_TYPE_LABELS.INTERNAL_TX)) {
-             this.processTransactionRequest(message)
-          }
-        } catch (err) {
-          log("error while processing the gas and balance request: ", err);
-          rpcResponse = new EventPayload(null, null, null, [], new ErrorPayload(err.message?.errCode || ERRCODES.INTERNAL, err.message?.errMessage || err.message));
-          this.parseGeneralRpc(rpcResponse)
-        }
+    if (!rpcResponse.error) {
+      //change the state in local storage
+      if (rpcResponse.stateChangeKey) await this.services.updateLocalState(rpcResponse.stateChangeKey, rpcResponse.payload.data, rpcResponse.payload?.options)
+      //send the response message to extension ui
+      if (rpcResponse.eventEmit) this.services.messageToUI(rpcResponse.eventEmit, rpcResponse.payload.data)
+    } else {
+      // this.services.messageToUI(rpcResponse.eventEmit, rpcResponse.payload.error)
     }
-  
+  }
 
-    //parse and send the message related to fee and balance
-    parseGeneralRpc = async (rpcResponse) => {
 
-        if(!rpcResponse.error) {
-          //change the state in local storage
-          if (rpcResponse.stateChangeKey) await this.services.updateLocalState(rpcResponse.stateChangeKey, rpcResponse.payload.data, rpcResponse.payload?.options)
-          //send the response message to extension ui
-          if (rpcResponse.eventEmit) this.services.messageToUI(rpcResponse.eventEmit, rpcResponse.payload.data)
-        } else {
-          // this.services.messageToUI(rpcResponse.eventEmit, rpcResponse.payload.error)
-        }
+  //parse the transaction related rpc response
+  processTransactionRequest = async (transactionRequest) => {
+    try {
+
+
+      //create a transaction payload
+      const { data } = transactionRequest;
+      const transactionProcessingPayload = new TransactionProcessingPayload(data, transactionRequest.event, null, data?.data, { ...data?.options });
+
+      //send the transaction into tx queue
+      await this.transactionQueue.addNewTransaction(transactionProcessingPayload);
+
+    } catch (err) {
+      console.log("error while processing the transaction: ", err);
     }
-
-  
-    //parse the transaction related rpc response
-    processTransactionRequest = async (transactionRequest) => {
-      try {
-
-
-          //create a transaction payload
-          const { data } = transactionRequest;
-          const transactionProcessingPayload = new TransactionProcessingPayload(data, transactionRequest.event, null, data?.data, {...data?.options});
-          
-          //send the transaction into tx queue
-          await this.transactionQueue.addNewTransaction(transactionProcessingPayload);
-
-      } catch (err) {
-        console.log("error while processing the transaction: ", err);
-      }
-    }
+  }
 }
-
 
 
 //class implementation for transaction queue
 class TransactionQueue {
-    static instance = null;
-    static transactionIntervalId = null;
+  static instance = null;
+  static transactionIntervalId = null;
 
-    constructor() {
-      this.services = new Services();
-      this.transactionRpc = new TransactionsRPC();
-    }
+  constructor() {
+    this.services = new Services();
+    this.transactionRpc = new TransactionsRPC();
+  }
 
-    //give only access to the single instance of class
-    static getInstance = () => {
-        if(!TransactionQueue.instance) TransactionQueue.instance = new TransactionQueue();
-        return TransactionQueue.instance;
-    }
+  //give only access to the single instance of class
+  static getInstance = () => {
+    if (!TransactionQueue.instance) TransactionQueue.instance = new TransactionQueue();
+    return TransactionQueue.instance;
+  }
 
-    //set the transaction interval id
-    static setIntervalId = (transactionIntervalId) => {
-      TransactionQueue.transactionIntervalId = transactionIntervalId;
-    }
-
-    
-    //add new transaction
-    addNewTransaction = async (transactionProcessingPayload) => {
-        //add the transaction history track
-        if(transactionProcessingPayload.type !== MESSAGE_EVENT_LABELS.NV_TX) {
-          const state = await getDataLocal(LABELS.STATE);
-          const {data} = transactionProcessingPayload;
-          transactionProcessingPayload.transactionHistoryTrack = new TransactionPayload(data?.to, data?.value ? parseFloat(data?.value).toString(): "", null, state.currentNetwork);
-
-          //insert transaction history with flag "Queued"
-          await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY, transactionProcessingPayload.transactionHistoryTrack, transactionProcessingPayload.options);
-        }
-
-        //add the new transaction into queue
-        await this.services.updateLocalState(STATE_CHANGE_ACTIONS.ADD_NEW_TRANSACTION, transactionProcessingPayload, {localStateKey: LABELS.TRANSACTION_QUEUE});
-
-        //emit the event that new transaction is added into queue
-        ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.NEW_TRANSACTION_INQUEUE);
-    }
+  //set the transaction interval id
+  static setIntervalId = (transactionIntervalId) => {
+    TransactionQueue.transactionIntervalId = transactionIntervalId;
+  }
 
 
-    //process next queued transaction
-    processQueuedTransaction = () => {
-        //dequeue next transaction and add it as processing transaction
-        this.services.updateLocalState(STATE_CHANGE_ACTIONS.PROCESS_QUEUE_TRANSACTION, {}, {localStateKey: LABELS.TRANSACTION_QUEUE})
-    }
-
-
-    //perform transaction rpc request
-    processTransaction = async () => {
+  //add new transaction
+  addNewTransaction = async (transactionProcessingPayload) => {
+    //add the transaction history track
+    if (transactionProcessingPayload.type !== MESSAGE_EVENT_LABELS.NV_TX) {
       const state = await getDataLocal(LABELS.STATE);
-      const {currentTransaction} = await getDataLocal(LABELS.TRANSACTION_QUEUE);
-      try {
+      const { data } = transactionProcessingPayload;
+      transactionProcessingPayload.transactionHistoryTrack = new TransactionPayload(data?.to, data?.value ? parseFloat(data?.value).toString() : "", null, state.currentNetwork);
 
-          if(hasProperty(this.transactionRpc, currentTransaction.type)) {
-            const rpcResponse = await this.transactionRpc[currentTransaction.type](currentTransaction, state);
-            return rpcResponse;
-          } else new Error(new ErrorPayload(ERRCODES.INTERNAL, ERROR_MESSAGES.INVALID_RPC_OPERATION)).throw();
+      //insert transaction history with flag "Queued"
+      await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY, transactionProcessingPayload.transactionHistoryTrack, transactionProcessingPayload.options);
+    }
+
+    //add the new transaction into queue
+    await this.services.updateLocalState(STATE_CHANGE_ACTIONS.ADD_NEW_TRANSACTION, transactionProcessingPayload, { localStateKey: LABELS.TRANSACTION_QUEUE });
+
+    //emit the event that new transaction is added into queue
+    ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.NEW_TRANSACTION_INQUEUE);
+  }
 
 
-      } catch (err) {
-       return new EventPayload(null, null, null, [], new ErrorPayload(err.message?.errCode || ERRCODES.INTERNAL, err.message?.errMessage || err.message));
+  //process next queued transaction
+  processQueuedTransaction = () => {
+    //dequeue next transaction and add it as processing transaction
+    this.services.updateLocalState(STATE_CHANGE_ACTIONS.PROCESS_QUEUE_TRANSACTION, {}, { localStateKey: LABELS.TRANSACTION_QUEUE })
+  }
+
+
+  //perform transaction rpc request
+  processTransaction = async () => {
+    const state = await getDataLocal(LABELS.STATE);
+    const { currentTransaction } = await getDataLocal(LABELS.TRANSACTION_QUEUE);
+    try {
+
+      if (hasProperty(this.transactionRpc, currentTransaction.type)) {
+        const rpcResponse = await this.transactionRpc[currentTransaction.type](currentTransaction, state);
+        return rpcResponse;
+      } else new Error(new ErrorPayload(ERRCODES.INTERNAL, ERROR_MESSAGES.INVALID_RPC_OPERATION)).throw();
+
+
+    } catch (err) {
+      return new EventPayload(null, null, null, [], new ErrorPayload(err.message?.errCode || ERRCODES.INTERNAL, err.message?.errMessage || err.message));
+    }
+  }
+
+
+  //parse the response after processing the transaction
+  parseTransactionResponse = async () => {
+    //perform the current active transactions 
+    const transactionResponse = await this.processTransaction();
+    log("here is the swap transaction: ", transactionResponse);
+    const { txHash } = transactionResponse.payload?.data;
+
+
+    //check if there is error payload into response
+    if (!transactionResponse.error) {
+
+      //if transaction is external then send the response to spefic tab
+      if (transactionResponse.payload.options?.externalTransaction && txHash) {
+        const { externalTransaction } = transactionResponse.payload.options;
+        const externalResponse = { method: externalTransaction.method, result: txHash }
+
+        sendMessageToTab(externalTransaction?.tabId, new TabMessagePayload(externalTransaction.id, externalResponse));
       }
+
+      await this._updateQueueAndHistory(transactionResponse);
+    } else {
+      //check for error after transaction
+      //check if txhash is found in payload then update transaction into queue and history
+      if (txHash) this._updateQueueAndHistory(transactionResponse);
     }
-
-    
-    //parse the response after processing the transaction
-    parseTransactionResponse = async () => {
-      //perform the current active transactions 
-      const transactionResponse = await this.processTransaction();
-      log("here is the swap transaction: ", transactionResponse);
-      const {txHash} = transactionResponse.payload?.data;
+  }
 
 
-      //check if there is error payload into response
-      if(!transactionResponse.error) {
-        
-        //if transaction is external then send the response to spefic tab
-        if(transactionResponse.payload.options?.externalTransaction && txHash) {
-          const {externalTransaction} = transactionResponse.payload.options;
-          const externalResponse = {method: externalTransaction.method, result: txHash}
-
-          sendMessageToTab(externalTransaction?.tabId, new TabMessagePayload(externalTransaction.id, externalResponse));
-        }
-        
-        await this._updateQueueAndHistory(transactionResponse);
-      } else {
-        //check for error after transaction
-        //check if txhash is found in payload then update transaction into queue and history
-        if(txHash) this._updateQueueAndHistory(transactionResponse);
-      }
-    }
+  //set timer for updating the transaction status
+  checkTransactionStatus = async () => {
+    const { currentTransaction, txQueue } = await getDataLocal(LABELS.TRANSACTION_QUEUE);
+    const transactionHistoryTrack = { ...currentTransaction.transactionHistoryTrack }
 
 
-    //set timer for updating the transaction status
-    checkTransactionStatus = async () => {
-        const {currentTransaction, txQueue} = await getDataLocal(LABELS.TRANSACTION_QUEUE);
-        const transactionHistoryTrack = {...currentTransaction.transactionHistoryTrack}
+    //check if transaction status is pending then only check the status
+    if (currentTransaction && isEqual(currentTransaction.transactionHistoryTrack.status, STATUS.PENDING)) {
+      const { transactionHistoryTrack: { txHash, isEvm, chain } } = currentTransaction;
+      const transactionStatus = await this.services.getTransactionStatus(txHash, isEvm, chain);
 
 
-        //check if transaction status is pending then only check the status
-        if(currentTransaction && isEqual(currentTransaction.transactionHistoryTrack.status, STATUS.PENDING)) {
-          const {transactionHistoryTrack: {txHash, isEvm, chain}} = currentTransaction;
-          const transactionStatus = await this.services.getTransactionStatus(txHash, isEvm, chain);
+      //if transaction status is found ether Failed or Success
+      if (transactionStatus?.status) {
+        const hasPendingTx = txQueue.length;
 
+        //update the transaction after getting the confirmation
+        transactionHistoryTrack.status = transactionStatus.status;
+        transactionHistoryTrack.to = !!transactionHistoryTrack.intermidateHash ? transactionHistoryTrack.to : transactionHistoryTrack.isEvm ? transactionStatus.to || transactionStatus.contractAddress : transactionHistoryTrack.to;
+        transactionHistoryTrack.gasUsed = transactionHistoryTrack.isEvm ? (Number(transactionStatus?.gasUsed) / ONE_ETH_IN_GWEI).toString() : transactionStatus?.txFee
 
-          //if transaction status is found ether Failed or Success
-          if(transactionStatus?.status) {
-            const hasPendingTx = txQueue.length;
+        //update the transaction status and other details after confirmation
+        await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, transactionHistoryTrack, currentTransaction?.options);
 
-           //update the transaction after getting the confirmation
-           transactionHistoryTrack.status = transactionStatus.status;
-           transactionHistoryTrack.to = !!transactionHistoryTrack.intermidateHash ? transactionHistoryTrack.to : transactionHistoryTrack.isEvm ? transactionStatus.to || transactionStatus.contractAddress: transactionHistoryTrack.to ;
-           transactionHistoryTrack.gasUsed = transactionHistoryTrack.isEvm ? (Number(transactionStatus?.gasUsed)/ONE_ETH_IN_GWEI).toString() : transactionStatus?.txFee
-          
-          //update the transaction status and other details after confirmation
-           await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, transactionHistoryTrack, currentTransaction?.options);
+        //update the balance after transaction confirmation
+        ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.BALANCE_FETCH);
 
-           //update the balance after transaction confirmation
-           ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.BALANCE_FETCH);
-
-            //dequeue the new transaction and set as active for processing
-            await this.processQueuedTransaction();
-
-            //show notification of transaction status
-            this.services.showNotification(txNotificationStringTemplate(transactionStatus.status, txHash));
-
-            //check if there any pending transaction into queue
-            if(!isEqual(hasPendingTx, 0)) {
-              await this.parseTransactionResponse();
-              TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus))
-            } else {
-              //reset the timeout id as null so whenever new transaction made the timeout start again
-              TransactionQueue.setIntervalId(null);
-            }
-          } 
-          //if transaction is still in pending state
-          else {
-            TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus))
-          }
-        }
-    }
-
-    /******************************* Event Callbacks *************************/
-    //callback for new transaction inserted into queue event
-    newTransactionAddedEventCallback = async () => {
-      if(isNullorUndef(TransactionQueue.transactionIntervalId)) {
+        //dequeue the new transaction and set as active for processing
         await this.processQueuedTransaction();
-        await this.parseTransactionResponse();
 
+        //show notification of transaction status
+        this.services.showNotification(txNotificationStringTemplate(transactionStatus.status, txHash));
+
+        //check if there any pending transaction into queue
+        if (!isEqual(hasPendingTx, 0)) {
+          await this.parseTransactionResponse();
+          TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus))
+        } else {
+          //reset the timeout id as null so whenever new transaction made the timeout start again
+          TransactionQueue.setIntervalId(null);
+        }
+      }
+      //if transaction is still in pending state
+      else {
         TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus))
       }
     }
+  }
 
+  /******************************* Event Callbacks *************************/
+  //callback for new transaction inserted into queue event
+  newTransactionAddedEventCallback = async () => {
+    if (isNullorUndef(TransactionQueue.transactionIntervalId)) {
+      await this.processQueuedTransaction();
+      await this.parseTransactionResponse();
 
-    /******************************** Internal methods ***********************/
-    //schedule execution
-    _setTimeout = (cb) => {
-      return setTimeout(cb, TRANSACTION_STATUS_CHECK_TIMER);
+      TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus))
     }
+  }
 
-    //update the transaction queue and history
-    _updateQueueAndHistory = async (transactionResponse) => {
-      await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, transactionResponse.payload.data, transactionResponse.payload?.options);
-          
-      //update the transaction into active transaction session
-      await this.services.updateLocalState(STATE_CHANGE_ACTIONS.UPDATE_HISTORY_TRACK, transactionResponse.payload.data, {localStateKey: LABELS.TRANSACTION_QUEUE});
-    }
+
+  /******************************** Internal methods ***********************/
+  //schedule execution
+  _setTimeout = (cb) => {
+    return setTimeout(cb, TRANSACTION_STATUS_CHECK_TIMER);
+  }
+
+  //update the transaction queue and history
+  _updateQueueAndHistory = async (transactionResponse) => {
+    await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, transactionResponse.payload.data, transactionResponse.payload?.options);
+
+    //update the transaction into active transaction session
+    await this.services.updateLocalState(STATE_CHANGE_ACTIONS.UPDATE_HISTORY_TRACK, transactionResponse.payload.data, { localStateKey: LABELS.TRANSACTION_QUEUE });
+  }
 }
 
 
@@ -502,12 +496,12 @@ export class ExtensionEventHandle {
 
   //return the already initlized instance
   static initEventsAndGetInstance = () => {
-  if(!ExtensionEventHandle.instance) {
-    ExtensionEventHandle.instance = new ExtensionEventHandle();
-    delete ExtensionEventHandle.constructor;
-  }
+    if (!ExtensionEventHandle.instance) {
+      ExtensionEventHandle.instance = new ExtensionEventHandle();
+      delete ExtensionEventHandle.constructor;
+    }
 
-  return ExtensionEventHandle.instance;
+    return ExtensionEventHandle.instance;
   }
 
 
@@ -521,34 +515,34 @@ export class ExtensionEventHandle {
   //for creating the instance of native and evm api
   bindConnectionEvent = async () => {
     //handling the connection using the events
-  ExtensionEventHandle.eventEmitter.on(INTERNAL_EVENT_LABELS.CONNECTION, this.networkHandler.initRpcApi);
+    ExtensionEventHandle.eventEmitter.on(INTERNAL_EVENT_LABELS.CONNECTION, this.networkHandler.initRpcApi);
   }
 
   //bind the transaction processing related events
   bindTransactionProcessingEvents = async () => {
-  //event triggered when new transaction is added into queue
-  ExtensionEventHandle.eventEmitter.on(INTERNAL_EVENT_LABELS.NEW_TRANSACTION_INQUEUE, this.transactionQueue.newTransactionAddedEventCallback);
+    //event triggered when new transaction is added into queue
+    ExtensionEventHandle.eventEmitter.on(INTERNAL_EVENT_LABELS.NEW_TRANSACTION_INQUEUE, this.transactionQueue.newTransactionAddedEventCallback);
   }
 
   //bind auto balance update event
   bindAutoBalanceUpdateEvent = async () => {
-      //auto update the balance
-      ExtensionEventHandle.eventEmitter.on(INTERNAL_EVENT_LABELS.BALANCE_FETCH, async () => {
-        const state = await getDataLocal(LABELS.STATE);
-  
-        //if account is not created
-        if(!state.currentAccount) return;
-  
-        await this.rpcRequestProcessor.rpcCallsMiddleware({ event: MESSAGE_EVENT_LABELS.BALANCE, type: MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, data: {}}, state);
-       })
-    }
+    //auto update the balance
+    ExtensionEventHandle.eventEmitter.on(INTERNAL_EVENT_LABELS.BALANCE_FETCH, async () => {
+      const state = await getDataLocal(LABELS.STATE);
+
+      //if account is not created
+      if (!state.currentAccount) return;
+
+      await this.rpcRequestProcessor.rpcCallsMiddleware({ event: MESSAGE_EVENT_LABELS.BALANCE, type: MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, data: {} }, state);
+    })
+  }
 
   //bind error handler event
   bindErrorHandlerEvent = async () => {
     ExtensionEventHandle.eventEmitter.on(INTERNAL_EVENT_LABELS.ERROR, async (err) => {
       try {
         log("error catched: ", err)
-      } catch(err) {
+      } catch (err) {
         log("Error in error event handler: ", err)
       }
     })
@@ -567,17 +561,17 @@ class ExternalTxTasks {
   //process and check external task (connection, tx approval)
   processExternalTask = async (message, state) => {
 
-      if(isEqual(message.event, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION)) await this.closePopupSession(message, state)
-      else if(isEqual(MESSAGE_EVENT_LABELS.EVM_TX, message.event)) await this.externalEvmTransaction(message, state);
-      else if(isEqual(MESSAGE_EVENT_LABELS.NATIVE_SIGNER, message.event)) await this.nativeSigner(message, state)
+    if (isEqual(message.event, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION)) await this.closePopupSession(message, state)
+    else if (isEqual(MESSAGE_EVENT_LABELS.EVM_TX, message.event)) await this.externalEvmTransaction(message, state);
+    else if (isEqual(MESSAGE_EVENT_LABELS.NATIVE_SIGNER, message.event)) await this.nativeSigner(message, state)
   }
 
   //handle the evm external transaction
   externalEvmTransaction = async (message) => {
-    const {activeSession} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+    const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
 
     //process the external evm transactions
-    const externalTransactionProcessingPayload = new TransactionProcessingPayload({...activeSession.message, options: {...message?.data.options, externalTransaction: {...activeSession}}}, message.event, null, activeSession.message?.data, {...message?.data.options, externalTransaction: {...activeSession}});
+    const externalTransactionProcessingPayload = new TransactionProcessingPayload({ ...activeSession.message, options: { ...message?.data.options, externalTransaction: { ...activeSession } } }, message.event, null, activeSession.message?.data, { ...message?.data.options, externalTransaction: { ...activeSession } });
 
     await this.transactionQueueHandler.addNewTransaction(externalTransactionProcessingPayload);
   }
@@ -585,14 +579,14 @@ class ExternalTxTasks {
 
   //handle the nominator and validator transaction
   nativeSigner = async (message, state) => {
-    const {activeSession} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+    const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
 
     //check if the requested method is supported by the handler
-    if(hasProperty(this.nativeSignerhandler, activeSession?.method)) {
-      if(message.data?.approve) {
+    if (hasProperty(this.nativeSignerhandler, activeSession?.method)) {
+      if (message.data?.approve) {
         const signerRes = await this.nativeSignerhandler[activeSession.method](activeSession.message, state);
-        if(!signerRes.error) sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, {result: signerRes.payload.data}));
-        else if(signerRes.error) sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, null, signerRes.error.errMessage));
+        if (!signerRes.error) sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, { result: signerRes.payload.data }));
+        else if (signerRes.error) sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, null, signerRes.error.errMessage));
       }
     }
     //close the popup
@@ -621,37 +615,37 @@ export class Services {
 
   //find the native and evm transaction status
   getTransactionStatus = async (txHash, isEvm, network) => {
-      //get the url of current network for evm rpc call or native explorer search
-      const rpcUrl = isEvm ? HTTP_END_POINTS[network.toUpperCase()] : API[network.toUpperCase()];
-  
-      //check if the transaction is still pending or not
-      let res = null, txRecipt = null;
-      if (isEvm) {
-        res = await httpRequest(rpcUrl, HTTP_METHODS.POST, JSON.stringify(new EVMRPCPayload(EVM_JSON_RPC_METHODS.GET_TX_RECIPT, [txHash])));
-        txRecipt = res?.result;
+    //get the url of current network for evm rpc call or native explorer search
+    const rpcUrl = isEvm ? HTTP_END_POINTS[network.toUpperCase()] : API[network.toUpperCase()];
 
-        //parse the hex string into decimal
-        if(!isNullorUndef(txRecipt?.status)) txRecipt.status = parseInt(txRecipt.status) ? STATUS.SUCCESS : STATUS.FAILED;
+    //check if the transaction is still pending or not
+    let res = null, txRecipt = null;
+    if (isEvm) {
+      res = await httpRequest(rpcUrl, HTTP_METHODS.POST, JSON.stringify(new EVMRPCPayload(EVM_JSON_RPC_METHODS.GET_TX_RECIPT, [txHash])));
+      txRecipt = res?.result;
 
-      }
-      else {
-        res = await httpRequest(rpcUrl + txHash, HTTP_METHODS.GET);
-        txRecipt = res?.data?.transaction;
+      //parse the hex string into decimal
+      if (!isNullorUndef(txRecipt?.status)) txRecipt.status = parseInt(txRecipt.status) ? STATUS.SUCCESS : STATUS.FAILED;
 
-
-        if(!isNullorUndef(txRecipt?.status)) {
-          if(isEqual(txRecipt.status.toLowerCase(), STATUS.SUCCESS.toLowerCase())) txRecipt.status = STATUS.SUCCESS;
-          if(isEqual(txRecipt.status.toLowerCase(), STATUS.FAILED.toLowerCase())) txRecipt.status = STATUS.FAILED;
-        }
-      }
-  
-      //transform the evm status to success or fail
-      if(isNullorUndef(txRecipt?.status) && isString(txRecipt?.status) && isEqual(txRecipt?.status, STATUS.PENDING.toLowerCase()))
-      txRecipt = null;
-  
-      return txRecipt;
-  
     }
+    else {
+      res = await httpRequest(rpcUrl + txHash, HTTP_METHODS.GET);
+      txRecipt = res?.data?.transaction;
+
+
+      if (!isNullorUndef(txRecipt?.status)) {
+        if (isEqual(txRecipt.status.toLowerCase(), STATUS.SUCCESS.toLowerCase())) txRecipt.status = STATUS.SUCCESS;
+        if (isEqual(txRecipt.status.toLowerCase(), STATUS.FAILED.toLowerCase())) txRecipt.status = STATUS.FAILED;
+      }
+    }
+
+    //transform the evm status to success or fail
+    if (isNullorUndef(txRecipt?.status) && isString(txRecipt?.status) && isEqual(txRecipt?.status, STATUS.PENDING.toLowerCase()))
+      txRecipt = null;
+
+    return txRecipt;
+
+  }
 
   // check if transaction status and inform user using browser notification
   checkTransactions = async (txData) => {
@@ -729,7 +723,7 @@ export class Services {
 export class TransactionsRPC {
 
   constructor() {
-    this.hybridKeyring = new HybridKeyring();
+    this.hybridKeyring = HybridKeyring.getInstance();
     this.services = new Services();
 
   }
@@ -742,9 +736,9 @@ export class TransactionsRPC {
     let transactionHistory = null, payload = null;
 
     try {
-  
+
       const { data, transactionHistoryTrack, contractBytecode } = message;
-      const {options:{account}} = data;
+      const { options: { account } } = data;
       const { evmApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
 
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
@@ -752,7 +746,7 @@ export class TransactionsRPC {
       transactionHistory = {
         ...transactionHistoryTrack,
         isEvm: true,
-        type: contractBytecode ? data.to ? TX_TYPE.CONTRACT_EXECUTION : TX_TYPE.CONTRACT_DEPLOYMENT :  TX_TYPE.SEND,
+        type: contractBytecode ? data.to ? TX_TYPE.CONTRACT_EXECUTION : TX_TYPE.CONTRACT_DEPLOYMENT : TX_TYPE.SEND,
         status: STATUS.PENDING
       };
 
@@ -834,7 +828,7 @@ export class TransactionsRPC {
 
     try {
       const { data, transactionHistoryTrack } = message;
-      const {options: {account}} = data;
+      const { options: { account } } = data;
       const { evmApi, nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
 
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
@@ -900,7 +894,7 @@ export class TransactionsRPC {
 
       payload = {
         data: transactionHistory,
-        options: {...message.data.options}
+        options: { ...message.data.options }
       }
       return new EventPayload(null, ERROR_EVENTS_LABELS.NETWORK_ERROR, payload, [], new ErrorPayload(err.message.errCode || ERRCODES.NETWORK_REQUEST, err.message));
     }
@@ -913,7 +907,7 @@ export class TransactionsRPC {
 
     try {
       const { data, transactionHistoryTrack } = message;
-      const {options: {account}} = data;
+      const { options: { account } } = data;
       const { nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
 
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
@@ -925,7 +919,7 @@ export class TransactionsRPC {
         transactionHistory = {
           ...transactionHistoryTrack,
           isEvm: false,
-          type:  TX_TYPE.SEND,
+          type: TX_TYPE.SEND,
           status: STATUS.PENDING
         };
 
@@ -940,28 +934,28 @@ export class TransactionsRPC {
           const txHash = await transfer.signAndSend(signer)
           if (txHash) {
 
-          if (txHash) {
+            if (txHash) {
 
-            const hash = txHash.toHex();
-            transactionHistory.txHash = hash;
+              const hash = txHash.toHex();
+              transactionHistory.txHash = hash;
 
 
-            payload = {
-              data: transactionHistory,
-              options: {
-                ...data.options
+              payload = {
+                data: transactionHistory,
+                options: {
+                  ...data.options
+                }
               }
-            }
 
-            return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, message.event, payload, [], null);
+              return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, message.event, payload, [], null);
 
-          } else new Error(new ErrorPayload(ERRCODES.NETWORK_REQUEST, ERROR_MESSAGES.TX_FAILED)).throw();
+            } else new Error(new ErrorPayload(ERRCODES.NETWORK_REQUEST, ERROR_MESSAGES.TX_FAILED)).throw();
 
-        } else {
-          //Send and sign txn
-          const { status, events, txHash } = transfer.signAndSend(signer);
+          } else {
+            //Send and sign txn
+            const { status, events, txHash } = transfer.signAndSend(signer);
 
-          if (status.isInBlock) {
+            if (status.isInBlock) {
               const hash = txHash.toHex();
               let phase = events.filter(({ phase }) => phase.isApplyExtrinsic);
 
@@ -989,8 +983,9 @@ export class TransactionsRPC {
               }
             }
           }
+        }
       }
-    } }catch (err) {
+    } catch (err) {
       log("Error while native transfer: ", err);
       transactionHistory.status = isEqual(transactionHistory.txHash, "") ? STATUS.PENDING : STATUS.FAILED;
 
@@ -1011,7 +1006,7 @@ export class TransactionsRPC {
 
     try {
       const { data, transactionHistoryTrack } = message;
-      const {options: {account}} = data;
+      const { options: { account } } = data;
       const { nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
 
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
@@ -1023,7 +1018,7 @@ export class TransactionsRPC {
         transactionHistory = {
           ...transactionHistoryTrack,
           isEvm: false,
-          type:  TX_TYPE.SWAP,
+          type: TX_TYPE.SWAP,
           status: STATUS.PENDING,
           to: LABELS.NATIVE_TO_EVM
         };
@@ -1106,7 +1101,7 @@ export class TransactionsRPC {
 
       payload = {
         data: transactionHistory,
-        options: {...message.data.options}
+        options: { ...message.data.options }
       }
       return new EventPayload(null, ERROR_EVENTS_LABELS.NETWORK_ERROR, payload, [], new ErrorPayload(err.message.errCode || ERRCODES.NETWORK_REQUEST, err.message));
     }
@@ -1140,75 +1135,75 @@ export class TransactionsRPC {
 export class GeneralWalletRPC {
 
   constructor() {
-    this.hybridKeyring = new HybridKeyring();
+    this.hybridKeyring = HybridKeyring.getInstance();
   }
 
-    //for fething the balance of both (evm and native)
-    getBalance = async (message, state) => {
+  //for fething the balance of both (evm and native)
+  getBalance = async (message, state) => {
 
-      let nbalance = 0;
-      const { evmApi, nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
-      const account = state.currentAccount;
+    let nbalance = 0;
+    const { evmApi, nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
+    const account = state.currentAccount;
 
-      if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
-  
-      // Evm Balance
-      const w3balance = await evmApi?.eth?.getBalance(account.evmAddress);
-  
-      //Native Balance
-      if (RpcRequestProcessor.isHttp) {
-        let balance_ = await nativeApi?._query.system.account(account.nativeAddress);
-        nbalance = parseFloat(`${balance_.data.free}`) - parseFloat(`${balance_.data.miscFrozen}`);
-      } else {
-        let balance_ = await nativeApi?.derive.balances.all(account.nativeAddress);
-        nbalance = balance_.availableBalance;
-      }
-  
-  
-      let evmBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toString();
-      let nativeBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toString();
-  
-  
-      if (Number(nativeBalance) % 1 !== 0) {
-        let tempBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toFixed(6, 8).toString();
-        if (Number(tempBalance) % 1 === 0)
-          nativeBalance = parseInt(tempBalance)
-        else
-          nativeBalance = tempBalance;
-      }
-  
-  
-      if (Number(evmBalance) % 1 !== 0) {
-        let tempBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toFixed(6, 8).toString();
-        if (Number(tempBalance) % 1 === 0)
-          evmBalance = parseInt(tempBalance)
-        else
-          evmBalance = tempBalance;
-      }
-  
-  
-      let totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toString();
-      if (Number(totalBalance) % 1 !== 0)
-        totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toFixed(6, 8).toString()
-  
-  
-      const payload = {
-        data: {
-          evmBalance,
-          nativeBalance,
-          totalBalance
-        }
-      }
-  
-      return new EventPayload(STATE_CHANGE_ACTIONS.BALANCE, null, payload, [], null);
-  
-    };
+    if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
-    //get the evm fee
-    evmFee = async (message, state) => {
+    // Evm Balance
+    const w3balance = await evmApi?.eth?.getBalance(account.evmAddress);
+
+    //Native Balance
+    if (RpcRequestProcessor.isHttp) {
+      let balance_ = await nativeApi?._query.system.account(account.nativeAddress);
+      nbalance = parseFloat(`${balance_.data.free}`) - parseFloat(`${balance_.data.miscFrozen}`);
+    } else {
+      let balance_ = await nativeApi?.derive.balances.all(account.nativeAddress);
+      nbalance = balance_.availableBalance;
+    }
+
+
+    let evmBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toString();
+    let nativeBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toString();
+
+
+    if (Number(nativeBalance) % 1 !== 0) {
+      let tempBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toFixed(6, 8).toString();
+      if (Number(tempBalance) % 1 === 0)
+        nativeBalance = parseInt(tempBalance)
+      else
+        nativeBalance = tempBalance;
+    }
+
+
+    if (Number(evmBalance) % 1 !== 0) {
+      let tempBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toFixed(6, 8).toString();
+      if (Number(tempBalance) % 1 === 0)
+        evmBalance = parseInt(tempBalance)
+      else
+        evmBalance = tempBalance;
+    }
+
+
+    let totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toString();
+    if (Number(totalBalance) % 1 !== 0)
+      totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toFixed(6, 8).toString()
+
+
+    const payload = {
+      data: {
+        evmBalance,
+        nativeBalance,
+        totalBalance
+      }
+    }
+
+    return new EventPayload(STATE_CHANGE_ACTIONS.BALANCE, null, payload, [], null);
+
+  };
+
+  //get the evm fee
+  evmFee = async (message, state) => {
 
     const { data } = message;
-    const {options: {account}} = data;
+    const { options: { account } } = data;
 
     const { evmApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
 
@@ -1249,13 +1244,13 @@ export class GeneralWalletRPC {
 
     return new EventPayload(null, message.event, payload, [], null);
 
-    };
+  };
 
-    //get native gas fee
-    nativeFee = async (message, state) => {
+  //get native gas fee
+  nativeFee = async (message, state) => {
 
     const { data } = message;
-    const {options: {account}} = data;
+    const { options: { account } } = data;
 
     const { nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
 
@@ -1283,109 +1278,121 @@ export class GeneralWalletRPC {
     return new EventPayload(null, message.event, payload, [], null);
 
 
-    };
+  };
 
 
   //external native transaction fee
   externalNativeTransactionArgsAndGas = async (message, state) => {
-    const {activeSession} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
-    const {nativeApi:api} = NetworkHandler.api[state.currentNetwork.toLowerCase()];
+    const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+    const { nativeApi: api } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
 
-      const hex = activeSession.message?.method;
+    const hex = activeSession.message?.method;
 
-      const DEFAULT_INFO = {
-          decoded: null,
-          extrinsicCall: null,
-          extrinsicError: null,
-          extrinsicFn: null,
-          extrinsicHex: null,
-          extrinsicKey: 'none',
-          extrinsicPayload: null,
-          isCall: true
-      };
+    const DEFAULT_INFO = {
+      decoded: null,
+      extrinsicCall: null,
+      extrinsicError: null,
+      extrinsicFn: null,
+      extrinsicHex: null,
+      extrinsicKey: 'none',
+      extrinsicPayload: null,
+      isCall: true
+    };
 
+
+    try {
+      assert(isHex(hex), 'Expected a hex-encoded call');
+
+      let extrinsicCall, extrinsicPayload = null, decoded = null, isCall = false;
 
       try {
-          assert(isHex(hex), 'Expected a hex-encoded call');
+        // cater for an extrinsic input
+        const tx = api.tx(hex);
 
-          let extrinsicCall, extrinsicPayload = null, decoded = null, isCall = false;
+        // ensure that the full data matches here
+        assert(tx.toHex() === hex, 'Cannot decode data as extrinsic, length mismatch');
 
-          try {
-              // cater for an extrinsic input
-              const tx = api.tx(hex);
+        decoded = tx;
+        extrinsicCall = api.createType('Call', decoded.method);
+      } catch (e) {
+        try {
+          // attempt to decode as Call
+          extrinsicCall = api.createType('Call', hex);
 
-              // ensure that the full data matches here
-              assert(tx.toHex() === hex, 'Cannot decode data as extrinsic, length mismatch');
+          const callHex = extrinsicCall.toHex();
 
-              decoded = tx;
-              extrinsicCall = api.createType('Call', decoded.method);
-          } catch(e) {
-              try {
-                  // attempt to decode as Call
-                  extrinsicCall = api.createType('Call', hex);
+          if (callHex === hex) {
+            // all good, we have a call
+            isCall = true;
+          } else if (hex.startsWith(callHex)) {
+            // this could be an un-prefixed payload...
+            const prefixed = u8aConcat(compactToU8a(extrinsicCall.encodedLength), hex);
 
-                  const callHex = extrinsicCall.toHex();
+            extrinsicPayload = api.createType('ExtrinsicPayload', prefixed);
 
-                  if (callHex === hex) {
-                      // all good, we have a call
-                      isCall = true;
-                  } else if (hex.startsWith(callHex)) {
-                      // this could be an un-prefixed payload...
-                      const prefixed = u8aConcat(compactToU8a(extrinsicCall.encodedLength), hex);
+            assert(u8aEq(extrinsicPayload.toU8a(), prefixed), 'Unable to decode data as un-prefixed ExtrinsicPayload');
 
-                      extrinsicPayload = api.createType('ExtrinsicPayload', prefixed);
-
-                      assert(u8aEq(extrinsicPayload.toU8a(), prefixed), 'Unable to decode data as un-prefixed ExtrinsicPayload');
-
-                      extrinsicCall = api.createType('Call', extrinsicPayload.method.toHex());
-                  } else {
-                      throw new Error(new ErrorPayload(ERRCODES.INTERNAL, "Unable to decode data as Call, length mismatch in supplied data"));
-                  }
-              } catch {
-                  // final attempt, we try this as-is as a (prefixed) payload
-                  extrinsicPayload = api.createType('ExtrinsicPayload', hex);
-
-                  assert(extrinsicPayload.toHex() === hex, 'Unable to decode input data as Call, Extrinsic or ExtrinsicPayload');
-                  extrinsicCall = api.createType('Call', extrinsicPayload.method.toHex());
-              }
+            extrinsicCall = api.createType('Call', extrinsicPayload.method.toHex());
+          } else {
+            throw new Error(new ErrorPayload(ERRCODES.INTERNAL, "Unable to decode data as Call, length mismatch in supplied data"));
           }
+        } catch {
+          // final attempt, we try this as-is as a (prefixed) payload
+          extrinsicPayload = api.createType('ExtrinsicPayload', hex);
 
-          const { method, section } = api.registry.findMetaCall(extrinsicCall.callIndex);
-          const extrinsicFn = api.tx[section][method];
-          // const extrinsicKey = extrinsicCall.callIndex.toString();
-
-          if (!decoded) {
-              decoded = extrinsicFn(...extrinsicCall.args);
-          }
-
-          const info = await decoded?.paymentInfo(this.hybridKeyring.getNativeSignerByAddress(state.currentAccount.nativeAddress));
-          const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
-          const params = decoded.method.toJSON()?.args;
-    
-
-          const payload = {
-            method: `${section}.${method}`,
-            estimatedGas: fee, 
-            args: params,
-            txHash: decoded.hash.toHex()
-          }
-
-
-          return new EventPayload(null, message.event, {data: payload}, [], null)
-
-      } catch (err) {
-        log("error formatting and getting the native external ", err)
-        return new EventPayload(null, message.event, null, [], new ErrorPayload(err.message?.errCode || ERRCODES.INTERNAL, err.message?.errMessage || ERROR_MESSAGES.EXTERNAL_NATIVE_TRANSACTION_ERROR))
+          assert(extrinsicPayload.toHex() === hex, 'Unable to decode input data as Call, Extrinsic or ExtrinsicPayload');
+          extrinsicCall = api.createType('Call', extrinsicPayload.method.toHex());
+        }
       }
+
+      const { method, section } = api.registry.findMetaCall(extrinsicCall.callIndex);
+      const extrinsicFn = api.tx[section][method];
+      // const extrinsicKey = extrinsicCall.callIndex.toString();
+
+      if (!decoded) {
+        decoded = extrinsicFn(...extrinsicCall.args);
+      }
+
+      const info = await decoded?.paymentInfo(this.hybridKeyring.getNativeSignerByAddress(state.currentAccount.nativeAddress));
+      const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
+      const params = decoded.method.toJSON()?.args;
+
+
+      const payload = {
+        method: `${section}.${method}`,
+        estimatedGas: fee,
+        args: params,
+        txHash: decoded.hash.toHex()
+      }
+
+
+      return new EventPayload(null, message.event, { data: payload }, [], null)
+
+    } catch (err) {
+      log("error formatting and getting the native external ", err)
+      return new EventPayload(null, message.event, null, [], new ErrorPayload(err.message?.errCode || ERRCODES.INTERNAL, err.message?.errMessage || ERROR_MESSAGES.EXTERNAL_NATIVE_TRANSACTION_ERROR))
+    }
   }
 
 }
 
 //keyring handler
 export class KeyringHandler {
+
+  static instance = null;
+
   constructor() {
-    this.hybridKeyring = new HybridKeyring();
+    this.hybridKeyring = HybridKeyring.getInstance();
     this.services = new Services();
+  }
+
+  //If there is already an instance of this class then it will return this otherwise this will create it.
+  getInstance = () => {
+    if (!KeyringHandler.instance) {
+      KeyringHandler.instance = new KeyringHandler();
+      delete KeyringHandler.constructor;
+    }
+    return KeyringHandler.instance;
   }
 
   keyringHelper = async (message) => {
@@ -1448,12 +1455,12 @@ class NetworkHandler {
   static api = {};
 
   constructor() {
-     this.services = new Services();
+    this.services = new Services();
   }
 
   //get only single instance
   static getInstance = () => {
-    if(!NetworkHandler.instance) {
+    if (!NetworkHandler.instance) {
       NetworkHandler.instance = new NetworkHandler();
       NetworkHandler.createNetworkSlots();
       delete NetworkHandler.constructor;
@@ -1469,20 +1476,20 @@ class NetworkHandler {
 
   //network handler request
   handleNetworkRelatedTasks = async (message, state) => {
-    if(!isNullorUndef(message.event) && hasProperty(NetworkHandler.instance, message.event)) {
-        const isDone = await NetworkHandler.instance[message.event](message, state);
+    if (!isNullorUndef(message.event) && hasProperty(NetworkHandler.instance, message.event)) {
+      const isDone = await NetworkHandler.instance[message.event](message, state);
     }
   }
 
   //change network handler
   networkChange = async (message, state) => {
-      ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.CONNECTION);
-      setTimeout(() => ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.BALANCE_FETCH), 1000)
+    ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.CONNECTION);
+    setTimeout(() => ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.BALANCE_FETCH), 1000)
   }
 
   /******************************** create connection *********************************/
   initRpcApi = async () => {
-    const {currentNetwork} = await getDataLocal(LABELS.STATE);
+    const { currentNetwork } = await getDataLocal(LABELS.STATE);
     const api = await this.services.createConnection(currentNetwork);
     if (api?.value) return;
 
@@ -1496,7 +1503,7 @@ class NetworkHandler {
 export class NativeSigner {
 
   constructor() {
-    this.hybridKeyring = new HybridKeyring();
+    this.hybridKeyring = HybridKeyring.getInstance();
   }
 
   signPayload = async (payload, state) => {
@@ -1520,7 +1527,7 @@ export class NativeSigner {
       }
 
       const result = registry.createType('ExtrinsicPayload', payload, { version: payload.version }).sign(pair);
-      return new EventPayload(null, null, {data: result}, [], null);
+      return new EventPayload(null, null, { data: result }, [], null);
 
     } catch (err) {
       log("error while signing the payload: ", err)
@@ -1533,7 +1540,7 @@ export class NativeSigner {
       const account = state.currentAccount;
       const pair = this.hybridKeyring.getNativeSignerByAddress(account.nativeAddress);
       const result = { signature: u8aToHex(pair.sign(u8aWrapBytes(payload))) };
-      return new EventPayload(null, null, {data: result}, [], null);
+      return new EventPayload(null, null, { data: result }, [], null);
 
     } catch (err) {
       log("error while signing the raw: ", err)

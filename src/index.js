@@ -73,7 +73,7 @@ const initApp = (data, externalControlsState) => {
     const externalControlsState  = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
     const loginState = await sessionStorage.get(LABELS.ISLOGIN);
 
-    currentLocalState.isLogin = !loginState?.isLogin ? false : currentLocalState.isLogin;
+    currentLocalState.isLogin = !loginState?.isLogin ? false : currentLocalState?.isLogin;
 
     initApp(currentLocalState, externalControlsState);
 

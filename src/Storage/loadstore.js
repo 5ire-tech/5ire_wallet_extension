@@ -183,6 +183,8 @@ export class ExtensionStorageHandler {
         this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
     }
 
+    /**************************Keyring Related Tasks***********************************/
+
 
     // unlockWallet 
     unlock = async (message) => {

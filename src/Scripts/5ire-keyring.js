@@ -17,22 +17,31 @@ import { ErrorPayload, Error } from "../Utility/error_helper";
 
 
 export class HybridKeyring extends EventEmitter {
-    keyrings
+
     static vault = "";
+    static ethKeyring;
+    static polkaKeyring;
     static password = "";
     static keyrings = [];
     static accounts = [];
+    static instance = null;
     static isLocked = false;
-    static ethKeyring;
-    static polkaKeyring;
     static simpleEthKeyring;
 
-    constructor() {
-        super();
-        this.initKeyring();
+
+    //return the already initlized instance if there is no instance then it will create it.
+    static getInstance = () => {
+        if (!HybridKeyring.instance) {
+            HybridKeyring.instance = new HybridKeyring();
+            HybridKeyring.initKeyring();
+            delete HybridKeyring.constructor;
+        }
+
+        return HybridKeyring.instance;
     }
 
-    initKeyring() {
+
+    static initKeyring() {
         HybridKeyring.polkaKeyring = new Keyring();
         HybridKeyring.ethKeyring = new EthKeyring();
         HybridKeyring.simpleEthKeyring = new SimpleKeyring();
@@ -82,7 +91,7 @@ export class HybridKeyring extends EventEmitter {
 
 
         if (res.vault && res.vault.length > 0) {
-            this.initKeyring();
+            HybridKeyring.initKeyring();
             HybridKeyring.password = password;
             HybridKeyring.vault = vault;
 
@@ -143,11 +152,11 @@ export class HybridKeyring extends EventEmitter {
     lock(message) {
 
         HybridKeyring.keyrings = [];
-        HybridKeyring.ethKeyring = undefined;
-        HybridKeyring.polkaKeyring = undefined;
-        HybridKeyring.simpleEthKeyring = undefined;
-        HybridKeyring.password = ''
+        HybridKeyring.password = null;
         HybridKeyring.isLocked = true;
+        HybridKeyring.ethKeyring = null;
+        HybridKeyring.polkaKeyring = null;
+        HybridKeyring.simpleEthKeyring = null;
 
         return new EventPayload(message.event, message.event, { isLogin: false }, [], false);
     }
@@ -461,7 +470,7 @@ export class HybridKeyring extends EventEmitter {
       */
     async forgotPassByMnemonic(message) {
         try {
-            this.initKeyring();
+            HybridKeyring.initKeyring();
             HybridKeyring.vault = "";
             HybridKeyring.accounts = [];
             const createRes = await this.createOrRestore(message);

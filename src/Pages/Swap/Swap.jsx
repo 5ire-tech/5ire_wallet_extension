@@ -116,8 +116,11 @@ function Swap() {
     else if (isNaN(amount))
       setError(ERROR_MESSAGES.ENTER_AMOUNT_CORRECTLY);
 
-    else if (Number(amount) <= 0)
-      setError(ERROR_MESSAGES.AMOUNT_CANT_BE_0);
+    else if (Number(amount) < 1)
+      setError(ERROR_MESSAGES.AMOUNT_CANT_LESS_THEN_ONE);
+
+    // else if (Number(amount) <= 0)
+    //   setError(ERROR_MESSAGES.AMOUNT_CANT_BE_0);
 
     else if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
 
