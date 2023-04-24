@@ -35,8 +35,8 @@ export class InitBackground {
     this.networkHandler = NetworkHandler.getInstance();
     this.rpcRequestProcessor = RpcRequestProcessor.getInstance();
     this.internalHandler = ExternalConnection.getInstance();
+    this.keyringHandler = KeyringHandler.getInstance();
     this.externalTaskHandler = new ExternalTxTasks();
-    this.keyringHandler = new KeyringHandler();
   }
 
   //init the background events
@@ -1387,7 +1387,7 @@ export class KeyringHandler {
   }
 
   //If there is already an instance of this class then it will return this otherwise this will create it.
-  getInstance = () => {
+  static getInstance = () => {
     if (!KeyringHandler.instance) {
       KeyringHandler.instance = new KeyringHandler();
       delete KeyringHandler.constructor;
@@ -1477,14 +1477,19 @@ class NetworkHandler {
   //network handler request
   handleNetworkRelatedTasks = async (message, state) => {
     if (!isNullorUndef(message.event) && hasProperty(NetworkHandler.instance, message.event)) {
-      const isDone = await NetworkHandler.instance[message.event](message, state);
+      const error = await NetworkHandler.instance[message.event](message, state);
+
+      //check for errors while network operations
+      if(error) {
+          log("Error while performing network operation: ", error);
+      }
     }
   }
 
   //change network handler
   networkChange = async (message, state) => {
     ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.CONNECTION);
-    setTimeout(() => ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.BALANCE_FETCH), 1000)
+    return false;
   }
 
   /******************************** create connection *********************************/
@@ -1495,6 +1500,7 @@ class NetworkHandler {
 
     //insert connection into its network slot
     NetworkHandler.api[currentNetwork.toLowerCase()] = api;
+    ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.BALANCE_FETCH)
     log("all api is here: ", NetworkHandler.api);
   }
 }
