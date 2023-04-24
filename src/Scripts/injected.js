@@ -44,7 +44,6 @@ injectedStream.on("data", (data) => {
     if (data.error) {
       handler?.isCb && handler.cb(data.error);
       handler?.reject(data.error);
-
     } else {
 
       if (fireProvider.conntectMethods.find(item => item === handler?.method)) {
@@ -67,8 +66,9 @@ injectedStream.on("data", (data) => {
         handler?.resolve(res);
       } else {
 
+        console.log("data is here ", data, handler);
         handler?.isCb && handler.cb(data.response);
-        handler?.resolve(data.response.result);
+        handler?.resolve(data.response?.result ? data.response.result : data.response);
       }
     }
     delete fireProvider.handlers[data.id];

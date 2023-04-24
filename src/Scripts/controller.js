@@ -54,7 +54,7 @@ export class ExternalWindowControl {
     const isOriginAlreadyExist = this._checkNewRequestOrigin(externalControlsState, data.origin);
 
     if(isOriginAlreadyExist) {
-      sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, generateErrorMessage(data.method, data.origin)));
+      sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, generateErrorMessage(data.method, data.origin)));
       return;
     }
       //set the pending task icon on chrome extension
@@ -140,7 +140,7 @@ export class ExternalWindowControl {
     //check if window is closed by close button
     if(isNullorUndef(ExternalWindowControl.isApproved) || isEqual(ExternalWindowControl.isApproved, false)) {
 
-      activeSession?.tabId && sendMessageToTab(activeSession?.tabId, new TabMessagePayload(activeSession.id, null, ERROR_MESSAGES.REJECTED_BY_USER))
+      activeSession?.tabId && sendMessageToTab(activeSession?.tabId, new TabMessagePayload(activeSession.id, {result: null}, null, null, ERROR_MESSAGES.REJECTED_BY_USER))
       if(isNullorUndef(ExternalWindowControl.isApproved)) {
         this.decressPendingTask();
         this.notificationAndBedgeHandler.showBedge(ExternalWindowControl.pendingTask);
@@ -206,7 +206,7 @@ export class ExternalConnection {
 
       //check if the from account is our current account
       if(!isEqual(state.currentAccount.evmAddress?.toLowerCase(), data.message?.from)) {
-          sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, ERROR_MESSAGES.ACCOUNT_ACCESS_NOT_GRANTED));
+          sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.ACCOUNT_ACCESS_NOT_GRANTED));
           return;
       }
 

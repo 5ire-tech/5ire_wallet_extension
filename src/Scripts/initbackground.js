@@ -121,7 +121,7 @@ export class InitBackground {
         const {connectedApps} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
         const isHasAccess = connectedApps[data.origin];
         if(!isHasAccess?.isConnected) {
-          data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, ERROR_MESSAGES.ACCESS_NOT_GRANTED));
+          data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.ACCESS_NOT_GRANTED));
           return;
         }}
 
@@ -145,7 +145,7 @@ export class InitBackground {
           case SIGNER_METHODS.SIGN_RAW:
             await this.internalHandler.handleNativeSigner(data, localData);
             break;
-          default: data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.message.id, null, ERROR_MESSAGES.INVALID_METHOD))
+          default: data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.message.id, null, null, null, ERROR_MESSAGES.INVALID_METHOD))
         }
     } catch (err) {
         console.log("Error while external operation: ", err);
@@ -588,7 +588,7 @@ class ExternalTxTasks {
       if (message.data?.approve) {
         const signerRes = await this.nativeSignerhandler[activeSession.method](activeSession.message, state);
         if (!signerRes.error) sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, { result: signerRes.payload.data }));
-        else if (signerRes.error) sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, null, signerRes.error.errMessage));
+        else if (signerRes.error) sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, {result: null}, null, null, signerRes.error.errMessage));
       }
     }
     //close the popup
