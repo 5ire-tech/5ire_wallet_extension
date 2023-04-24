@@ -385,7 +385,6 @@ class TransactionQueue {
 
     //check if there is error payload into response
     if (!transactionResponse.error) {
-
       if(txHash) this.services.messageToUI(MESSAGE_EVENT_LABELS.TX_HASH, {txHash});
 
       //if transaction is external then send the response to spefic tab

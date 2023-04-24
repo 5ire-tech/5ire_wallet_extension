@@ -306,7 +306,7 @@ export const WALLET_TYPES = {
     IMPORTED_NATIVE: "imported_native"
 }
 
-export const CONNECTION_METHODS = ["connect", "eth_requestAccounts", "eth_accounts"];
+export const CONNECTION_METHODS = ["connect", "eth_requestAccounts", "eth_accounts", "get_endPoint"];
 
 export const KEYRING_EVENTS = {
     STATE_CHANGED: "valut_state",
