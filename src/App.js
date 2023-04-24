@@ -17,18 +17,18 @@ import PrivateKey from "./Components/Setting/PrivateKey";
 import Beforebegin from "./Pages/WelcomeScreens/Beforebegin";
 import EnterPassword from "./Components/Setting/EnterPassword";
 import LoginApprove from "./Pages/WelcomeScreens/LoginApprove";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import SwapApprove from "./Pages/Swap/SwapApprove/SwapApprove";
 import ImportWallet from "./Pages/WelcomeScreens/ImportWallet";
 import UnlockWelcome from "./Pages/WelcomeScreens/UnlockWelcome";
 import ManageWallet from "./Components/Setting/ManageWallet.jsx";
 import WelcomeScreen from "./Pages/WelcomeScreens/WelcomeScreen";
+import ForgotPassword from "./Pages/WelcomeScreens/ForgotPassword";
 import CreateNewWallet from "./Pages/WelcomeScreens/CreateNewWallet";
 import ApproveTx from "./Pages/RejectNotification/RejectNotification";
 import CreateWalletChain from "./Pages/WelcomeScreens/CreateWalletChain";
 import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
-import ForgotPassword from "./Pages/WelcomeScreens/ForgotPassword";
 import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
-import { Route, Routes, useNavigate } from "react-router-dom";
 
 // import { log } from "./Utility/utility";
 
@@ -73,14 +73,21 @@ function App(props) {
       return;
     }
 
-    if (!isLogin && vault) {
+    // if (!isLogin && vault) {
+    //   navigate(ROUTES.UNLOACK_WALLET, {
+    //     state: {
+    //       redirectRoute: route ? ROUTES.DEFAULT + route : EMTY_STR,
+    //     },
+    //   });
+    if ((!isLogin && !vault && state?.pass) || (!isLogin && vault))  {
       navigate(ROUTES.UNLOACK_WALLET, {
         state: {
           redirectRoute: route ? ROUTES.DEFAULT + route : EMTY_STR,
         },
       });
     }
-  }, [isLogin, vault]);
+    }, [isLogin, vault, state?.pass]);
+  // }, [isLogin]);
 
 
 

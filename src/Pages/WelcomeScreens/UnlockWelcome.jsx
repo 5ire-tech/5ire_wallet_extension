@@ -8,14 +8,20 @@ import React, { useEffect, useState, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
-import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
-import { LABELS, ERROR_MESSAGES, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
 import { isEmpty } from "../../Utility/utility";
+import { decryptor } from "../../Helper/CryptoHelper";
+import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+import {
+  LABELS,
+  ERROR_MESSAGES,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS
+} from "../../Constants/index";
+
+import * as StorageUpdator  from "../../Storage/loadstore";
 
 function UnlockWelcome() {
-  // const navigate = useNavigate();
-  // const location = useLocation();
-
+  const { verifyPass } = useAuth()
   const [pass, setPass] = useState("");
   const [isDisable, setDisable] = useState(true);
   const { state, passError, setPassError } = useContext(AuthContext);
@@ -43,7 +49,39 @@ function UnlockWelcome() {
 
   const handleClick = async (e) => {
     if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.UNLOCK, { password: pass, vault: vault });
+
+      if (state?.pass && state?.oldAccounts && pass && !passError) {
+
+        const passRes = await verifyPass(pass, state.pass);
+
+        if (!passRes.error) {
+
+          if (state?.oldAccounts.length > 0) {
+
+            for (let i = 0; i < state.oldAccounts.length; i++) {
+              const mnemonic = decryptor(state?.oldAccounts[i].temp1m, state?.pass);
+              if (i === 0)
+                sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: pass, opts: { mnemonic, name: state?.oldAccounts[0]?.accountName }, type: "import" });
+              else
+                sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC, { mnemonic, name: state?.oldAccounts[i].accountName });
+            }
+
+            const newState = { ...state };
+            delete newState.oldAccounts;
+            delete newState.pass;
+            console.log("New State ::: ", newState);
+            // setState(newState);
+            StorageUpdator.ExtensionStorageHandler.updateStorage("updateMainState", newState)
+          }
+
+        }
+        else {
+          setPassError(passRes.data);
+        }
+
+      } else if (pass && !passError) {
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.UNLOCK, { password: pass, vault: vault });
+      }
     }
   };
 

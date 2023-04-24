@@ -55,9 +55,9 @@ export default function useAuth() {
     });
   };
 
-  const verifyPass = async (p) => {
+  const verifyPass = async (pass, hash) => {
     try {
-      let res = bcrypt.compareSync(p, pass);
+      let res = bcrypt.compareSync(pass, hash);
 
       if (res) {
         if (isManifestV3) {

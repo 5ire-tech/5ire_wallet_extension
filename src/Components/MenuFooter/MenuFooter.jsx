@@ -117,7 +117,7 @@ function MenuFooter() {
         {
           (txHistory[currentAccount?.accountName] ? txHistory[currentAccount?.accountName] : []).filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase())).length > 0 ?
             (
-              arrayReverser(txHistory[currentAccount.accountName].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()))).map((data, index) => (
+              arrayReverser(txHistory[currentAccount?.accountName].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()))).map((data, index) => (
                 <TransectionHistry
                   dateTime={formatDate(data.dateTime)}
                   type={data?.type}

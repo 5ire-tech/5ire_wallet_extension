@@ -1,9 +1,14 @@
 export const userState = {
+
     vault: null,
 
-    allAccounts: [],
-
     txHistory: {},
+
+    isLogin: false,
+
+    eth_accounts: '',
+
+    currentNetwork: "QA",
 
     popupChecks: {
         txApprove: false
@@ -20,19 +25,13 @@ export const userState = {
         evmBalance: "",
         nativeBalance: "",
         totalBalance: ""
-    },
-
-    currentNetwork: "QA",
-
-    eth_accounts: '',
-
-    isLogin: false
+    }
 
 }
 
 export const externalControls = {
-    activeSession: null,
     connectedApps: {},
+    activeSession: null,
     connectionQueue: []
 }
 
@@ -43,17 +42,17 @@ export const transactionQueue = {
 
 export const newAccountInitialState = {
     mnemonic: "",
-    evmPrivateKey: "",
     evmAddress: "",
+    accountName: "",
+    accountIndex: "",
     nativeAddress: "",
-    accountName:"",
-    accountIndex:""
+    evmPrivateKey: "",
 }
 
 //initial state for external native transaction
 export const initialExternalNativeTransaction = {
-method: "",
-fee: "", 
-args: "",
-txHash: ""
+    fee: "",
+    args: "",
+    txHash: "",
+    method: "",
 }
