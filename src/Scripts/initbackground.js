@@ -369,6 +369,7 @@ class TransactionQueue {
 
 
     } catch (err) {
+      log("error while saving the transaction")
       return new EventPayload(null, null, null, [], new ErrorPayload(err.message?.errCode || ERRCODES.INTERNAL, err.message?.errMessage || err.message));
     }
   }
@@ -385,11 +386,12 @@ class TransactionQueue {
     //check if there is error payload into response
     if (!transactionResponse.error) {
 
+      if(txHash) this.services.messageToUI(MESSAGE_EVENT_LABELS.TX_HASH, {txHash});
+
       //if transaction is external then send the response to spefic tab
       if (transactionResponse.payload.options?.externalTransaction && txHash) {
         const { externalTransaction } = transactionResponse.payload.options;
         const externalResponse = { method: externalTransaction.method, result: txHash }
-
         sendMessageToTab(externalTransaction?.tabId, new TabMessagePayload(externalTransaction.id, externalResponse));
       }
 
@@ -1095,7 +1097,7 @@ export class TransactionsRPC {
 
       }
     } catch (err) {
-      console.log("Error occured while swapping native to evm : ", err);
+      console.log("Error occured while swapping native to evm: ", err);
 
       transactionHistory.status = (transactionHistory.txHash && transactionHistory.intermidateHash) ? STATUS.PENDING : STATUS.FAILED;
 

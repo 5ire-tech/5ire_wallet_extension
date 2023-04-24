@@ -10,7 +10,7 @@ import SwapIcon from "../../Assets/SwapIcon.svg";
 import ComplSwap from "../../Assets/succeslogo.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import React, { useState, useContext } from "react";
-// import CopyIcon from "../../Assets/CopyIcon.svg";
+import CopyIcon from "../../Assets/CopyIcon.svg";
 import { isEmpty, isEqual } from "../../Utility/utility";
 // import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
@@ -35,10 +35,10 @@ function Swap() {
   const [error, setError] = useState("");
   const [amount, setAmount] = useState("");
   const [disableBtn, setDisable] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [toFrom, setToFrom] = useState({ from: NATIVE, to: EVM });
-  const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
+  const { state, estimatedGas, updateEstimatedGas, updateLoading, txHash, setTxHash } = useContext(AuthContext);
   const { balance, currentAccount } = state;
 
 
@@ -50,7 +50,6 @@ function Swap() {
 
 
   useEffect(() => {
-
     const getData = setTimeout(() => {
       if (!isEmpty(amount) && !error) {
         getFee();
@@ -99,6 +98,7 @@ function Swap() {
 
   const blockInvalidChar = e => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
 
+
   //set the ED toggler state
   const onChangeToggler = (checked) => {
     console.log(`switch to ${checked}`);
@@ -143,18 +143,12 @@ function Swap() {
 
   const handleApprove = async (e) => {
     try {
-
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
-
-        // updateLoading(true);
+        updateLoading(true);
         sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP, { value: amount, options: { account: state.currentAccount } });
-        setIsModalOpen(true);
-
       } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
-
-        // updateLoading(true);
+        updateLoading(true);
         sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP, { value: amount, options: { account: state.currentAccount } });
-        setIsModalOpen(true);
       }
 
       updateEstimatedGas("");
@@ -217,7 +211,7 @@ function Swap() {
     updateEstimatedGas(null);
     setDisable(true);
     setIsFaildOpen(false);
-    setIsModalOpen(false);
+    setTxHash(null);
   };
 
 
@@ -372,8 +366,10 @@ function Swap() {
         </div> */}
       </div>
       <Approve onClick={handleApprove} text="Swap" isDisable={disableBtn} />
+      
+      
       <ModalCustom
-        isModalOpen={isModalOpen}
+        isModalOpen={!!txHash}
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
         centered
@@ -383,7 +379,15 @@ function Swap() {
             <img src={ComplSwap} alt="swapIcon" width={127} height={127} draggable={false} />
             <h2 className="title">Swap Processed</h2>
              <p className="transId">Your Swapped Transaction ID</p>
-            <h3 className="hashTag">0ADX0SSD123211HJGT12641673653OL126416736GT12</h3>
+             <h3 className="hashTag">{txHash ? shortner(txHash): ""}</h3>
+              {txHash && <img
+              draggable={false}
+              src={CopyIcon}
+              alt="copyIcon"
+              name="naiveAddress"
+              style={{cursor: "pointer"}}
+              onClick={handleCopy}
+            />}
 
            {/* <span className="address">
               {txHash ? shortner(txHash) : ""}
@@ -404,6 +408,7 @@ function Swap() {
           </div>
         </div>
       </ModalCustom>
+           
       <ModalCustom
         isModalOpen={isFaildOpen}
         handleOk={handle_OK_Cancel}

@@ -25,7 +25,8 @@ export default function Context({ children }) {
   const [externalNativeTxDetails, setExternalNativeTxDetails] = useState(initialExternalNativeTransaction);
   const [passVerified, setPassVerified] = useState(false);
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
-  const [externalControlsState, setExternalControlState] = useState(externalControls)
+  const [externalControlsState, setExternalControlState] = useState(externalControls);
+  const [txHash, setTxHash] = useState(null);
 
 
   Browser.storage.local.onChanged.addListener((changedData) => {
@@ -43,6 +44,8 @@ export default function Context({ children }) {
         (!estimatedGas) && updateEstimatedGas(message.data.fee);
       } else if(message.event === MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS) {
         setExternalNativeTxDetails(message.data);
+      } else if(message.event === MESSAGE_EVENT_LABELS.TX_HASH) {
+        setTxHash(message.data.txHash);
       } else if (message.event === MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE) {
         createOrRestore(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.UNLOCK) {
@@ -159,6 +162,7 @@ export default function Context({ children }) {
   const values = {
     //data
     state,
+    txHash,
     userPass,
     passError,
     isLoading,
@@ -173,8 +177,8 @@ export default function Context({ children }) {
     externalNativeTxDetails,
 
     //data setters
-    setExternalNativeTxDetails,
     setState,
+    setTxHash,
     setAccName,
     setUserPass,
     updateState,
@@ -185,7 +189,8 @@ export default function Context({ children }) {
     setPrivateKey,
     setPassVerified,
     updateEstimatedGas,
-    setExternalControlState
+    setExternalControlState,
+    setExternalNativeTxDetails
   }
 
   return (

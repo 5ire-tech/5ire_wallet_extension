@@ -24,18 +24,22 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
   EXISTENTIAL_DEPOSITE,
+  COPIED
 } from "../../Constants/index";
+import { shortner } from "../../Helper/helper";
+import CopyIcon from "../../Assets/CopyIcon.svg";
+
+
 
 function Send() {
-
   const [isEd, setEd] = useState(true);
   const [disableBtn, setDisable] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [err, setErr] = useState({ to: "", amount: "" });
   const [data, setData] = useState({ to: "", amount: "" });
   const [activeTab, setActiveTab] = useState(NATIVE.toLowerCase());
-  const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
+  const { state, estimatedGas, updateEstimatedGas, updateLoading, txHash, setTxHash } = useContext(AuthContext);
 
   const { balance, currentAccount } = state;
 
@@ -200,29 +204,41 @@ function Send() {
     }
   };
 
+  const handleCopy = (e) => {
+    if (e.target.name.toLowerCase() === NATIVE.toLowerCase())
+      navigator.clipboard.writeText(currentAccount?.nativeAddress);
+
+    if (e.target.name.toLowerCase() === EVM.toLowerCase())
+      navigator.clipboard.writeText(currentAccount?.evmAddress);
+
+    // if (e.target.name.toLowerCase() === "hash")
+    //   navigator.clipboard.writeText(txHash);
+
+    toast.success(COPIED);
+  };
+
   const handleApprove = async () => {
     try {
 
       if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
         //pass the message request for evm transfer
+        updateLoading(true);
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.INTERNAL_TX,
           MESSAGE_EVENT_LABELS.EVM_TX,
           { to: data.to, value: data.amount, options: { account: state.currentAccount } }
         );
-        setIsModalOpen(true);
-
 
       } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
 
         //pass the message request for native transfer
+        updateLoading(true);
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.INTERNAL_TX,
           MESSAGE_EVENT_LABELS.NATIVE_TX,
           { to: data.to, value: data.amount, options: { account: state.currentAccount } }
         );
-        setIsModalOpen(true);
       }
 
       updateEstimatedGas("");
@@ -243,10 +259,12 @@ function Send() {
   const handle_OK_Cancel = () => {
     updateEstimatedGas(null);
     setDisable(true);
-    setIsModalOpen(false);
     setIsFaildOpen(false);
     setData({ to: "", amount: "" });
+    setTxHash(null);
   };
+
+
 
   return (
     <>
@@ -326,7 +344,7 @@ function Send() {
       <Approve onClick={handleApprove} text="Transfer" isDisable={disableBtn} />
 
       <ModalCustom
-        isModalOpen={isModalOpen}
+        isModalOpen={!!txHash}
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
         centered
@@ -342,15 +360,15 @@ function Send() {
             />
             <h2 className="title">Transfer Processed</h2>
             <p className="transId">Your Transaction ID</p>
-            <h3 className="hashTag">0ADX0SSD123211HJGT12641673653OL126416736GT12</h3>
-            {/* <span className="address">{shortner(txHash)}</span> */}
-            {/* <img
+            <h3 className="hashTag">{txHash ? shortner(txHash): ""}</h3>
+              {txHash && <img
               draggable={false}
               src={CopyIcon}
               alt="copyIcon"
+              style={{cursor: "pointer"}}
               name="naiveAddress"
               onClick={handleCopy}
-            /> */}
+            />}
 
             <div className="footerbuttons">
               <ButtonComp text={"Transfer Again"} onClick={handle_OK_Cancel} />

@@ -231,6 +231,7 @@ export const MESSAGE_EVENT_LABELS = {
     UPDATE_TX_HISTORY: "txupdatehistory",
     EVM_TO_NATIVE_SWAP: "evmToNativeSwap",
     CLOSE_POPUP_SESSION: "closePopupSession",
+    TX_HASH: "txHash",
 
     LOCK: "lock",
     UNLOCK: "unlock",
