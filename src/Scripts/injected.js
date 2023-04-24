@@ -27,13 +27,13 @@ injectedStream.on("data", (data) => {
     }, 1000 * 30);
   }
 
-  
+
   //emit the tab events
   if (data?.event) {
-    if(data?.event === TABS_EVENT.NETWORK_CHANGE_EVENT) fireProvider.httpHost = data.response.result?.url;
+    if (data?.event === TABS_EVENT.NETWORK_CHANGE_EVENT) fireProvider.httpHost = data.response?.result?.url;
     fireProvider.emit(data.event, data.response);
     return;
-  } 
+  }
 
   //get specfic handler using id and resolve or reject it
   if (data.id) {
