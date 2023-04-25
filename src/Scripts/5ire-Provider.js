@@ -128,7 +128,6 @@ export class FireProvider extends SafeEventEmitter {
   //inject the http endpoint for specfic network
   async injectHttpProvider() {
     const result = await this.passReq("get_endPoint", null)
-    console.log("here is endpoint: ", result);
     if (result) this.httpHost = result;
   }
 

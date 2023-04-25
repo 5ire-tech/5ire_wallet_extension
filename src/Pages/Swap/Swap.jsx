@@ -26,6 +26,7 @@ import {
   MESSAGE_TYPE_LABELS,
   EXISTENTIAL_DEPOSITE,
   MESSAGE_EVENT_LABELS,
+  TX_TYPE,
 } from "../../Constants/index";
 import { Switch, Tooltip } from "antd";
 
@@ -145,10 +146,10 @@ function Swap() {
     try {
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
         updateLoading(true);
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP, { value: amount, options: { account: state.currentAccount } });
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP, { value: amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SEND} });
       } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
         updateLoading(true);
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP, { value: amount, options: { account: state.currentAccount } });
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP, { value: amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SEND } });
       }
 
       updateEstimatedGas("");
@@ -157,20 +158,22 @@ function Swap() {
     }
   };
 
+
+  //for getting the fee details
   const getFee = async () => {
 
     if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase()) {
-
       updateLoading(true);
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, { value: amount, options: { account: state.currentAccount } });
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, { value: amount, options: { account: state.currentAccount, network: state.currentNetwork}});
     } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase()) {
-
       updateLoading(true);
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, { value: amount, options: { account: state.currentAccount } });
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, { value: amount, options: { account: state.currentAccount, network: state.currentNetwork}});
     }
 
     updateEstimatedGas(null);
   };
+
+
 
   const handleChange = (e) => {
     const val = e.target.value;

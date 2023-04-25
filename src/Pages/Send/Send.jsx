@@ -24,7 +24,8 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
   EXISTENTIAL_DEPOSITE,
-  COPIED
+  COPIED,
+  TX_TYPE
 } from "../../Constants/index";
 import { shortner } from "../../Helper/helper";
 import CopyIcon from "../../Assets/CopyIcon.svg";
@@ -160,12 +161,12 @@ function Send() {
     if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
       updateLoading(true);
       //calculate the native fee
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, { value: data.amount, toAddress: data.to, options: { account: state.currentAccount, } });
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, { value: data.amount, toAddress: data.to, options: { account: state.currentAccount, network: state.currentNetwork} });
     }
     else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
       updateLoading(true);
       //calculate the evm fee
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, { value: data.amount, toAddress: data.to, options: { account: state.currentAccount, } });
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, { value: data.amount, toAddress: data.to, options: { account: state.currentAccount, network: state.currentNetwork} });
     }
   };
 
@@ -227,7 +228,7 @@ function Send() {
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.INTERNAL_TX,
           MESSAGE_EVENT_LABELS.EVM_TX,
-          { to: data.to, value: data.amount, options: { account: state.currentAccount } }
+          { to: data.to, value: data.amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SEND }}
         );
 
       } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
@@ -237,7 +238,7 @@ function Send() {
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.INTERNAL_TX,
           MESSAGE_EVENT_LABELS.NATIVE_TX,
-          { to: data.to, value: data.amount, options: { account: state.currentAccount } }
+          { to: data.to, value: data.amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SEND } }
         );
       }
 
