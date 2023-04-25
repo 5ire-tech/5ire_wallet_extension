@@ -65,8 +65,6 @@ injectedStream.on("data", (data) => {
         handler?.isCb && handler.cb(res);
         handler?.resolve(res);
       } else {
-
-        console.log("data is here ", data, handler);
         handler?.isCb && handler.cb(data.response);
         handler?.resolve(data.response?.result ? data.response.result : data.response);
       }

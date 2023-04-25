@@ -226,12 +226,10 @@ export class ExternalConnection {
     //inject the current net endpoint to injected global
     async sendEndPoint(data, state) {
       try {
-
-        log("inside the send endpoint: ", data, state)
   
         if (data?.tabId) {
           //pass the current network http endpoint
-          sendMessageToTab(data.tabId, new TabMessagePayload(data.id, { result: HTTP_END_POINTS[state.currentNetwork.toUpperCase()] }))
+          sendMessageToTab(data.tabId, new TabMessagePayload(data.id, { result: HTTP_END_POINTS[state.currentNetwork.toUpperCase()]}))
         }
       } catch (err) {
          console.log("Error while sending the endpoint: ", err);
