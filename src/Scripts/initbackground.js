@@ -20,8 +20,7 @@ import { Connection } from "../Helper/connection.helper";
 import { Error, ErrorPayload } from "../Utility/error_helper"
 import { sendMessageToTab, sendRuntimeMessage } from "../Utility/message_helper";
 import { assert, compactToU8a, isHex, u8aConcat, u8aEq, u8aWrapBytes } from "@polkadot/util"
-// import Keyring from "@polkadot/keyring";
-// import { nativeMethod } from "./nativehelper";
+
 
 //for initilization of background events
 export class InitBackground {
@@ -36,7 +35,11 @@ export class InitBackground {
     this.rpcRequestProcessor = RpcRequestProcessor.getInstance();
     this.internalHandler = ExternalConnection.getInstance();
     this.externalTaskHandler = new ExternalTxTasks();
-    this.keyringHandler = new KeyringHandler();
+    this.keyringHandler = KeyringHandler.getInstance();
+
+    if(!InitBackground.balanceTimer) {
+      InitBackground.balanceTimer = this._balanceUpdate();
+    }
   }
 
   //init the background events
@@ -97,7 +100,7 @@ export class InitBackground {
         await this.externalTaskHandler.processExternalTask(message, localData);
         return;
       } else if (message?.type === MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING) {
-        await this.keyringHandler.keyringHelper(message);
+        await this.keyringHandler.keyringHelper(message, localData);
         // Promise.resolve(true);
 
         return;
@@ -170,16 +173,16 @@ export class InitBackground {
         ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.CONNECTION);
 
         //auto update the balance
-        if (!isNullorUndef(InitBackground.balanceTimer)) clearInterval(InitBackground.balanceTimer)
-        InitBackground.balanceTimer = this._balanceUpdate();
+        // if (!isNullorUndef(InitBackground.balanceTimer)) clearInterval(InitBackground.balanceTimer)
+        // InitBackground.balanceTimer = this._balanceUpdate();
 
         //handle the popup close event
         port?.onDisconnect.addListener(() => {
           //clear the Interval on popup close
-          if (!isNullorUndef(InitBackground.balanceTimer)) {
-            clearInterval(InitBackground.balanceTimer)
-            InitBackground.balanceTimer = null;
-          }
+          // if (!isNullorUndef(InitBackground.balanceTimer)) {
+          //   clearInterval(InitBackground.balanceTimer)
+          //   InitBackground.balanceTimer = null;
+          // }
         });
       }
     });
@@ -495,6 +498,7 @@ export class ExtensionEventHandle {
     this.transactionQueue = TransactionQueue.getInstance();
     this.rpcRequestProcessor = RpcRequestProcessor.getInstance();
     this.bindAllEvents();
+    
   }
 
 
@@ -1392,7 +1396,7 @@ export class KeyringHandler {
   }
 
   //If there is already an instance of this class then it will return this otherwise this will create it.
-  getInstance = () => {
+  static getInstance = () => {
     if (!KeyringHandler.instance) {
       KeyringHandler.instance = new KeyringHandler();
       delete KeyringHandler.constructor;
@@ -1400,7 +1404,7 @@ export class KeyringHandler {
     return KeyringHandler.instance;
   }
 
-  keyringHelper = async (message) => {
+  keyringHelper = async (message, state) => {
     try {
 
       if (this.hybridKeyring[message.event]) {

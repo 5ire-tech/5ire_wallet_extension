@@ -247,7 +247,8 @@ export const INTERNAL_EVENT_LABELS = {
     CONNECTION: "connection",
     BALANCE_FETCH: "balanceFetch",
     NEW_TRANSACTION_INQUEUE: "newTransactionInQueue",
-    ERROR: "error"
+    ERROR: "error",
+    KEYRING_FETCH: "keyringFetch"
 }
 
 export const STATE_CHANGE_ACTIONS = {
