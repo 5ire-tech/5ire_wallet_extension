@@ -146,10 +146,10 @@ function Swap() {
     try {
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
         updateLoading(true);
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP, { value: amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SEND} });
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP, { value: amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SWAP, isEvm: true, to: LABELS.EVM_TO_NATIVE } });
       } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
         updateLoading(true);
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP, { value: amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SEND } });
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP, { value: amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SWAP, isEvm: false, to: LABELS.NATIVE_TO_EVM } });
       }
 
       updateEstimatedGas("");
@@ -164,10 +164,10 @@ function Swap() {
 
     if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase()) {
       updateLoading(true);
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, { value: amount, options: { account: state.currentAccount, network: state.currentNetwork}});
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, { value: amount, options: { account: state.currentAccount}});
     } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase()) {
       updateLoading(true);
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, { value: amount, options: { account: state.currentAccount, network: state.currentNetwork}});
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, { value: amount, options: { account: state.currentAccount}});
     }
 
     updateEstimatedGas(null);

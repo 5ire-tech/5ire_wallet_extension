@@ -156,17 +156,17 @@ function Send() {
     }
   };
 
-  const getFee = async () => {
 
+  const getFee = async () => {
     if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
       updateLoading(true);
       //calculate the native fee
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, { value: data.amount, toAddress: data.to, options: { account: state.currentAccount, network: state.currentNetwork} });
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, { value: data.amount, toAddress: data.to, options: { account: state.currentAccount} });
     }
     else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
       updateLoading(true);
       //calculate the evm fee
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, { value: data.amount, toAddress: data.to, options: { account: state.currentAccount, network: state.currentNetwork} });
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, { value: data.amount, toAddress: data.to, options: { account: state.currentAccount} });
     }
   };
 
@@ -228,7 +228,7 @@ function Send() {
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.INTERNAL_TX,
           MESSAGE_EVENT_LABELS.EVM_TX,
-          { to: data.to, value: data.amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SEND }}
+          { to: data.to, value: data.amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SEND, isEvm: true }}
         );
 
       } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
@@ -238,7 +238,7 @@ function Send() {
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.INTERNAL_TX,
           MESSAGE_EVENT_LABELS.NATIVE_TX,
-          { to: data.to, value: data.amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SEND } }
+          { to: data.to, value: data.amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SEND, isEvm: false } }
         );
       }
 

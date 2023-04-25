@@ -5,7 +5,7 @@ import { AuthContext } from "../../Store";
 import browser from "webextension-polyfill";
 import { useNavigate } from "react-router-dom";
 import ButtonComp from "../ButtonComp/ButtonComp";
-import { EVM_JSON_RPC_METHODS, LABELS, STATE_CHANGE_ACTIONS, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, ERROR_MESSAGES } from "../../Constants/index";
+import { EVM_JSON_RPC_METHODS, LABELS, STATE_CHANGE_ACTIONS, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, ERROR_MESSAGES, TX_TYPE } from "../../Constants/index";
 import { useDispatch, useSelector } from "react-redux";
 import { newAccountInitialState } from "../../Store/initialState";
 import { connectionObj, Connection } from "../../Helper/connection.helper";
@@ -169,7 +169,10 @@ export const ApproveTx = () => {
 
 
   function handleClick(isApproved) {
-    if (isApproved) sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.EVM_TX, {options: {account: state.currentAccount}});
+    if (isApproved) {
+      const txType = activeSession.message?.data && activeSession.message?.to ? TX_TYPE.CONTRACT_EXECUTION : TX_TYPE.CONTRACT_DEPLOYMENT;
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.EVM_TX, {options: { account: state.currentAccount, network: state.currentNetwork, type: txType, isEvm: true }});
+    }
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION, {approve: isApproved});
     navigate(ROUTES.WALLET);
   }

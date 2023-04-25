@@ -37,6 +37,10 @@ export class InitBackground {
     this.internalHandler = ExternalConnection.getInstance();
     this.keyringHandler = KeyringHandler.getInstance();
     this.externalTaskHandler = new ExternalTxTasks();
+    
+    if(!InitBackground.balanceTimer) {
+      InitBackground.balanceTimer = this._balanceUpdate();
+    }
   }
 
   //init the background events
@@ -166,16 +170,16 @@ export class InitBackground {
         ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.CONNECTION);
 
         //auto update the balance
-        if (!isNullorUndef(InitBackground.balanceTimer)) clearInterval(InitBackground.balanceTimer)
-        InitBackground.balanceTimer = this._balanceUpdate();
+        // if (!isNullorUndef(InitBackground.balanceTimer)) clearInterval(InitBackground.balanceTimer)
+        // InitBackground.balanceTimer = this._balanceUpdate();
 
         //handle the popup close event
         port?.onDisconnect.addListener(() => {
           //clear the Interval on popup close
-          if (!isNullorUndef(InitBackground.balanceTimer)) {
-            clearInterval(InitBackground.balanceTimer)
-            InitBackground.balanceTimer = null;
-          }
+          // if (!isNullorUndef(InitBackground.balanceTimer)) {
+          //   clearInterval(InitBackground.balanceTimer)
+          //   InitBackground.balanceTimer = null;
+          // }
         });
       }
     });
@@ -331,14 +335,11 @@ class TransactionQueue {
   //add new transaction
   addNewTransaction = async (transactionProcessingPayload) => {
     //add the transaction history track
-    if (transactionProcessingPayload.type !== MESSAGE_EVENT_LABELS.NV_TX) {
-      const state = await getDataLocal(LABELS.STATE);
-      const { data } = transactionProcessingPayload;
-      transactionProcessingPayload.transactionHistoryTrack = new TransactionPayload(data?.to, data?.value ? parseFloat(data?.value).toString() : "", null, state.currentNetwork);
+      const { data, options } = transactionProcessingPayload;
+      transactionProcessingPayload.transactionHistoryTrack = new TransactionPayload(data?.to || options?.to, data?.value ? parseFloat(data?.value).toString() : "", options?.isEvm, options?.network, options?.type);
 
       //insert transaction history with flag "Queued"
       await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY, transactionProcessingPayload.transactionHistoryTrack, transactionProcessingPayload.options);
-    }
 
     //add the new transaction into queue
     await this.services.updateLocalState(STATE_CHANGE_ACTIONS.ADD_NEW_TRANSACTION, transactionProcessingPayload, { localStateKey: LABELS.TRANSACTION_QUEUE });
@@ -552,7 +553,7 @@ export class ExtensionEventHandle {
       const state = await getDataLocal(LABELS.STATE);
 
       //if account is not created
-      if (!state.currentAccount) return;
+      if (!state.currentAccount.accountName) return;
 
       await this.rpcRequestProcessor.rpcCallsMiddleware({ event: MESSAGE_EVENT_LABELS.BALANCE, type: MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, data: {} }, state);
     })
@@ -786,14 +787,13 @@ export class TransactionsRPC {
 
       const { data, transactionHistoryTrack, contractBytecode } = message;
       const { options: { account } } = data;
-      const { evmApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
+      const network = transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase()
+      const { evmApi } = NetworkHandler.api[network];
 
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
       transactionHistory = {
         ...transactionHistoryTrack,
-        isEvm: true,
-        type: contractBytecode ? data.to ? TX_TYPE.CONTRACT_EXECUTION : TX_TYPE.CONTRACT_DEPLOYMENT : TX_TYPE.SEND,
         status: STATUS.PENDING
       };
 
@@ -876,16 +876,13 @@ export class TransactionsRPC {
     try {
       const { data, transactionHistoryTrack } = message;
       const { options: { account } } = data;
-      const { evmApi, nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
-
+      const network = transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
+      const { evmApi, nativeApi } = NetworkHandler.api[network];
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
       transactionHistory = {
         ...transactionHistoryTrack,
-        isEvm: true,
-        type: TX_TYPE.SWAP,
-        status: STATUS.PENDING,
-        to: LABELS.EVM_TO_NATIVE
+        status: STATUS.PENDING
       }
 
       if (Number(data.value) >= Number(state.balance.evmBalance) || Number(data.value) <= 0) {
@@ -955,7 +952,8 @@ export class TransactionsRPC {
     try {
       const { data, transactionHistoryTrack } = message;
       const { options: { account } } = data;
-      const { nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
+      const network = transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
+      const { nativeApi } = NetworkHandler.api[network];
 
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
@@ -965,8 +963,6 @@ export class TransactionsRPC {
 
         transactionHistory = {
           ...transactionHistoryTrack,
-          isEvm: false,
-          type: TX_TYPE.SEND,
           status: STATUS.PENDING
         };
 
@@ -1054,7 +1050,8 @@ export class TransactionsRPC {
     try {
       const { data, transactionHistoryTrack } = message;
       const { options: { account } } = data;
-      const { nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
+      const network = transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
+      const { nativeApi } = NetworkHandler.api[network];
 
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
@@ -1064,10 +1061,7 @@ export class TransactionsRPC {
 
         transactionHistory = {
           ...transactionHistoryTrack,
-          isEvm: false,
-          type: TX_TYPE.SWAP,
-          status: STATUS.PENDING,
-          to: LABELS.NATIVE_TO_EVM
+          status: STATUS.PENDING
         };
 
 
@@ -1493,7 +1487,6 @@ export class KeyringHandler {
     }
   }
 }
-
 
 //network task handler
 class NetworkHandler {
