@@ -1,17 +1,24 @@
+import { ROUTES } from "../Routes/index";
 import Browser from "webextension-polyfill";
-import { userState, newAccountInitialState, externalControls, initialExternalNativeTransaction } from "./initialState";
+import { useNavigate } from "react-router-dom";
 import { isManifestV3 } from "../Scripts/utils";
 import { createContext, useState } from "react";
 import { isNullorUndef, log } from "../Utility/utility";
 import { sessionStorage, localStorage } from "../Storage";
 import { bindRuntimeMessageListener } from "../Utility/message_helper";
 import { MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, LABELS } from "../Constants";
+import {
+  userState,
+  externalControls,
+  newAccountInitialState,
+  initialExternalNativeTransaction
+} from "./initialState";
 
 
 export const AuthContext = createContext();
 
 export default function Context({ children }) {
-
+  const navigate = useNavigate();
   const [state, setState] = useState(userState);
   const [passError, setPassError] = useState("");
   const [userPass, setUserPass] = useState(null);
@@ -25,7 +32,7 @@ export default function Context({ children }) {
   const [passVerified, setPassVerified] = useState(false);
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
   const [externalControlsState, setExternalControlState] = useState(externalControls)
-  
+
 
   Browser.storage.local.onChanged.addListener((changedData) => {
     //change the state whenever the local storage is updated
@@ -40,7 +47,7 @@ export default function Context({ children }) {
     if (message.type === MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND) {
       if (message.event === MESSAGE_EVENT_LABELS.EVM_FEE || message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE) {
         (!estimatedGas) && updateEstimatedGas(message.data.fee);
-      } else if(message.event === MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS) {
+      } else if (message.event === MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS) {
         log("data is here: ", message)
         setExternalNativeTxDetails(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE) {
@@ -60,6 +67,8 @@ export default function Context({ children }) {
         exportPrivatekey(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE) {
         exportSeedPhrase(message.data);
+      } else if (message.event === MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC) {
+        importAccountByMnemonics(message.data);
       }
 
       updateLoading(false);
@@ -109,6 +118,16 @@ export default function Context({ children }) {
       setNewAccount(data.newAccount);
     }
   };
+  
+  // set the new Account
+  const importAccountByMnemonics = (data) => {
+    if (data?.vault && data?.newAccount) {
+      navigate(ROUTES.WALLET)
+    }
+   
+  };
+
+
 
   const unlock = (data) => {
     if (data?.errMessage) {
@@ -121,11 +140,15 @@ export default function Context({ children }) {
   };
 
   const addAccount = (data) => {
-    setNewAccount(data.newAccount);
+    setNewAccount(data?.newAccount);
   };
 
   const getAccounts = (data) => {
-    // console.log("Data : ", data);
+    if (data?.isInitialAccount) {
+      navigate(ROUTES.DEFAULT)
+      setNewAccount(newAccountInitialState);
+    }
+
     setAllAccounts(data?.accounts ? data.accounts : data);
   };
 
@@ -151,6 +174,13 @@ export default function Context({ children }) {
     updateState(LABELS.TX_HISTORY, newTx)
   }
 
+  // // remove Vault && pass
+  // const resetVaultAndPass = (data) => {
+  //   console.log("DATA ::: ", data);
+  //   console.log("resetVaultAndPass  in Context :;;;; ");
+  //   setNewAccount(newAccountInitialState)
+  // }
+
   const values = {
     //data
     state,
@@ -168,7 +198,6 @@ export default function Context({ children }) {
     externalNativeTxDetails,
 
     //data setters
-    setExternalNativeTxDetails,
     setState,
     setAccName,
     setUserPass,
@@ -180,7 +209,9 @@ export default function Context({ children }) {
     setPrivateKey,
     setPassVerified,
     updateEstimatedGas,
-    setExternalControlState
+    setExternalControlState,
+    importAccountByMnemonics,
+    setExternalNativeTxDetails,
   }
 
   return (

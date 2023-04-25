@@ -98,6 +98,8 @@ export class InitBackground {
         return;
       } else if (message?.type === MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING) {
         await this.keyringHandler.keyringHelper(message);
+        // Promise.resolve(true);
+
         return;
       } else if (message?.type === MESSAGE_TYPE_LABELS.NETWORK_HANDLER) {
         this.networkHandler.handleNetworkRelatedTasks(message, localData);
@@ -691,6 +693,7 @@ export class Services {
   //pass message to extension ui
   messageToUI = async (event, message) => {
     try {
+      // await  sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND, event, message)
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND, event, message)
     } catch (err) {
       console.log("Error while sending the message to extension ui: ", err);
@@ -1402,6 +1405,7 @@ export class KeyringHandler {
 
       if (this.hybridKeyring[message.event]) {
         const keyringResponse = await this._keyringCaller(message);
+        // await  this._parseKeyringRes(keyringResponse);
         this._parseKeyringRes(keyringResponse);
 
       } else {
@@ -1436,11 +1440,13 @@ export class KeyringHandler {
         if (response.stateChangeKey)
           await this.services.updateLocalState(response.stateChangeKey, response.payload, response.payload?.options);
         //send the response message to extension ui
+        // if (response.eventEmit)await this.services.messageToUI(response.eventEmit, response.payload)
         if (response.eventEmit) this.services.messageToUI(response.eventEmit, response.payload)
 
       } else {
         console.log("in the processing the unit, error section: ", response);
         if (Number(response?.error?.errCode) === 3) {
+          // if (response.eventEmit)await this.services.messageToUI(response.eventEmit, response.error)
           if (response.eventEmit) this.services.messageToUI(response.eventEmit, response.error)
         }
       }

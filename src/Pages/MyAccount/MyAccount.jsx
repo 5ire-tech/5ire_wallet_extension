@@ -34,7 +34,7 @@ function MyAccount() {
   const [accounts, setAccounts] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [addressToRemove, setAddressToRemove] = useState(null);
-  const { allAccounts, state, updateState, removeHistory, externalControlsState} = useContext(AuthContext);
+  const { allAccounts, state, updateState, removeHistory, externalControlsState } = useContext(AuthContext);
   const { connectedApps } = externalControlsState;
   const { balance, currentAccount } = state;
 
@@ -50,7 +50,7 @@ function MyAccount() {
     } else {
 
       //Remove account
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT, { address: addressToRemove });
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT, { address: addressToRemove, isInitialAccount: false });
       if (
         currentAccount.evmAddress === addressToRemove ||
         currentAccount.nativeAddress === addressToRemove
@@ -68,7 +68,7 @@ function MyAccount() {
     }
     handle_OK_Cancel();
   };
-  
+
   const hanldeCreateNewAcc = () => {
     navigate(ROUTES.CREATE_WALLET);
   };
@@ -95,15 +95,15 @@ function MyAccount() {
     const acc = accounts.find(acc => acc.accountName === name);
     updateCurrentAccount(acc);
   };
-  
+
   //update the current account
   const updateCurrentAccount = (acc) => {
 
-    updateState(LABELS.CURRENT_ACCOUNT, acc);  
+    updateState(LABELS.CURRENT_ACCOUNT, acc);
     //fetch balance of changed account
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.BALANCE, {});
-      //send account details whenever account is changed
-      sendEventToTab(new TabMessagePayload(ACCOUNT_CHANGED_EVENT, {evmAddress: acc.evmAddress, nativeAddress: acc.nativeAddress}, ACCOUNT_CHANGED_EVENT), connectedApps)
+    //send account details whenever account is changed
+    sendEventToTab(new TabMessagePayload(ACCOUNT_CHANGED_EVENT, { evmAddress: acc.evmAddress, nativeAddress: acc.nativeAddress }, ACCOUNT_CHANGED_EVENT), connectedApps)
   }
 
 

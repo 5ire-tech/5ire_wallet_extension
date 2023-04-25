@@ -69,7 +69,6 @@ function Swap() {
     if (!estimatedGas) setDisable(true);
 
     else {
-      console.log("Is ED ::: ", isEd);
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
         if ((Number(amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0)) >= Number(balance.evmBalance)) {
           updateEstimatedGas(null);
@@ -101,7 +100,6 @@ function Swap() {
 
   //set the ED toggler state
   const onChangeToggler = (checked) => {
-    console.log(`switch to ${checked}`);
     setEd(checked);
     updateEstimatedGas(null);
     setError("");

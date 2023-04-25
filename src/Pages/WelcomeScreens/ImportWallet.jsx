@@ -98,7 +98,6 @@ function ImportWallet() {
 
           sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: userPass, opts: { mnemonic: data.key, name: data.accName.trim() }, type: "import" });
           
-          // navigate(ROUTES.WALLET);
 
         } else {
           const match = allAccounts?.find((a) => a.accountName === data.accName.trim());
@@ -109,9 +108,9 @@ function ImportWallet() {
               acc: ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS,
             }));
           }else{
-            //todo
+          
             sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC, { mnemonic: data.key, name: data.accName.trim() });
-            navigate(ROUTES.WALLET);
+         
           }
 
         }

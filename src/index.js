@@ -7,7 +7,7 @@ import { localStorage } from "./Storage";
 import browser from "webextension-polyfill";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { CONNECTION_NAME, EMTY_STR, LABELS} from "./Constants";
+import { CONNECTION_NAME, EMTY_STR, LABELS } from "./Constants";
 import { getDataLocal } from "../src/Storage/loadstore"
 import { sessionStorage } from "../src/Storage/index";
 import { log } from "./Utility/utility";
@@ -44,8 +44,8 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 //init the main app
 const initApp = (data, externalControlsState) => {
   root.render(
-    <Context>
-      <MemoryRouter>
+    <MemoryRouter>
+      <Context>
         <App data={data} externalControlsState={externalControlsState} />
         <ToastContainer
           position="top-right"
@@ -59,8 +59,8 @@ const initApp = (data, externalControlsState) => {
           pauseOnHover
           theme="colored"
         />
-      </MemoryRouter>
-    </Context>
+      </Context>
+    </MemoryRouter>
   );
 };
 
@@ -70,7 +70,7 @@ const initApp = (data, externalControlsState) => {
 
     //inject the current state into main app
     const currentLocalState = await getDataLocal(LABELS.STATE);
-    const externalControlsState  = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+    const externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
     const loginState = await sessionStorage.get(LABELS.ISLOGIN);
 
     currentLocalState.isLogin = !loginState?.isLogin ? false : currentLocalState?.isLogin;
