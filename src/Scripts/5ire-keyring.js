@@ -188,7 +188,6 @@ export class HybridKeyring extends EventEmitter {
      */
     // async createOrRestore(password, opts = {}) {
     async createOrRestore(message) {
-        console.log("--------createOrRestore--------", message)
 
         let { password, opts, type } = message.data;
 
@@ -260,6 +259,7 @@ export class HybridKeyring extends EventEmitter {
         const existingHdAccounts = oldAccounts.length
         const mainPair = HybridKeyring.polkaKeyring.getPair(oldAccounts[0]?.nativeAddress);
         const newKr = mainPair.derive("//" + existingHdAccounts);
+        HybridKeyring.polkaKeyring.addPair(newKr)
         const newAcc = {
             nativeAddress: newKr.address,
             evmAddress: Web3.utils.toChecksumAddress(eth[0]),
@@ -657,6 +657,7 @@ export class HybridKeyring extends EventEmitter {
             for (let i = 1; i < data.numberOfAccounts; i++) {
                 const derivedPair = keyringPair.derive("//" + i);
                 // const derivedPair = HybridKeyring.polkaKeyring.addFromUri(data.mnemonic + "//" + i)
+                HybridKeyring.polkaKeyring.addPair(derivedPair)
                 accounts.push(derivedPair.address)
             }
         }
