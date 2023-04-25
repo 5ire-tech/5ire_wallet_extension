@@ -287,7 +287,7 @@ function BalanceDetails({ mt0 }) {
                             },
                           ],
                         }}
-                        trigger="click"
+                        trigger="hover"
                       >
                         <Space style={{ cursor: "pointer" }}>
                           <img src={Info} />

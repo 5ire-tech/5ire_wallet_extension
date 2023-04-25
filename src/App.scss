@@ -475,10 +475,10 @@
     cursor: pointer;
   }
 }
-:where(.css-mxhywb).ant-dropdown .ant-dropdown-menu,
-:where(.css-mxhywb).ant-dropdown-menu-submenu .ant-dropdown-menu {
-  background-color: #06142cf7;
-  border: 1px solid #fff;
+.ant-dropdown .ant-dropdown-menu,
+.ant-dropdown-menu-submenu .ant-dropdown-menu {
+  background-color: #06142cf7 !important;
+  // border: 1px solid #fff !important;
 }
 .pasteTextArea {
   transform: translateY(-50%);
