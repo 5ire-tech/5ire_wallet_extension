@@ -118,13 +118,13 @@ export default function Context({ children }) {
       setNewAccount(data.newAccount);
     }
   };
-  
+
   // set the new Account
   const importAccountByMnemonics = (data) => {
     if (data?.vault && data?.newAccount) {
       navigate(ROUTES.WALLET)
     }
-   
+
   };
 
 

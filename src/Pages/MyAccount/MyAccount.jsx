@@ -50,7 +50,7 @@ function MyAccount() {
     } else {
 
       //Remove account
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT, { address: addressToRemove, isInitialAccount: false });
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT, { address: addressToRemove });
       if (
         currentAccount.evmAddress === addressToRemove ||
         currentAccount.nativeAddress === addressToRemove

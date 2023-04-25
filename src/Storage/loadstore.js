@@ -212,9 +212,7 @@ export class ExtensionStorageHandler {
         }
 
         this._updateSession(LABELS.ISLOGIN, true);
-        setTimeout(async () => {
-            return await this._updateStorage(newState);
-        }, 2000);
+        return await this._updateStorage(newState);
     };
 
 
@@ -257,12 +255,12 @@ export class ExtensionStorageHandler {
 
     // remove specific account 
     removeAccount = async (message, state) => {
-        console.log("HERE MESSAGE REMOVE", message);
         const newState = { ...state, vault: message.vault };
         if (message?.isInitialAccount) {
             newState.isLogin = false
         }
         return await this._updateStorage(newState);
+
     }
 
     // remove specific account 

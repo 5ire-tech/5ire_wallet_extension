@@ -12,6 +12,7 @@ import SimpleKeyring from '@metamask/eth-simple-keyring';
 import { WALLET_TYPES, KEYRING_EVENTS } from "../Constants";
 import { ERRCODES, ERROR_MESSAGES } from "../Constants/index";
 import { ErrorPayload, Error } from "../Utility/error_helper";
+import { message } from "antd";
 // import { mnemonicToMiniSecret, ed25519PairFromSeed } from "@polkadot/util-crypto";
 
 
@@ -87,7 +88,6 @@ export class HybridKeyring extends EventEmitter {
    * @param {string} vault 
    */
     async loadPersistData(password, vault) {
-
         const res = await protector.decryptWithDetail(password, vault);
 
 
@@ -188,6 +188,7 @@ export class HybridKeyring extends EventEmitter {
      */
     // async createOrRestore(password, opts = {}) {
     async createOrRestore(message) {
+        console.log("--------createOrRestore--------", message)
 
         let { password, opts, type } = message.data;
 
@@ -425,7 +426,7 @@ export class HybridKeyring extends EventEmitter {
     * @param {object} message 
     */
     async removeAccount(message) {
-        const { address, isInitialAccount } = message?.data;
+        const { address } = message?.data;
         const password = message?.data?.password ? message?.data?.password : HybridKeyring.password;
 
         await this._verifyPassword(password);
@@ -456,7 +457,7 @@ export class HybridKeyring extends EventEmitter {
         let payload = {
             vault: null,
             accounts: [],
-            isInitialAccount
+            isInitialAccount: true
         }
 
         //Persist state
@@ -466,6 +467,7 @@ export class HybridKeyring extends EventEmitter {
                 vault: prsistRes.vault,
                 accounts: HybridKeyring.accounts
             }
+            payload.isInitialAccount = false;
 
         } else {
             await this.resetVaultAndPass();
@@ -735,6 +737,7 @@ export class HybridKeyring extends EventEmitter {
      * @param {string} password 
      */
     async _persistData(password) {
+
         const res = await protector.encryptWithDetail(password, HybridKeyring.keyrings);
         this.emit(KEYRING_EVENTS.STATE_CHANGED, res);
         HybridKeyring.vault = res.vault

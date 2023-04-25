@@ -62,7 +62,7 @@ export const FooterStepTwo = () => {
   const handleCancle = async () => {
 
     //Remove account
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT, { address: newAccount.evmAddress, isInitialAccount: true });
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT, { address: newAccount.evmAddress });
 
   };
 

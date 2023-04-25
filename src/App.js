@@ -62,6 +62,7 @@ function App(props) {
 
 
   useEffect(() => {
+
     const route = getParameterByName("route");
 
     //sync the current action route with main popup
@@ -77,17 +78,19 @@ function App(props) {
           redirectRoute: route ? ROUTES.DEFAULT + route : EMTY_STR,
         },
       });
+    } else if (isLogin && newAccount?.evmAddress && vault) {
+      navigate(ROUTES.NEW_WALLET_DETAILS);
+    }
+    else if (isLogin && vault) {
+      navigate(ROUTES.WALLET);
+
     } else if (!isLogin && !vault) {
       navigate(ROUTES.DEFAULT);
     }
-  }, [isLogin, vault]);
+  }, [isLogin, vault, newAccount?.evmAddress]);
 
 
-  useEffect(() => {
-    if (isLogin && !newAccount?.evmAddress && !externalControlsState.activeSession?.route)
-      navigate(ROUTES.WALLET);
 
-  }, [isLogin, newAccount?.evmAddress]);
 
 
   return (
