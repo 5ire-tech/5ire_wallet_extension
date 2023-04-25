@@ -168,6 +168,7 @@ function ForgotPassword() {
               onChange={handleChange}
               placeholder={"Enter mnemonic here"}
             />
+            <p className="pasteTextArea">Paste</p>
             <p className={style.errorText}>{error?.key ? error.key : ""}</p>
           </div>
           <div>

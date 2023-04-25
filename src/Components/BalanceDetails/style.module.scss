@@ -80,7 +80,7 @@
       background-position: center;
       background-size: cover;
       padding: 10px;
-      gap: 8px;
+      // gap: 8px;
       display: flex;
       // align-items: flex-end;
       border-radius: 6px;
@@ -364,7 +364,11 @@
         cursor: pointer;
       }
       span {
-        color: #37c4e1;
+        background: -webkit-linear-gradient(#0071ff, #54f0d1);
+        -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
         font-size: 14px;
       }
     }
@@ -382,3 +386,8 @@
 // .abc {
 //   background-color: red;
 // }
+.headerInfo{
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}

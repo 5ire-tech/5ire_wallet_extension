@@ -23,7 +23,7 @@
     // overflow-y: scroll;
     flex: 1 1;
     background-color: #08132c;
-    overflow: auto;
+    // overflow: auto;
   }
   &__logo {
     margin-bottom: 24px;
@@ -98,7 +98,9 @@
 }
 
 .inputFieldOnly {
-  input,textarea {
+  position: relative;
+  input,
+  textarea {
     background-color: transparent;
     border-radius: 12px;
     padding: 11px 16px;
@@ -109,8 +111,9 @@
       color: $white !important;
     }
   }
-  textarea{
+  textarea {
     height: 70px;
+    padding-right: 38px;
   }
 }
 .ant-input-group-wrapper {
@@ -196,12 +199,12 @@
       color: #8fa2b7;
       font-size: 14px;
     }
-    .hashTag{
+    .hashTag {
       font-size: 16px;
       color: #fff;
       text-align: center;
-    padding-bottom: 20px;
-    width: 100%;
+      padding-bottom: 20px;
+      width: 100%;
     }
     .address {
       color: $white;
@@ -251,7 +254,7 @@
   .ant-select-selector {
     background-color: transparent !important;
     border-radius: 20px !important;
-    height: 40px !important;
+    height: 34px !important;
     padding: 0 5px 0 12px !important;
     color: $white;
     border-color: $white !important;
@@ -262,6 +265,9 @@
       outline: none !important;
       box-shadow: unset !important;
     }
+  }
+  .ant-select-arrow {
+    color: #fff !important;
   }
 }
 .ant-select-dropdown {
@@ -304,7 +310,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  margin-top: 5px;
+  margin-top: 1px;
   font-size: 12px;
   font-weight: bold;
   color: $white;
@@ -344,9 +350,12 @@
   border-radius: 15px;
 }
 .ant-dropdown-menu-title-content {
-  color: $baseColor-Text;
+  color: #fff;
   font-size: 13px;
   font-weight: bold;
+}
+:where(.css-mxhywb).ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item {
+  padding: 0 5px;
 }
 
 .loader {
@@ -373,8 +382,8 @@
     font-weight: 600;
     font-size: 20px;
     line-height: 40px;
+    background: -webkit-linear-gradient(#0071ff, #54f0d1);
     text-align: center;
-    background: linear-gradient(91.26deg, #0071FF 0%, #54F0D1 100%);
     background-clip: border-box;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -408,32 +417,77 @@
   color: #000;
 }
 
-
 // Switch css-------------------
 :where(.css-mxhywb).ant-switch.ant-switch-checked {
-  background: linear-gradient(91.26deg, #0071FF 0%, #54F0D1 100%) !important;
+  background: linear-gradient(91.26deg, #0071ff 0%, #54f0d1 100%) !important;
 }
-:where(.css-mxhywb).ant-switch.ant-switch-checked:hover:not(.ant-switch-disabled) {
-  background: linear-gradient(91.26deg, #54F0D1 0%, #0071FF 100%) !important;
+:where(.css-mxhywb).ant-switch.ant-switch-checked:hover:not(
+    .ant-switch-disabled
+  ) {
+  background: linear-gradient(91.26deg, #54f0d1 0%, #0071ff 100%) !important;
 }
 :where(.css-mxhywb).ant-switch:hover:not(.ant-switch-disabled) {
   background: transparent;
-  border: 1px solid #54F0D1;
+  border: 1px solid #54f0d1;
 }
 :where(.css-mxhywb).ant-switch {
-  border: 1px solid #54F0D1;
+  border: 1px solid #54f0d1;
+  min-width: 27px;
+  height: 15px;
 }
 :where(.css-mxhywb).ant-switch .ant-switch-handle {
   top: 1px;
+  width: 12px;
+  height: 11px;
 }
-
-
-.approveBtn{
+:where(.css-mxhywb).ant-switch.ant-switch-checked .ant-switch-handle {
+  inset-inline-start: calc(100% - 15px);
+}
+:where(.css-mxhywb).ant-switch .ant-switch-inner {
+  padding-inline-end: 9px;
+}
+.approveBtn {
   flex-direction: column;
 }
 
 :where(.css-mxhywb).ant-tooltip .ant-tooltip-inner {
-  background: #0080fbfc ;
+  background: #0080fbfc;
   border-radius: 6px;
   font-size: 12px;
+}
+
+.yesnoPopup {
+  .innerContct {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 8px;
+  }
+  h3 {
+    padding-right: 13px;
+  }
+  .btnYesNo {
+    background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    padding: 7px 21px;
+    color: #fff;
+    cursor: pointer;
+  }
+}
+:where(.css-mxhywb).ant-dropdown .ant-dropdown-menu,
+:where(.css-mxhywb).ant-dropdown-menu-submenu .ant-dropdown-menu {
+  background-color: #06142cf7;
+  border: 1px solid #fff;
+}
+.pasteTextArea {
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #0c98fc;
+  text-decoration-line: underline;
+  text-transform: capitalize;
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  cursor: pointer;
 }

@@ -52,9 +52,12 @@ function MenuFooter() {
   };
 
   const handleMyAccOpen = () => {
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.GET_ACCOUNTS, {});
+    sendRuntimeMessage(
+      MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+      MESSAGE_EVENT_LABELS.GET_ACCOUNTS,
+      {}
+    );
   };
-
 
   return (
     <div className={`${style.menuItems} welcomeFooter`}>
@@ -62,9 +65,11 @@ function MenuFooter() {
         pathname === ROUTES.HISTORY_P ||
         pathname === ROUTES.MY_ACCOUNT) && (
         <>
-           <Link
+          <Link
             to={ROUTES.WALLET} // onClick={handleHistoryOpen}
-            className={`${style.menuItems__items} ${pathname === ROUTES.WALLET ?style.menuItems__items__active:''}`}
+            className={`${style.menuItems__items} ${
+              pathname === ROUTES.WALLET ? style.menuItems__items__active : ""
+            }`}
           >
             <div className={style.menuItems__items__img}>
               <img src={Wallet} alt="HistoryIcon" draggable={false} />
@@ -73,7 +78,11 @@ function MenuFooter() {
           </Link>
           <Link
             to={ROUTES.HISTORY_P} // onClick={handleHistoryOpen}
-            className={`${style.menuItems__items} ${pathname === ROUTES.HISTORY_P ? style.menuItems__items__active:''}`}
+            className={`${style.menuItems__items} ${
+              pathname === ROUTES.HISTORY_P
+                ? style.menuItems__items__active
+                : ""
+            }`}
           >
             <div className={style.menuItems__items__img}>
               <img src={HistoryIcon} alt="HistoryIcon" draggable={false} />
@@ -84,7 +93,11 @@ function MenuFooter() {
           <Link
             to={ROUTES.MY_ACCOUNT}
             onClick={handleMyAccOpen}
-            className={`${style.menuItems__items} ${pathname === ROUTES.MY_ACCOUNT ? style.menuItems__items__active:''}`}
+            className={`${style.menuItems__items} ${
+              pathname === ROUTES.MY_ACCOUNT
+                ? style.menuItems__items__active
+                : ""
+            }`}
           >
             <div className={style.menuItems__items__img}>
               <img src={Myaccount} alt="Myaccount" draggable={false} />
@@ -94,7 +107,11 @@ function MenuFooter() {
 
           <Link
             onClick={() => setOpen2(true)}
-            className={`${style.menuItems__items} ${pathname === ROUTES.MANAGE_WALLET ? style.menuItems__items__active:''}`}
+            className={`${style.menuItems__items} ${
+              pathname === ROUTES.MANAGE_WALLET
+                ? style.menuItems__items__active
+                : ""
+            }`}
           >
             <div className={style.menuItems__items__img}>
               <img src={Setting} alt="Setting" draggable={false} />
@@ -115,33 +132,42 @@ function MenuFooter() {
         open={open1}
         closeIcon={<img src={ModalCloseIcon} alt="close" draggable={false} />}
       >
-        {
-          (txHistory[currentAccount?.accountName] ? txHistory[currentAccount?.accountName] : []).filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase())).length > 0 ?
-            (
-              arrayReverser(txHistory[currentAccount.accountName].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()))).map((data, index) => (
-                <TransectionHistry
-                  dateTime={formatDate(data.dateTime)}
-                  type={data?.type}
-                  txHash={data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase() ?
-                    data.txHash.mainHash : data.txHash}
-                  to={
-                    data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase()
-                      ? data.to
-                      : `${data?.to ? `To: ` + shortner(data.to) : EMTY_STR}`
-                  }
-                  amount={data?.amount}
-                  status={data?.status.charAt(0).toUpperCase() + data?.status.slice(1)}
-                  img={Sendhistry}
-                  key={index + CURRENCY}
-                />
-              ))
+        {(txHistory[currentAccount?.accountName]
+          ? txHistory[currentAccount?.accountName]
+          : []
+        ).filter(
+          (tx) => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()
+        ).length > 0 ? (
+          arrayReverser(
+            txHistory[currentAccount.accountName].filter(
+              (tx) => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()
             )
-            :
-            (<h4 className={style.noTxn}>No Transaction Found!</h4>)
-        }
-
+          ).map((data, index) => (
+            <TransectionHistry
+              dateTime={formatDate(data.dateTime)}
+              type={data?.type}
+              txHash={
+                data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase()
+                  ? data.txHash.mainHash
+                  : data.txHash
+              }
+              to={
+                data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase()
+                  ? data.to
+                  : `${data?.to ? `To: ` + shortner(data.to) : EMTY_STR}`
+              }
+              amount={data?.amount}
+              status={
+                data?.status.charAt(0).toUpperCase() + data?.status.slice(1)
+              }
+              img={Sendhistry}
+              key={index + CURRENCY}
+            />
+          ))
+        ) : (
+          <h4 className={style.noTxn}>No Transaction Found!</h4>
+        )}
       </Drawer>
-
 
       <Drawer
         height={404}
@@ -188,7 +214,11 @@ function MenuFooter() {
           </div>
         </Link>
         {/* <Link to={ROUTES.PRIVACY_POLICY}> */}
-        <div className={style.sttings} style={{ marginTop: "14px" }} onClick={() => openBrowserTab(SOCIAL_LINKS.POLICY)}>
+        <div
+          className={style.sttings}
+          style={{ marginTop: "14px" }}
+          onClick={() => openBrowserTab(SOCIAL_LINKS.POLICY)}
+        >
           <div className={style.sttings__left}>
             <div className={style.walletIconBorder}>
               <img
@@ -228,7 +258,8 @@ function MenuFooter() {
       {(pathname === ROUTES.CREATE_WALLET ||
         pathname === ROUTES.UNLOACK_WALLET ||
         pathname === ROUTES.FORGOT_PASSWORD ||
-        pathname === ROUTES.IMPORT_WALLET) && <PrivacyPolicy />}
+        pathname === ROUTES.IMPORT_WALLET ||
+        pathname === ROUTES.DEFAULT) && <PrivacyPolicy />}
     </div>
   );
 }
