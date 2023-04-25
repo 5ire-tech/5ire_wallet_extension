@@ -4,9 +4,9 @@ import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
 import { AuthContext } from "../../Store";
 import Info from "../../Assets/infoIcon.svg";
-import logoNew from "../../Assets/logoNew.svg";
 import ComplSwap from "../../Assets/succeslogo.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
+import SmallLogo from "../../Assets/smallLogo.svg";
 import { validateAddress } from "../../Utility/utility";
 import React, { useState, useEffect, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
@@ -270,7 +270,7 @@ function Send() {
     <>
       <div className={style.sendSec} onKeyDown={handleEnter}>
         <div className={`scrollableCont ${style.sendSec__sourceLabel}`}>
-          <label>Source Chain :</label>
+          <label>Source Chain</label>
           <div className={style.sendSec__sendSwapbtn}>
             <button
               onClick={activeSend}
@@ -321,7 +321,7 @@ function Send() {
               placeholder={"Enter Amount"}
               addonAfter={
                 <span className={style.sendSec__pasteText}>
-                  <img src={logoNew} alt="logo" draggable={false} />
+                  <img src={SmallLogo} alt="logo" draggable={false} />
                   5ire
                 </span>
               }

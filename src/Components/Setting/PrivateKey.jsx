@@ -38,7 +38,7 @@ function PrivateKey() {
   return (
     <>
       <div className={`scrollableCont`}>
-        <MenuRestofHeaders backTo={ROUTES.WALLET} title={""} />
+        {/* <MenuRestofHeaders backTo={ROUTES.WALLET} title={""} /> */}
         <div className={`flexedContent`}>
           <div className={style.enterPassword}>
             <div className={style.commonHeadeing}>
@@ -59,11 +59,11 @@ function PrivateKey() {
               </div>
             </div>
 
-            <div className={style.mnemonicsButton}>
+            {/* <div className={style.mnemonicsButton}>
               <ButtonComp
                 onClick={handleClick}
                 text={show ? "Hide Mnemonic" : "Reveal Mnemonic"} />
-            </div>
+            </div> */}
             <div className={style.wallet} hidden={!show ? true : false}>
               <div className={style.wallet__addressInput}>
                 <p className={style.wallet__addressInput__copyText}>

@@ -4,7 +4,7 @@ import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
 import { AuthContext } from "../../Store";
 import Info from "../../Assets/infoIcon.svg";
-import logoNew from "../../Assets/logoNew.svg";
+import SmallLogo from "../../Assets/smallLogo.svg"
 import { shortner } from "../../Helper/helper";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import ComplSwap from "../../Assets/succeslogo.svg";
@@ -261,7 +261,7 @@ function Swap() {
                 onClick={handleCopy}
               />
             </span> */}
-            <span>{isEqual(toFrom.to, EVM) ? shortner(currentAccount.evmAddress) : shortner(currentAccount.nativeAddress)}</span>
+            {/* <span>{isEqual(toFrom.to, EVM) ? shortner(currentAccount.evmAddress) : shortner(currentAccount.nativeAddress)}</span> */}
           </div>
           <div className={style.swap__icon} onClick={handleClick}>
             <img src={SwapIcon} alt="swapIcon" draggable={false} />
@@ -280,7 +280,7 @@ function Swap() {
                 onClick={handleCopy}
               />
             </span> */}
-            <span>{!isEqual(toFrom.to, EVM) ? shortner(currentAccount.evmAddress) : shortner(currentAccount.nativeAddress)}</span>
+            {/* <span>{!isEqual(toFrom.to, EVM) ? shortner(currentAccount.evmAddress) : shortner(currentAccount.nativeAddress)}</span> */}
           </div>
         </div>
         <div className={style.swap__swapAccount}>
@@ -297,7 +297,7 @@ function Swap() {
               placeholder={"Enter Amount"}
               addonAfter={
                 <span className={style.swap__pasteText}>
-                  <img src={logoNew} alt="walletLogo" draggable={false} />
+                  <img src={SmallLogo} alt="walletLogo" draggable={false} />
                   5ire
                 </span>
               }

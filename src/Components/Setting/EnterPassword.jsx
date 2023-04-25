@@ -10,12 +10,16 @@ import InputFieldSimple from "../InputField/InputFieldSimple.jsx";
 import { sendRuntimeMessage } from "../../Utility/message_helper.js";
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 import { LABELS, ERROR_MESSAGES, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
+import ModalCustom from "../ModalCustom/ModalCustom";
+import PrivateKey from "./PrivateKey";
 
 
 function EnterPassword() {
 
   const navigate = useNavigate();
   const [data, setData] = useState("");
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [addressToRemove, setAddressToRemove] = useState(null);
   const { passError, setPassError, passVerified} = useContext(AuthContext);
   const [isDisable, setDisable] = useState(true);
 
@@ -29,7 +33,8 @@ function EnterPassword() {
 
   useEffect(()=>{
     if (passVerified) {
-      navigate(ROUTES.PVT_KEY);
+      setModalOpen(true);
+      //navigate(ROUTES.PVT_KEY);
     }
   },[passVerified]);
 
@@ -38,6 +43,11 @@ function EnterPassword() {
     setData(e.target.value);
     setPassError("");
   }
+
+  const handle_OK_Cancel = () => {
+    setModalOpen(false);
+  };
+
 
   const validateInput = () => {
     if (isEmpty(data)) {
@@ -82,11 +92,19 @@ function EnterPassword() {
             <div>
               <ButtonComp
                 onClick={handleClick}
+                // onClick={() => handleModalOpen}
                 text="Continue"
                 isDisable={isDisable}
               ></ButtonComp>
             </div>
           </div>
+          <ModalCustom
+        isModalOpen={isModalOpen}
+        handleOk={handle_OK_Cancel}
+        handleCancel={handle_OK_Cancel}
+      >
+        <PrivateKey/>
+      </ModalCustom>
         </div>
       </div>
     </>

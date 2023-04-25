@@ -34,7 +34,7 @@
     flex-direction: column;
     gap: 8px;
     width: 100%;
-    max-width: 120px;
+    max-width: 140px;
     h3 {
       color: $white;
       font-size: 14px;
@@ -51,6 +51,10 @@
       gap: 5px;
       align-items: center;
       justify-content:left ;
+      width: 124px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       img {
         cursor: pointer;
       }
