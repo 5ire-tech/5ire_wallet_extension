@@ -25,7 +25,8 @@ import {
   EMTY_STR,
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
-  SOCIAL_LINKS
+  SOCIAL_LINKS,
+  LABELS
 } from "../../Constants/index";
 import FooterStepOne, {
   ApproveTx,
@@ -221,7 +222,7 @@ function MenuFooter() {
       </Drawer>
 
       {pathname === ROUTES.BEFORE_BEGIN && <FooterStepOne />}
-      {pathname === ROUTES.NEW_WALLET_DETAILS && <FooterStepTwo />}
+      {(pathname === ROUTES.NEW_WALLET_DETAILS) && <FooterStepTwo />}
       {pathname === ROUTES.LOGIN_APPROVE && <ApproveLogin />}
       {pathname === ROUTES.APPROVE_TXN && <ApproveTx />}
       {(pathname === ROUTES.CREATE_WALLET ||

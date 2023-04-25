@@ -3,12 +3,26 @@ import { isNullorUndef, isObject, isString, log } from "./utility";
 
 
 //message passing helper
+// export const sendRuntimeMessage =async (typeLabel, eventLabel, message) => {
+//     try {
+//         if(!isObject(message) && isNullorUndef(message)) throw new Error("Invalid message, (*Only Objects or Array is valid value)");
+//         if(!isString(eventLabel) && eventLabel.trim().length === 0) throw new Error("Invalid event Label")
+//         if(!isString(typeLabel) && typeLabel.trim().length === 0) throw new Error("Invalid type Label")
+//       const res=await  Browser.runtime.sendMessage({type: typeLabel, event: eventLabel, data: message})
+//       return res
+//     } catch (err) {
+//         console.log("Error while sending message to background: ", err.message);
+//         return null;
+//     }
+// }
+
+//message passing helper
 export const sendRuntimeMessage = (typeLabel, eventLabel, message) => {
     try {
-        if(!isObject(message) && isNullorUndef(message)) throw new Error("Invalid message, (*Only Objects or Array is valid value)");
-        if(!isString(eventLabel) && eventLabel.trim().length === 0) throw new Error("Invalid event Label")
-        if(!isString(typeLabel) && typeLabel.trim().length === 0) throw new Error("Invalid type Label")
-        Browser.runtime.sendMessage({type: typeLabel, event: eventLabel, data: message});
+        if (!isObject(message) && isNullorUndef(message)) throw new Error("Invalid message, (*Only Objects or Array is valid value)");
+        if (!isString(eventLabel) && eventLabel.trim().length === 0) throw new Error("Invalid event Label")
+        if (!isString(typeLabel) && typeLabel.trim().length === 0) throw new Error("Invalid type Label")
+        Browser.runtime.sendMessage({ type: typeLabel, event: eventLabel, data: message });
     } catch (err) {
         console.log("Error while sending message to background: ", err.message);
     }

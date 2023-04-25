@@ -1,18 +1,25 @@
+import { ROUTES } from "../Routes/index";
 import Browser from "webextension-polyfill";
-import { userState, newAccountInitialState, externalControls, initialExternalNativeTransaction } from "./initialState";
+import { useNavigate } from "react-router-dom";
 import { isManifestV3 } from "../Scripts/utils";
 import { createContext, useEffect, useState } from "react";
 import { isNullorUndef, log } from "../Utility/utility";
 import { sessionStorage, localStorage } from "../Storage";
 import { bindRuntimeMessageListener } from "../Utility/message_helper";
-import { MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, LABELS, ACCOUNT_CHANGED_EVENT, TABS_EVENT } from "../Constants";
+import { MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, LABELS, TABS_EVENT } from "../Constants";
+import {
+  userState,
+  externalControls,
+  newAccountInitialState,
+  initialExternalNativeTransaction
+} from "./initialState";
 import { sendEventToTab } from "../Helper/helper";
 import { TabMessagePayload } from "../Utility/network_calls";
 
 export const AuthContext = createContext();
 
-
 export default function Context({ children }) {
+  const navigate = useNavigate();
   const [state, setState] = useState(userState);
   const [passError, setPassError] = useState("");
   const [userPass, setUserPass] = useState(null);
@@ -68,6 +75,8 @@ export default function Context({ children }) {
         exportPrivatekey(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE) {
         exportSeedPhrase(message.data);
+      } else if (message.event === MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC) {
+        importAccountByMnemonics(message.data);
       }
 
       updateLoading(false);
@@ -118,6 +127,16 @@ export default function Context({ children }) {
     }
   };
 
+  // set the new Account
+  const importAccountByMnemonics = (data) => {
+    if (data?.vault && data?.newAccount) {
+      navigate(ROUTES.WALLET)
+    }
+
+  };
+
+
+
   const unlock = (data) => {
     if (data?.errMessage) {
       setPassError(data.errMessage);
@@ -129,11 +148,15 @@ export default function Context({ children }) {
   };
 
   const addAccount = (data) => {
-    setNewAccount(data.newAccount);
+    setNewAccount(data?.newAccount);
   };
 
   const getAccounts = (data) => {
-    // console.log("Data : ", data);
+    if (data?.isInitialAccount) {
+      navigate(ROUTES.DEFAULT)
+      setNewAccount(newAccountInitialState);
+    }
+
     setAllAccounts(data?.accounts ? data.accounts : data);
   };
 
@@ -158,6 +181,13 @@ export default function Context({ children }) {
     delete newTx[accName];
     updateState(LABELS.TX_HISTORY, newTx)
   }
+
+  // // remove Vault && pass
+  // const resetVaultAndPass = (data) => {
+  //   console.log("DATA ::: ", data);
+  //   console.log("resetVaultAndPass  in Context :;;;; ");
+  //   setNewAccount(newAccountInitialState)
+  // }
 
   const values = {
     //data
@@ -190,7 +220,9 @@ export default function Context({ children }) {
     setPassVerified,
     updateEstimatedGas,
     setExternalControlState,
-    setExternalNativeTxDetails
+    setExternalNativeTxDetails,
+    importAccountByMnemonics,
+
   }
 
   return (

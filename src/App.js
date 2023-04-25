@@ -1,5 +1,4 @@
 import "./App.scss";
-import History from "./Pages/History/History";
 import { ROUTES } from "./Routes";
 import Send from "./Pages/Send/Send";
 import Swap from "./Pages/Swap/Swap";
@@ -9,12 +8,14 @@ import Wallet from "./Pages/Wallet/Wallet";
 import Loader from "./Pages/Loader/Loader";
 import NativeTx from "./Components/NativeTx";
 import { useEffect, useContext } from "react";
+import History from "./Pages/History/History";
 import OnlyContent from "./Layout/OnlyContent";
 import WelcomeLayout from "./Layout/WelcomeLayout";
 import MyAccount from "./Pages/MyAccount/MyAccount";
 import FixWidthLayout from "./Layout/FixWidthLayout";
 import PrivateKey from "./Components/Setting/PrivateKey";
 import Beforebegin from "./Pages/WelcomeScreens/Beforebegin";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import EnterPassword from "./Components/Setting/EnterPassword";
 import LoginApprove from "./Pages/WelcomeScreens/LoginApprove";
 import SwapApprove from "./Pages/Swap/SwapApprove/SwapApprove";
@@ -22,15 +23,13 @@ import ImportWallet from "./Pages/WelcomeScreens/ImportWallet";
 import UnlockWelcome from "./Pages/WelcomeScreens/UnlockWelcome";
 import ManageWallet from "./Components/Setting/ManageWallet.jsx";
 import WelcomeScreen from "./Pages/WelcomeScreens/WelcomeScreen";
+import ForgotPassword from "./Pages/WelcomeScreens/ForgotPassword";
 import CreateNewWallet from "./Pages/WelcomeScreens/CreateNewWallet";
 import ApproveTx from "./Pages/RejectNotification/RejectNotification";
 import CreateWalletChain from "./Pages/WelcomeScreens/CreateWalletChain";
 import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
-import ForgotPassword from "./Pages/WelcomeScreens/ForgotPassword";
 import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
-import { Route, Routes, useNavigate } from "react-router-dom";
 
-// import { log } from "./Utility/utility";
 
 function getParameterByName(name, url = window.location.href) {
   name = name.replace(/[[\]]/g, "\\$&");
@@ -45,7 +44,6 @@ function App(props) {
   const navigate = useNavigate();
   const { state, setState, isLoading, setExternalControlState, externalControlsState, newAccount } = useContext(AuthContext);
   const { isLogin, vault } = state;
-
 
   useEffect(() => {
 
@@ -63,8 +61,8 @@ function App(props) {
   }, []);
 
 
-
   useEffect(() => {
+
     const route = getParameterByName("route");
 
     //sync the current action route with main popup
@@ -73,21 +71,26 @@ function App(props) {
       return;
     }
 
+
     if (!isLogin && vault) {
       navigate(ROUTES.UNLOACK_WALLET, {
         state: {
           redirectRoute: route ? ROUTES.DEFAULT + route : EMTY_STR,
         },
       });
+    } else if (isLogin && newAccount?.evmAddress && vault) {
+      navigate(ROUTES.NEW_WALLET_DETAILS);
     }
-  }, [isLogin, vault]);
-
-
-
-  useEffect(() => {
-    if (isLogin && !newAccount?.evmAddress && !externalControlsState.activeSession?.route)
+    else if (isLogin && vault) {
       navigate(ROUTES.WALLET);
-  }, [isLogin, newAccount?.evmAddress]);
+
+    } else if (!isLogin && !vault) {
+      navigate(ROUTES.DEFAULT);
+    }
+  }, [isLogin, vault, newAccount?.evmAddress]);
+
+
+
 
 
   return (

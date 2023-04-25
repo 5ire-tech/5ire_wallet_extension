@@ -20,8 +20,7 @@ import { Connection } from "../Helper/connection.helper";
 import { Error, ErrorPayload } from "../Utility/error_helper"
 import { sendMessageToTab, sendRuntimeMessage } from "../Utility/message_helper";
 import { assert, compactToU8a, isHex, u8aConcat, u8aEq, u8aWrapBytes } from "@polkadot/util"
-// import Keyring from "@polkadot/keyring";
-// import { nativeMethod } from "./nativehelper";
+
 
 //for initilization of background events
 export class InitBackground {
@@ -37,7 +36,8 @@ export class InitBackground {
     this.internalHandler = ExternalConnection.getInstance();
     this.keyringHandler = KeyringHandler.getInstance();
     this.externalTaskHandler = new ExternalTxTasks();
-    
+    this.keyringHandler = KeyringHandler.getInstance();
+
     if(!InitBackground.balanceTimer) {
       InitBackground.balanceTimer = this._balanceUpdate();
     }
@@ -101,7 +101,9 @@ export class InitBackground {
         await this.externalTaskHandler.processExternalTask(message, localData);
         return;
       } else if (message?.type === MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING) {
-        await this.keyringHandler.keyringHelper(message);
+        await this.keyringHandler.keyringHelper(message, localData);
+        // Promise.resolve(true);
+
         return;
       } else if (message?.type === MESSAGE_TYPE_LABELS.NETWORK_HANDLER) {
         this.networkHandler.handleNetworkRelatedTasks(message, localData);
@@ -508,6 +510,7 @@ export class ExtensionEventHandle {
     this.transactionQueue = TransactionQueue.getInstance();
     this.rpcRequestProcessor = RpcRequestProcessor.getInstance();
     this.bindAllEvents();
+    
   }
 
 
@@ -737,6 +740,7 @@ export class Services {
   //pass message to extension ui
   messageToUI = async (event, message) => {
     try {
+      // await  sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND, event, message)
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND, event, message)
     } catch (err) {
       console.log("Error while sending the message to extension ui: ", err);
@@ -1435,11 +1439,12 @@ export class KeyringHandler {
     return KeyringHandler.instance;
   }
 
-  keyringHelper = async (message) => {
+  keyringHelper = async (message, state) => {
     try {
 
       if (this.hybridKeyring[message.event]) {
         const keyringResponse = await this._keyringCaller(message);
+        // await  this._parseKeyringRes(keyringResponse);
         this._parseKeyringRes(keyringResponse);
 
       } else {
@@ -1474,11 +1479,13 @@ export class KeyringHandler {
         if (response.stateChangeKey)
           await this.services.updateLocalState(response.stateChangeKey, response.payload, response.payload?.options);
         //send the response message to extension ui
+        // if (response.eventEmit)await this.services.messageToUI(response.eventEmit, response.payload)
         if (response.eventEmit) this.services.messageToUI(response.eventEmit, response.payload)
 
       } else {
         console.log("in the processing the unit, error section: ", response);
         if (Number(response?.error?.errCode) === 3) {
+          // if (response.eventEmit)await this.services.messageToUI(response.eventEmit, response.error)
           if (response.eventEmit) this.services.messageToUI(response.eventEmit, response.error)
         }
       }

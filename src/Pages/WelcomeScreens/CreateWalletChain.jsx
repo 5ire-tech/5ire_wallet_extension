@@ -42,7 +42,7 @@ function CreateWalletChain() {
 
   return (
     <div className={style.cardWhite}>
-      <MenuRestofHeaders backTo={ROUTES.BEFORE_BEGIN} title={"Create New Wallet"} />
+      <MenuRestofHeaders title={"New Wallet Details"} />
       <div className={style.copyButton}>
         <button
           className={style.cardWhite__addressInput__copyAll}

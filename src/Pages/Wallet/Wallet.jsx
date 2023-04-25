@@ -26,7 +26,7 @@ function Wallet() {
                 }
             `}
             >
-              <img src={TransferLogo}/>Transfer
+              <img src={TransferLogo} alt="transferLogo" />Transfer
             </button>
             <button
               onClick={activeSwap}
@@ -34,7 +34,7 @@ function Wallet() {
                 style.wallet__sendSwapbtn__buttons__active
                 }`}
             >
-           <img src={SwapLogo}/>   Swap
+              <img src={SwapLogo} alt="swapLogo" />   Swap
             </button>
           </div>
         </div>

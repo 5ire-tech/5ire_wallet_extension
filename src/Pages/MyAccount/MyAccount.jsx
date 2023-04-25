@@ -35,7 +35,7 @@ function MyAccount() {
   const [accounts, setAccounts] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [addressToRemove, setAddressToRemove] = useState(null);
-  const { allAccounts, state, updateState, removeHistory, externalControlsState} = useContext(AuthContext);
+  const { allAccounts, state, updateState, removeHistory, externalControlsState } = useContext(AuthContext);
   const { connectedApps } = externalControlsState;
   const { balance, currentAccount } = state;
 
@@ -69,7 +69,7 @@ function MyAccount() {
     }
     handle_OK_Cancel();
   };
-  
+
   const hanldeCreateNewAcc = () => {
     navigate(ROUTES.CREATE_WALLET);
   };

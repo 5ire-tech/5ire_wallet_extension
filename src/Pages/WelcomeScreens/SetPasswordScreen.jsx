@@ -27,10 +27,11 @@ export default function SetPasswordScreen() {
 
   const navigate = useNavigate();
   const { setUserPass, accountName } = useContext(AuthContext);
-  const [show, setShow] = useState(false);
+  // const [show, setShow] = useState(false);
   const { state, updateState } = useContext(AuthContext);
   const [error, setError] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
   const [pass, setPass] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
+
 
   useEffect(() => {
 
@@ -111,7 +112,7 @@ export default function SetPasswordScreen() {
     <>
       <div onKeyDown={handleSubmit} className={`${style.cardWhite}`}>
         <MenuRestofHeaders
-          backTo={ROUTES.NEW_WALLET_DETAILS}
+          backTo={params.id === LABELS.CREATE ? ROUTES.CREATE_WALLET : ROUTES.DEFAULT}
           title={"Create Password"}
         />
         <div className={style.cardWhite__beginText}>
