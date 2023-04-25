@@ -42,18 +42,17 @@ function NativeSigner() {
   const navigate = useNavigate();
 
   const handleClick = async (isApproved) => {
-    // sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.NATIVE_SIGNER, {approve: isApproved, options: {account: state.currentAccount}});
-    // navigate(ROUTES.WALLET);
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.NATIVE_SIGNER, {...externalNativeTxDetails, approve: isApproved, options: {account: state.currentAccount, network: state.currentNetwork, nativeSigner: true}});
+    navigate(ROUTES.WALLET);
   };
 
-  // useEffect(() => {
-  //     const method = activeSession.method;
-  //     console.log("State. currentAcc : ",state.currentAccount);
-  //     if (SIGNER_METHODS.SIGN_PAYLOAD === method) {
-  //     updateLoading(true);
-  //     sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS, {options: {account: state.currentAccount}});
-  //     } else setFormattedMethod(SIGNER_METHODS.SIGN_RAW)
-  // }, [])
+  useEffect(() => {
+      const method = activeSession.method;
+      if (SIGNER_METHODS.SIGN_PAYLOAD === method) {
+      updateLoading(true);
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS, {options: {account: state.currentAccount, network: state.currentNetwork}});
+      } else setFormattedMethod(SIGNER_METHODS.SIGN_RAW)
+  }, [])
 
   function RecComponent({ data }) {
     return Object.keys(data).map((v) => {
@@ -104,7 +103,7 @@ function NativeSigner() {
                     <h4>
                       {externalNativeTxDetails.method
                         ? externalNativeTxDetails.method
-                        : "method"}
+                        : formattedMethod}
                           <img
                         src={CopyIcon}
                         alt="copyIcon"
@@ -135,10 +134,7 @@ function NativeSigner() {
                                     } */}
                   <RecComponent
                     data={
-                      externalNativeTxDetails?.args || {
-                        data: "hello ",
-                        data2: "hello3",
-                      }
+                      externalNativeTxDetails?.args || {}
                     }
                   />
 
@@ -148,7 +144,7 @@ function NativeSigner() {
                     >
                       <h4>Estimated Fee: </h4>
                       <h4>
-                        {externalNativeTxDetails?.estimatedGas || "5.00 5ire"}{" "}
+                        {externalNativeTxDetails?.estimatedGas || ""}{" "}
                         5IRE
                       </h4>
                     </div>

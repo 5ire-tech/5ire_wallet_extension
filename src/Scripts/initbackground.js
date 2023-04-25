@@ -292,7 +292,6 @@ class RpcRequestProcessor {
   processTransactionRequest = async (transactionRequest) => {
     try {
 
-
       //create a transaction payload
       const { data } = transactionRequest;
       const transactionProcessingPayload = new TransactionProcessingPayload(data, transactionRequest.event, null, data?.data, { ...data?.options });
@@ -377,11 +376,18 @@ class TransactionQueue {
 
   //parse the response after processing the transaction
   parseTransactionResponse = async () => {
+
+    // //check if next transaction is native signer transaction
+    // const { currentTransaction:{options} } = await getDataLocal(LABELS.TRANSACTION_QUEUE);
+    // if(options?.nativeSigner) {
+    //   ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.NEW_NATIVE_SIGNER_TRANSACTION_INQUEUE);
+    //   return;
+    // }
+
     //perform the current active transactions 
     const transactionResponse = await this.processTransaction();
     log("here is the swap transaction: ", transactionResponse);
     const { txHash } = transactionResponse.payload?.data;
-
 
     //check if there is error payload into response
     if (!transactionResponse.error) {
@@ -464,6 +470,15 @@ class TransactionQueue {
   }
 
 
+  //callback for native signer new transaction
+  newNativeSignerTransactionAddedEventCallback = async () => {
+    if (isNullorUndef(TransactionQueue.transactionIntervalId)) {
+      await this.processQueuedTransaction();
+      TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus))
+    }
+  }
+
+
   /******************************** Internal methods ***********************/
   //schedule execution
   _setTimeout = (cb) => {
@@ -510,6 +525,7 @@ export class ExtensionEventHandle {
   bindAllEvents = () => {
     this.bindAutoBalanceUpdateEvent();
     this.bindTransactionProcessingEvents();
+    this.bindNewNativeSignerTransactionEvents();
     this.bindErrorHandlerEvent();
   }
 
@@ -523,6 +539,10 @@ export class ExtensionEventHandle {
   bindTransactionProcessingEvents = async () => {
     //event triggered when new transaction is added into queue
     ExtensionEventHandle.eventEmitter.on(INTERNAL_EVENT_LABELS.NEW_TRANSACTION_INQUEUE, this.transactionQueue.newTransactionAddedEventCallback);
+  }
+
+  bindNewNativeSignerTransactionEvents = async () => {
+    ExtensionEventHandle.eventEmitter.on(INTERNAL_EVENT_LABELS.NEW_NATIVE_SIGNER_TRANSACTION_INQUEUE, this.transactionQueue.newNativeSignerTransactionAddedEventCallback)
   }
 
   //bind auto balance update event
@@ -557,6 +577,7 @@ class ExternalTxTasks {
   constructor() {
     this.transactionQueueHandler = TransactionQueue.getInstance();
     this.nativeSignerhandler = new NativeSigner();
+    this.services = new Services();
   }
 
   //process and check external task (connection, tx approval)
@@ -586,10 +607,35 @@ class ExternalTxTasks {
     if (hasProperty(this.nativeSignerhandler, activeSession?.method)) {
       if (message.data?.approve) {
         const signerRes = await this.nativeSignerhandler[activeSession.method](activeSession.message, state);
-        if (!signerRes.error) sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, { result: signerRes.payload.data }));
+        if (!signerRes.error) {
+          sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, { result: signerRes.payload.data }));
+          
+          // const network = message.data.options?.network || state.currentNetwork;
+          // const {data} = message;
+
+          // //create the Transaction processing payload
+          // const transactionProcessingPayload = new TransactionProcessingPayload(data, MESSAGE_EVENT_LABELS.NATIVE_SIGNER, null, null, { ...data?.options });
+
+          // //create transaction payload
+          // transactionProcessingPayload.transactionHistoryTrack = new TransactionPayload(null, "", false, network, TX_TYPE.NATIVE_SIGNER, data.txHash, STATUS.PENDING, null, data.estimatedGas, data.estimatedGas, data.method);
+      
+          // //insert transaction history with flag
+          // await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY, transactionProcessingPayload.transactionHistoryTrack, transactionProcessingPayload.options);
+      
+          // //add the new transaction into queue
+          // await this.services.updateLocalState(STATE_CHANGE_ACTIONS.ADD_NEW_TRANSACTION, transactionProcessingPayload, {
+          //   localStateKey: LABELS.TRANSACTION_QUEUE });
+
+          //   log("saved the tx", transactionProcessingPayload)
+
+          //   //emit the new native signer transaction event
+          //   ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.NEW_NATIVE_SIGNER_TRANSACTION_INQUEUE);
+      
+        }
         else if (signerRes.error) sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, {result: null}, null, null, signerRes.error.errMessage));
       }
     }
+
     //close the popup
     await this.closePopupSession(message);
   }
@@ -1357,7 +1403,6 @@ export class GeneralWalletRPC {
       const info = await decoded?.paymentInfo(this.hybridKeyring.getNativeSignerByAddress(state.currentAccount.nativeAddress));
       const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
       const params = decoded.method.toJSON()?.args;
-
 
       const payload = {
         method: `${section}.${method}`,

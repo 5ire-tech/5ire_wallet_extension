@@ -14,7 +14,7 @@ export const DECIMALS = 10 ** 18;
 export const WINDOW_HEIGHT = 620;
 export const ONE_ETH_IN_GWEI = 1000000000;
 export const AUTO_BALANCE_UPDATE_TIMER = 8000;
-export const TRANSACTION_STATUS_CHECK_TIMER = 2000;
+export const TRANSACTION_STATUS_CHECK_TIMER = 4000;
 export const EXISTENTIAL_DEPOSITE = 1;
 
 
@@ -49,6 +49,7 @@ export const TX_TYPE = {
     SWAP: "Swap",
     CONTRACT_EXECUTION: "Contract Execution",
     CONTRACT_DEPLOYMENT: "Contract Deployement",
+    NATIVE_SIGNER: "Native Signer"
 };
 
 export const NETWORK = {
@@ -253,6 +254,7 @@ export const INTERNAL_EVENT_LABELS = {
     CONNECTION: "connection",
     BALANCE_FETCH: "balanceFetch",
     NEW_TRANSACTION_INQUEUE: "newTransactionInQueue",
+    NEW_NATIVE_SIGNER_TRANSACTION_INQUEUE: "newNativeSignerTransactionInQueue",
     ERROR: "error"
 }
 
