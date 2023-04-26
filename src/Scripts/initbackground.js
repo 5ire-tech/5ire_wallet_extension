@@ -340,7 +340,7 @@ class TransactionQueue {
   addNewTransaction = async (transactionProcessingPayload) => {
     //add the transaction history track
     const { data, options } = transactionProcessingPayload;
-    transactionProcessingPayload.transactionHistoryTrack = new TransactionPayload(data?.to || options?.to, data?.value ? parseFloat(data?.value).toString() : "", options?.isEvm, options?.network, options?.type);
+    transactionProcessingPayload.transactionHistoryTrack = new TransactionPayload(data?.to || options?.to, data?.value ? parseFloat(Number(data?.value)).toString() : "", options?.isEvm, options?.network, options?.type);
 
     //insert transaction history with flag "Queued"
     await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY, transactionProcessingPayload.transactionHistoryTrack, transactionProcessingPayload.options);
