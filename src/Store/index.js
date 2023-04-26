@@ -53,6 +53,7 @@ export default function Context({ children }) {
       } else if (message.event === MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE) {
         createOrRestore(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.UNLOCK) {
+        log("message", message)
         unlock(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.ADD_ACCOUNT) {
         addAccount(message.data);

@@ -1456,7 +1456,7 @@ export class KeyringHandler {
       const keyResponse = await this.hybridKeyring[message.event](message);
       return keyResponse;
     } catch (err) {
-     return new EventPayload(null, null, null, [], new ErrorPayload(ERRCODES.KEYRING_SECTION_ERROR, err.message));
+     return new EventPayload(null, message.event, null, [], new ErrorPayload(err.message.errCode || ERRCODES.KEYRING_SECTION_ERROR, err.message.errMessage || err.message));
     }
   }
 
