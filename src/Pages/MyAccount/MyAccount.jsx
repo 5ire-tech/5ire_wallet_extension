@@ -26,6 +26,7 @@ import {
   MESSAGE_EVENT_LABELS,
   RESTRICTED_URLS,
   TABS_EVENT,
+  WALLET_TYPES
 } from "../../Constants/index";
 import { toast } from "react-toastify";
 import { isEqual } from "../../Utility/utility";
@@ -46,6 +47,7 @@ function MyAccount() {
 
   useEffect(() => {
     setAccounts(allAccounts);
+
   }, [allAccounts]);
 
   const handleRemoveAcc = () => {
@@ -164,7 +166,7 @@ function MyAccount() {
           <div className={style.myAccountSec__leftSec}>
             <img src={DarkLogo} alt="logo" draggable={false} />
             <div className={style.myAccountSec__leftSec__accountConatct}>
-              <h2>{e?.accountName}</h2>
+              <h2>{e?.accountName}{e?.type === WALLET_TYPES.IMPORTED_NATIVE ? <i> <small> (Imported)</small></i> : ""}</h2>
               <p>
                 {e?.accountName === currentAccount?.accountName ? (
                   balance?.totalBalance ? (

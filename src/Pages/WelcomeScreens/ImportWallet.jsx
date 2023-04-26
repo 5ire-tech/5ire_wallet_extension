@@ -18,6 +18,8 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
+import CongratulationsScreen from "./CongratulationsScreen";
+
 
 
 
@@ -28,6 +30,7 @@ function ImportWallet() {
   const [warrning, setWarrning] = useState({ acc: "", key: "" });
   const { state, userPass, allAccounts, inputError, setInputError } = useContext(AuthContext);
   const { isLogin } = state;
+  const [show, setShow] = useState(false)
 
   useEffect(() => {
     if (isLogin) {
@@ -102,9 +105,14 @@ function ImportWallet() {
   const handleClick = async (e) => {
     if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
       if (!warrning.key && !warrning.acc && data.accName && data.key) {
+
         if (userPass && !isLogin) {
 
-          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: userPass, opts: { mnemonic: data.key, name: data.accName.trim() }, type: "import" });
+          setShow(true)
+          setTimeout(() => {
+            setShow(false)
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: userPass, opts: { mnemonic: data.key, name: data.accName.trim() }, type: "import" });
+          }, 2000)
 
 
         } else {
@@ -116,9 +124,11 @@ function ImportWallet() {
               acc: ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS,
             }));
           } else {
-
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC, { mnemonic: data.key, name: data.accName.trim() });
-
+            setShow(true)
+            setTimeout(() => {
+              setShow(false)
+              sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC, { mnemonic: data.key, name: data.accName.trim() });
+            }, 2000)
           }
 
         }
@@ -175,6 +185,8 @@ function ImportWallet() {
           <ButtonComp onClick={handleClick} text={"Import"} isDisable={isDisable} />
           <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancel} />
         </div>
+        {show && <div className="loader">
+          <CongratulationsScreen text={"Your wallet has been imported"} /></div>}
       </div>
     </div>
   );

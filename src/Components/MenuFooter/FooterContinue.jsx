@@ -11,6 +11,7 @@ import { isEqual } from "../../Utility/utility";
 import { sendMessageToTab, sendRuntimeMessage } from "../../Utility/message_helper";
 import { TabMessagePayload } from "../../Utility/network_calls";
 import { toast } from "react-toastify";
+import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
 
 
 
@@ -53,6 +54,8 @@ function FooterStepOne() {
 //Footer of New wallet Detail Page
 export const FooterStepTwo = () => {
   const navigate = useNavigate();
+  const [show, setShow] = useState(false)
+
 
   const { state, setNewAccount, newAccount, updateState } = useContext(AuthContext);
 
@@ -79,13 +82,17 @@ export const FooterStepTwo = () => {
       ...txHistory,
       [newAccount?.accountName]: []
     };
+    setShow(true)
+    setTimeout(() => {
+      setShow(false)
+      updateState(LABELS.CURRENT_ACCOUNT, currentAcc);
+      updateState(LABELS.TX_HISTORY, txHis);
+
+      setNewAccount(newAccountInitialState);
+      navigate(ROUTES.WALLET);
+    }, 2000)
 
 
-    updateState(LABELS.CURRENT_ACCOUNT, currentAcc);
-    updateState(LABELS.TX_HISTORY, txHis);
-
-    setNewAccount(newAccountInitialState);
-    navigate(ROUTES.WALLET);
   };
 
   return (
@@ -101,6 +108,8 @@ export const FooterStepTwo = () => {
 
         <ButtonComp onClick={handleClick} text={"Continue"} maxWidth={"100%"} />
       </div>
+      {show && <div className="loader">
+        <CongratulationsScreen text={"Your wallet has been created"} /></div>}
     </>
   );
 };
@@ -183,9 +192,9 @@ export const ApproveTx = () => {
   function handleClick(isApproved) {
     if (isApproved) {
       const txType = activeSession.message?.data && activeSession.message?.to ? TX_TYPE.CONTRACT_EXECUTION : TX_TYPE.CONTRACT_DEPLOYMENT;
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.EVM_TX, {options: { account: state.currentAccount, network: state.currentNetwork, type: txType, isEvm: true }});
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.EVM_TX, { options: { account: state.currentAccount, network: state.currentNetwork, type: txType, isEvm: true } });
     }
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION, {approve: isApproved});
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION, { approve: isApproved });
     navigate(ROUTES.WALLET);
   }
 
