@@ -77,7 +77,7 @@ export default class WindowManager {
 
       // Firefox currently ignores left/top for create, but it works for update
       if (popupWindow.left !== left && popupWindow.state !== "fullscreen") {
-        await this.platform.updateWindowPosition(popupWindow.id, left, top);
+        await this.updateWindowPosition(popupWindow.id, left, top);
       }
 
       return popupWindow.id;

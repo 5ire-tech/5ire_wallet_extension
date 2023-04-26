@@ -1265,7 +1265,6 @@ export class GeneralWalletRPC {
       let toAddress = data.toAddress ? data.toAddress : data?.data ? account.evmAddress : account.nativeAddress;
       let amount = data?.value;
       
-      log("here is data: ", Math.round(Number(amount)));
 
       if (toAddress?.startsWith("5"))
         toAddress = u8aToHex(toAddress).slice(0, 42);
@@ -1296,7 +1295,6 @@ export class GeneralWalletRPC {
   
       return new EventPayload(null, message.event, payload, [], null);
     } catch (err) {
-      log("err", err)
       return new EventPayload(null, null, null, [], new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, err.message));
     }
 
