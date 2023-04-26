@@ -36,10 +36,10 @@ function Swap() {
   const [error, setError] = useState("");
   const [amount, setAmount] = useState("");
   const [disableBtn, setDisable] = useState(true);
-  // const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [toFrom, setToFrom] = useState({ from: NATIVE, to: EVM });
-  const { state, estimatedGas, updateEstimatedGas, updateLoading, txHash, setTxHash } = useContext(AuthContext);
+  const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
   const { balance, currentAccount } = state;
 
 
@@ -143,11 +143,11 @@ function Swap() {
   const handleApprove = async (e) => {
     try {
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
-        updateLoading(true);
         sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP, { value: amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SWAP, isEvm: true, to: LABELS.EVM_TO_NATIVE } });
+        setIsModalOpen(true);
       } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
-        updateLoading(true);
         sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP, { value: amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SWAP, isEvm: false, to: LABELS.NATIVE_TO_EVM } });
+        setIsModalOpen(true);
       }
 
       updateEstimatedGas("");
@@ -212,7 +212,7 @@ function Swap() {
     updateEstimatedGas(null);
     setDisable(true);
     setIsFaildOpen(false);
-    setTxHash(null);
+    setIsModalOpen(false);
   };
 
 
@@ -370,7 +370,7 @@ function Swap() {
       
       
       <ModalCustom
-        isModalOpen={!!txHash}
+        isModalOpen={isModalOpen}
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
         centered
@@ -379,7 +379,7 @@ function Swap() {
           <div className="innerContact">
             <img src={ComplSwap} alt="swapIcon" width={127} height={127} draggable={false} />
             <h2 className="title">Swap Processed</h2>
-             <p className="transId">Your Swapped Transaction ID</p>
+             {/* <p className="transId">Your Swapped Transaction ID</p>
              <h3 className="hashTag">{txHash ? shortner(txHash): ""}</h3>
               {txHash && <img
               draggable={false}
@@ -388,7 +388,7 @@ function Swap() {
               name="naiveAddress"
               style={{cursor: "pointer"}}
               onClick={handleCopy}
-            />}
+            />} */}
 
            {/* <span className="address">
               {txHash ? shortner(txHash) : ""}

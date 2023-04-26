@@ -3,7 +3,7 @@ import { ROUTES } from "./Routes";
 import Send from "./Pages/Send/Send";
 import Swap from "./Pages/Swap/Swap";
 import { AuthContext } from "./Store";
-import { EMTY_STR } from "./Constants";
+import { EMTY_STR, MAIN_POPUP } from "./Constants";
 import Wallet from "./Pages/Wallet/Wallet";
 import Loader from "./Pages/Loader/Loader";
 import NativeTx from "./Components/NativeTx";
@@ -58,13 +58,14 @@ function App(props) {
     } else {
       navigate(ROUTES.DEFAULT);
     }
+
   }, []);
 
 
+
+
   useEffect(() => {
-
     const route = getParameterByName("route");
-
     //sync the current action route with main popup
     if (externalControlsState.activeSession?.route && isLogin) {
       navigate(`/${externalControlsState.activeSession.route}`);

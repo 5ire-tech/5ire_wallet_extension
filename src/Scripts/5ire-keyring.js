@@ -140,11 +140,10 @@ export class HybridKeyring extends EventEmitter {
      * @returns 
      */
     async verifyUserPassword(message) {
-        const { password } = message.data;
-        const verifiedResponse = await this._verifyPassword(password);
-        const verified = verifiedResponse.vault ? true : false;
-
-        return new EventPayload(message.event, message.event, { verified }, [], false);
+            const { password } = message.data;
+            const verifiedResponse = await this._verifyPassword(password);
+            const verified = verifiedResponse.vault ? true : false;
+            return new EventPayload(message.event, message.event, { verified }, [], false);
     }
 
     /**
@@ -721,7 +720,7 @@ export class HybridKeyring extends EventEmitter {
             const data = this._getKeyringData(WALLET_TYPES.IMPORTED_NATIVE)
             return data.mnemonics[acc.accountIndex];
         } else {
-            throw new Error("Invalid keyring");
+            new Error(new ErrorPayload(ERRCODES.KEYRING_ERROR, "Invalid keyring")).throw();
         }
     }
 

@@ -111,6 +111,7 @@ export const ERROR_MESSAGES = {
     ACCOUNT_ACCESS_NOT_GRANTED: "The requested account has not been authorized by the user",
     SINGER_ERROR: "Error while signing the the raw/payload",
     EXTERNAL_NATIVE_TRANSACTION_ERROR: "Error while external native transaction.",
+    ERROR_WHILE_TRANSACTION: "Transaction failed, Error occured during transaction processing",
 
 
     INVALID_PROPERTY: "Invalid property.",
@@ -146,7 +147,12 @@ export const ERRCODES = {
     INVALID_ARGU_TYPE: 7,
     FAILED_TO_CONNECT_NETWORK: 8,
     INSUFFICENT_BALANCE: 9,
-    SIGNER_ERROR: 10
+    SIGNER_ERROR: 10,
+    ERROR_WHILE_TRANSACTION: 11,
+    ERROR_WHILE_BALANCE_FETCH: 12,
+    ERROR_WHILE_GETTING_ESTIMATED_FEE: 13,
+    KEYRING_SECTION_ERROR: 14,
+    RUNTIME_MESSAGE_SECTION_ERROR: 15
 }
 
 
@@ -209,8 +215,8 @@ export const API = {
 };
 
 export const EXPLORERS = {
-    TESTNET: "https://explorer.5ire.network/testnet/tx",
-    QA: "https://qa-web-exp.5ire.network/testnet/tx"
+    TESTNET: "https://explorer.5ire.network",
+    QA: "https://qa-web-exp.5ire.network"
 }
 
 export const WS_END_POINTS = {

@@ -35,12 +35,12 @@ import CopyIcon from "../../Assets/CopyIcon.svg";
 function Send() {
   const [isEd, setEd] = useState(true);
   const [disableBtn, setDisable] = useState(true);
-  // const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [err, setErr] = useState({ to: "", amount: "" });
   const [data, setData] = useState({ to: "", amount: "" });
   const [activeTab, setActiveTab] = useState(NATIVE.toLowerCase());
-  const { state, estimatedGas, updateEstimatedGas, updateLoading, txHash, setTxHash } = useContext(AuthContext);
+  const { state, estimatedGas, updateEstimatedGas, updateLoading  } = useContext(AuthContext);
 
   const { balance, currentAccount } = state;
 
@@ -224,22 +224,22 @@ function Send() {
       if (activeTab.toLowerCase() === EVM.toLowerCase()) {
 
         //pass the message request for evm transfer
-        updateLoading(true);
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.INTERNAL_TX,
           MESSAGE_EVENT_LABELS.EVM_TX,
           { to: data.to, value: data.amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SEND, isEvm: true }}
         );
+        setIsModalOpen(true);
 
       } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
 
         //pass the message request for native transfer
-        updateLoading(true);
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.INTERNAL_TX,
           MESSAGE_EVENT_LABELS.NATIVE_TX,
           { to: data.to, value: data.amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SEND, isEvm: false } }
         );
+        setIsModalOpen(true)
       }
 
       updateEstimatedGas("");
@@ -262,7 +262,7 @@ function Send() {
     setDisable(true);
     setIsFaildOpen(false);
     setData({ to: "", amount: "" });
-    setTxHash(null);
+    setIsModalOpen(false);
   };
 
 
@@ -345,7 +345,7 @@ function Send() {
       <Approve onClick={handleApprove} text="Transfer" isDisable={disableBtn} />
 
       <ModalCustom
-        isModalOpen={!!txHash}
+        isModalOpen={isModalOpen}
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
         centered
@@ -360,7 +360,7 @@ function Send() {
               draggable={false}
             />
             <h2 className="title">Transfer Processed</h2>
-            <p className="transId">Your Transaction ID</p>
+            {/* <p className="transId">Your Transaction ID</p>
             <h3 className="hashTag">{txHash ? shortner(txHash): ""}</h3>
               {txHash && <img
               draggable={false}
@@ -369,7 +369,7 @@ function Send() {
               style={{cursor: "pointer"}}
               name="naiveAddress"
               onClick={handleCopy}
-            />}
+            />} */}
 
             <div className="footerbuttons">
               <ButtonComp text={"Transfer Again"} onClick={handle_OK_Cancel} />

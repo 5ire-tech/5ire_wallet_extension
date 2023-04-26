@@ -41,14 +41,6 @@ export default class WindowManager {
    */
   async showPopup(route = "") {
 
-    const popup = await this._getPopup();
-
-    // Bring focus to chrome popup
-
-    if (popup) {
-      // bring focus to existing chrome popup
-      await this.focusWindow(popup.id);
-    } else {
 
       //position control's
       let left = 0;
@@ -57,14 +49,11 @@ export default class WindowManager {
       try {
         const lastFocused = await this.getLastFocusedWindow();
 
-        // log("Last focus window: ", lastFocused);
-
         // Position window in top right corner of lastFocused window.
         top = lastFocused.top;
         left = lastFocused.left + (lastFocused.width - WINDOW_WIDTH);
 
       } catch (e) {
-        log(e)
         // The following properties are more than likely 0, due to being
         // opened from the background chrome process for the extension that
         // has no physical dimensions
@@ -72,7 +61,9 @@ export default class WindowManager {
         top = Math.max(screenY, 0);
         left = Math.max(screenX + (outerWidth - WINDOW_WIDTH), 0);
       }
+      
       const extensionURL = Browser.runtime.getURL("index.html") + `?route=${route}`;
+
 
       // create new approval window
       const popupWindow = await this.openWindow({
@@ -89,31 +80,17 @@ export default class WindowManager {
         await this.platform.updateWindowPosition(popupWindow.id, left, top);
       }
 
-      this._popupId = popupWindow.id;
-
       return popupWindow.id;
-    }
   }
+
 
   /**
    * close the current active popup
    * @param {*} popupId 
    */
   async closePopup(popupId) {
-      await this.closeWindow(popupId);
+    await this.closeWindow(popupId);
   }
-
-  // //internal listner for window close
-  // _onWindowClosed = async (windowId) => {
-
-  //   console.log("closed here: ", windowId);
-
-  //   if (windowId === this._popupId) {
-  //     this._popupId = undefined;
-  //     this._popupAutomaticallyClosed = undefined;
-
-  //   }
-  // }
 
 
   /**

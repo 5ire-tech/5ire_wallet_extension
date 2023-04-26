@@ -70,7 +70,6 @@ export class ExtensionStorageHandler {
             return false;
 
         } catch (err) {
-            log("Error while updating the local storage data: ", err);
             return new ErrorPayload(err.message.errCode || ERRCODES.INTERNAL, err.message.errMessage || err.message);
         }
     }

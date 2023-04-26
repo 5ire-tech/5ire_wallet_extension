@@ -1,5 +1,4 @@
 import { ExtensionStorageHandler } from "../Storage/loadstore";
-import Browser from "webextension-polyfill";
 import WindowManager, {NotificationAndBedgeManager} from "./platform";
 import { ExternalAppsRequest, TabMessagePayload } from "../Utility/network_calls";
 import { isEqual, log, isNullorUndef } from "../Utility/utility";
@@ -51,6 +50,7 @@ export class ExternalWindowControl {
    * @returns
    */
   newConnectionRequest = async (data, externalControlsState) => {
+
     const isOriginAlreadyExist = this._checkNewRequestOrigin(externalControlsState, data.origin);
 
     if(isOriginAlreadyExist) {
@@ -97,8 +97,6 @@ export class ExternalWindowControl {
   closeActiveSessionPopup = async () => {
     const {activeSession} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
 
-    log("here is active session: ", activeSession);
-
     if(activeSession?.popupId) {
     //set the pending task icon on chrome extension
 
@@ -129,7 +127,7 @@ export class ExternalWindowControl {
    */
   _handleClose = async (windowId) =>  {
 
-    log("closed the window: ", windowId, ExternalWindowControl.eventListnerControl)
+    log("closed the window: ", ExternalWindowControl.eventListnerControl)
 
     const isWindowIdFound = ExternalWindowControl.eventListnerControl.findIndex((item) => windowId === item);
     if(isWindowIdFound >= 0) ExternalWindowControl.eventListnerControl = ExternalWindowControl.eventListnerControl.filter(item => item !== windowId);

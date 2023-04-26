@@ -85,12 +85,11 @@ export const numFormatter = num => {
 
 
 //check transaction network and generate url
-export const generateTransactionUrl = (network, txHash) => {
+export const generateTransactionUrl = (network, txHash, isEvm) => {
 try {
-
     if(isNullorUndef(network) && isNullorUndef(txHash)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
     const explorerUrl = EXPLORERS[network.toUpperCase()];
-    return `${explorerUrl}/${txHash}`;
+    return `${explorerUrl}/${isEvm ? "evm/tx": "testnet/tx"}/${txHash}`;
 
 } catch(err) {
     log("error while generating the url: ", err)
