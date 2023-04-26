@@ -228,400 +228,400 @@ function BalanceDetails({ mt0 }) {
         isEqual(pathname, ROUTES.APPROVE_TXN) ||
         isEqual(pathname, ROUTES.HISTORY_P) ||
         isEqual(pathname, ROUTES.MY_ACCOUNT)) && (
-        <div className={`${style.balanceDetails} ${mt0 ? mt0 : EMTY_STR}`}>
-          <div className={style.balanceDetails__decoratedSec}>
-            <>
-              <img src={DarkLogo} alt="logo" draggable={false} />
-              {(isEqual(pathname, ROUTES.WALLET) ||
-                isEqual(pathname, ROUTES.HISTORY_P) ||
-                isEqual(pathname, ROUTES.MY_ACCOUNT)) && (
-                <div
-                  className={`${style.balanceDetails__accountName} ${style.headerInfo}`}
-                >
-                  {isConnected ? (
-                    <>
-                      <p onClick={headerActive}>
-                        <img
-                          src={GreenCircle}
-                          alt="connectionLogo"
-                          draggable={false}
-                        />
-                        {currentAccount?.accountName
-                          ? currentAccount?.accountName
-                          : ""}
-                        <img src={Info} />
-                      </p>
-                      <span>
-                        {currentAccount?.evmAddress
-                          ? shortner(currentAccount.evmAddress)
-                          : ""}{" "}
-                        <img
-                          draggable={false}
-                          src={CopyIcon}
-                          alt="copyIcon"
-                          name={EVM}
-                          onClick={handleCopy}
-                          style={{ cursor: "pointer" }}
-                        />
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <p onClick={headerActive}>
-                        <img
-                          src={GrayCircle}
-                          alt="connectionLogo"
-                          draggable={false}
-                        />
-                        {currentAccount?.accountName
-                          ? currentAccount?.accountName
-                          : ""}
-                      </p>
-                      <Dropdown
-                       placement="bottom"
-                        menu={{
-                          items: [
-                            {
-                              key: 1,
-                              label: <span>View Connected Details</span>,
-                            },
-                          ],
-                        }}
-                        trigger="hover"
-                      >
-                        <Space style={{ cursor: "pointer" }}>
-                          <img src={Info} />
-                        </Space>
-                      </Dropdown>
-                    </>
-                  )}
-                </div>
-              )}
-              <ModalCustom
-                isModalOpen={isHeaderActive}
-                handleOk={handle_OK_Cancel}
-                handleCancel={handle_OK_Cancel}
-              >
-                <div className={style.activeDis_Modal}>
-                  <div className={style.activeDis_Modal__modalHeading}>
-                    <h3>{url.replace(/[a-z]+:\/\//, "")}</h3>
-                    {(!url.startsWith("http") || isNewSite) && (
-                      <p>
-                        5ire Extension is not connected to this site. To connect
-                        to a web3 site, find and click the connect button.
-                      </p>
-                    )}
-                  </div>
-                  {url.startsWith("http") &&
-                    !isNewSite &&
-                    allAccounts.length > 0 &&
-                    allAccounts.map((e, i) => (
-                      <div
-                        className={style.activeDis_Modal__accountActive}
-                        key={i + e?.accountName}
-                      >
-                        <div className={style.activeDis_Modal__leftSec}>
-                          <img src={DarkLogo} alt="logo" />
-                          <div
-                            className={
-                              style.activeDis_Modal__leftSec__accountConatct
-                            }
+          <div className={`${style.balanceDetails} ${mt0 ? mt0 : EMTY_STR}`}>
+            <div className={style.balanceDetails__decoratedSec}>
+              <>
+                <img src={DarkLogo} alt="logo" draggable={false} />
+                {(isEqual(pathname, ROUTES.WALLET) ||
+                  isEqual(pathname, ROUTES.HISTORY_P) ||
+                  isEqual(pathname, ROUTES.MY_ACCOUNT)) && (
+                    <div
+                      className={`${isConnected ? style.balanceDetails__accountName : style.balanceDetails__accountName1} ${style.headerInfo}`}
+                    >
+                      {isConnected ? (
+                        <>
+                          <p onClick={headerActive}>
+                            <img
+                              src={GreenCircle}
+                              alt="connectionLogo"
+                              draggable={false}
+                            />
+                            {currentAccount?.accountName
+                              ? currentAccount?.accountName
+                              : ""}
+                            <img src={Info} />
+                          </p>
+                          {/* <span>
+                            {currentAccount?.evmAddress
+                              ? shortner(currentAccount.evmAddress)
+                              : ""}{" "}
+                            <img
+                              draggable={false}
+                              src={CopyIcon}
+                              alt="copyIcon"
+                              name={EVM}
+                              onClick={handleCopy}
+                              style={{ cursor: "pointer" }}
+                            />
+                          </span> */}
+                        </>
+                      ) : (
+                        <>
+                          <p >
+                            <img
+                              src={GrayCircle}
+                              alt="connectionLogo"
+                              draggable={false}
+                            />
+                            {currentAccount?.accountName
+                              ? currentAccount?.accountName
+                              : ""}
+                          </p>
+                          {/* <Dropdown
+                            placement="bottom"
+                            menu={{
+                              items: [
+                                {
+                                  key: 1,
+                                  label: <span>View Connected Details</span>,
+                                },
+                              ],
+                            }}
+                            trigger="hover"
                           >
-                            <h2>{e.accountName}</h2>
+                            <Space style={{ cursor: "pointer" }}>
+                              <img src={Info} />
+                            </Space>
+                          </Dropdown> */}
+                        </>
+                      )}
+                    </div>
+                  )}
+                <ModalCustom
+                  isModalOpen={isHeaderActive}
+                  handleOk={handle_OK_Cancel}
+                  handleCancel={handle_OK_Cancel}
+                >
+                  <div className={style.activeDis_Modal}>
+                    <div className={style.activeDis_Modal__modalHeading}>
+                      <h3>{url.replace(/[a-z]+:\/\//, "")}</h3>
+                      {(!url.startsWith("http") || isNewSite) && (
+                        <p>
+                          5ire Extension is not connected to this site. To connect
+                          to a web3 site, find and click the connect button.
+                        </p>
+                      )}
+                    </div>
+                    {url.startsWith("http") &&
+                      !isNewSite &&
+                      allAccounts.length > 0 &&
+                      allAccounts.map((e, i) => (
+                        <div
+                          className={style.activeDis_Modal__accountActive}
+                          key={i + e?.accountName}
+                        >
+                          <div className={style.activeDis_Modal__leftSec}>
+                            <img src={DarkLogo} alt="logo" />
+                            <div
+                              className={
+                                style.activeDis_Modal__leftSec__accountConatct
+                              }
+                            >
+                              <h2>{e.accountName}</h2>
 
-                            {e?.accountName === currentAccount?.accountName ? (
-                              <p>{`${balance?.totalBalance} 5ire`}</p>
-                            ) : (
-                              <p
-                                classname={style.activeDis_Modal__switchAcc}
-                                onClick={() => onSelectAcc(e?.accountName)}
+                              {e?.accountName === currentAccount?.accountName ? (
+                                <p>{`${balance?.totalBalance} 5ire`}</p>
+                              ) : (
+                                <p
+                                  classname={style.activeDis_Modal__switchAcc}
+                                  onClick={() => onSelectAcc(e?.accountName)}
+                                >
+                                  Switch Account
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <div className={style.activeDis_Modal__rytSec}>
+                            <h2>
+                              {e.accountName === currentAccount?.accountName &&
+                                isConnected ? (
+                                <img
+                                  src={GreenCircle}
+                                  alt="connectionLogo"
+                                  draggable={false}
+                                />
+                              ) : (
+                                <img
+                                  src={GrayCircle}
+                                  alt="connectionLogo"
+                                  draggable={false}
+                                />
+                              )}{" "}
+                              {e.accountName === currentAccount?.accountName &&
+                                isConnected
+                                ? LABELS.CONNECTED
+                                : LABELS.NOT_CONNECTED}
+                            </h2>
+                            {e.accountName === currentAccount?.accountName && (
+                              <Dropdown
+                                menu={{
+                                  items: [
+                                    {
+                                      key: i,
+                                      label: (
+                                        <span
+                                          onClick={
+                                            isConnected
+                                              ? handleDisconnect
+                                              : handleConnect
+                                          }
+                                        >
+                                          {isConnected
+                                            ? "Disconnected"
+                                            : "Connect"}
+                                        </span>
+                                      ),
+                                    },
+                                  ],
+                                }}
+                                trigger="click"
                               >
-                                Switch Account
-                              </p>
+                                <Space style={{ cursor: "pointer" }}>
+                                  <img src={ThreeDot} alt="3dots" />
+                                </Space>
+                              </Dropdown>
                             )}
                           </div>
                         </div>
-                        <div className={style.activeDis_Modal__rytSec}>
-                          <h2>
-                            {e.accountName === currentAccount?.accountName &&
-                            isConnected ? (
-                              <img
-                                src={GreenCircle}
-                                alt="connectionLogo"
-                                draggable={false}
-                              />
-                            ) : (
-                              <img
-                                src={GrayCircle}
-                                alt="connectionLogo"
-                                draggable={false}
-                              />
-                            )}{" "}
-                            {e.accountName === currentAccount?.accountName &&
-                            isConnected
-                              ? LABELS.CONNECTED
-                              : LABELS.NOT_CONNECTED}
-                          </h2>
-                          {e.accountName === currentAccount?.accountName && (
-                            <Dropdown
-                              menu={{
-                                items: [
-                                  {
-                                    key: i,
-                                    label: (
-                                      <span
-                                        onClick={
-                                          isConnected
-                                            ? handleDisconnect
-                                            : handleConnect
-                                        }
-                                      >
-                                        {isConnected
-                                          ? "Disconnected"
-                                          : "Connect"}
-                                      </span>
-                                    ),
-                                  },
-                                ],
-                              }}
-                              trigger="click"
-                            >
-                              <Space style={{ cursor: "pointer" }}>
-                                <img src={ThreeDot} alt="3dots" />
-                              </Space>
-                            </Dropdown>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                  </div>
+                </ModalCustom>
+                <div className={style.balanceDetails__selectStyle}>
+                  <Select
+                    disabled={isEqual(pathname, ROUTES.APPROVE_TXN)}
+                    onChange={handleNetworkChange}
+                    suffixIcon={
+                      <img
+                        src={DownArrowSuffix}
+                        alt="DownArrow"
+                        draggable={false}
+                      />
+                    }
+                    defaultValue={[
+                      {
+                        value: currentNetwork,
+                        label: (
+                          <span className="flexedItemSelect">
+                            {currentNetwork || "Testnet"}
+                          </span>
+                        ),
+                      },
+                    ]}
+                    style={{
+                      width: 100,
+                    }}
+                    options={[
+                      {
+                        value: NETWORK.TEST_NETWORK,
+                        label: <span className="flexedItemSelect">Testnet</span>,
+                      },
+                      {
+                        value: NETWORK.QA_NETWORK,
+                        label: (
+                          <span className="flexedItemSelect">
+                            {NETWORK.QA_NETWORK}
+                          </span>
+                        ),
+                      },
+                    ]}
+                  />
                 </div>
-              </ModalCustom>
-              <div className={style.balanceDetails__selectStyle}>
-                <Select
-                  disabled={isEqual(pathname, ROUTES.APPROVE_TXN)}
-                  onChange={handleNetworkChange}
-                  suffixIcon={
+              </>
+            </div>
+
+            {pathname === ROUTES.WALLET && (
+              <div className={style.balanceDetails__innerBalance}>
+                <div className={style.balanceDetails__innerBalance__totalBalnce}>
+                  <p>
+                    Total Balance :{" "}
+                    <span>
+                      {balance?.totalBalance
+                        ? `${balance.totalBalance} ${CURRENCY}`
+                        : ""}{" "}
+                    </span>
+                  </p>
+                </div>
+                <div className={style.balanceDetails__innerBalance__chainBalance}>
+                  <div
+                    className={style.balanceDetails__innerBalance__balanceCard}
+                  >
+                    <div
+                      className={style.balanceDetails__innerBalance__balanceName}
+                    >
+                      <p>Native Chain Balance</p>
+                      <h3>
+                        {/* <img src={WalletCardLogo} draggable={false} alt="walletLogo" /> */}
+                        {balance?.nativeBalance ? balance?.nativeBalance : ""}
+                      </h3>
+                    </div>
+                    <div className={style.balanceDetails__innerBalance__walletQa}>
+                      <img
+                        onClick={showModal}
+                        alt="walletQR"
+                        src={WalletQr}
+                        width={30}
+                        height={30}
+                        draggable={false}
+                      />
+                    </div>
+                  </div>
+                  <div
+                    className={style.balanceDetails__innerBalance__balanceCard}
+                  >
+                    <div
+                      className={style.balanceDetails__innerBalance__balanceName}
+                    >
+                      <p>EVM Chain Balance</p>
+                      <h3>
+                        {/* <img src={WalletCardLogo} draggable={false} alt="balanceLogo" /> */}
+                        {balance?.evmBalance ? balance?.evmBalance : ""}
+                      </h3>
+                    </div>
+                    <div className={style.balanceDetails__innerBalance__walletQa}>
+                      <img
+                        onClick={evmModal}
+                        alt="balance"
+                        src={WalletQr}
+                        width={30}
+                        height={30}
+                        draggable={false}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <ModalCustom
+              isModalOpen={isModalOpen}
+              handleOk={handleOk}
+              handleCancel={handleCancel}
+              centered
+            >
+              <div className={style.balanceDetails__nativemodal}>
+                <div className={style.balanceDetails__nativemodal__innerContact}>
+                  <div className={style.balanceDetails__nativemodal__logoFlex}>
                     <img
-                      src={DownArrowSuffix}
-                      alt="DownArrow"
+                      src={DarkLogo}
+                      alt="logo"
+                      width={55}
+                      height={55}
                       draggable={false}
                     />
-                  }
-                  defaultValue={[
-                    {
-                      value: currentNetwork,
-                      label: (
-                        <span className="flexedItemSelect">
-                          {currentNetwork || "Testnet"}
-                        </span>
-                      ),
-                    },
-                  ]}
-                  style={{
-                    width: 100,
-                  }}
-                  options={[
-                    {
-                      value: NETWORK.TEST_NETWORK,
-                      label: <span className="flexedItemSelect">Testnet</span>,
-                    },
-                    {
-                      value: NETWORK.QA_NETWORK,
-                      label: (
-                        <span className="flexedItemSelect">
-                          {NETWORK.QA_NETWORK}
-                        </span>
-                      ),
-                    },
-                  ]}
-                />
+                    <p className={style.balanceDetails__nativemodal__title}>
+                      5ire Native Chain
+                    </p>
+                  </div>
+                  <div className={style.balanceDetails__nativemodal__scanner}>
+                    <QRCode
+                      size={200}
+                      style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                      viewBox={`0 0 256 256`}
+                      value={
+                        currentAccount?.nativeAddress
+                          ? currentAccount?.nativeAddress
+                          : ""
+                      }
+                    />
+                  </div>
+                  <div className={style.balanceDetails__nativemodal__modalOr}>
+                    <p>or</p>
+                  </div>
+                  <p className={style.balanceDetails__nativemodal__addressText}>
+                    Your 5ire Native Address
+                  </p>
+                  <div className={style.balanceDetails__nativemodal__wrapedText}>
+                    <p>
+                      {currentAccount?.nativeAddress
+                        ? shortner(currentAccount?.nativeAddress)
+                        : ""}
+                      <img
+                        draggable={false}
+                        src={CopyIcon}
+                        alt="copyIcon"
+                        name={NATIVE}
+                        onClick={handleCopy}
+                      />
+                    </p>
+                  </div>
+                  <div
+                    className={style.balanceDetails__nativemodal__footerbuttons}
+                  ></div>
+                </div>
               </div>
-            </>
+            </ModalCustom>
+            <ModalCustom
+              isModalOpen={isEvmModal}
+              handleOk={evmOk}
+              handleCancel={evmCancel}
+              centered
+            >
+              <div className={style.balanceDetails__nativemodal}>
+                <div className={style.balanceDetails__nativemodal__innerContact}>
+                  <div className={style.balanceDetails__nativemodal__logoFlex}>
+                    <img
+                      src={DarkLogo}
+                      width={55}
+                      height={55}
+                      alt="darkLogo"
+                      draggable={false}
+                    />
+                    <p className={style.balanceDetails__nativemodal__title}>
+                      5ire EVM Chain
+                    </p>
+                  </div>
+                  <div className={style.balanceDetails__nativemodal__scanner}>
+                    <QRCode
+                      size={200}
+                      style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                      viewBox={`0 0 256 256`}
+                      value={
+                        currentAccount?.evmAddress
+                          ? currentAccount.evmAddress
+                          : ""
+                      }
+                    />
+                  </div>
+                  <div className={style.balanceDetails__nativemodal__modalOr}>
+                    <p>or</p>
+                  </div>
+                  <p className={style.balanceDetails__nativemodal__addressText}>
+                    Your 5ire EVM Address
+                  </p>
+                  <div className={style.balanceDetails__nativemodal__wrapedText}>
+                    <p>
+                      {currentAccount?.evmAddress
+                        ? shortner(currentAccount?.evmAddress)
+                        : ""}
+                      <img
+                        draggable={false}
+                        src={CopyIcon}
+                        alt="copyIcon"
+                        name={EVM}
+                        onClick={handleCopy}
+                      />
+                    </p>
+                  </div>
+                  <div
+                    className={style.balanceDetails__nativemodal__footerbuttons}
+                  >
+                    {/* <ButtonComp text={"Share Address"} /> */}
+                  </div>
+                </div>
+              </div>
+            </ModalCustom>
           </div>
-
-          {pathname === ROUTES.WALLET && (
-            <div className={style.balanceDetails__innerBalance}>
-              <div className={style.balanceDetails__innerBalance__totalBalnce}>
-                <p>
-                  Total Balance :{" "}
-                  <span>
-                    {balance?.totalBalance
-                      ? `${balance.totalBalance} ${CURRENCY}`
-                      : ""}{" "}
-                  </span>
-                </p>
-              </div>
-              <div className={style.balanceDetails__innerBalance__chainBalance}>
-                <div
-                  className={style.balanceDetails__innerBalance__balanceCard}
-                >
-                  <div
-                    className={style.balanceDetails__innerBalance__balanceName}
-                  >
-                    <p>Native Chain Balance</p>
-                    <h3>
-                      {/* <img src={WalletCardLogo} draggable={false} alt="walletLogo" /> */}
-                      {balance?.nativeBalance ? balance?.nativeBalance : ""}
-                    </h3>
-                  </div>
-                  <div className={style.balanceDetails__innerBalance__walletQa}>
-                    <img
-                      onClick={showModal}
-                      alt="walletQR"
-                      src={WalletQr}
-                      width={30}
-                      height={30}
-                      draggable={false}
-                    />
-                  </div>
-                </div>
-                <div
-                  className={style.balanceDetails__innerBalance__balanceCard}
-                >
-                  <div
-                    className={style.balanceDetails__innerBalance__balanceName}
-                  >
-                    <p>EVM Chain Balance</p>
-                    <h3>
-                      {/* <img src={WalletCardLogo} draggable={false} alt="balanceLogo" /> */}
-                      {balance?.evmBalance ? balance?.evmBalance : ""}
-                    </h3>
-                  </div>
-                  <div className={style.balanceDetails__innerBalance__walletQa}>
-                    <img
-                      onClick={evmModal}
-                      alt="balance"
-                      src={WalletQr}
-                      width={30}
-                      height={30}
-                      draggable={false}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <ModalCustom
-            isModalOpen={isModalOpen}
-            handleOk={handleOk}
-            handleCancel={handleCancel}
-            centered
-          >
-            <div className={style.balanceDetails__nativemodal}>
-              <div className={style.balanceDetails__nativemodal__innerContact}>
-                <div className={style.balanceDetails__nativemodal__logoFlex}>
-                  <img
-                    src={DarkLogo}
-                    alt="logo"
-                    width={55}
-                    height={55}
-                    draggable={false}
-                  />
-                  <p className={style.balanceDetails__nativemodal__title}>
-                    5ire Native Chain
-                  </p>
-                </div>
-                <div className={style.balanceDetails__nativemodal__scanner}>
-                  <QRCode
-                    size={200}
-                    style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-                    viewBox={`0 0 256 256`}
-                    value={
-                      currentAccount?.nativeAddress
-                        ? currentAccount?.nativeAddress
-                        : ""
-                    }
-                  />
-                </div>
-                <div className={style.balanceDetails__nativemodal__modalOr}>
-                  <p>or</p>
-                </div>
-                <p className={style.balanceDetails__nativemodal__addressText}>
-                  Your 5ire Native Address
-                </p>
-                <div className={style.balanceDetails__nativemodal__wrapedText}>
-                  <p>
-                    {currentAccount?.nativeAddress
-                      ? shortner(currentAccount?.nativeAddress)
-                      : ""}
-                    <img
-                      draggable={false}
-                      src={CopyIcon}
-                      alt="copyIcon"
-                      name={NATIVE}
-                      onClick={handleCopy}
-                    />
-                  </p>
-                </div>
-                <div
-                  className={style.balanceDetails__nativemodal__footerbuttons}
-                ></div>
-              </div>
-            </div>
-          </ModalCustom>
-          <ModalCustom
-            isModalOpen={isEvmModal}
-            handleOk={evmOk}
-            handleCancel={evmCancel}
-            centered
-          >
-            <div className={style.balanceDetails__nativemodal}>
-              <div className={style.balanceDetails__nativemodal__innerContact}>
-                <div className={style.balanceDetails__nativemodal__logoFlex}>
-                  <img
-                    src={DarkLogo}
-                    width={55}
-                    height={55}
-                    alt="darkLogo"
-                    draggable={false}
-                  />
-                  <p className={style.balanceDetails__nativemodal__title}>
-                    5ire EVM Chain
-                  </p>
-                </div>
-                <div className={style.balanceDetails__nativemodal__scanner}>
-                  <QRCode
-                    size={200}
-                    style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-                    viewBox={`0 0 256 256`}
-                    value={
-                      currentAccount?.evmAddress
-                        ? currentAccount.evmAddress
-                        : ""
-                    }
-                  />
-                </div>
-                <div className={style.balanceDetails__nativemodal__modalOr}>
-                  <p>or</p>
-                </div>
-                <p className={style.balanceDetails__nativemodal__addressText}>
-                  Your 5ire EVM Address
-                </p>
-                <div className={style.balanceDetails__nativemodal__wrapedText}>
-                  <p>
-                    {currentAccount?.evmAddress
-                      ? shortner(currentAccount?.evmAddress)
-                      : ""}
-                    <img
-                      draggable={false}
-                      src={CopyIcon}
-                      alt="copyIcon"
-                      name={EVM}
-                      onClick={handleCopy}
-                    />
-                  </p>
-                </div>
-                <div
-                  className={style.balanceDetails__nativemodal__footerbuttons}
-                >
-                  {/* <ButtonComp text={"Share Address"} /> */}
-                </div>
-              </div>
-            </div>
-          </ModalCustom>
-        </div>
-      )}
+        )}
     </>
   );
 }

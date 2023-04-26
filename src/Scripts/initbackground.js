@@ -154,8 +154,8 @@ export class InitBackground {
             break;
           default: data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.message.id, null, null, null, ERROR_MESSAGES.INVALID_METHOD))
         }
-    } catch (err) {
-      ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.RUNTIME_MESSAGE_SECTION_ERROR, err.message))
+      } catch (err) {
+        ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.RUNTIME_MESSAGE_SECTION_ERROR, err.message))
       }
     });
   }
@@ -184,7 +184,7 @@ export class InitBackground {
           //   InitBackground.balanceTimer = null;
           // }
         });
-      } 
+      }
     });
   }
 
@@ -274,6 +274,7 @@ class RpcRequestProcessor {
         this.processTransactionRequest(message)
       }
     } catch (err) {
+
       ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.INTERNAL, err.message))
     }
   }
@@ -288,6 +289,7 @@ class RpcRequestProcessor {
       //send the response message to extension ui
       if (rpcResponse.eventEmit) this.services.messageToUI(rpcResponse.eventEmit, rpcResponse.payload.data)
     } else {
+
       ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, rpcResponse.error);
     }
   }
@@ -305,6 +307,7 @@ class RpcRequestProcessor {
       await this.transactionQueue.addNewTransaction(transactionProcessingPayload);
 
     } catch (err) {
+
       ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.INTERNAL, err.message))
     }
   }
@@ -374,6 +377,7 @@ class TransactionQueue {
       const error = new ErrorPayload(err.message?.errCode || ERRCODES.INTERNAL, err.message?.errMessage || err.message);
 
       //emit the error event
+
       ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, error)
       return new EventPayload(null, null, null, [], error);
     }
@@ -730,9 +734,9 @@ export class Services {
 
   //create rpc handler
   createConnection = async (currentNetwork) => {
-      const connector = Connection.getInsatnce();
-      const apiConn = await connector.initializeApi(currentNetwork)
-      return apiConn;
+    const connector = Connection.getInsatnce();
+    const apiConn = await connector.initializeApi(currentNetwork)
+    return apiConn;
   }
 
   //pass message to extension ui
@@ -740,6 +744,7 @@ export class Services {
     try {
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND, event, message)
     } catch (err) {
+
       ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.INTERNAL, err.message))
     }
   }
@@ -749,14 +754,16 @@ export class Services {
     try {
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND, errTypeEvent, errorMessage)
     } catch (err) {
+
       ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.INTERNAL, err.message))
     }
   }
 
   //update the local storage data
   updateLocalState = async (key, data, options) => {
-      const res = await ExtensionStorageHandler.updateStorage(key, data, options)
-      if(res) ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, res);
+    const res = await ExtensionStorageHandler.updateStorage(key, data, options)
+    if (res)
+      ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, res);
   }
 
   /*************************** Service Internals ******************************/
@@ -798,7 +805,7 @@ export class TransactionsRPC {
         status: STATUS.PENDING
       };
 
-      const tempAmount = data.isBig ? (new BigNumber(data.value).dividedBy(DECIMALS)).toString() : data.value;
+      const tempAmount = data?.options?.isBig ? (new BigNumber(data.value).dividedBy(DECIMALS)).toString() : data.value;
 
       if (
         (Number(tempAmount) > (Number(state.balance.evmBalance)) && data.value !== '0x0')
@@ -1189,16 +1196,16 @@ export class GeneralWalletRPC {
   //for fething the balance of both (evm and native)
   getBalance = async (message, state) => {
     try {
-      
+
       let nbalance = 0;
       const { evmApi, nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
       const account = state.currentAccount;
-  
+
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
-  
+
       // Evm Balance
       const w3balance = await evmApi?.eth?.getBalance(account.evmAddress);
-  
+
       //Native Balance
       if (RpcRequestProcessor.isHttp) {
         let balance_ = await nativeApi?._query.system.account(account.nativeAddress);
@@ -1207,12 +1214,12 @@ export class GeneralWalletRPC {
         let balance_ = await nativeApi?.derive.balances.all(account.nativeAddress);
         nbalance = balance_.availableBalance;
       }
-  
-  
+
+
       let evmBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toString();
       let nativeBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toString();
-  
-  
+
+
       if (Number(nativeBalance) % 1 !== 0) {
         let tempBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toFixed(6, 8).toString();
         if (Number(tempBalance) % 1 === 0)
@@ -1220,8 +1227,8 @@ export class GeneralWalletRPC {
         else
           nativeBalance = tempBalance;
       }
-  
-  
+
+
       if (Number(evmBalance) % 1 !== 0) {
         let tempBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toFixed(6, 8).toString();
         if (Number(tempBalance) % 1 === 0)
@@ -1229,13 +1236,13 @@ export class GeneralWalletRPC {
         else
           evmBalance = tempBalance;
       }
-  
-  
+
+
       let totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toString();
       if (Number(totalBalance) % 1 !== 0)
         totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toFixed(6, 8).toString()
-  
-  
+
+
       const payload = {
         data: {
           evmBalance,
@@ -1243,9 +1250,9 @@ export class GeneralWalletRPC {
           totalBalance
         }
       }
-  
+
       return new EventPayload(STATE_CHANGE_ACTIONS.BALANCE, null, payload, [], null);
-  
+
 
     } catch (err) {
       return new EventPayload(null, null, null, [], new ErrorPayload(ERRCODES.ERROR_WHILE_BALANCE_FETCH, err.message));
@@ -1273,7 +1280,7 @@ export class GeneralWalletRPC {
           amount = Math.round(Number(amount));
           Web3.utils.toChecksumAddress(toAddress);
       }
-  
+
       const tx = {
         to: toAddress,
         from: account.evmAddress,
@@ -1284,15 +1291,15 @@ export class GeneralWalletRPC {
       if (data?.data) {
         tx.data = data.data;
       }
-  
+
       const gasAmount = await evmApi.eth.estimateGas(tx);
       const gasPrice = await evmApi.eth.getGasPrice();
       let fee = (new BigNumber(gasPrice * gasAmount)).dividedBy(DECIMALS).toString();
-  
+
       const payload = {
         data: { fee }
       }
-  
+
       return new EventPayload(null, message.event, payload, [], null);
     } catch (err) {
       return new EventPayload(null, null, null, [], new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, err.message));
@@ -1305,16 +1312,16 @@ export class GeneralWalletRPC {
     try {
       const { data } = message;
       const { options: { account } } = data;
-  
+
       const { nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
-  
+
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
-  
+
       const toAddress = data.toAddress ? data.toAddress : account.evmAddress;
       let transferTx;
-  
+
       const signer = this.hybridKeyring.getNativeSignerByAddress(account.nativeAddress);
-  
+
       if (toAddress?.startsWith("0x")) {
         const amt = BigNumber(data.value).multipliedBy(DECIMALS).toString();
         transferTx = await nativeApi.tx.evm.deposit(toAddress, (Number(amt).noExponents()).toString());
@@ -1322,11 +1329,11 @@ export class GeneralWalletRPC {
       else if (toAddress?.startsWith("5")) {
         const amt = new BigNumber(data.value).multipliedBy(DECIMALS).toString();
         transferTx = nativeApi.tx.balances.transfer(toAddress, (Number(amt).noExponents()).toString());
-  
+
       }
       const info = await transferTx?.paymentInfo(signer);
       const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS)).toString();
-  
+
       //construct payload
       const payload = { data: { fee } }
       return new EventPayload(null, message.event, payload, [], null);
@@ -1456,7 +1463,6 @@ export class KeyringHandler {
       if (this.hybridKeyring[message.event]) {
         const keyringResponse = await this._keyringCaller(message);
         this._parseKeyringRes(keyringResponse);
-
         //handle if the method is not the part of system
       } else new Error(new ErrorPayload(ERRCODES.INTERNAL, ERROR_MESSAGES.UNDEF_PROPERTY)).throw();
     } catch (err) {
@@ -1469,23 +1475,24 @@ export class KeyringHandler {
       const keyResponse = await this.hybridKeyring[message.event](message);
       return keyResponse;
     } catch (err) {
-     return new EventPayload(null, message.event, null, [], new ErrorPayload(err.message.errCode || ERRCODES.KEYRING_SECTION_ERROR, err.message.errMessage || err.message));
+      return new EventPayload(null, message.event, null, [], new ErrorPayload(err.message.errCode || ERRCODES.KEYRING_SECTION_ERROR, err.message.errMessage || err.message));
     }
   }
 
 
   //parse the response recieve from operation and send message accordingly to extension ui
   _parseKeyringRes = async (response) => {
-      if (!response.error) {
-        //change the state in local storage
-        if (response.stateChangeKey) await this.services.updateLocalState(response.stateChangeKey, response.payload, response.payload?.options);
-        //send the response message to extension ui
-        if (response.eventEmit) this.services.messageToUI(response.eventEmit, response.payload)
+    if (!response.error) {
+      //change the state in local storage
+      if (response.stateChangeKey) await this.services.updateLocalState(response.stateChangeKey, response.payload, response.payload?.options);
+      //send the response message to extension ui
+      if (response.eventEmit) this.services.messageToUI(response.eventEmit, response.payload)
 
-      } else {
-        if (Number(response?.error?.errCode) === 3) response.eventEmit && this.services.messageToUI(response.eventEmit, response.error)
-        else ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.KEYRING_SECTION_ERROR, response.error))
-      }
+    } else {
+      if (Number(response?.error?.errCode) === 3) response.eventEmit && this.services.messageToUI(response.eventEmit, response.error)
+      else
+        ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.KEYRING_SECTION_ERROR, response.error))
+    }
   }
 }
 

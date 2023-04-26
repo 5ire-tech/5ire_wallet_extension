@@ -3,7 +3,7 @@ import { ROUTES } from "../../Routes";
 import { AuthContext } from "../../Store";
 import { useNavigate } from "react-router-dom";
 import ButtonComp from "../ButtonComp/ButtonComp";
-import { EVM_JSON_RPC_METHODS, LABELS, STATE_CHANGE_ACTIONS, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, ERROR_MESSAGES, TX_TYPE } from "../../Constants/index";
+import { EVM_JSON_RPC_METHODS, LABELS, STATE_CHANGE_ACTIONS, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, ERROR_MESSAGES, TX_TYPE, DECIMALS } from "../../Constants/index";
 import React, { useContext, useEffect, useState } from "react";
 import { newAccountInitialState } from "../../Store/initialState";
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
@@ -11,6 +11,8 @@ import { isEqual } from "../../Utility/utility";
 import { sendMessageToTab, sendRuntimeMessage } from "../../Utility/message_helper";
 import { TabMessagePayload } from "../../Utility/network_calls";
 import { toast } from "react-toastify";
+import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
+import BigNumber from "bignumber.js";
 
 
 
@@ -53,6 +55,8 @@ function FooterStepOne() {
 //Footer of New wallet Detail Page
 export const FooterStepTwo = () => {
   const navigate = useNavigate();
+  const [show, setShow] = useState(false)
+
 
   const { state, setNewAccount, newAccount, updateState } = useContext(AuthContext);
 
@@ -79,28 +83,34 @@ export const FooterStepTwo = () => {
       ...txHistory,
       [newAccount?.accountName]: []
     };
+    setShow(true)
+    setTimeout(() => {
+      setShow(false)
+      updateState(LABELS.CURRENT_ACCOUNT, currentAcc);
+      updateState(LABELS.TX_HISTORY, txHis);
+
+      setNewAccount(newAccountInitialState);
+      navigate(ROUTES.WALLET);
+    }, 2000)
 
 
-    updateState(LABELS.CURRENT_ACCOUNT, currentAcc);
-    updateState(LABELS.TX_HISTORY, txHis);
-
-    setNewAccount(newAccountInitialState);
-    navigate(ROUTES.WALLET);
   };
 
   return (
     <>
       <div className={style.menuItems__cancleContinue}>
 
-        <ButtonComp
+        {!isLogin && <ButtonComp
           bordered={true}
           text={"Cancel"}
           maxWidth={"100%"}
           onClick={handleCancle}
-        />
+        />}
 
         <ButtonComp onClick={handleClick} text={"Continue"} maxWidth={"100%"} />
       </div>
+      {show && <div className="loader">
+        <CongratulationsScreen text={"Your wallet has been created"} /></div>}
     </>
   );
 };
@@ -172,7 +182,10 @@ export const ApproveTx = () => {
 
   //check if user has sufficent balance to make transaction
   useEffect(() => {
-    if ((Number(activeSession.message?.value) + Number(estimatedGas)) >= Number(state.balance.evmBalance)) {
+
+    const amount = (new BigNumber(activeSession.message?.value).dividedBy(DECIMALS)).toString();
+
+    if ((Number(amount) + Number(estimatedGas)) >= Number(state.balance.evmBalance)) {
       toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       setDisableApproval(true);
       return;
@@ -183,9 +196,9 @@ export const ApproveTx = () => {
   function handleClick(isApproved) {
     if (isApproved) {
       const txType = activeSession.message?.data && activeSession.message?.to ? TX_TYPE.CONTRACT_EXECUTION : TX_TYPE.CONTRACT_DEPLOYMENT;
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.EVM_TX, {options: { account: state.currentAccount, network: state.currentNetwork, type: txType, isEvm: true }});
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.EVM_TX, { options: { account: state.currentAccount, network: state.currentNetwork, type: txType, isEvm: true, isBig: true } });
     }
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION, {approve: isApproved});
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION, { approve: isApproved });
     navigate(ROUTES.WALLET);
   }
 
