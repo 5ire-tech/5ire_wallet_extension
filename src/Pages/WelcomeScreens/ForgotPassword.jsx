@@ -20,6 +20,7 @@ import {
 
 function ForgotPassword() {
   const navigate = useNavigate();
+
   const [data, setData] = useState({
     pass: EMTY_STR,
     confirmPass: EMTY_STR,
@@ -141,7 +142,7 @@ function ForgotPassword() {
   return (
     //onKeyDown={handleClick}//
     <div className={style.cardWhite}>
-      <MenuRestofHeaders logosilver={true} title="5irechain Wallet" backTo={true} />
+      <MenuRestofHeaders logosilver={true} title="5irechain Wallet" backTo={ROUTES.UNLOACK_WALLET} />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Forgot password</h1>
