@@ -206,18 +206,18 @@ export const ApproveTx = () => {
     <>
       <div className={`${style.menuItems__cancleContinue} approveBtn`}>
         <ButtonComp
-          bordered={true}
-          text={"Reject"}
-          maxWidth={"100%"}
-          onClick={() => handleClick(false)}
-        />
-        <ButtonComp
           onClick={() => handleClick(true)}
           text={"Approve"}
           maxWidth={"100%"}
           isDisable={disableApproval}
         />
       </div>
+      <ButtonComp
+        bordered={true}
+        text={"Reject"}
+        maxWidth={"100%"}
+        onClick={() => handleClick(false)}
+      />
     </>
   );
 };

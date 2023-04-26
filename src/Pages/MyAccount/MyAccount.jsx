@@ -4,6 +4,7 @@ import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import Browser from "webextension-polyfill";
 import ThreeDot from "../../Assets/dot3.svg";
+import GreenCircle from "../../Assets/greencircle.svg";
 import { useNavigate } from "react-router-dom";
 import Import from "../../Assets/PNG/import.png";
 import Logout from "../../Assets/PNG/logout.png";
@@ -186,11 +187,22 @@ function MyAccount() {
             </div>
           </div>
           <div className={style.myAccountSec__rytSec}>
-            <h2>
-              {e?.accountName === currentAccount?.accountName
-                ? LABELS.ACTIVE
-                : LABELS.NOT_ACTIVE}
-            </h2>
+            {/* <h2> */}
+            {e?.accountName === currentAccount?.accountName
+              ?
+              <>
+                <img
+                  src={GreenCircle}
+                  alt="connectionLogo"
+                  draggable={false}
+                />
+                <h2 >{LABELS.ACTIVE}</h2>
+              </>
+              : <h2>
+                {LABELS.NOT_ACTIVE}
+              </h2>
+            }
+            {/* </h2> */}
             {Number(e.accountIndex) === 0 && e.type === "hd_wallet" ? (
               ""
             ) : (

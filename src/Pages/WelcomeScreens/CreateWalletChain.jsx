@@ -86,7 +86,7 @@ function CreateWalletChain() {
         </p>
       </div>
       <div className={style.cardWhite__addressInput}>
-        <label>Evm Chain Address:</label>
+        <label>EVM Chain Address:</label>
         <p className={style.cardWhite__addressInput__copyText}>
           <span>{newAccount?.evmAddress}</span>
           {
