@@ -233,6 +233,8 @@ export class ExtensionStorageHandler {
 
 
     importAccountByMnemonics = async (message, state) => {
+        // console.log("essage in loadstore import ", message);
+
         const { newAccount, vault } = message;
         const txHistory = this._txProperty(state, newAccount.accountName);
         const newState = { ...state, vault, txHistory, currentAccount: newAccount }

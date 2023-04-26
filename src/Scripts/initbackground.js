@@ -38,7 +38,7 @@ export class InitBackground {
     this.externalTaskHandler = new ExternalTxTasks();
     this.keyringHandler = KeyringHandler.getInstance();
 
-    if(!InitBackground.balanceTimer) {
+    if (!InitBackground.balanceTimer) {
       InitBackground.balanceTimer = this._balanceUpdate();
     }
   }
@@ -122,14 +122,15 @@ export class InitBackground {
           tabId: sender?.tab?.id
         };
 
-      //check if the app has the permission to access requested method
-      if(!checkStringInclusionIntoArray(data?.method)) {
-        const {connectedApps} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
-        const isHasAccess = connectedApps[data.origin];
-        if(!isHasAccess?.isConnected) {
-          data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.ACCESS_NOT_GRANTED));
-          return;
-        }}
+        //check if the app has the permission to access requested method
+        if (!checkStringInclusionIntoArray(data?.method)) {
+          const { connectedApps } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+          const isHasAccess = connectedApps[data.origin];
+          if (!isHasAccess?.isConnected) {
+            data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.ACCESS_NOT_GRANTED));
+            return;
+          }
+        }
 
         //checks for event from injected script
         switch (data.method) {
@@ -335,11 +336,11 @@ class TransactionQueue {
   //add new transaction
   addNewTransaction = async (transactionProcessingPayload) => {
     //add the transaction history track
-      const { data, options } = transactionProcessingPayload;
-      transactionProcessingPayload.transactionHistoryTrack = new TransactionPayload(data?.to || options?.to, data?.value ? parseFloat(data?.value).toString() : "", options?.isEvm, options?.network, options?.type);
+    const { data, options } = transactionProcessingPayload;
+    transactionProcessingPayload.transactionHistoryTrack = new TransactionPayload(data?.to || options?.to, data?.value ? parseFloat(data?.value).toString() : "", options?.isEvm, options?.network, options?.type);
 
-      //insert transaction history with flag "Queued"
-      await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY, transactionProcessingPayload.transactionHistoryTrack, transactionProcessingPayload.options);
+    //insert transaction history with flag "Queued"
+    await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY, transactionProcessingPayload.transactionHistoryTrack, transactionProcessingPayload.options);
 
     //add the new transaction into queue
     await this.services.updateLocalState(STATE_CHANGE_ACTIONS.ADD_NEW_TRANSACTION, transactionProcessingPayload, { localStateKey: LABELS.TRANSACTION_QUEUE });
@@ -509,7 +510,7 @@ export class ExtensionEventHandle {
     this.transactionQueue = TransactionQueue.getInstance();
     this.rpcRequestProcessor = RpcRequestProcessor.getInstance();
     this.bindAllEvents();
-    
+
   }
 
 
@@ -611,7 +612,7 @@ class ExternalTxTasks {
         const signerRes = await this.nativeSignerhandler[activeSession.method](activeSession.message, state);
         if (!signerRes.error) {
           sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, { result: signerRes.payload.data }));
-          
+
           // const network = message.data.options?.network || state.currentNetwork;
           // const {data} = message;
 
@@ -620,10 +621,10 @@ class ExternalTxTasks {
 
           // //create transaction payload
           // transactionProcessingPayload.transactionHistoryTrack = new TransactionPayload(null, "", false, network, TX_TYPE.NATIVE_SIGNER, data.txHash, STATUS.PENDING, null, data.estimatedGas, data.estimatedGas, data.method);
-      
+
           // //insert transaction history with flag
           // await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY, transactionProcessingPayload.transactionHistoryTrack, transactionProcessingPayload.options);
-      
+
           // //add the new transaction into queue
           // await this.services.updateLocalState(STATE_CHANGE_ACTIONS.ADD_NEW_TRANSACTION, transactionProcessingPayload, {
           //   localStateKey: LABELS.TRANSACTION_QUEUE });
@@ -632,9 +633,9 @@ class ExternalTxTasks {
 
           //   //emit the new native signer transaction event
           //   ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.NEW_NATIVE_SIGNER_TRANSACTION_INQUEUE);
-      
+
         }
-        else if (signerRes.error) sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, {result: null}, null, null, signerRes.error.errMessage));
+        else if (signerRes.error) sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, { result: null }, null, null, signerRes.error.errMessage));
       }
     }
 
@@ -1506,8 +1507,8 @@ class NetworkHandler {
       const error = await NetworkHandler.instance[message.event](message, state);
 
       //check for errors while network operations
-      if(error) {
-          log("Error while performing network operation: ", error);
+      if (error) {
+        log("Error while performing network operation: ", error);
       }
     }
   }
