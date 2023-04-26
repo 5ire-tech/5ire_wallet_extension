@@ -18,25 +18,25 @@ function UnlockWelcome() {
 
   const [pass, setPass] = useState("");
   const [isDisable, setDisable] = useState(true);
-  const { state, passError, setPassError } = useContext(AuthContext);
+  const { state, inputError, setInputError } = useContext(AuthContext);
   const { vault } = state;
 
   useEffect(() => {
-    if (passError || !pass) {
+    if (inputError || !pass) {
       setDisable(true);
     } else {
       setDisable(false);
     }
-  }, [passError, pass]);
+  }, [inputError, pass]);
 
   const handleChange = (e) => {
     setPass(e.target.value);
-    setPassError("");
+    setInputError("");
   };
 
   const validateInput = () => {
     if (isEmpty(pass)) {
-      setPassError(ERROR_MESSAGES.INPUT_REQUIRED);
+      setInputError(ERROR_MESSAGES.INPUT_REQUIRED);
       setDisable(true);
     }
   };
@@ -71,7 +71,7 @@ function UnlockWelcome() {
               keyUp={validateInput}
               coloredBg={true}
             />
-            <p className={style.errorText}>{passError ? passError : ""}</p>
+            <p className={style.errorText}>{inputError ? inputError : ""}</p>
           </div>
           <div className={style.forgotLink}>
             <Link to={ROUTES.FORGOT_PASSWORD}>Forgot password?</Link>
