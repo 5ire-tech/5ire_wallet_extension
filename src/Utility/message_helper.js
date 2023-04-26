@@ -18,6 +18,7 @@ import { isNullorUndef, isObject, isString, log } from "./utility";
 
 //message passing helper
 export const sendRuntimeMessage = (typeLabel, eventLabel, message) => {
+    log("inside message passer:", message)
     try {
         if (!isObject(message) && isNullorUndef(message)) throw new Error("Invalid message, (*Only Objects or Array is valid value)");
         if (!isString(eventLabel) && eventLabel.trim().length === 0) throw new Error("Invalid event Label")

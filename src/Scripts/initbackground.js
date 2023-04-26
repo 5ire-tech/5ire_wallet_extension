@@ -406,8 +406,9 @@ class TransactionQueue {
       await this._updateQueueAndHistory(transactionResponse);
     } else {
       //check if txhash is found in payload then update transaction into queue and history
+      log("txhash: ", txHash);
       if (txHash) this._updateQueueAndHistory(transactionResponse);
-      ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, transactionResponse.error);
+      else ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, transactionResponse.error);
     }
   }
 
@@ -564,6 +565,9 @@ export class ExtensionEventHandle {
 
   //bind error handler event
   bindErrorHandlerEvent = async () => {
+    /**
+     * parse the error and send the error response back to ui
+     */
     ExtensionEventHandle.eventEmitter.on(INTERNAL_EVENT_LABELS.ERROR, async (err) => {
       try {
         log("error catched: ", err)
@@ -850,15 +854,26 @@ export class TransactionsRPC {
         else new Error(new ErrorPayload(ERRCODES.NETWORK_REQUEST, ERROR_MESSAGES.TX_FAILED)).throw();
       }
     } catch (err) {
-      transactionHistory.status = transactionHistory.txHash ? STATUS.PENDING : STATUS.FAILED;
 
       payload = {
-        data: transactionHistory,
+        data: null,
         options: {
           ...message.data.options
         },
       }
-      return new EventPayload(null, ERROR_EVENTS_LABELS.NETWORK_ERROR, payload, [], new ErrorPayload(ERRCODES.ERROR_WHILE_TRANSACTION, err.message));
+
+      //check for the revert case
+      const evmRevertedTx = JSON.parse(JSON.stringify(err));
+      if(evmRevertedTx?.receipt || transactionHistory.txHash) {
+        transactionHistory.txHash = evmRevertedTx.receipt.transactionHash;
+        transactionHistory.status = STATUS.PENDING;
+        payload.data = transactionHistory;
+        return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, null, payload, [], null);
+      } else {
+        transactionHistory.status = STATUS.FAILED;
+        payload.data = transactionHistory;
+        return new EventPayload(null, ERROR_EVENTS_LABELS.NETWORK_ERROR, payload, [], new ErrorPayload(ERRCODES.ERROR_WHILE_TRANSACTION, err.message));
+      }
     }
 
   };
@@ -1242,24 +1257,22 @@ export class GeneralWalletRPC {
     try {
       const { data } = message;
       const { options: { account } } = data;
-  
+
       const { evmApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
-  
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
   
-      let toAddress = data.toAddress ? data.toAddress : account.nativeAddress;
-      let amount = data.value;
-  
+      log(message)
+      let toAddress = data.toAddress ? data.toAddress : data?.data ? account.evmAddress : account.nativeAddress;
+      let amount = data?.value;
+      
+      log("here is data: ", Math.round(Number(amount)));
+
       if (toAddress?.startsWith("5"))
         toAddress = u8aToHex(toAddress).slice(0, 42);
-  
+        
       if (toAddress?.startsWith("0x")) {
-        try {
           amount = Math.round(Number(amount));
           Web3.utils.toChecksumAddress(toAddress);
-        } catch (error) {
-  
-        }
       }
   
       const tx = {
@@ -1268,6 +1281,7 @@ export class GeneralWalletRPC {
         value: amount,
       };
   
+
       if (data?.data) {
         tx.data = data.data;
       }
@@ -1282,6 +1296,7 @@ export class GeneralWalletRPC {
   
       return new EventPayload(null, message.event, payload, [], null);
     } catch (err) {
+      log("err", err)
       return new EventPayload(null, null, null, [], new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, err.message));
     }
 

@@ -20,6 +20,7 @@ function ApproveTx() {
 
 
   useEffect(() => {
+    console.log("gas data: ", activeSession.message.value);
     updateLoading(true);
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {value: activeSession.message?.value, toAddress: activeSession.message?.to, data: activeSession.message?.data, options: {account: state.currentAccount}});
   }, [])
@@ -81,11 +82,11 @@ function ApproveTx() {
                   <div className={style.rejectedSec__listReject__innerList}>
                     <h4>Value: </h4>
                     <h4>
-                      {String(
-                        activeSession.message.value
-                          ? parseFloat(activeSession.message.value).toString()
+                      {
+                        activeSession.message?.value
+                          ? parseFloat(Number(activeSession.message.value)).toString()
                           : '0'
-                      )}
+                      }
                     </h4>
                   </div>
 
