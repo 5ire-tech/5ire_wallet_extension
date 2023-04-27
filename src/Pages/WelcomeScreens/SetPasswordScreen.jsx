@@ -121,7 +121,7 @@ export default function SetPasswordScreen() {
           </p>
           <div
             className={style.cardWhite__beginText__passInputSec}
-            style={{ marginTop: "48px" }}
+            style={{ marginTop: "20px" }}
           >
             <InputFieldSimple
               value={pass?.pass}
@@ -136,7 +136,7 @@ export default function SetPasswordScreen() {
           <p className={style.errorText}>{error.pass ? error.pass : ""}</p>
           <div
             className={style.cardWhite__beginText__passInputSec}
-            style={{ marginTop: "20px" }}
+            style={{ marginTop: "34px" }}
           >
             <InputFieldSimple
               value={pass?.confirmPass}

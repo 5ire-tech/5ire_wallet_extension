@@ -62,9 +62,11 @@
       &.errorText {
         color: #ff0000;
         text-align: left;
-        font-size: 12px;
+        font-size: 11px;
         position: absolute;
         padding-top: 0;
+        word-break: break-word;
+        line-height: 14px;
       }
     }
 

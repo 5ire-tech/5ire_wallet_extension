@@ -118,7 +118,7 @@ function CreateWalletChain() {
           {" "}
         </p>
       </div>
-      <div className={`${style.cardWhite__addressInput} ${style.textElips}`}>
+      <div className={`${style.cardWhite__addressInput}`}>
         <label>EVM Private Key:</label>
         <p className={style.cardWhite__addressInput__copyText}>
           <span className={isOpen.open2 && "blurContact"}>{newAccount?.evmPrivateKey}</span>

@@ -46,6 +46,11 @@
         width: auto !important;
       }
     }
+    &__nativeChain{
+      span{
+        width: 300px !important;
+      }
+    }
     &__copyText {
       border: 1px solid #404058;
       border-radius: 12px;
