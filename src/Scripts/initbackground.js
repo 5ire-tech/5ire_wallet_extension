@@ -653,6 +653,7 @@ class ExternalTxTasks {
 
   //close the current popup session
   closePopupSession = async (message) => {
+    log("close message: ", message)
     ExternalWindowControl.isApproved = message.data?.approve;
     const externalWindowControl = ExternalWindowControl.getInstance();
     await externalWindowControl.closeActiveSessionPopup();

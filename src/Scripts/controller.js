@@ -14,7 +14,7 @@ import { generateErrorMessage } from "../Helper/helper";
 export class ExternalWindowControl {
 
   static instance = null;
-  static pendingTask = 0;
+  // static pendingTask = 0;
   static isApproved = null;
   static eventListnerControl = [];
 
@@ -36,10 +36,10 @@ export class ExternalWindowControl {
   }
 
 
-  //decress the pending task count
-  decressPendingTask = () => ExternalWindowControl.pendingTask -= 1;
-  //increase the pending task count
-  increasePendingTask = () => ExternalWindowControl.pendingTask += 1;
+  // //decress the pending task count
+  // decressPendingTask = () => ExternalWindowControl.pendingTask -= 1;
+  // //increase the pending task count
+  // increasePendingTask = () => ExternalWindowControl.pendingTask += 1;
 
 
   /**
@@ -52,17 +52,23 @@ export class ExternalWindowControl {
   newConnectionRequest = async (data, externalControlsState) => {
 
     const isOriginAlreadyExist = this._checkNewRequestOrigin(externalControlsState, data.origin);
+    
+    //check if already connected or not
+    if(isEqual(data.route, ROUTE_FOR_APPROVAL_WINDOWS.CONNECTION_ROUTE)) {
+      const isAlreadyConnected = this._checkAlreadyConnected(externalControlsState, data.origin);
+      if(isAlreadyConnected) return;
+    }
 
     if(isOriginAlreadyExist) {
       sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, generateErrorMessage(data.method, data.origin)));
       return;
     }
-      //set the pending task icon on chrome extension
-      this.increasePendingTask();
-      this.notificationAndBedgeHandler.showBedge(ExternalWindowControl.pendingTask);
 
     const newConnectionRequest = new ExternalAppsRequest(data.id, data.tabId, data.message, data.method, data.origin, data.route, null);
     await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.ADD_NEW_CONNECTION_TASK, newConnectionRequest, {localStateKey: LABELS.EXTERNAL_CONTROLS})
+
+    //set the pending task icon on chrome extension
+    await this._showPendingTaskBedge();
     
     //check if activeSession is null if yes then set the active session from pending queue
     if(!externalControlsState.activeSession) await this.changeActiveSession();
@@ -74,8 +80,9 @@ export class ExternalWindowControl {
    */
   changeActiveSession = async () => {
     await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.CHANGE_ACTIVE_SESSION, {}, {localStateKey: LABELS.EXTERNAL_CONTROLS})
-    this.closeActiveSessionPopup();
-    
+    // this.closeActiveSessionPopup();
+
+    await this._showPendingTaskBedge()
     //show the popup after changing active session from pending queue
     const externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
     externalControlsState.activeSession && this.activatePopupSession(externalControlsState.activeSession);
@@ -85,24 +92,34 @@ export class ExternalWindowControl {
    * create and show the popup for current active session
    */
   activatePopupSession = async (activeSession) => {
-
     const popupId = await this.windowManager.showPopup(activeSession.route);
     ExternalWindowControl.eventListnerControl.push(popupId);
     await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.UPDATE_CURRENT_SESSION, {popupId}, {localStateKey: LABELS.EXTERNAL_CONTROLS})
+    log("popupid: ", popupId)
+    await this.windowManager.filterAndRemoveWindows(popupId);
   }
 
   /**
    * close the popup of current active session
    */
   closeActiveSessionPopup = async () => {
-    const {activeSession} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+    const externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
 
-    if(activeSession?.popupId) {
+    if(externalControlsState.activeSession?.popupId) {
     //set the pending task icon on chrome extension
+ 
+    await this._showPendingTaskBedge()
 
-    this.decressPendingTask();
-    this.notificationAndBedgeHandler.showBedge(ExternalWindowControl.pendingTask);
-      await this.windowManager.closePopup(activeSession.popupId);
+    //check if there is any window opened with popupid
+    const window = await this.windowManager.getWindowById(externalControlsState.activeSession.popupId);
+    if(!window) {
+      log("closed wihtout using the window");
+      this._sendRejectAndCloseResponse(externalControlsState.activeSession);
+      return;
+    }
+
+    //if window find then close the window
+    await this.windowManager.closePopup(externalControlsState.activeSession.popupId);
     }
     
   }
@@ -122,34 +139,61 @@ export class ExternalWindowControl {
   }
 
 
+  _checkAlreadyConnected = (externalControls, origin) => {
+    return externalControls.connectedApps[origin]?.isConnected;
+  }
+
   /**
    * callback for close event
    */
   _handleClose = async (windowId) =>  {
 
-    log("closed the window: ", ExternalWindowControl.eventListnerControl)
-
-    const isWindowIdFound = ExternalWindowControl.eventListnerControl.findIndex((item) => windowId === item);
-    if(isWindowIdFound >= 0) ExternalWindowControl.eventListnerControl = ExternalWindowControl.eventListnerControl.filter(item => item !== windowId);
-    else return;
-
     const {activeSession} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
-
-    //check if window is closed by close button
-    if(isNullorUndef(ExternalWindowControl.isApproved) || isEqual(ExternalWindowControl.isApproved, false)) {
-
-      activeSession?.tabId && sendMessageToTab(activeSession?.tabId, new TabMessagePayload(activeSession.id, {result: null}, null, null, ERROR_MESSAGES.REJECTED_BY_USER))
-      if(isNullorUndef(ExternalWindowControl.isApproved)) {
-        this.decressPendingTask();
-        this.notificationAndBedgeHandler.showBedge(ExternalWindowControl.pendingTask);
-      } 
+    if(!isEqual(activeSession?.popupId, windowId)) {
+      log("not match the current task: ", activeSession?.popupId, windowId);
+      return;
     }
 
-    //set the approve to null for next session
-    ExternalWindowControl.isApproved = null;
+    // const isWindowIdFound = ExternalWindowControl.eventListnerControl.findIndex((item) => windowId === item);
+    // if(isWindowIdFound >= 0) ExternalWindowControl.eventListnerControl = ExternalWindowControl.eventListnerControl.filter(item => item !== windowId);
+    // else return;
 
-    //change the current popup session
-    await this.changeActiveSession();
+    this._sendRejectAndCloseResponse(activeSession);
+  }
+
+  /**
+   * for sending the reject or close response to user
+   * @param {*} activeSession 
+   */
+  _sendRejectAndCloseResponse = async (activeSession) => {
+        //check if window is closed by close button
+        if(isNullorUndef(ExternalWindowControl.isApproved) || isEqual(ExternalWindowControl.isApproved, false)) {
+          activeSession?.tabId && sendMessageToTab(activeSession?.tabId, new TabMessagePayload(activeSession.id, {result: null}, null, null, ERROR_MESSAGES.REJECTED_BY_USER))
+        }
+    
+        
+        //change the current popup session
+        await this.changeActiveSession();
+
+        if(isNullorUndef(ExternalWindowControl.isApproved)) {
+          await this._showPendingTaskBedge();
+         } 
+
+        //set the approve to null for next session
+        ExternalWindowControl.isApproved = null;
+      }
+
+  /**
+   * show the bedge
+   */
+  _showPendingTaskBedge = async (externalControlsState=null) => {
+    if(!externalControlsState) externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+    log("here is pending task: ", externalControlsState.activeSession)
+
+    //check if there is any pending task if found then show the pending task count in bedge
+    let pendingTaskCount = externalControlsState.connectionQueue.length;
+    externalControlsState.activeSession && pendingTaskCount++;
+    this.notificationAndBedgeHandler.showBedge(pendingTaskCount);
   }
 }
 
@@ -179,7 +223,7 @@ export class ExternalConnection {
       const account = state.currentAccount;
       const isEthReq = isEqual(data?.method, EVM_JSON_RPC_METHODS.ETH_REQUEST_ACCOUNT) || isEqual(data?.method, EVM_JSON_RPC_METHODS.ETH_ACCOUNTS);
 
-        const isConnected = isAlreadyConnected(externalControls.connectedApps, data.origin)
+      const isConnected = isAlreadyConnected(externalControls.connectedApps, data.origin)
 
       if (isConnected) {
         const res = isEthReq ? { method: data?.method, result: [account.evmAddress] }

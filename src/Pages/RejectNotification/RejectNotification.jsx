@@ -5,6 +5,7 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
   LABELS,
+  WEI_IN_ONE_ETH,
 } from "../../Constants";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import SwapIcon from "../../Assets/SwapIcon.svg";
@@ -20,7 +21,6 @@ function ApproveTx() {
 
 
   useEffect(() => {
-    console.log("gas data: ", activeSession.message.value);
     updateLoading(true);
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {value: activeSession.message?.value, toAddress: activeSession.message?.to, data: activeSession.message?.data, options: {account: state.currentAccount}});
   }, [])
@@ -84,7 +84,7 @@ function ApproveTx() {
                     <h4>
                       {
                         activeSession.message?.value
-                          ? parseFloat(Number(activeSession.message.value)).toString()
+                          ? (Number(activeSession.message?.value)/WEI_IN_ONE_ETH).noExponents().toString()
                           : '0'
                       }
                     </h4>
