@@ -18,7 +18,6 @@ import Beforebegin from "./Pages/WelcomeScreens/Beforebegin";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import EnterPassword from "./Components/Setting/EnterPassword";
 import LoginApprove from "./Pages/WelcomeScreens/LoginApprove";
-import { Route, Routes, useNavigate } from "react-router-dom";
 import SwapApprove from "./Pages/Swap/SwapApprove/SwapApprove";
 import ImportWallet from "./Pages/WelcomeScreens/ImportWallet";
 import UnlockWelcome from "./Pages/WelcomeScreens/UnlockWelcome";
@@ -74,7 +73,7 @@ function App(props) {
     }
 
 
-    if (!isLogin && vault) {
+    if ((!isLogin && vault) || state?.pass) {
       navigate(ROUTES.UNLOACK_WALLET, {
         state: {
           redirectRoute: route ? ROUTES.DEFAULT + route : EMTY_STR,
@@ -89,7 +88,7 @@ function App(props) {
     } else if (!isLogin && !vault) {
       navigate(ROUTES.DEFAULT);
     }
-  }, [isLogin, vault, newAccount?.evmAddress]);
+  }, [isLogin, vault, newAccount?.evmAddress, state?.pass]);
 
 
 

@@ -18,7 +18,7 @@ import {
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
 
-import * as StorageUpdator  from "../../Storage/loadstore";
+import * as StorageUpdator from "../../Storage/loadstore";
 
 function UnlockWelcome() {
   const { verifyPass } = useAuth()
@@ -50,7 +50,7 @@ function UnlockWelcome() {
   const handleClick = async (e) => {
     if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
 
-      if (state?.pass && state?.oldAccounts && pass && !passError) {
+      if (state?.pass && state?.oldAccounts && pass && !inputError) {
 
         const passRes = await verifyPass(pass, state.pass);
 
@@ -76,10 +76,10 @@ function UnlockWelcome() {
 
         }
         else {
-          setPassError(passRes.data);
+          setInputError(passRes.data);
         }
 
-      } else if (pass && !passError) {
+      } else if (pass && !inputError) {
         sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.UNLOCK, { password: pass, vault: vault });
       }
     }
