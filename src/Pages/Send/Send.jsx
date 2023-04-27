@@ -25,12 +25,10 @@ import {
   MESSAGE_EVENT_LABELS,
   EXISTENTIAL_DEPOSITE,
   COPIED,
-  TX_TYPE
+  TX_TYPE,
 } from "../../Constants/index";
 import { shortner } from "../../Helper/helper";
 import CopyIcon from "../../Assets/CopyIcon.svg";
-
-
 
 function Send() {
   const [isEd, setEd] = useState(true);
@@ -40,7 +38,8 @@ function Send() {
   const [err, setErr] = useState({ to: "", amount: "" });
   const [data, setData] = useState({ to: "", amount: "" });
   const [activeTab, setActiveTab] = useState(NATIVE.toLowerCase());
-  const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
+  const { state, estimatedGas, updateEstimatedGas, updateLoading } =
+    useContext(AuthContext);
 
   const { balance, currentAccount } = state;
 
@@ -67,13 +66,17 @@ function Send() {
     return () => clearTimeout(getData);
   }, [err.to, err.amount, data.to, data.amount, isEd]);
 
-
   useEffect(() => {
     if (!estimatedGas) {
       setDisable(true);
     } else {
       if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-        if ((Number(data.amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0)) >= Number(balance.evmBalance)) {
+        if (
+          Number(data.amount) +
+            Number(estimatedGas) +
+            (isEd ? EXISTENTIAL_DEPOSITE : 0) >=
+          Number(balance.evmBalance)
+        ) {
           updateEstimatedGas(null);
           setDisable(true);
           setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
@@ -82,8 +85,12 @@ function Send() {
           setErr((p) => ({ ...p, amount: "" }));
         }
       } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
-
-        if ((Number(data.amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0)) >= Number(balance.nativeBalance)) {
+        if (
+          Number(data.amount) +
+            Number(estimatedGas) +
+            (isEd ? EXISTENTIAL_DEPOSITE : 0) >=
+          Number(balance.nativeBalance)
+        ) {
           updateEstimatedGas(null);
           setDisable(true);
           setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
@@ -95,8 +102,8 @@ function Send() {
     }
   }, [estimatedGas]);
 
-  const blockInvalidChar = e => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
-
+  const blockInvalidChar = (e) =>
+    ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
 
   //set the ED toggler state
   const onChangeToggler = (checked) => {
@@ -132,7 +139,6 @@ function Send() {
         setErr((p) => ({ ...p, to: ERROR_MESSAGES.INCORRECT_ADDRESS }));
       else if (data.to === currentAccount.evmAddress)
         setErr((p) => ({ ...p, to: ERROR_MESSAGES.NOT_YOUR_OWN_ADDRESS }));
-
       else {
         let res = await validateAddress(data.to);
 
@@ -146,7 +152,6 @@ function Send() {
         setErr((p) => ({ ...p, to: ERROR_MESSAGES.INCORRECT_ADDRESS }));
       else if (data.to === currentAccount.nativeAddress)
         setErr((p) => ({ ...p, to: ERROR_MESSAGES.NOT_YOUR_OWN_ADDRESS }));
-
       else {
         let res = await validateAddress(data.to);
 
@@ -156,17 +161,31 @@ function Send() {
     }
   };
 
-
   const getFee = async () => {
     if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
       updateLoading(true);
       //calculate the native fee
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, { value: data.amount, toAddress: data.to, options: { account: state.currentAccount } });
-    }
-    else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
+      sendRuntimeMessage(
+        MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
+        MESSAGE_EVENT_LABELS.NATIVE_FEE,
+        {
+          value: data.amount,
+          toAddress: data.to,
+          options: { account: state.currentAccount },
+        }
+      );
+    } else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
       updateLoading(true);
       //calculate the evm fee
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, { value: data.amount, toAddress: data.to, options: { account: state.currentAccount } });
+      sendRuntimeMessage(
+        MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
+        MESSAGE_EVENT_LABELS.EVM_FEE,
+        {
+          value: data.amount,
+          toAddress: data.to,
+          options: { account: state.currentAccount },
+        }
+      );
     }
   };
 
@@ -178,12 +197,11 @@ function Send() {
           const slice = arr[1].slice(0, 18);
           setData((p) => ({ ...p, amount: arr[0] + "." + slice }));
         } else {
-          setData(p => ({ ...p, amount: e.target.value }))
+          setData((p) => ({ ...p, amount: e.target.value }));
           updateEstimatedGas(null);
         }
-      }
-      else {
-        setData(p => ({ ...p, amount: e.target.value }))
+      } else {
+        setData((p) => ({ ...p, amount: e.target.value }));
         updateEstimatedGas(null);
       }
     } else {
@@ -220,30 +238,43 @@ function Send() {
 
   const handleApprove = async () => {
     try {
-
       if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-
         //pass the message request for evm transfer
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.INTERNAL_TX,
           MESSAGE_EVENT_LABELS.EVM_TX,
-          { to: data.to, value: data.amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SEND, isEvm: true } }
+          {
+            to: data.to,
+            value: data.amount,
+            options: {
+              account: state.currentAccount,
+              network: state.currentNetwork,
+              type: TX_TYPE.SEND,
+              isEvm: true,
+            },
+          }
         );
         setIsModalOpen(true);
-
       } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
-
         //pass the message request for native transfer
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.INTERNAL_TX,
           MESSAGE_EVENT_LABELS.NATIVE_TX,
-          { to: data.to, value: data.amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SEND, isEvm: false } }
+          {
+            to: data.to,
+            value: data.amount,
+            options: {
+              account: state.currentAccount,
+              network: state.currentNetwork,
+              type: TX_TYPE.SEND,
+              isEvm: false,
+            },
+          }
         );
-        setIsModalOpen(true)
+        setIsModalOpen(true);
       }
 
       updateEstimatedGas("");
-
     } catch (error) {
       toast.error(ERROR_MESSAGES.ERR_OCCURED);
     }
@@ -264,8 +295,9 @@ function Send() {
     setData({ to: "", amount: "" });
     setIsModalOpen(false);
   };
-
-
+  const suffix = (
+    <button className="maxBtn">Max</button>
+  );
 
   return (
     <>
@@ -277,9 +309,10 @@ function Send() {
               onClick={activeSend}
               name={NATIVE.toLowerCase()}
               className={`${style.sendSec__sendSwapbtn__buttons} 
-              ${activeTab === NATIVE.toLowerCase() &&
+              ${
+                activeTab === NATIVE.toLowerCase() &&
                 style.sendSec__sendSwapbtn__buttons__active
-                }
+              }
             `}
             >
               Native
@@ -287,9 +320,10 @@ function Send() {
             <button
               onClick={activeSend}
               name={EVM.toLowerCase()}
-              className={`${style.sendSec__sendSwapbtn__buttons}  ${activeTab === EVM.toLowerCase() &&
+              className={`${style.sendSec__sendSwapbtn__buttons}  ${
+                activeTab === EVM.toLowerCase() &&
                 style.sendSec__sendSwapbtn__buttons__active
-                }`}
+              }`}
             >
               EVM
             </button>
@@ -326,6 +360,7 @@ function Send() {
                   5ire
                 </span>
               }
+              suffix={suffix}
             />
             <span className={style.errorText}>{err.amount}</span>
           </div>
@@ -405,6 +440,5 @@ function Send() {
     </>
   );
 }
-
 
 export default Send;

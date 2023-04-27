@@ -40,6 +40,12 @@
       display: inline-flex;
       margin-bottom: 8px;
     }
+    &__privateCopyText {
+      span {
+        white-space: initial !important;
+        width: auto !important;
+      }
+    }
     &__copyText {
       border: 1px solid #404058;
       border-radius: 12px;
@@ -56,7 +62,7 @@
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
-        width:150px;
+        width: 150px;
       }
       img {
         cursor: pointer;

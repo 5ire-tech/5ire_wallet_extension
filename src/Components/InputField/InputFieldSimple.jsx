@@ -3,7 +3,6 @@ import { Input } from "antd";
 import style from "./style.module.scss";
 import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
 import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
-
 function InputFieldSimple({
   name,
   keyUp,
@@ -13,7 +12,10 @@ function InputFieldSimple({
   coloredBg,
   placeholder,
   placeholderBaseColor,
-}) {
+})
+
+ {
+  
   return (
     <Input.Password
       className={`${style.inputSimple} ${style.inputPassword} ${placeholderBaseColor ? "placeholderBaseColor" : ""
@@ -55,7 +57,11 @@ export const InputField = ({
   placeholder,
   defaultValue,
   placeholderBaseColor,
+  suffix='',
 }) => {
+  // const suffix = (
+  //   <button>Max</button>
+  // );
   return (
     <div className={`${style.boxStyle} inputField ${mb0 ? style.mb0 : ""}`}>
       <label htmlFor={name} className={`${style.boxStyle__label}`}>
@@ -77,6 +83,7 @@ export const InputField = ({
         addonAfter={addonAfter}
         defaultValue={defaultValue}
         placeholder={placeholder}
+        suffix={suffix}
       />
     </div>
   );

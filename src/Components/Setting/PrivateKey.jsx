@@ -39,7 +39,7 @@ function PrivateKey({ id }) {
             </div>
             <div className={style.wallet}>
               <div className={style.wallet__addressInput}>
-                <p className={style.wallet__addressInput__copyText}>
+                <p className={`${style.wallet__addressInput__copyText} ${style.wallet__addressInput__privateCopyText}`}>
                   <span>{id === PVT_KEY ? privateKey : seedPhrase}</span>
                   <img
                     draggable={false}

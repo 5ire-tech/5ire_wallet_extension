@@ -15,6 +15,9 @@
   content: "";
   opacity: 0.5;
 }
+.importAfter > div::after{
+  width: 268px;
+}
 .stepsItems {
   background: #0f2046;
   border: 1px solid rgba(255, 255, 255, 0.5);

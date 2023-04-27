@@ -18,9 +18,8 @@ import {
   EMTY_STR,
   ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
-  MESSAGE_EVENT_LABELS
+  MESSAGE_EVENT_LABELS,
 } from "../../Constants/index";
-
 
 export default function SetPasswordScreen() {
   const params = useParams();
@@ -31,23 +30,17 @@ export default function SetPasswordScreen() {
   const [error, setError] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
   const [pass, setPass] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
 
-
-
   useEffect(() => {
-
     if (pass.confirmPass === pass.pass || pass.pass === EMTY_STR)
-      setError(p => ({ ...p, confirmPass: EMTY_STR }))
+      setError((p) => ({ ...p, confirmPass: EMTY_STR }));
     else if (pass.confirmPass !== EMTY_STR)
-      setError(p => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }))
-
+      setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }));
   }, [pass.pass, pass.confirmPass]);
 
   const validatePass = () => {
     let errMsg = EMTY_STR;
 
-    if (isEmpty(pass.pass))
-      errMsg = ERROR_MESSAGES.INPUT_REQUIRED;
-
+    if (isEmpty(pass.pass)) errMsg = ERROR_MESSAGES.INPUT_REQUIRED;
     else if (
       !REGEX.UPPERCASE.test(pass.pass) ||
       !REGEX.LOWERCASE.test(pass.pass) ||
@@ -58,22 +51,16 @@ export default function SetPasswordScreen() {
       errMsg = ERROR_MESSAGES.CREATE_PASS_MSG;
     else errMsg = EMTY_STR;
 
-    setError(p => ({ ...p, pass: errMsg }));
+    setError((p) => ({ ...p, pass: errMsg }));
   };
 
   const validateConfirmPass = () => {
-
     if (isEmpty(pass.confirmPass))
-      setError(p => ({ ...p, confirmPass: ERROR_MESSAGES.INPUT_REQUIRED }))
-
+      setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.INPUT_REQUIRED }));
     else if (pass.confirmPass !== pass.pass)
-      setError(p => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }))
-
-    else
-      setError(p => ({ ...p, confirmPass: EMTY_STR }))
-
+      setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }));
+    else setError((p) => ({ ...p, confirmPass: EMTY_STR }));
   };
-
 
   const handleCancel = () => {
     updateState(LABELS.NEW_ACCOUNT, null, false);
@@ -82,19 +69,19 @@ export default function SetPasswordScreen() {
   };
 
   const handleSubmit = async (e) => {
-
-    if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
-
+    if (e.key === LABELS.ENTER || e.key === undefined) {
       if (!error.pass && !error.confirmPass && pass.pass && pass.confirmPass) {
         if (params.id === LABELS.CREATE) {
-
-          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: pass.pass, opts: { name: accountName }, type: "create" });
+          sendRuntimeMessage(
+            MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+            MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE,
+            { password: pass.pass, opts: { name: accountName }, type: "create" }
+          );
           navigate(ROUTES.NEW_WALLET_DETAILS);
         } else {
           setUserPass(pass.pass);
           navigate(ROUTES.IMPORT_WALLET);
         }
-
       }
     }
   };
@@ -111,18 +98,20 @@ export default function SetPasswordScreen() {
   return (
     <>
       <div onKeyDown={handleSubmit} className={`${style.cardWhite}`}>
-        {
-          params.id === LABELS.CREATE ?
-            < StepHeaders active={3} />
-            :
-            <StepHeaders active={1} />
-
-        }
+        {params.id === LABELS.CREATE ? (
+          <StepHeaders active={3} />
+        ) : (
+          <StepHeaders active={1} isCreate={false} />
+        )}
         <MenuRestofHeaders
-          backTo={params.id === LABELS.CREATE ? ROUTES.CREATE_WALLET : ROUTES.DEFAULT}
+          backTo={
+            params.id === LABELS.CREATE ? ROUTES.CREATE_WALLET : ROUTES.DEFAULT
+          }
           title={"Create Password"}
         />
-        <div className={`${style.cardWhite__beginText} ${style.cardWhite__createPassText}`}>
+        <div
+          className={`${style.cardWhite__beginText} ${style.cardWhite__createPassText}`}
+        >
           <p>
             Your password is used to unlock your wallet and is stored securely
             on your device. We recommend 12 characters, with uppercase and
@@ -143,7 +132,10 @@ export default function SetPasswordScreen() {
             />
           </div>
           <p className={style.errorText}>{error.pass ? error.pass : ""}</p>
-          <div className={style.cardWhite__beginText__passInputSec} style={{ marginTop: "20px" }}>
+          <div
+            className={style.cardWhite__beginText__passInputSec}
+            style={{ marginTop: "20px" }}
+          >
             <InputFieldSimple
               value={pass?.confirmPass}
               name="confirmPass"
@@ -153,7 +145,9 @@ export default function SetPasswordScreen() {
               coloredBg={true}
               keyUp={validateConfirmPass}
             />
-            <p className={style.errorText}>{error.confirmPass ? error.confirmPass : ""}</p>
+            <p className={style.errorText}>
+              {error.confirmPass ? error.confirmPass : ""}
+            </p>
           </div>
 
           <div style={{ marginTop: "50px" }} className={style.contBtn}>
@@ -169,7 +163,6 @@ export default function SetPasswordScreen() {
               maxWidth={"100%"}
             />
           </div>
-
         </div>
       </div>
     </>

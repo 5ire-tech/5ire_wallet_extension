@@ -154,7 +154,7 @@ function ImportWallet() {
   return (
     <div className={style.cardWhite} onKeyDown={handleClick}>
       {
-        !isLogin && <StepHeaders active={2} />
+        !isLogin && <StepHeaders active={2} isCreate={false}/>
       }
       <MenuRestofHeaders logosilver={true} title="5irechain Wallet" />
       <div className={style.cardWhite__cardInner}>

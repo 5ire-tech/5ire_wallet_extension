@@ -38,23 +38,29 @@ export function StepHeaders({ active, isCreate = true }) {
           {/* <div className={active === 4 && style.active}>3</div> */}
         </div>
       ) : (
-        <div className="steps">
+        <div className={style.steps} style={{ color: "white" }}>
           {/* <p>style.active</p> */}
-          <div
-            className={`${style.stepsItems} ${active === 1 && style.active}`}
-          >
-            1
+          <div className={`${style.innerStep} ${style.innerStepLast}`}>
+            <div
+              className={`${style.stepsItems} ${active === 1 && style.active}`}
+            >
+              1
+            </div>
           </div>
-          <div
-            className={`${style.stepsItems} ${active === 2 && style.active}`}
-          >
-            2
+          <div className={`${style.innerStep} ${style.importAfter}`}>
+            <div
+              className={`${style.stepsItems} ${active === 2 && style.active}`}
+            >
+              2
+            </div>
           </div>
-          <div
-            className={`${style.stepsItems} ${active === 3 && style.active}`}
-          >
-            3
-          </div>
+          {/* <div className={`${style.innerStep}`}>
+            <div
+              className={`${style.stepsItems} ${active === 3 && style.active}`}
+            >
+              3
+            </div>
+          </div> */}
         </div>
       )}
     </>
