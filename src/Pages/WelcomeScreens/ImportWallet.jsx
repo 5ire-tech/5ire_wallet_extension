@@ -111,7 +111,7 @@ function ImportWallet() {
           setShow(true)
           setTimeout(() => {
             setShow(false)
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: userPass, opts: { mnemonic: data.key, name: data.accName.trim() }, type: "import" });
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: userPass, opts: { mnemonic: data.key, name: data.accName.trim() }, type: LABELS.IMPORT });
           }, 2000)
 
 

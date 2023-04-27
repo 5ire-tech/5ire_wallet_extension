@@ -131,11 +131,10 @@ export default function Context({ children }) {
     // console.log("Data in import Context :::: ",data);
 
     if (data?.vault && data?.newAccount) {
-      navigate(ROUTES.WALLET)
+      navigate(ROUTES.WALLET);
     } else if (data?.errCode === 3) {
       setInputError(data?.errMessage ? data.errMessage : "");
     }
-
   };
 
 
