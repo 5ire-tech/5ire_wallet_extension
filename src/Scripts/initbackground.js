@@ -534,7 +534,7 @@ export class ExtensionEventHandle {
   bindAllEvents = () => {
     this.bindAutoBalanceUpdateEvent();
     this.bindTransactionProcessingEvents();
-    this.bindNewNativeSignerTransactionEvents();
+    // this.bindNewNativeSignerTransactionEvents();
     this.bindErrorHandlerEvent();
   }
 
