@@ -6,11 +6,11 @@ import ReactDOM from "react-dom/client";
 import { localStorage } from "./Storage";
 import browser from "webextension-polyfill";
 import { MemoryRouter } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 import { CONNECTION_NAME, EMTY_STR, LABELS } from "./Constants";
 import { getDataLocal } from "../src/Storage/loadstore"
 import { sessionStorage } from "../src/Storage/index";
 import { log } from "./Utility/utility";
+import { Toaster } from 'react-hot-toast';
 
 //For Dev Enviroment Check
 // const isDev = process.env.NODE_ENV === "development";
@@ -47,18 +47,8 @@ const initApp = (data, externalControlsState) => {
     <MemoryRouter>
       <Context>
         <App data={data} externalControlsState={externalControlsState} />
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
+
+        <Toaster />
       </Context>
     </MemoryRouter>
   );

@@ -62,10 +62,7 @@ export default function Context({ children }) {
         importAccountByMnemonics(message.data);
         //send account details whenever account is changed
         sendEventToTab(new TabMessagePayload(TABS_EVENT.ACCOUNT_CHANGE_EVENT, { result: { evmAddress: state.currentAccount.evmAddress, nativeAddress: state.currentAccount.nativeAddress } }, null, TABS_EVENT.ACCOUNT_CHANGE_EVENT), externalControlsState.connectedApps);
-      } else if (
-        message.event === MESSAGE_EVENT_LABELS.GET_ACCOUNTS ||
-        message.event === MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT
-      ) {
+      } else if (message.event === MESSAGE_EVENT_LABELS.GET_ACCOUNTS) {
         getAccounts(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.VERIFY_USER_PASSWORD) {
         verifyUserPassword(message.data);
@@ -73,6 +70,9 @@ export default function Context({ children }) {
         exportPrivatekey(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE) {
         exportSeedPhrase(message.data);
+      }
+      else if (message.event === MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT) {
+        removeAccount(message.data);
       }
 
       updateLoading(false);
@@ -151,10 +151,6 @@ export default function Context({ children }) {
   };
 
   const getAccounts = (data) => {
-    if (data?.isInitialAccount) {
-      navigate(ROUTES.DEFAULT)
-      setNewAccount(newAccountInitialState);
-    }
 
     setAllAccounts(data?.accounts ? data.accounts : data);
   };
@@ -179,6 +175,14 @@ export default function Context({ children }) {
     const newTx = { ...state.txHistory };
     delete newTx[accName];
     updateState(LABELS.TX_HISTORY, newTx)
+  }
+  const removeAccount = (data) => {
+    setNewAccount(newAccountInitialState);
+    if (data?.isInitialAccount) {
+      navigate(ROUTES.DEFAULT)
+    } else {
+      navigate(ROUTES.WALLET);
+    }
   }
 
 

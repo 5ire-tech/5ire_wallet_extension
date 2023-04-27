@@ -9,8 +9,6 @@ import { COPIED,  MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, PVT_KEY, MNEMONIC }
 
 function PrivateKey({ id }) {
 
-  console.log("iDD ::: ", id);
-
   const { state, privateKey, seedPhrase } = useContext(AuthContext);
   const { currentAccount } = state;
 

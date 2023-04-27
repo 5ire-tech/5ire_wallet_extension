@@ -1,5 +1,5 @@
 import { ROUTES } from "../../Routes";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store/index";
 import { useNavigate } from "react-router-dom";

@@ -10,9 +10,8 @@ import { ExtensionStorageHandler } from "../../Storage/loadstore";
 import { isEqual } from "../../Utility/utility";
 import { sendMessageToTab, sendRuntimeMessage } from "../../Utility/message_helper";
 import { TabMessagePayload } from "../../Utility/network_calls";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
-import BigNumber from "bignumber.js";
 
 
 //Before We begin
@@ -64,10 +63,10 @@ export const FooterStepTwo = () => {
 
   const handleCancle = async () => {
 
-    console.log("IsLOGIN :::: ",isLogin);
+    console.log("IsLOGIN :::: ", isLogin);
 
     // if (isLogin) {
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT, { address: newAccount.evmAddress });
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT, { address: newAccount.evmAddress });
     // }
 
 
@@ -104,12 +103,12 @@ export const FooterStepTwo = () => {
     <>
       <div className={style.menuItems__cancleContinue}>
 
-        {!isLogin && <ButtonComp
+        <ButtonComp
           bordered={true}
           text={"Cancel"}
           maxWidth={"100%"}
           onClick={handleCancle}
-        />}
+        />
 
         <ButtonComp onClick={handleClick} text={"Continue"} maxWidth={"100%"} />
       </div>
@@ -187,9 +186,8 @@ export const ApproveTx = () => {
   //check if user has sufficent balance to make transaction
   useEffect(() => {
 
-    const amount = (new BigNumber(activeSession.message?.value).dividedBy(DECIMALS)).toString();
 
-    if ((Number(amount) + Number(estimatedGas)) >= Number(state.balance.evmBalance)) {
+    if ((Number(activeSession.message?.value) + Number(estimatedGas)) >= Number(state.balance.evmBalance)) {
       toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       setDisableApproval(true);
       return;
@@ -201,7 +199,7 @@ export const ApproveTx = () => {
   function handleClick(isApproved) {
     if (isApproved) {
       const txType = activeSession.message?.data && activeSession.message?.to ? TX_TYPE.CONTRACT_EXECUTION : TX_TYPE.CONTRACT_DEPLOYMENT;
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.EVM_TX, { options: { account: state.currentAccount, network: state.currentNetwork, type: txType, isEvm: true, isBig: true } });
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.EVM_TX, { options: { account: state.currentAccount, network: state.currentNetwork, type: txType, isEvm: true } });
     }
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION, { approve: isApproved });
     navigate(ROUTES.WALLET);

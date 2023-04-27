@@ -1,5 +1,5 @@
 import { Switch, Tooltip } from "antd";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
 import { AuthContext } from "../../Store";
@@ -40,7 +40,7 @@ function Send() {
   const [err, setErr] = useState({ to: "", amount: "" });
   const [data, setData] = useState({ to: "", amount: "" });
   const [activeTab, setActiveTab] = useState(NATIVE.toLowerCase());
-  const { state, estimatedGas, updateEstimatedGas, updateLoading  } = useContext(AuthContext);
+  const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
 
   const { balance, currentAccount } = state;
 
@@ -161,12 +161,12 @@ function Send() {
     if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
       updateLoading(true);
       //calculate the native fee
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, { value: data.amount, toAddress: data.to, options: { account: state.currentAccount} });
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, { value: data.amount, toAddress: data.to, options: { account: state.currentAccount } });
     }
     else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
       updateLoading(true);
       //calculate the evm fee
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, { value: data.amount, toAddress: data.to, options: { account: state.currentAccount} });
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, { value: data.amount, toAddress: data.to, options: { account: state.currentAccount } });
     }
   };
 
@@ -227,7 +227,7 @@ function Send() {
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.INTERNAL_TX,
           MESSAGE_EVENT_LABELS.EVM_TX,
-          { to: data.to, value: data.amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SEND, isEvm: true }}
+          { to: data.to, value: data.amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SEND, isEvm: true } }
         );
         setIsModalOpen(true);
 
@@ -336,7 +336,7 @@ function Send() {
         </div>
         <div className={style.sendSec__inFoAccount}>
           <Tooltip title="5irechain requires a minimum of 1 5ire token to keep your wallet active">
-          <img src={Info} />
+            <img src={Info} />
           </Tooltip>
           <h3>Transfer with account keep alive checks </h3>
           <Switch defaultChecked name="EdToggler" onChange={onChangeToggler} />
