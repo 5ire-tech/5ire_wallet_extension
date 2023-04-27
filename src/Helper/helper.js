@@ -1,4 +1,5 @@
 import Browser from "webextension-polyfill";
+import { BigNumber } from "bignumber.js";
 import { isNullorUndef, log } from "../Utility/utility";
 import { getCurrentTabDetails } from "../Scripts/utils";
 import { Error, ErrorPayload } from "../Utility/error_helper";
@@ -46,8 +47,6 @@ export const formatDate = (_date) => {
         return "";
     }
 };
-
-
 
 
 export const formatNum = (num, numOfDecimals = 4) => {
@@ -133,4 +132,16 @@ export const sendEventToTab = async (tabMessagePayload, connectedApps, emitWitho
             sendMessageToTab(tabDetails.tabId, tabMessagePayload)
         }
     });
+}
+
+//fix number upto certain decimals
+export const fixNumber = (num, decimalPlaces = 6, roundingMode = 8) => {
+    try {
+        const number = new BigNumber(Number(num)).toFixed(decimalPlaces, roundingMode).toString();
+        console.log("Number after rounding of ", number);
+        return number;
+    }
+    catch (error) {
+        return "";
+    }
 }
