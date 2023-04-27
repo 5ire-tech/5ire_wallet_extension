@@ -27,7 +27,7 @@ export default function SetPasswordScreen() {
 
   const navigate = useNavigate();
   const { setUserPass, accountName } = useContext(AuthContext);
-  const { state, updateState } = useContext(AuthContext);
+  const { updateState } = useContext(AuthContext);
   const [error, setError] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
   const [pass, setPass] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
 
@@ -115,7 +115,7 @@ export default function SetPasswordScreen() {
           params.id === LABELS.CREATE ?
             < StepHeaders active={3} />
             :
-            <StepHeaders active={1} />
+            <StepHeaders active={1} isCreate={false}/>
 
         }
         <MenuRestofHeaders

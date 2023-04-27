@@ -57,6 +57,32 @@ function CreateWalletChain() {
         </button>
       </div>
       <div className={style.cardWhite__addressInput}>
+        <label>EVM Chain Address:</label>
+        <p className={style.cardWhite__addressInput__copyText}>
+          <span>{newAccount?.evmAddress}</span>
+          <img
+            name={EVM}
+            src={CopyIcon}
+            alt="copyIcon"
+            draggable={false}
+            onClick={handleCopy}
+          />{" "}
+        </p>
+      </div>
+      <div className={style.cardWhite__addressInput}>
+        <label> Native Chain Address:</label>
+        <p className={style.cardWhite__addressInput__copyText}>
+          <span>{newAccount?.nativeAddress}</span>
+          <img
+            name={NATIVE}
+            src={CopyIcon}
+            alt="copyIcon"
+            draggable={false}
+            onClick={handleCopy}
+          />{" "}
+        </p >
+      </div >
+      <div className={style.cardWhite__addressInput}>
         <label>Mnemonic Phrase: </label>
         <p className={style.cardWhite__addressInput__copyText}>
           <span className={isOpen.open1 && "blurContact"}>{newAccount?.mnemonic ? newAccount.mnemonic : newAccount.drivedMnemonic}</span>
@@ -127,32 +153,6 @@ function CreateWalletChain() {
           />{" "}
         </p>
       </div>
-      <div className={style.cardWhite__addressInput}>
-        <label>EVM Chain Address:</label>
-        <p className={style.cardWhite__addressInput__copyText}>
-          <span>{newAccount?.evmAddress}</span>
-          <img
-            name={EVM}
-            src={CopyIcon}
-            alt="copyIcon"
-            draggable={false}
-            onClick={handleCopy}
-          />{" "}
-        </p>
-      </div>
-      <div className={style.cardWhite__addressInput}>
-        <label> Native Chain Address:</label>
-        <p className={style.cardWhite__addressInput__copyText}>
-          <span>{newAccount?.nativeAddress}</span>
-          <img
-            name={NATIVE}
-            src={CopyIcon}
-            alt="copyIcon"
-            draggable={false}
-            onClick={handleCopy}
-          />{" "}
-        </p >
-      </div >
     </div >
   );
 }
