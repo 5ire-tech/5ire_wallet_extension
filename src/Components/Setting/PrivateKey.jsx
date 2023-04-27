@@ -1,10 +1,10 @@
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store/index";
 import CopyIcon from "../../Assets/CopyIcon.svg";
-import React, {  useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { sendRuntimeMessage } from "../../Utility/message_helper.js"
-import { COPIED,  MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, PVT_KEY, MNEMONIC } from "../../Constants/index";
+import { COPIED, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, PVT_KEY, MNEMONIC } from "../../Constants/index";
 
 
 function PrivateKey({ id }) {
