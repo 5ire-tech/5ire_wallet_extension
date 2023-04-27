@@ -59,7 +59,67 @@ export const userState = {
   isLoading: false,
 
 };
+export const OlState = {
 
+  auth: {
+
+    accountName: "qwert",
+
+    accounts: [
+      {
+        accountName: "qwert",
+        evmAddress: "0xb2141453Bcd544C63Bf129B5feee4F0C19D4e9B4",
+        id: 1,
+        nativeAddress: "5CdNHTUhpyPUswwg4cFEvtKmcvWtm9wBsTd85DmojvYPmbqa",
+        temp1m: "e293d2b42ce3d8785890489479f13bb7:03ca1c869ca1fb99717685387a28424dce18be7ba6c6a3c30bc0893ccd4459772bc08859a02883ecc219dc2bee832a77d983685d0c79116b1c715a5dfc8c6d32c8823a4254de7c22a1",
+        temp2p: null,
+        txHistory: []
+      }
+    ],
+    
+    pass: "$2a$10$HdSn8LumIuk4DsHIBMd1s.V2elQtA0tErFc6k8sfRSY2tlkqHkW36",
+
+
+    balance: { evmBalance: '0', nativeBalance: '0', totalBalance: '0' },
+
+    connectedSites: [],
+
+    currentAccount: {
+      accountName: 'qwert',
+      evmAddress: '0xb2141453Bcd544C63Bf129B5feee4F0C19D4e9B4',
+      id: 1,
+      nativeAddress: '5CdNHTUhpyPUswwg4cFEvtKmcvWtm9wBsTd85DmojvYPmbqa',
+      temp1m: 'e293d2b42ce3d8785890489479f13bb7:03ca1c869ca1fb997…983685d0c79116b1c715a5dfc8c6d32c8823a4254de7c22a1',
+      temp2p: null
+    },
+
+    currentNetwork: "Testnet",
+    api: { native: 'https://explorer-api.5ire.network/api/firechain/explorer/get-transaction-by-hash/' },
+
+    eth_accounts: "",
+
+    httpEndPoints: {
+      qa: 'https://qa-http-nodes.5ire.network',
+      testnet: 'https://rpc-testnet.5ire.network'
+    },
+
+    isLoading: false,
+
+    isLogin: true,
+
+    newAccount: null,
+
+    popupChecks: { txApprove: false },
+
+    uiData: {},
+
+    wsEndPoints: {
+      qa: 'wss://qa-wss-nodes.5ire.network',
+      testnet: 'wss://wss-testnet.5ire.network'
+    }
+  }
+
+}
 //all reducers methods
 const reducers = {
 

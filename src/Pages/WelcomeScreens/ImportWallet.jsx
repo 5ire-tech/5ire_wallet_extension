@@ -27,6 +27,7 @@ import CongratulationsScreen from "./CongratulationsScreen";
 function ImportWallet() {
   const navigate = useNavigate();
   const [isDisable, setDisable] = useState(true);
+  const [isRequestSent, setSentRequest] = useState(false);
   const [data, setData] = useState({ accName: "", key: "" });
   const [warrning, setWarrning] = useState({ acc: "", key: "" });
   const { state, userPass, allAccounts, inputError, setInputError } = useContext(AuthContext);
@@ -42,8 +43,14 @@ function ImportWallet() {
   useEffect(() => {
     if (inputError) {
       setWarrning(p => ({ ...p, key: inputError }));
-    }
-  }, [inputError])
+    } 
+    // else if (!inputError && isRequestSent) {
+    //   setShow(true);
+    //   setTimeout(() => {
+    //     setShow(false);
+    //   }, 1000);
+    // }
+  }, [inputError, isRequestSent]);
 
 
   useEffect(() => {
@@ -125,11 +132,12 @@ function ImportWallet() {
               acc: ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS,
             }));
           } else {
-            setShow(true)
-            setTimeout(() => {
-              setShow(false)
-              sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC, { mnemonic: data.key, name: data.accName.trim() });
-            }, 2000)
+            // setShow(true)
+            // setTimeout(() => {
+            // setShow(false)
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC, { mnemonic: data.key, name: data.accName.trim() });
+            setSentRequest(true);
+            // }, 2000)
           }
 
         }
@@ -138,6 +146,7 @@ function ImportWallet() {
   };
 
   const handleCancel = () => {
+    setInputError("");
     if (isLogin) navigate(ROUTES.WALLET);
     else navigate(ROUTES.DEFAULT);
   };

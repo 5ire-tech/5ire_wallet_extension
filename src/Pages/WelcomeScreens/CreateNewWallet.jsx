@@ -8,7 +8,6 @@ import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
-import PrivacyPolicy from "../../Components/MenuFooter/PrivacyPolicy";
 import { LABELS, REGEX, ERROR_MESSAGES, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
 
 function CreateNewWallet() {
@@ -19,7 +18,6 @@ function CreateNewWallet() {
   const { state, updateState, setAccName, allAccounts } = useContext(AuthContext);
   const { isLogin } = state;
 
-  //todo
   useEffect(() => {
     if (isLogin) {
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.GET_ACCOUNTS, {});

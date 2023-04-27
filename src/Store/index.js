@@ -45,8 +45,6 @@ export default function Context({ children }) {
   //bind the message from background event
   bindRuntimeMessageListener((message) => {
 
-    console.log("message.event : ", message.event, "message.type : ", message.type);
-
     if (message.type === MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND) {
       if (message.event === MESSAGE_EVENT_LABELS.EVM_FEE || message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE) {
         (!estimatedGas) && updateEstimatedGas(message.data.fee);
@@ -61,6 +59,7 @@ export default function Context({ children }) {
         //send account details whenever account is changed
         sendEventToTab(new TabMessagePayload(TABS_EVENT.ACCOUNT_CHANGE_EVENT, { result: { evmAddress: state.currentAccount.evmAddress, nativeAddress: state.currentAccount.nativeAddress } }, null, TABS_EVENT.ACCOUNT_CHANGE_EVENT), externalControlsState.connectedApps);
       } else if (message.event === MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC) {
+        importAccountByMnemonics(message.data);
         //send account details whenever account is changed
         sendEventToTab(new TabMessagePayload(TABS_EVENT.ACCOUNT_CHANGE_EVENT, { result: { evmAddress: state.currentAccount.evmAddress, nativeAddress: state.currentAccount.nativeAddress } }, null, TABS_EVENT.ACCOUNT_CHANGE_EVENT), externalControlsState.connectedApps);
       } else if (
@@ -74,9 +73,6 @@ export default function Context({ children }) {
         exportPrivatekey(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE) {
         exportSeedPhrase(message.data);
-      } else if (message.event === MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC) {
-        console.log("Messaggggegeggegegegge :::: ",message);
-        importAccountByMnemonics(message.data);
       }
 
       updateLoading(false);

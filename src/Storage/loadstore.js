@@ -258,7 +258,7 @@ export class ExtensionStorageHandler {
     removeAccount = async (message, state) => {
         const newState = { ...state, vault: message.vault };
         if (message?.isInitialAccount) {
-            newState.isLogin = false
+            newState.isLogin = false;
         }
         return await this._updateStorage(newState);
 

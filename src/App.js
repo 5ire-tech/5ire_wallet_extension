@@ -144,7 +144,7 @@ function App(props) {
             />
             <Route
               index
-              path={ROUTES.ENTER_PASS}
+              path={ROUTES.ENTER_PASS + "/:id"}
               element={<OnlyContent children={<EnterPassword />} />}
             />
             <Route

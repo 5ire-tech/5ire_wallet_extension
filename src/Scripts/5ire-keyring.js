@@ -140,7 +140,7 @@ export class HybridKeyring extends EventEmitter {
      * @returns 
      */
     async verifyUserPassword(message) {
-        const { password } = message.data;
+        const { password } = message?.data;
         const verifiedResponse = await this._verifyPassword(password);
         const verified = verifiedResponse.vault ? true : false;
         return new EventPayload(message.event, message.event, { verified }, [], false);
@@ -274,7 +274,7 @@ export class HybridKeyring extends EventEmitter {
         const keyResponse = await this._exportEthAccountByAddress(newAcc.evmAddress, HybridKeyring.password);
 
         newAcc.evmPrivateKey = keyResponse ? keyResponse : "";
-        newAcc.drivePath = "//" + existingHdAccounts;
+        newAcc.drivedMnemonic = await this._exportNativeAccountByAddress(newAcc.nativeAddress, HybridKeyring.password);;
 
         const response = await this._persistData(HybridKeyring.password);
 

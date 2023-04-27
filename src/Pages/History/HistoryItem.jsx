@@ -1,9 +1,9 @@
 import React from 'react';
+import style from "./style.module.scss";
 import Swap from "../../Assets/swap.svg";
 import Sent from "../../Assets/sent.svg";
-import style from "./style.module.scss";
+import { STATUS } from '../../Constants';
 import { formatDate, shortner } from "../../Helper/helper"
-import { LABELS, STATUS } from '../../Constants';
 
 export default function HistoryItem({ historyItem, handleHistoryOpen }) {
   return (
