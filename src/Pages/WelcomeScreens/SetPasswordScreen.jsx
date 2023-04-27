@@ -9,8 +9,8 @@ import { isEmpty } from "../../Utility/utility";
 import React, { useContext, useEffect, useState } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
+import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
-import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 import {
   REGEX,
@@ -27,10 +27,10 @@ export default function SetPasswordScreen() {
 
   const navigate = useNavigate();
   const { setUserPass, accountName } = useContext(AuthContext);
-  // const [show, setShow] = useState(false);
   const { state, updateState } = useContext(AuthContext);
   const [error, setError] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
   const [pass, setPass] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
+
 
 
   useEffect(() => {
@@ -111,6 +111,13 @@ export default function SetPasswordScreen() {
   return (
     <>
       <div onKeyDown={handleSubmit} className={`${style.cardWhite}`}>
+        {
+          params.id === LABELS.CREATE ?
+            < StepHeaders active={3} />
+            :
+            <StepHeaders active={1} />
+
+        }
         <MenuRestofHeaders
           backTo={params.id === LABELS.CREATE ? ROUTES.CREATE_WALLET : ROUTES.DEFAULT}
           title={"Create Password"}

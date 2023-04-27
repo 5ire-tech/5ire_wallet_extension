@@ -45,6 +45,8 @@ export default function Context({ children }) {
   //bind the message from background event
   bindRuntimeMessageListener((message) => {
 
+    console.log("message.event : ", message.event, "message.type : ", message.type);
+
     if (message.type === MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND) {
       if (message.event === MESSAGE_EVENT_LABELS.EVM_FEE || message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE) {
         (!estimatedGas) && updateEstimatedGas(message.data.fee);
@@ -53,7 +55,6 @@ export default function Context({ children }) {
       } else if (message.event === MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE) {
         createOrRestore(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.UNLOCK) {
-        log("message", message)
         unlock(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.ADD_ACCOUNT) {
         addAccount(message.data);
@@ -74,7 +75,7 @@ export default function Context({ children }) {
       } else if (message.event === MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE) {
         exportSeedPhrase(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC) {
-        // console.log("Messaggggegeggegegegge :::: ",message);
+        console.log("Messaggggegeggegegegge :::: ",message);
         importAccountByMnemonics(message.data);
       }
 

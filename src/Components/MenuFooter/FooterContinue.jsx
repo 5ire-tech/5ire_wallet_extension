@@ -15,7 +15,6 @@ import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScr
 import BigNumber from "bignumber.js";
 
 
-
 //Before We begin
 function FooterStepOne() {
   const { state } = useContext(AuthContext);
@@ -65,8 +64,13 @@ export const FooterStepTwo = () => {
 
   const handleCancle = async () => {
 
-    //Remove account
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT, { address: newAccount.evmAddress });
+    console.log("IsLOGIN :::: ",isLogin);
+
+    // if (isLogin) {
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT, { address: newAccount.evmAddress });
+    // }
+
+
 
   };
 
@@ -190,6 +194,7 @@ export const ApproveTx = () => {
       setDisableApproval(true);
       return;
     }
+
   }, [estimatedGas]);
 
 

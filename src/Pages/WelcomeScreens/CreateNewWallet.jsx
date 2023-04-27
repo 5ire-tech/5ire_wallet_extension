@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import React, { useState, useContext, useEffect } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
+import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 import PrivacyPolicy from "../../Components/MenuFooter/PrivacyPolicy";
@@ -71,23 +72,7 @@ function CreateNewWallet() {
       }
 
     }
-
-    // const match = allAccounts?.find((e) => e.accountName === data.trim());
-
-    // if (match) {
-    //   setWarrning(ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS);
-    // } else {
-    //   setAccName(data.trim());
-
-    //   if (isLogin) {
-
-    //   }
-    //   else
-    //     navigate(ROUTES.SET_PASS + "/create");
-
-
   }
-
 
 
   const handleCancle = () => {
@@ -100,6 +85,11 @@ function CreateNewWallet() {
   return (
     <>
       <div className={style.cardWhite}>
+        {
+          !isLogin &&
+          <StepHeaders active={2} />
+
+        }
         <MenuRestofHeaders logosilver={true} title="5irechain Wallet" />
         <div className={style.cardWhite__cardInner}>
           <div className={style.cardWhite__cardInner__innercontact}>

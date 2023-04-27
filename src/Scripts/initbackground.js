@@ -762,8 +762,7 @@ export class Services {
   //update the local storage data
   updateLocalState = async (key, data, options) => {
     const res = await ExtensionStorageHandler.updateStorage(key, data, options)
-    if (res)
-      ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, res);
+    if (res) ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, res);
   }
 
   /*************************** Service Internals ******************************/
@@ -795,6 +794,7 @@ export class TransactionsRPC {
 
       const { data, transactionHistoryTrack, contractBytecode } = message;
       const { options: { account } } = data;
+      console.log("OPTIONS IN EVM TRANSFER : ",data.options);
       const network = transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase()
       const { evmApi } = NetworkHandler.api[network];
 

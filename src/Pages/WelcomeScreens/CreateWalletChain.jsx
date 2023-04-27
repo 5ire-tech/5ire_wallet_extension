@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
 import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
+import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
 import { PVT_KEY, NATIVE, EVM, COPIED, MNEMONIC } from "../../Constants/index.js";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx";
 
@@ -42,6 +43,14 @@ function CreateWalletChain() {
 
   return (
     <div className={style.cardWhite}>
+      {
+        newAccount?.mnemonic
+        &&
+        < StepHeaders active={4} />
+        // :
+        // <StepHeaders active={2} />
+
+      }
       <MenuRestofHeaders title={"New Wallet Details"} />
       <div className={style.copyButton}>
         <button
@@ -55,13 +64,44 @@ function CreateWalletChain() {
       <div className={style.cardWhite__addressInput}>
         <label>{!newAccount?.mnemonic && newAccount.drivePath ? "Drived Path:" : "Mnemonic Phrase:"}</label>
         <p className={style.cardWhite__addressInput__copyText}>
+
+       
           <span>
             {
               !newAccount?.mnemonic && newAccount?.drivePath ? newAccount.drivePath : newAccount.mnemonic
             }
           </span>
+
           {
             newAccount?.mnemonic &&
+            <>
+              {
+                isOpen?.open1 ?
+                  <img
+                    width={19}
+                    height={12}
+                    alt="eyeOpen"
+                    name="open1"
+                    draggable={false}
+                    src={EyeOpenIcon}
+                    onClick={handleEyeOpen}
+                  />
+                  :
+                  <img
+                    width={19}
+                    height={16}
+                    name="open1"
+                    alt="eyeClose"
+                    src={EyeCloseIcon}
+                    draggable={false}
+                    onClick={handleEyeOpen}
+                  />
+              }
+            </>
+          }
+          {
+            newAccount?.mnemonic &&
+
             <img
               name={MNEMONIC}
               src={CopyIcon}
@@ -89,7 +129,7 @@ function CreateWalletChain() {
         <label>EVM Chain Address:</label>
         <p className={style.cardWhite__addressInput__copyText}>
           <span>{newAccount?.evmAddress}</span>
-          {
+          {/* {
             isOpen?.open1 ?
               <img
                 width={19}
@@ -110,7 +150,7 @@ function CreateWalletChain() {
                 draggable={false}
                 onClick={handleEyeOpen}
               />
-          }
+          } */}
           <img
             name={EVM}
             src={CopyIcon}

@@ -7,6 +7,7 @@ import React, { useState, useEffect, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { isEmpty, validateMnemonic } from "../../Utility/utility";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
+import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
 // import PrivacyPolicy from "../../Components/MenuFooter/PrivacyPolicy";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
@@ -143,6 +144,9 @@ function ImportWallet() {
 
   return (
     <div className={style.cardWhite} onKeyDown={handleClick}>
+      {
+        !isLogin && <StepHeaders active={2} />
+      }
       <MenuRestofHeaders logosilver={true} title="5irechain Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
