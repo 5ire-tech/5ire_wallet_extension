@@ -340,7 +340,7 @@ class TransactionQueue {
   addNewTransaction = async (transactionProcessingPayload) => {
     //add the transaction history track
     const { data, options } = transactionProcessingPayload;
-    transactionProcessingPayload.transactionHistoryTrack = new TransactionPayload(data?.to || options?.to, data?.value ? parseFloat(data?.value).toString() : "", options?.isEvm, options?.network, options?.type);
+    transactionProcessingPayload.transactionHistoryTrack = new TransactionPayload(data?.to || options?.to, data?.value ? parseFloat(Number(data?.value)).toString() : "", options?.isEvm, options?.network, options?.type);
 
     //insert transaction history with flag "Queued"
     await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY, transactionProcessingPayload.transactionHistoryTrack, transactionProcessingPayload.options);
@@ -817,7 +817,7 @@ export class TransactionsRPC {
       else {
         const amt = (new BigNumber(data.value).multipliedBy(DECIMALS)).toString();
         const to = Web3.utils.toChecksumAddress(data.to);
-        const value = data.isBig
+        const value = data?.options?.isBig
           ? data.value
           : (Number(amt).noExponents()).toString();
 
@@ -871,7 +871,7 @@ export class TransactionsRPC {
 
       //check for the revert case
       const evmRevertedTx = JSON.parse(JSON.stringify(err));
-      if(evmRevertedTx?.receipt || transactionHistory.txHash) {
+      if (evmRevertedTx?.receipt || transactionHistory.txHash) {
         transactionHistory.txHash = evmRevertedTx.receipt.transactionHash;
         transactionHistory.status = STATUS.PENDING;
         payload.data = transactionHistory;
@@ -1267,18 +1267,18 @@ export class GeneralWalletRPC {
 
       const { evmApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
-  
+
       log(message)
       let toAddress = data.toAddress ? data.toAddress : data?.data ? account.evmAddress : account.nativeAddress;
       let amount = data?.value;
-      
+
 
       if (toAddress?.startsWith("5"))
         toAddress = u8aToHex(toAddress).slice(0, 42);
-        
+
       if (toAddress?.startsWith("0x")) {
-          amount = Math.round(Number(amount));
-          Web3.utils.toChecksumAddress(toAddress);
+        amount = Math.round(Number(amount));
+        Web3.utils.toChecksumAddress(toAddress);
       }
 
       const tx = {
@@ -1286,7 +1286,7 @@ export class GeneralWalletRPC {
         from: account.evmAddress,
         value: amount,
       };
-  
+
 
       if (data?.data) {
         tx.data = data.data;
