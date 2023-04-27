@@ -2,6 +2,7 @@ import { Button, message, Steps } from "antd";
 import React from "react";
 import style from "./style.module.scss";
 import { useState } from 'react';
+import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
 function Beforebegin() {
   // const steps = [
   //   {
@@ -31,7 +32,8 @@ function Beforebegin() {
   return (
     <div>
       <div className={style.cardWhite}>
-      {/* <Steps current={current} items={items} direction="horizontal" /> */}
+        {/* <Steps current={current} items={items} direction="horizontal" /> */}
+        <StepHeaders active={1} />
         <div className={style.cardWhite__beginText}>
           <h1>Before we begin!</h1>
           <p>

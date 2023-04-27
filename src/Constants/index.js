@@ -9,16 +9,23 @@ export const PVT_KEY = "privateKey";
 export const CONNECTION_NAME = "5IRE_EXT";
 export const PORT_NAME = "WEBEXT_REDUX_TEST";
 export const UI_CONNECTION_NAME = "5IRE_EXT_UI";
-export const ACCOUNT_CHANGED_EVENT = 'accountChanged';
-
-
 export const WINDOW_WIDTH = 400;
 export const DECIMALS = 10 ** 18;
 export const WINDOW_HEIGHT = 620;
 export const ONE_ETH_IN_GWEI = 1000000000;
 export const AUTO_BALANCE_UPDATE_TIMER = 8000;
-export const TRANSACTION_STATUS_CHECK_TIMER = 2000;
+export const TRANSACTION_STATUS_CHECK_TIMER = 4000;
 export const EXISTENTIAL_DEPOSITE = 1;
+
+
+
+//tabs event
+export const TABS_EVENT = {
+    ACCOUNT_CHANGE_EVENT: "accountChange",
+    NETWORK_CHANGE_EVENT: "networkChange",
+    WALLET_CONNECTED_EVENT: "walletConnected",
+    WALLET_DISCONNECTED_EVEN: "walletDisconnected"
+}
 
 
 /* Regular expressions */
@@ -42,6 +49,7 @@ export const TX_TYPE = {
     SWAP: "Swap",
     CONTRACT_EXECUTION: "Contract Execution",
     CONTRACT_DEPLOYMENT: "Contract Deployement",
+    NATIVE_SIGNER: "Native Signer"
 };
 
 export const NETWORK = {
@@ -103,6 +111,7 @@ export const ERROR_MESSAGES = {
     ACCOUNT_ACCESS_NOT_GRANTED: "The requested account has not been authorized by the user",
     SINGER_ERROR: "Error while signing the the raw/payload",
     EXTERNAL_NATIVE_TRANSACTION_ERROR: "Error while external native transaction.",
+    ERROR_WHILE_TRANSACTION: "Transaction failed, Error occured during transaction processing",
 
 
     INVALID_PROPERTY: "Invalid property.",
@@ -138,7 +147,12 @@ export const ERRCODES = {
     INVALID_ARGU_TYPE: 7,
     FAILED_TO_CONNECT_NETWORK: 8,
     INSUFFICENT_BALANCE: 9,
-    SIGNER_ERROR: 10
+    SIGNER_ERROR: 10,
+    ERROR_WHILE_TRANSACTION: 11,
+    ERROR_WHILE_BALANCE_FETCH: 12,
+    ERROR_WHILE_GETTING_ESTIMATED_FEE: 13,
+    KEYRING_SECTION_ERROR: 14,
+    RUNTIME_MESSAGE_SECTION_ERROR: 15
 }
 
 
@@ -150,6 +164,7 @@ export const LABELS = {
     ENTER: "Enter",
     ACTIVE: "Active",
     CREATE: "create",
+    IMPORT: "import",
     FAILED: "failed",
     AMOUNT: "amount",
     SUCCESS: "success",
@@ -200,8 +215,8 @@ export const API = {
 };
 
 export const EXPLORERS = {
-    TESTNET: "https://explorer.5ire.network/testnet/tx",
-    QA: "https://qa-web-exp.5ire.network/testnet/tx"
+    TESTNET: "https://explorer.5ire.network",
+    QA: "https://qa-web-exp.5ire.network"
 }
 
 export const WS_END_POINTS = {
@@ -224,6 +239,7 @@ export const MESSAGE_EVENT_LABELS = {
     UPDATE_TX_HISTORY: "txupdatehistory",
     EVM_TO_NATIVE_SWAP: "evmToNativeSwap",
     CLOSE_POPUP_SESSION: "closePopupSession",
+    TX_HASH: "txHash",
 
     LOCK: "lock",
     UNLOCK: "unlock",
@@ -234,6 +250,7 @@ export const MESSAGE_EVENT_LABELS = {
     CREATE_OR_RESTORE: "createOrRestore",
     EXPORT_PRIVATE_KEY: "exportPrivatekey",
     EXPORT_SEED_PHRASE: "exportSeedPhrase",
+    RESET_VAULT_AND_PASS: "resetVaultAndPass",
     VERIFY_USER_PASSWORD: "verifyUserPassword",
     IMPORT_BY_MNEMONIC: "importAccountByMnemonics",
 
@@ -245,6 +262,7 @@ export const INTERNAL_EVENT_LABELS = {
     CONNECTION: "connection",
     BALANCE_FETCH: "balanceFetch",
     NEW_TRANSACTION_INQUEUE: "newTransactionInQueue",
+    NEW_NATIVE_SIGNER_TRANSACTION_INQUEUE: "newNativeSignerTransactionInQueue",
     ERROR: "error"
 }
 
@@ -298,7 +316,7 @@ export const WALLET_TYPES = {
     IMPORTED_NATIVE: "imported_native"
 }
 
-export const CONNECTION_METHODS = ["connect", "eth_requestAccounts", "eth_accounts"];
+export const CONNECTION_METHODS = ["connect", "eth_requestAccounts", "eth_accounts", "get_endPoint"];
 
 export const KEYRING_EVENTS = {
     STATE_CHANGED: "valut_state",

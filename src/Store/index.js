@@ -1,19 +1,27 @@
+import { ROUTES } from "../Routes/index";
 import Browser from "webextension-polyfill";
-import { userState, newAccountInitialState, externalControls, initialExternalNativeTransaction } from "./initialState";
+import { useNavigate } from "react-router-dom";
 import { isManifestV3 } from "../Scripts/utils";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { isNullorUndef, log } from "../Utility/utility";
 import { sessionStorage, localStorage } from "../Storage";
 import { bindRuntimeMessageListener } from "../Utility/message_helper";
-import { MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, LABELS } from "../Constants";
-
+import { MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, LABELS, TABS_EVENT } from "../Constants";
+import {
+  userState,
+  externalControls,
+  newAccountInitialState,
+  initialExternalNativeTransaction
+} from "./initialState";
+import { sendEventToTab } from "../Helper/helper";
+import { TabMessagePayload } from "../Utility/network_calls";
 
 export const AuthContext = createContext();
 
 export default function Context({ children }) {
-
+  const navigate = useNavigate();
   const [state, setState] = useState(userState);
-  const [passError, setPassError] = useState("");
+  const [inputError, setInputError] = useState("");
   const [userPass, setUserPass] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const [privateKey, setPrivateKey] = useState("");
@@ -24,8 +32,8 @@ export default function Context({ children }) {
   const [externalNativeTxDetails, setExternalNativeTxDetails] = useState(initialExternalNativeTransaction);
   const [passVerified, setPassVerified] = useState(false);
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
-  const [externalControlsState, setExternalControlState] = useState(externalControls)
-  
+  const [externalControlsState, setExternalControlState] = useState(externalControls);
+
 
   Browser.storage.local.onChanged.addListener((changedData) => {
     //change the state whenever the local storage is updated
@@ -37,11 +45,12 @@ export default function Context({ children }) {
   //bind the message from background event
   bindRuntimeMessageListener((message) => {
 
+    console.log("message.event : ", message.event, "message.type : ", message.type);
+
     if (message.type === MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND) {
       if (message.event === MESSAGE_EVENT_LABELS.EVM_FEE || message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE) {
         (!estimatedGas) && updateEstimatedGas(message.data.fee);
-      } else if(message.event === MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS) {
-        log("data is here: ", message)
+      } else if (message.event === MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS) {
         setExternalNativeTxDetails(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE) {
         createOrRestore(message.data);
@@ -49,10 +58,12 @@ export default function Context({ children }) {
         unlock(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.ADD_ACCOUNT) {
         addAccount(message.data);
-      } else if (
-        message.event === MESSAGE_EVENT_LABELS.GET_ACCOUNTS ||
-        message.event === MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT
-      ) {
+        //send account details whenever account is changed
+        sendEventToTab(new TabMessagePayload(TABS_EVENT.ACCOUNT_CHANGE_EVENT, { result: { evmAddress: state.currentAccount.evmAddress, nativeAddress: state.currentAccount.nativeAddress } }, null, TABS_EVENT.ACCOUNT_CHANGE_EVENT), externalControlsState.connectedApps);
+      } else if (message.event === MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC) {
+        //send account details whenever account is changed
+        sendEventToTab(new TabMessagePayload(TABS_EVENT.ACCOUNT_CHANGE_EVENT, { result: { evmAddress: state.currentAccount.evmAddress, nativeAddress: state.currentAccount.nativeAddress } }, null, TABS_EVENT.ACCOUNT_CHANGE_EVENT), externalControlsState.connectedApps);
+      } else if (message.event === MESSAGE_EVENT_LABELS.GET_ACCOUNTS) {
         getAccounts(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.VERIFY_USER_PASSWORD) {
         verifyUserPassword(message.data);
@@ -60,6 +71,12 @@ export default function Context({ children }) {
         exportPrivatekey(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE) {
         exportSeedPhrase(message.data);
+      } else if (message.event === MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC) {
+        console.log("Messaggggegeggegegegge :::: ",message);
+        importAccountByMnemonics(message.data);
+      }
+      else if (message.event === MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT) {
+        removeAccount(message.data);
       }
 
       updateLoading(false);
@@ -110,9 +127,22 @@ export default function Context({ children }) {
     }
   };
 
+  // set the new Account
+  const importAccountByMnemonics = (data) => {
+    // console.log("Data in import Context :::: ",data);
+
+    if (data?.vault && data?.newAccount) {
+      navigate(ROUTES.WALLET);
+    } else if (data?.errCode === 3) {
+      setInputError(data?.errMessage ? data.errMessage : "");
+    }
+  };
+
+
+
   const unlock = (data) => {
     if (data?.errMessage) {
-      setPassError(data.errMessage);
+      setInputError(data.errMessage);
     } else {
       // setPassVerified(data?.verified ? true : false);
       updateState(LABELS.ISLOGIN, data.isLogin, true, true);
@@ -121,17 +151,17 @@ export default function Context({ children }) {
   };
 
   const addAccount = (data) => {
-    setNewAccount(data.newAccount);
+    setNewAccount(data?.newAccount);
   };
 
   const getAccounts = (data) => {
-    // console.log("Data : ", data);
+
     setAllAccounts(data?.accounts ? data.accounts : data);
   };
 
   const verifyUserPassword = (data) => {
     if (data?.errCode === 3) {
-      setPassError(data?.errMessage ? data?.errMessage : "");
+      setInputError(data?.errMessage ? data?.errMessage : "");
     }
     setPassVerified(data?.verified ? true : false);
   }
@@ -150,12 +180,21 @@ export default function Context({ children }) {
     delete newTx[accName];
     updateState(LABELS.TX_HISTORY, newTx)
   }
+  const removeAccount = (data) => {
+    setNewAccount(newAccountInitialState);
+    if (data?.isInitialAccount) {
+      navigate(ROUTES.DEFAULT)
+    } else {
+      navigate(ROUTES.WALLET);
+    }
+  }
+
 
   const values = {
     //data
     state,
     userPass,
-    passError,
+    inputError,
     isLoading,
     newAccount,
     privateKey,
@@ -168,19 +207,21 @@ export default function Context({ children }) {
     externalNativeTxDetails,
 
     //data setters
-    setExternalNativeTxDetails,
     setState,
     setAccName,
     setUserPass,
     updateState,
-    setPassError,
+    setInputError,
     updateLoading,
     setNewAccount,
     removeHistory,
     setPrivateKey,
     setPassVerified,
     updateEstimatedGas,
-    setExternalControlState
+    setExternalControlState,
+    setExternalNativeTxDetails,
+    importAccountByMnemonics,
+
   }
 
   return (

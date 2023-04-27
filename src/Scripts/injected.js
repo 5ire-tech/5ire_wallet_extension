@@ -1,6 +1,7 @@
 import { WindowPostMessageStream } from "./stream";
 import { ACCOUNT_CHANGED_EVENT, CONTENT_SCRIPT, INPAGE } from "./constants";
 import { FireProvider } from "./5ire-Provider";
+import { TABS_EVENT } from "../Constants";
 
 const injectedStream = new WindowPostMessageStream({
   name: INPAGE,
@@ -21,18 +22,18 @@ window.fire = fireProvider;
 injectedStream.on("data", (data) => {
 
   if (data?.method === "keepAlive") {
-
     setTimeout(() => {
       injectedStream.write({ method: "keepAlive" });
     }, 1000 * 30);
   }
 
-  if (data?.method === ACCOUNT_CHANGED_EVENT) {
-    fireProvider.emit(ACCOUNT_CHANGED_EVENT, data.response)
-    return
-  }
 
-  // console.log("Here is response from extension: ", data);
+  //emit the tab events
+  if (data?.event) {
+    if (data?.event === TABS_EVENT.NETWORK_CHANGE_EVENT) fireProvider.httpHost = data.response?.result?.url;
+    fireProvider.emit(data.event, data.response);
+    return;
+  }
 
   //get specfic handler using id and resolve or reject it
   if (data.id) {
@@ -43,7 +44,6 @@ injectedStream.on("data", (data) => {
     if (data.error) {
       handler?.isCb && handler.cb(data.error);
       handler?.reject(data.error);
-
     } else {
 
       if (fireProvider.conntectMethods.find(item => item === handler?.method)) {
@@ -65,9 +65,8 @@ injectedStream.on("data", (data) => {
         handler?.isCb && handler.cb(res);
         handler?.resolve(res);
       } else {
-
         handler?.isCb && handler.cb(data.response);
-        handler?.resolve(data.response.result);
+        handler?.resolve(data.response?.result ? data.response.result : data.response);
       }
     }
     delete fireProvider.handlers[data.id];

@@ -32,7 +32,7 @@ export const getDataLocal = async (key) => {
             await localStorage.set({ transactionQueue });
             return transactionQueue
         }
-    
+
         return localState[key];
 
     } catch (err) {
@@ -81,7 +81,6 @@ export class ExtensionStorageHandler {
             return false;
 
         } catch (err) {
-            log("Error while updating the local storage data: ", err);
             return new ErrorPayload(err.message.errCode || ERRCODES.INTERNAL, err.message.errMessage || err.message);
         }
     }
@@ -209,27 +208,24 @@ export class ExtensionStorageHandler {
 
     }
 
-    _txProperty = (state, accountName) => {
-        return {
-            ...state.txHistory,
-            [accountName]: []
-        };
-    }
 
     // set the new Account
     createOrRestore = async (message, state) => {
-        console.log("Setting New Wallet Details ......");
-        const { vault, newAccount, type } = message;
 
-        const currentAccount = {
-            evmAddress: newAccount.evmAddress,
-            accountName: newAccount.accountName,
-            accountIndex: newAccount.accountIndex,
-            nativeAddress: newAccount.nativeAddress,
+        const { vault, type, newAccount } = message;
+        const newState = { ...state, vault, isLogin: true };
+
+        if (type === LABELS.IMPORT) {
+
+            newState.currentAccount = {
+                evmAddress: newAccount.evmAddress,
+                accountName: newAccount.accountName,
+                accountIndex: newAccount.accountIndex,
+                nativeAddress: newAccount.nativeAddress,
+            }
+            newState.txHistory = this._txProperty(state, newAccount.accountName);
         }
-        const txHistory = this._txProperty(state, newAccount.accountName);
 
-        const newState = { ...state, vault, txHistory, currentAccount, isLogin: true }
         this._updateSession(LABELS.ISLOGIN, true);
         return await this._updateStorage(newState);
     };
@@ -253,6 +249,8 @@ export class ExtensionStorageHandler {
 
 
     importAccountByMnemonics = async (message, state) => {
+        // console.log("essage in loadstore import ", message);
+
         const { newAccount, vault } = message;
         const txHistory = this._txProperty(state, newAccount.accountName);
         const newState = { ...state, vault, txHistory, currentAccount: newAccount }
@@ -261,20 +259,9 @@ export class ExtensionStorageHandler {
 
     //add hd account
     addAccount = async (message, state) => {
-
-        const { newAccount, vault } = message;
-
-        const currentAccount = {
-            evmAddress: newAccount.evmAddress,
-            nativeAddress: newAccount.nativeAddress,
-            accountName: newAccount.accountName,
-            accountIndex: newAccount.accountIndex,
-        };
-
-        const txHistory = this._txProperty(state, newAccount.accountName);
-        const newState = { ...state, vault, txHistory, currentAccount }
+        const { vault } = message;
+        const newState = { ...state, vault };
         return await this._updateStorage(newState);
-
     };
 
     //Lock the wallet
@@ -286,6 +273,18 @@ export class ExtensionStorageHandler {
     // remove specific account 
     removeAccount = async (message, state) => {
         const newState = { ...state, vault: message.vault };
+        if (message?.isInitialAccount) {
+            newState.isLogin = false
+        }
+        return await this._updateStorage(newState);
+
+    }
+
+    // remove specific account 
+    resetVaultAndPass = async (message, state) => {
+        console.log("resetVaultAndPass in Storage  ::: ", message);
+        const newState = { ...state, vault: null, isLogin: false };
+        await this._updateSession("isLogin", null);
         return await this._updateStorage(newState);
     }
 
@@ -294,11 +293,17 @@ export class ExtensionStorageHandler {
     _updateStorage = async (state, key) => {
         const checkKey = key || LABELS.STATE;
         await localStorage.set({ [checkKey]: state })
-
     }
 
     _updateSession = async (key, state) => {
         await sessionStorage.set({ [key]: state })
+    }
+
+    _txProperty = (state, accountName) => {
+        return {
+            ...state.txHistory,
+            [accountName]: []
+        };
     }
 
 }

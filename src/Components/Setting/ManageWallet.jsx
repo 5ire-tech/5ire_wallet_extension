@@ -1,5 +1,5 @@
 import { ROUTES } from "../../Routes";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store/index";
 import { useNavigate } from "react-router-dom";
@@ -12,8 +12,8 @@ import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHea
 
 function ManageWallet() {
   const navigate = useNavigate();
- 
-  const { state, setPassVerified} = useContext(AuthContext);
+
+  const { state, setPassVerified } = useContext(AuthContext);
   const { currentAccount } = state;
 
   useEffect(() => {

@@ -7,6 +7,7 @@ import React, { useState, useEffect, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { isEmpty, validateMnemonic } from "../../Utility/utility";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
+import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
 // import PrivacyPolicy from "../../Components/MenuFooter/PrivacyPolicy";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
@@ -18,6 +19,8 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
+import CongratulationsScreen from "./CongratulationsScreen";
+
 
 
 
@@ -26,14 +29,21 @@ function ImportWallet() {
   const [isDisable, setDisable] = useState(true);
   const [data, setData] = useState({ accName: "", key: "" });
   const [warrning, setWarrning] = useState({ acc: "", key: "" });
-  const { state, userPass, allAccounts } = useContext(AuthContext);
+  const { state, userPass, allAccounts, inputError, setInputError } = useContext(AuthContext);
   const { isLogin } = state;
+  const [show, setShow] = useState(false)
 
   useEffect(() => {
     if (isLogin) {
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.GET_ACCOUNTS, {});
     }
   }, []);
+
+  useEffect(() => {
+    if (inputError) {
+      setWarrning(p => ({ ...p, key: inputError }));
+    }
+  }, [inputError])
 
 
   useEffect(() => {
@@ -52,6 +62,9 @@ function ImportWallet() {
 
   const handleChange = (e) => {
     setData((p) => ({ ...p, [e.target.name]: e.target.value }));
+    if (e.target.name === LABELS.KEY) {
+      setInputError("");
+    }
   };
 
 
@@ -92,13 +105,16 @@ function ImportWallet() {
 
   const handleClick = async (e) => {
     if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
-
       if (!warrning.key && !warrning.acc && data.accName && data.key) {
+
         if (userPass && !isLogin) {
 
-          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: userPass, opts: { mnemonic: data.key, name: data.accName.trim() }, type: "import" });
-          
-          // navigate(ROUTES.WALLET);
+          setShow(true)
+          setTimeout(() => {
+            setShow(false)
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: userPass, opts: { mnemonic: data.key, name: data.accName.trim() }, type: LABELS.IMPORT });
+          }, 2000)
+
 
         } else {
           const match = allAccounts?.find((a) => a.accountName === data.accName.trim());
@@ -108,10 +124,12 @@ function ImportWallet() {
               ...p,
               acc: ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS,
             }));
-          }else{
-            //todo
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC, { mnemonic: data.key, name: data.accName.trim() });
-            navigate(ROUTES.WALLET);
+          } else {
+            setShow(true)
+            setTimeout(() => {
+              setShow(false)
+              sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC, { mnemonic: data.key, name: data.accName.trim() });
+            }, 2000)
           }
 
         }
@@ -126,6 +144,9 @@ function ImportWallet() {
 
   return (
     <div className={style.cardWhite} onKeyDown={handleClick}>
+      {
+        !isLogin && <StepHeaders active={2} />
+      }
       <MenuRestofHeaders logosilver={true} title="5irechain Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
@@ -155,7 +176,7 @@ function ImportWallet() {
             /> */}
             <TextArea
               rows={4}
-              name="key"
+              name={LABELS.KEY}
               onKeyUp={validateKey}
               onChange={handleChange}
               placeholder={"Enter mnemonic here"}
@@ -167,6 +188,8 @@ function ImportWallet() {
           <ButtonComp onClick={handleClick} text={"Import"} isDisable={isDisable} />
           <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancel} />
         </div>
+        {show && <div className="loader">
+          <CongratulationsScreen text={"Your wallet has been imported"} /></div>}
       </div>
     </div>
   );

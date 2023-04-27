@@ -1,6 +1,7 @@
 import Browser from "webextension-polyfill";
-import { CONNECTION_METHODS, ERRCODES, ERROR_MESSAGES, EXPLORERS, RESTRICTED_URLS } from "../Constants";
-import { getCurrentTabUId, getCurrentTabUrl } from "../Scripts/utils";
+import { CONNECTION_METHODS, ERRCODES, ERROR_MESSAGES, EXPLORERS, LABELS, RESTRICTED_URLS } from "../Constants";
+import { getCurrentTabDetails } from "../Scripts/utils";
+import { getDataLocal } from "../Storage/loadstore";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import { sendMessageToTab } from "../Utility/message_helper";
 import { isNullorUndef, log } from "../Utility/utility";
@@ -84,12 +85,11 @@ export const numFormatter = num => {
 
 
 //check transaction network and generate url
-export const generateTransactionUrl = (network, txHash) => {
+export const generateTransactionUrl = (network, txHash, isEvm) => {
 try {
-
     if(isNullorUndef(network) && isNullorUndef(txHash)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
     const explorerUrl = EXPLORERS[network.toUpperCase()];
-    return `${explorerUrl}/${txHash}`;
+    return `${explorerUrl}/${isEvm ? "evm/tx": "testnet/tx"}/${txHash}`;
 
 } catch(err) {
     log("error while generating the url: ", err)
@@ -118,12 +118,10 @@ export const generateErrorMessage = (method, origin) => {
 }
 
 //send event to the connected tab
-export const sendEventToTab = (tabMessagePayload, connectedApps) => {
-    getCurrentTabUId((id) => {
-        getCurrentTabUrl((url) => {
-          if (!checkStringInclusionIntoArray(url, RESTRICTED_URLS) && connectedApps[url]?.isConnected) {
-          sendMessageToTab(id, tabMessagePayload)
+export const sendEventToTab = async (tabMessagePayload, connectedApps, emitWithoutConnectionCheck=false) => {
+    getCurrentTabDetails().then((tabDetails) => {
+          if (!checkStringInclusionIntoArray(tabDetails.tabUrl, RESTRICTED_URLS) && (connectedApps[tabDetails.tabUrl]?.isConnected || emitWithoutConnectionCheck)) {
+          sendMessageToTab(tabDetails.tabId, tabMessagePayload)
         }
         });
-      });
 }

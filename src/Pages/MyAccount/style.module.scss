@@ -8,7 +8,7 @@
     padding-top: 35px ;
     text-align: left;
     h3 {
-      background: linear-gradient(91.26deg, #0071ff 0%, #54f0d1 100%);
+      background: -webkit-linear-gradient(#0071ff, #54f0d1);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -33,6 +33,9 @@
     display: flex;
     gap: 12px;
     align-items: center;
+    img{
+      width: 33px;
+    }
     &__accountConatct {
       text-align: left;
       h2 {
@@ -46,7 +49,11 @@
         opacity: 0.6;
       }
       span {
-        color: #37c4e1;
+        background: -webkit-linear-gradient(#0071ff, #54f0d1);
+        -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
         font-size: 14px;
       }
     }

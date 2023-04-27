@@ -4,6 +4,7 @@
   background-color: #0e1f45;
   display: flex;
   justify-content: center;
+  width: 400px;
   &__inner {
     height: 599px;
     background-color: $blue-08132C;
@@ -17,7 +18,7 @@
   }
   &__content {
     // padding: 0 28px 24px;
-    // overflow-y: scroll;
+    overflow-y: scroll;
     flex: 1 1 0%;
     &__paddingX {
       padding-left: 0;

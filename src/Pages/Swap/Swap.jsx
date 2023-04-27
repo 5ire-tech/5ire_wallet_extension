@@ -1,16 +1,16 @@
 import { useEffect } from "react";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
 import { AuthContext } from "../../Store";
 import Info from "../../Assets/infoIcon.svg";
-import logoNew from "../../Assets/logoNew.svg";
+import SmallLogo from "../../Assets/smallLogo.svg"
 import { shortner } from "../../Helper/helper";
 import SwapIcon from "../../Assets/SwapIcon.svg";
-import ComplSwap from "../../Assets/DarkLogo.svg";
+import ComplSwap from "../../Assets/succeslogo.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import React, { useState, useContext } from "react";
-// import CopyIcon from "../../Assets/CopyIcon.svg";
+import CopyIcon from "../../Assets/CopyIcon.svg";
 import { isEmpty, isEqual } from "../../Utility/utility";
 // import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
@@ -26,6 +26,7 @@ import {
   MESSAGE_TYPE_LABELS,
   EXISTENTIAL_DEPOSITE,
   MESSAGE_EVENT_LABELS,
+  TX_TYPE,
 } from "../../Constants/index";
 import { Switch, Tooltip } from "antd";
 
@@ -50,7 +51,6 @@ function Swap() {
 
 
   useEffect(() => {
-
     const getData = setTimeout(() => {
       if (!isEmpty(amount) && !error) {
         getFee();
@@ -69,7 +69,6 @@ function Swap() {
     if (!estimatedGas) setDisable(true);
 
     else {
-      console.log("Is ED ::: ", isEd);
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
         if ((Number(amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0)) >= Number(balance.evmBalance)) {
           updateEstimatedGas(null);
@@ -99,9 +98,9 @@ function Swap() {
 
   const blockInvalidChar = e => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
 
+
   //set the ED toggler state
   const onChangeToggler = (checked) => {
-    console.log(`switch to ${checked}`);
     setEd(checked);
     updateEstimatedGas(null);
     setError("");
@@ -143,17 +142,11 @@ function Swap() {
 
   const handleApprove = async (e) => {
     try {
-
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
-
-        // updateLoading(true);
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP, { value: amount, options: { account: state.currentAccount } });
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP, { value: amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SWAP, isEvm: true, to: LABELS.EVM_TO_NATIVE } });
         setIsModalOpen(true);
-
       } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
-
-        // updateLoading(true);
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP, { value: amount, options: { account: state.currentAccount } });
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP, { value: amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SWAP, isEvm: false, to: LABELS.NATIVE_TO_EVM } });
         setIsModalOpen(true);
       }
 
@@ -163,20 +156,22 @@ function Swap() {
     }
   };
 
+
+  //for getting the fee details
   const getFee = async () => {
 
     if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase()) {
-
       updateLoading(true);
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, { value: amount, options: { account: state.currentAccount } });
     } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase()) {
-
       updateLoading(true);
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, { value: amount, options: { account: state.currentAccount } });
     }
 
     updateEstimatedGas(null);
   };
+
+
 
   const handleChange = (e) => {
     const val = e.target.value;
@@ -267,7 +262,7 @@ function Swap() {
                 onClick={handleCopy}
               />
             </span> */}
-            <span>{isEqual(toFrom.to, EVM) ? shortner(currentAccount.evmAddress) : shortner(currentAccount.nativeAddress)}</span>
+            {/* <span>{isEqual(toFrom.to, EVM) ? shortner(currentAccount.evmAddress) : shortner(currentAccount.nativeAddress)}</span> */}
           </div>
           <div className={style.swap__icon} onClick={handleClick}>
             <img src={SwapIcon} alt="swapIcon" draggable={false} />
@@ -286,7 +281,7 @@ function Swap() {
                 onClick={handleCopy}
               />
             </span> */}
-            <span>{!isEqual(toFrom.to, EVM) ? shortner(currentAccount.evmAddress) : shortner(currentAccount.nativeAddress)}</span>
+            {/* <span>{!isEqual(toFrom.to, EVM) ? shortner(currentAccount.evmAddress) : shortner(currentAccount.nativeAddress)}</span> */}
           </div>
         </div>
         <div className={style.swap__swapAccount}>
@@ -303,7 +298,7 @@ function Swap() {
               placeholder={"Enter Amount"}
               addonAfter={
                 <span className={style.swap__pasteText}>
-                  <img src={logoNew} alt="walletLogo" draggable={false} />
+                  <img src={SmallLogo} alt="walletLogo" draggable={false} />
                   5ire
                 </span>
               }
@@ -361,8 +356,8 @@ function Swap() {
           {/* <h3>Balance 00.0000 5IRE</h3> */}
         </div>
         <div className={style.swap__inFoAccount}>
-        <Tooltip title="5irechain requires a minimum of 1 5ire token to keep your wallet active">
-          <img src={Info} />
+          <Tooltip title="5irechain requires a minimum of 1 5ire token to keep your wallet active">
+            <img src={Info} />
           </Tooltip>
           <h3>Transfer with account keep alive checks </h3>
           <Switch defaultChecked onChange={onChangeToggler} />
@@ -372,6 +367,8 @@ function Swap() {
         </div> */}
       </div>
       <Approve onClick={handleApprove} text="Swap" isDisable={disableBtn} />
+
+
       <ModalCustom
         isModalOpen={isModalOpen}
         handleOk={handle_OK_Cancel}
@@ -383,7 +380,17 @@ function Swap() {
             <img src={ComplSwap} alt="swapIcon" width={127} height={127} draggable={false} />
             <h2 className="title">Swap Processed</h2>
             {/* <p className="transId">Your Swapped Transaction ID</p>
-            <span className="address">
+             <h3 className="hashTag">{txHash ? shortner(txHash): ""}</h3>
+              {txHash && <img
+              draggable={false}
+              src={CopyIcon}
+              alt="copyIcon"
+              name="naiveAddress"
+              style={{cursor: "pointer"}}
+              onClick={handleCopy}
+            />} */}
+
+            {/* <span className="address">
               {txHash ? shortner(txHash) : ""}
               <img
                 width={15}
@@ -402,6 +409,7 @@ function Swap() {
           </div>
         </div>
       </ModalCustom>
+
       <ModalCustom
         isModalOpen={isFaildOpen}
         handleOk={handle_OK_Cancel}

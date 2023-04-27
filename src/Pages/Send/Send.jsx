@@ -1,12 +1,12 @@
 import { Switch, Tooltip } from "antd";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
 import { AuthContext } from "../../Store";
 import Info from "../../Assets/infoIcon.svg";
-import logoNew from "../../Assets/logoNew.svg";
-import ComplSwap from "../../Assets/DarkLogo.svg";
+import ComplSwap from "../../Assets/succeslogo.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
+import SmallLogo from "../../Assets/smallLogo.svg";
 import { validateAddress } from "../../Utility/utility";
 import React, { useState, useEffect, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
@@ -24,10 +24,15 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
   EXISTENTIAL_DEPOSITE,
+  COPIED,
+  TX_TYPE
 } from "../../Constants/index";
+import { shortner } from "../../Helper/helper";
+import CopyIcon from "../../Assets/CopyIcon.svg";
+
+
 
 function Send() {
-
   const [isEd, setEd] = useState(true);
   const [disableBtn, setDisable] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -151,17 +156,17 @@ function Send() {
     }
   };
 
-  const getFee = async () => {
 
+  const getFee = async () => {
     if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
       updateLoading(true);
       //calculate the native fee
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, { value: data.amount, toAddress: data.to, options: { account: state.currentAccount, } });
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, { value: data.amount, toAddress: data.to, options: { account: state.currentAccount } });
     }
     else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
       updateLoading(true);
       //calculate the evm fee
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, { value: data.amount, toAddress: data.to, options: { account: state.currentAccount, } });
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, { value: data.amount, toAddress: data.to, options: { account: state.currentAccount } });
     }
   };
 
@@ -200,6 +205,19 @@ function Send() {
     }
   };
 
+  const handleCopy = (e) => {
+    if (e.target.name.toLowerCase() === NATIVE.toLowerCase())
+      navigator.clipboard.writeText(currentAccount?.nativeAddress);
+
+    if (e.target.name.toLowerCase() === EVM.toLowerCase())
+      navigator.clipboard.writeText(currentAccount?.evmAddress);
+
+    // if (e.target.name.toLowerCase() === "hash")
+    //   navigator.clipboard.writeText(txHash);
+
+    toast.success(COPIED);
+  };
+
   const handleApprove = async () => {
     try {
 
@@ -209,10 +227,9 @@ function Send() {
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.INTERNAL_TX,
           MESSAGE_EVENT_LABELS.EVM_TX,
-          { to: data.to, value: data.amount, options: { account: state.currentAccount } }
+          { to: data.to, value: data.amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SEND, isEvm: true } }
         );
         setIsModalOpen(true);
-
 
       } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
 
@@ -220,9 +237,9 @@ function Send() {
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.INTERNAL_TX,
           MESSAGE_EVENT_LABELS.NATIVE_TX,
-          { to: data.to, value: data.amount, options: { account: state.currentAccount } }
+          { to: data.to, value: data.amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SEND, isEvm: false } }
         );
-        setIsModalOpen(true);
+        setIsModalOpen(true)
       }
 
       updateEstimatedGas("");
@@ -243,16 +260,18 @@ function Send() {
   const handle_OK_Cancel = () => {
     updateEstimatedGas(null);
     setDisable(true);
-    setIsModalOpen(false);
     setIsFaildOpen(false);
     setData({ to: "", amount: "" });
+    setIsModalOpen(false);
   };
+
+
 
   return (
     <>
       <div className={style.sendSec} onKeyDown={handleEnter}>
         <div className={`scrollableCont ${style.sendSec__sourceLabel}`}>
-          <label>Source Chain :</label>
+          <label>Source Chain</label>
           <div className={style.sendSec__sendSwapbtn}>
             <button
               onClick={activeSend}
@@ -303,7 +322,7 @@ function Send() {
               placeholder={"Enter Amount"}
               addonAfter={
                 <span className={style.sendSec__pasteText}>
-                  <img src={logoNew} alt="logo" draggable={false} />
+                  <img src={SmallLogo} alt="logo" draggable={false} />
                   5ire
                 </span>
               }
@@ -317,7 +336,7 @@ function Send() {
         </div>
         <div className={style.sendSec__inFoAccount}>
           <Tooltip title="5irechain requires a minimum of 1 5ire token to keep your wallet active">
-          <img src={Info} />
+            <img src={Info} />
           </Tooltip>
           <h3>Transfer with account keep alive checks </h3>
           <Switch defaultChecked name="EdToggler" onChange={onChangeToggler} />
@@ -342,14 +361,15 @@ function Send() {
             />
             <h2 className="title">Transfer Processed</h2>
             {/* <p className="transId">Your Transaction ID</p>
-            <span className="address">{shortner(txHash)}</span>
-            <img
+            <h3 className="hashTag">{txHash ? shortner(txHash): ""}</h3>
+              {txHash && <img
               draggable={false}
               src={CopyIcon}
               alt="copyIcon"
+              style={{cursor: "pointer"}}
               name="naiveAddress"
               onClick={handleCopy}
-            /> */}
+            />} */}
 
             <div className="footerbuttons">
               <ButtonComp text={"Transfer Again"} onClick={handle_OK_Cancel} />
