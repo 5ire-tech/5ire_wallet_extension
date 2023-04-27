@@ -97,7 +97,28 @@
     padding: 0 !important;
   }
 }
-
+.inputField{
+  .ant-input-affix-wrapper{
+    padding: 0;
+    border-width: 0;
+    background-color: transparent;
+    &:hover{
+      border-inline-end-width: 0px !important;
+    }
+  }
+  .ant-input-suffix{
+    margin: 0;
+  }
+  .maxBtn{
+    background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
+    border: 1px solid #13d3e1;
+    border-radius: 7px;
+    cursor: pointer;
+    color: #fff;
+    padding: 4px;
+    margin-right: 5px;
+  }
+}
 .inputFieldOnly {
   position: relative;
   input,
