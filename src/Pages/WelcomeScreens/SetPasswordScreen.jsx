@@ -122,7 +122,7 @@ export default function SetPasswordScreen() {
           backTo={params.id === LABELS.CREATE ? ROUTES.CREATE_WALLET : ROUTES.DEFAULT}
           title={"Create Password"}
         />
-        <div className={style.cardWhite__beginText}>
+        <div className={`${style.cardWhite__beginText} ${style.cardWhite__createPassText}`}>
           <p>
             Your password is used to unlock your wallet and is stored securely
             on your device. We recommend 12 characters, with uppercase and
