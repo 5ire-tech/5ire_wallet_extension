@@ -29,7 +29,7 @@ import {
   TABS_EVENT,
   WALLET_TYPES
 } from "../../Constants/index";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { isEqual } from "../../Utility/utility";
 import { TabMessagePayload } from "../../Utility/network_calls";
 import {

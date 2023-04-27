@@ -1,9 +1,7 @@
 import { useContext, useState } from "react";
-import { ROUTES } from "../../Routes";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
-import "react-toastify/dist/ReactToastify.css";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
 import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
@@ -65,7 +63,7 @@ function CreateWalletChain() {
         <label>{!newAccount?.mnemonic && newAccount.drivePath ? "Drived Path:" : "Mnemonic Phrase:"}</label>
         <p className={style.cardWhite__addressInput__copyText}>
 
-       
+
           <span>
             {
               !newAccount?.mnemonic && newAccount?.drivePath ? newAccount.drivePath : newAccount.mnemonic

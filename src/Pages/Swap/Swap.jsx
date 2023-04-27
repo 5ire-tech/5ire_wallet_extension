@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
 import { AuthContext } from "../../Store";
@@ -162,10 +162,10 @@ function Swap() {
 
     if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase()) {
       updateLoading(true);
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, { value: amount, options: { account: state.currentAccount}});
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, { value: amount, options: { account: state.currentAccount } });
     } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase()) {
       updateLoading(true);
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, { value: amount, options: { account: state.currentAccount}});
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, { value: amount, options: { account: state.currentAccount } });
     }
 
     updateEstimatedGas(null);
@@ -356,8 +356,8 @@ function Swap() {
           {/* <h3>Balance 00.0000 5IRE</h3> */}
         </div>
         <div className={style.swap__inFoAccount}>
-        <Tooltip title="5irechain requires a minimum of 1 5ire token to keep your wallet active">
-          <img src={Info} />
+          <Tooltip title="5irechain requires a minimum of 1 5ire token to keep your wallet active">
+            <img src={Info} />
           </Tooltip>
           <h3>Transfer with account keep alive checks </h3>
           <Switch defaultChecked onChange={onChangeToggler} />
@@ -367,8 +367,8 @@ function Swap() {
         </div> */}
       </div>
       <Approve onClick={handleApprove} text="Swap" isDisable={disableBtn} />
-      
-      
+
+
       <ModalCustom
         isModalOpen={isModalOpen}
         handleOk={handle_OK_Cancel}
@@ -379,7 +379,7 @@ function Swap() {
           <div className="innerContact">
             <img src={ComplSwap} alt="swapIcon" width={127} height={127} draggable={false} />
             <h2 className="title">Swap Processed</h2>
-             {/* <p className="transId">Your Swapped Transaction ID</p>
+            {/* <p className="transId">Your Swapped Transaction ID</p>
              <h3 className="hashTag">{txHash ? shortner(txHash): ""}</h3>
               {txHash && <img
               draggable={false}
@@ -390,7 +390,7 @@ function Swap() {
               onClick={handleCopy}
             />} */}
 
-           {/* <span className="address">
+            {/* <span className="address">
               {txHash ? shortner(txHash) : ""}
               <img
                 width={15}
@@ -409,7 +409,7 @@ function Swap() {
           </div>
         </div>
       </ModalCustom>
-           
+
       <ModalCustom
         isModalOpen={isFaildOpen}
         handleOk={handle_OK_Cancel}

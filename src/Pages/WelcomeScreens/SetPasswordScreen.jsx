@@ -1,7 +1,7 @@
 import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
-// import { toast } from "react-toastify";
+// import { toast } from "react-hot-toast";
 // import useAuth from "../../Hooks/useAuth";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";

@@ -10,7 +10,7 @@ import { ExtensionStorageHandler } from "../../Storage/loadstore";
 import { isEqual } from "../../Utility/utility";
 import { sendMessageToTab, sendRuntimeMessage } from "../../Utility/message_helper";
 import { TabMessagePayload } from "../../Utility/network_calls";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
 
 

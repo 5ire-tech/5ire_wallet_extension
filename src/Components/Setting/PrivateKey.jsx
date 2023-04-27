@@ -1,11 +1,11 @@
 import { ROUTES } from "../../Routes";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store/index";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import ButtonComp from "../ButtonComp/ButtonComp";
-import React, { useState, useContext, useEffect} from "react";
-import { COPIED, LABELS, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS} from "../../Constants/index";
+import React, { useState, useContext, useEffect } from "react";
+import { COPIED, LABELS, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
 import { decryptor } from "../../Helper/CryptoHelper";
 import { sendRuntimeMessage } from "../../Utility/message_helper.js"
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
@@ -13,14 +13,14 @@ import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHea
 
 function PrivateKey() {
 
-  const { state, privateKey, seedPhrase} = useContext(AuthContext);
+  const { state, privateKey, seedPhrase } = useContext(AuthContext);
   const [show, handleShow] = useState(false);
   const { currentAccount } = state;
 
   useEffect(() => {
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.EXPORT_PRIVATE_KEY, { address : currentAccount.evmAddress});
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE, { address : currentAccount.nativeAddress});
-    
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.EXPORT_PRIVATE_KEY, { address: currentAccount.evmAddress });
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE, { address: currentAccount.nativeAddress });
+
   }, []);
 
   const handleCopy = (e) => {

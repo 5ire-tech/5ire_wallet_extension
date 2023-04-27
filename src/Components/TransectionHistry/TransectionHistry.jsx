@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import style from "./style.module.scss";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import DarkRyt from "../../Assets/darkRyt.svg";
