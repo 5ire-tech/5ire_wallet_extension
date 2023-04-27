@@ -12,7 +12,6 @@ import { sendMessageToTab, sendRuntimeMessage } from "../../Utility/message_help
 import { TabMessagePayload } from "../../Utility/network_calls";
 import { toast } from "react-toastify";
 import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
-import BigNumber from "bignumber.js";
 
 
 //Before We begin
@@ -187,9 +186,8 @@ export const ApproveTx = () => {
   //check if user has sufficent balance to make transaction
   useEffect(() => {
 
-    const amount = (new BigNumber(activeSession.message?.value).dividedBy(DECIMALS)).toString();
 
-    if ((Number(amount) + Number(estimatedGas)) >= Number(state.balance.evmBalance)) {
+    if ((Number(activeSession.message?.value) + Number(estimatedGas)) >= Number(state.balance.evmBalance)) {
       toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       setDisableApproval(true);
       return;
