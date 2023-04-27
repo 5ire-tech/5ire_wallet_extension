@@ -1,9 +1,9 @@
 import React from 'react';
+import style from "./style.module.scss";
 import Swap from "../../Assets/swap.svg";
 import Sent from "../../Assets/sent.svg";
-import style from "./style.module.scss";
+import { STATUS } from '../../Constants';
 import { formatDate, shortner } from "../../Helper/helper"
-import { LABELS, STATUS } from '../../Constants';
 
 export default function HistoryItem({ historyItem, handleHistoryOpen }) {
   return (
@@ -21,8 +21,28 @@ export default function HistoryItem({ historyItem, handleHistoryOpen }) {
         </div>
         <div className={style.historySec__historyMarketSwap__rytSide}>
           <h3>{historyItem.amount} 5ire</h3>
+
+          {/* {
+            (historyItem.status.toLowerCase() === STATUS.PENDING.toLowerCase() || historyItem.status.toLowerCase() === STATUS.QUEUED.toLowerCase()) &&
+            <p className={style.historySec__pending}>
+              {historyItem.status}
+            </p>
+          }
+          {
+            historyItem.status.toLowerCase() === STATUS.FAILED.toLowerCase() &&
+            <p className={style.historySec__failed}>
+              {historyItem.status}
+            </p>
+          }
+          {
+            historyItem.status.toLowerCase() === STATUS.SUCCESS.toLowerCase() &&
+            <p className={style.historySec__success}>
+              {historyItem.status}
+            </p>
+          } */}
+
           <p>
-            Status : <span className={historyItem.status.toLowerCase() === STATUS.PENDING.toLowerCase() ? style.historySec__pending : (historyItem.status.toLowerCase() === STATUS.SUCCESS.toLowerCase() ? style.historySec__success : style.historySec__failed)}>{historyItem.status}</span>
+            Status : <span className={(historyItem.status.toLowerCase() === STATUS.PENDING.toLowerCase() || historyItem.status.toLowerCase() === STATUS.QUEUED.toLowerCase()) ? style.historySec__pending : (historyItem.status.toLowerCase() === STATUS.SUCCESS.toLowerCase() ? style.historySec__success : style.historySec__failed)}>{historyItem.status}</span>
           </p>
         </div>
       </div>

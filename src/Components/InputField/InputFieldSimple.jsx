@@ -7,6 +7,7 @@ import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
 function InputFieldSimple({
   name,
   keyUp,
+  value,
   onChange,
   minHeight,
   coloredBg,
@@ -20,8 +21,9 @@ function InputFieldSimple({
       placeholder={placeholder}
       style={{ minHeight: minHeight }}
       onChange={onChange}
-      name={name}
       onKeyUp={keyUp}
+      name={name}
+      value={value}
       // className={style.inputSimple}
       // placeholder={placeholder}
       iconRender={(visible) =>
@@ -62,7 +64,7 @@ export const InputField = ({
       <Input
         name={name}
         type={type ? type : "text"}
-        min = {min}
+        min={min}
         // max = {max}
         value={value}
         onChange={onChange}

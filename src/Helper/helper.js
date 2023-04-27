@@ -1,34 +1,43 @@
 import Browser from "webextension-polyfill";
-import { CONNECTION_METHODS, ERRCODES, ERROR_MESSAGES, EXPLORERS, LABELS, RESTRICTED_URLS } from "../Constants";
+import { isNullorUndef, log } from "../Utility/utility";
 import { getCurrentTabDetails } from "../Scripts/utils";
-import { getDataLocal } from "../Storage/loadstore";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import { sendMessageToTab } from "../Utility/message_helper";
-import { isNullorUndef, log } from "../Utility/utility";
+import {
+    CONNECTION_METHODS,
+    ERRCODES, ERROR_MESSAGES,
+    EXPLORERS, RESTRICTED_URLS
+} from "../Constants";
 
 export const formatDate = (_date) => {
     try {
 
-        let currentDate = new Date(_date);
-        let date =
-            currentDate.getDate() +
-            "/" +
-            (currentDate.getMonth() + 1) +
-            "/" +
-            currentDate.getFullYear() +
-            " | ";
+        const currentDate = new Date(_date);
+        const fullYear = currentDate.getFullYear();
+        let date = currentDate.getDate().toString();
+        let hours = currentDate.getHours().toString();
+        let seconds = currentDate.getSeconds().toString();
+        let minutes = currentDate.getMinutes().toString();
+        let month = (currentDate.getMonth() + 1).toString();
 
-        let time =
-            currentDate.getHours() +
-            ":" +
-            currentDate.getMinutes() +
-            ":" +
-            currentDate.getSeconds();
+        date = date.length === 1 ? "0" + date : date;
+
+        month = month.length === 1 ? "0" + month : month;
+
+        hours = hours.length === 1 ? "0" + hours : hours;
+
+        minutes = minutes.length === 1 ? "0" + minutes : minutes;
+
+        seconds = seconds.length === 1 ? "0" + seconds : seconds;
+
+        const fullDate = date + "-" + month + "-" + fullYear + " | ";
+
+        let time = hours + ":" + minutes + ":" + seconds;
 
         time = time.split(":");
         time[3] = time[0] < 12 ? " AM" : " PM";
         time[0] = time[0] > 12 ? time[0] % 12 : time[0];
-        let dateTime = date + `${time[0]}:${time[1]}:${time[2]}${time[3]}`;
+        const dateTime = fullDate + `${time[0]}:${time[1]}:${time[2]}${time[3]}`;
 
         return dateTime;
 
@@ -61,7 +70,7 @@ export const formatNum = (num, numOfDecimals = 4) => {
 };
 
 //address and hash shortner from starting and ending
-export const shortner = (str, startLength = 5, endLength=4) => {
+export const shortner = (str, startLength = 5, endLength = 4) => {
     const start = str.slice(0, startLength);
 
     const len = str.length;
@@ -75,10 +84,10 @@ export const shortner = (str, startLength = 5, endLength=4) => {
 //number formatter
 export const numFormatter = num => {
 
-    if (Number(num) % 1 === 0 ) {
+    if (Number(num) % 1 === 0) {
         let numArr = (num.toString()).split(".");
         return numArr[0];
-    }else{
+    } else {
         return num;
     }
 }
@@ -86,14 +95,14 @@ export const numFormatter = num => {
 
 //check transaction network and generate url
 export const generateTransactionUrl = (network, txHash, isEvm) => {
-try {
-    if(isNullorUndef(network) && isNullorUndef(txHash)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
-    const explorerUrl = EXPLORERS[network.toUpperCase()];
-    return `${explorerUrl}/${isEvm ? "evm/tx": "testnet/tx"}/${txHash}`;
+    try {
+        if (isNullorUndef(network) && isNullorUndef(txHash)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
+        const explorerUrl = EXPLORERS[network.toUpperCase()];
+        return `${explorerUrl}/${isEvm ? "evm/tx" : "testnet/tx"}/${txHash}`;
 
-} catch(err) {
-    log("error while generating the url: ", err)
-}
+    } catch (err) {
+        log("error while generating the url: ", err)
+    }
 }
 
 
@@ -107,8 +116,8 @@ export const openBrowserTab = (url) => {
 }
 
 //check if string is included into array
-export const checkStringInclusionIntoArray = (str, strArr=CONNECTION_METHODS) => {
-    if(isNullorUndef(str) && isNullorUndef(strArr)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
+export const checkStringInclusionIntoArray = (str, strArr = CONNECTION_METHODS) => {
+    if (isNullorUndef(str) && isNullorUndef(strArr)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
     return strArr.includes(str);
 }
 
@@ -118,10 +127,10 @@ export const generateErrorMessage = (method, origin) => {
 }
 
 //send event to the connected tab
-export const sendEventToTab = async (tabMessagePayload, connectedApps, emitWithoutConnectionCheck=false) => {
+export const sendEventToTab = async (tabMessagePayload, connectedApps, emitWithoutConnectionCheck = false) => {
     getCurrentTabDetails().then((tabDetails) => {
-          if (!checkStringInclusionIntoArray(tabDetails.tabUrl, RESTRICTED_URLS) && (connectedApps[tabDetails.tabUrl]?.isConnected || emitWithoutConnectionCheck)) {
-          sendMessageToTab(tabDetails.tabId, tabMessagePayload)
+        if (!checkStringInclusionIntoArray(tabDetails.tabUrl, RESTRICTED_URLS) && (connectedApps[tabDetails.tabUrl]?.isConnected || emitWithoutConnectionCheck)) {
+            sendMessageToTab(tabDetails.tabId, tabMessagePayload)
         }
-        });
+    });
 }

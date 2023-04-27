@@ -9,6 +9,7 @@ import {
 } from "../../Constants";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import SwapIcon from "../../Assets/SwapIcon.svg";
+import CopyIcon from "../../Assets/CopyIcon.svg"
 
 function ApproveTx() {
   const [activeTab, setActiveTab] = useState("detail");
@@ -19,11 +20,19 @@ function ApproveTx() {
   //current account
   const account = state.currentAccount;
 
-
   useEffect(() => {
     updateLoading(true);
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {value: activeSession.message?.value, toAddress: activeSession.message?.to, data: activeSession.message?.data, options: {account: state.currentAccount}});
-  }, [])
+    sendRuntimeMessage(
+      MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
+      MESSAGE_EVENT_LABELS.EVM_FEE,
+      {
+        value: activeSession.message?.value,
+        toAddress: activeSession.message?.to,
+        data: activeSession.message?.data,
+        options: { account: state.currentAccount },
+      }
+    );
+  }, []);
 
   const activeDetail = () => {
     setActiveTab("detail");
@@ -56,7 +65,7 @@ function ApproveTx() {
                 style.rejectedSec__sendSwapbtn__buttons__active
               }`}
             >
-              Data
+              HEX Data
             </button>
           </div>
 
@@ -66,7 +75,14 @@ function ApproveTx() {
                 <div className={style.rejectedSec__flexList}>
                   <div className={style.rejectedSec__listReject__innerList}>
                     <h4>From: </h4>
-                    <p>{account.evmAddress}</p>
+                    <p>
+                      {account.evmAddress}{" "}
+                      <img
+                        draggable={false}
+                        src={CopyIcon}
+                        alt="copyIcon"
+                      />
+                    </p>
                   </div>
                   <div className={style.rejectedSec__icon}>
                     <img src={SwapIcon} alt="swapIcon" />
@@ -74,7 +90,9 @@ function ApproveTx() {
                   <div className={style.rejectedSec__listReject__innerList}>
                     <h4>To: </h4>
                     <p>
-                      {activeSession.message?.data ? LABELS.CONTRACT: activeSession.message?.to}
+                      {activeSession.message?.data
+                        ? LABELS.CONTRACT
+                        : activeSession.message?.to}
                     </p>
                   </div>
                 </div>
@@ -83,18 +101,14 @@ function ApproveTx() {
                     <h4>Value: </h4>
                     <h4>
                       {
-                        activeSession.message?.value
-                          ? (Number(activeSession.message?.value)/WEI_IN_ONE_ETH).noExponents().toString()
-                          : '0'
+                           activeSession.message?.value || '0'
                       }
                     </h4>
                   </div>
 
                   <div className={style.rejectedSec__listReject__innerList}>
                     <h4>Fee: </h4>
-                    <h4>
-                      {estimatedGas ? `${estimatedGas} 5ire`: ""}
-                    </h4>
+                    <p>{estimatedGas ? `${estimatedGas} 5ire` : ""}</p>
                   </div>
                 </div>
               </>

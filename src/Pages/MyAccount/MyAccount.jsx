@@ -4,6 +4,7 @@ import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import Browser from "webextension-polyfill";
 import ThreeDot from "../../Assets/dot3.svg";
+import GreenCircle from "../../Assets/greencircle.svg";
 import { useNavigate } from "react-router-dom";
 import Import from "../../Assets/PNG/import.png";
 import Logout from "../../Assets/PNG/logout.png";
@@ -26,9 +27,9 @@ import {
   MESSAGE_EVENT_LABELS,
   RESTRICTED_URLS,
   TABS_EVENT,
-  WALLET_TYPES
+  WALLET_TYPES,
 } from "../../Constants/index";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { isEqual } from "../../Utility/utility";
 import { TabMessagePayload } from "../../Utility/network_calls";
 import {
@@ -41,13 +42,18 @@ function MyAccount() {
   const [accounts, setAccounts] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [addressToRemove, setAddressToRemove] = useState(null);
-  const { allAccounts, state, updateState, removeHistory, externalControlsState } = useContext(AuthContext);
+  const {
+    allAccounts,
+    state,
+    updateState,
+    removeHistory,
+    externalControlsState,
+  } = useContext(AuthContext);
   const { connectedApps } = externalControlsState;
   const { balance, currentAccount } = state;
 
   useEffect(() => {
     setAccounts(allAccounts);
-
   }, [allAccounts]);
 
   const handleRemoveAcc = () => {
@@ -166,7 +172,17 @@ function MyAccount() {
           <div className={style.myAccountSec__leftSec}>
             <img src={DarkLogo} alt="logo" draggable={false} />
             <div className={style.myAccountSec__leftSec__accountConatct}>
-              <h2>{e?.accountName}{e?.type === WALLET_TYPES.IMPORTED_NATIVE ? <i> <small> (Imported)</small></i> : ""}</h2>
+              <h2>
+                {e?.accountName}
+                {e?.type === WALLET_TYPES.IMPORTED_NATIVE ? (
+                  <i>
+                    {" "}
+                    <small> (Imported)</small>
+                  </i>
+                ) : (
+                  ""
+                )}
+              </h2>
               <p>
                 {e?.accountName === currentAccount?.accountName ? (
                   balance?.totalBalance ? (
@@ -186,11 +202,23 @@ function MyAccount() {
             </div>
           </div>
           <div className={style.myAccountSec__rytSec}>
-            <h2>
-              {e?.accountName === currentAccount?.accountName
-                ? LABELS.ACTIVE
-                : LABELS.NOT_ACTIVE}
-            </h2>
+            {/* <h2> */}
+            {e?.accountName === currentAccount?.accountName ? (
+              <>
+                <h2>
+                  {" "}
+                  <img
+                    src={GreenCircle}
+                    alt="connectionLogo"
+                    draggable={false}
+                  />
+                  {LABELS.ACTIVE}
+                </h2>
+              </>
+            ) : (
+              <h2>{LABELS.NOT_ACTIVE}</h2>
+            )}
+            {/* </h2> */}
             {Number(e.accountIndex) === 0 && e.type === "hd_wallet" ? (
               ""
             ) : (

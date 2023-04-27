@@ -1,19 +1,19 @@
 import { ROUTES } from "../../Routes";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store/index";
 import { useNavigate } from "react-router-dom";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import React, { useContext, useEffect } from "react";
 import ButtonComp from "../ButtonComp/ButtonComp.jsx";
-import { NATIVE, EVM, COPIED } from "../../Constants/index";
+import { NATIVE, EVM, COPIED, PVT_KEY, MNEMONIC } from "../../Constants/index";
 import Exportprivate from "../../Assets/PNG/exportprivate.png";
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx";
 
 function ManageWallet() {
   const navigate = useNavigate();
- 
-  const { state, setPassVerified} = useContext(AuthContext);
+
+  const { state, setPassVerified } = useContext(AuthContext);
   const { currentAccount } = state;
 
   useEffect(() => {
@@ -58,7 +58,7 @@ function ManageWallet() {
           </div>
           <div className={style.wallet}>
             <div className={style.wallet__addressInput}>
-              <label>Evm Chain Address:</label>
+              <label>EVM Chain Address:</label>
               <p className={style.wallet__addressInput__copyText}>
                 <span>{currentAccount?.evmAddress}</span>
                 <img src={CopyIcon} alt="copyIcon" name={EVM} onClick={handleCopy} draggable={false} />{" "}
@@ -67,12 +67,12 @@ function ManageWallet() {
           </div>
           <div className={style.btn_icon}>
             <ButtonComp
-              onClick={() => navigate(ROUTES.ENTER_PASS)}
+              onClick={() => navigate(ROUTES.ENTER_PASS + "/" + PVT_KEY)}
               text="Export Private Key"
             ></ButtonComp>
             <ButtonComp
               bordered={true}
-              onClick={() => navigate(ROUTES.ENTER_PASS)}
+              onClick={() => navigate(ROUTES.ENTER_PASS + "/" + MNEMONIC)}
               text="Reveal Mnemonic"
             />
           </div>

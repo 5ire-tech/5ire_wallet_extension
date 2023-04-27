@@ -60,11 +60,13 @@
   }
   &__rytSec {
     display: flex;
-    gap: 48px;
+    gap: 18px;
     align-items: center;
     h2 {
       font-size: 13px;
       color: #ffffff;
+      display: flex;
+      gap: 4px;
     }
   }
 }

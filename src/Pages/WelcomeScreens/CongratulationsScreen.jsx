@@ -1,6 +1,7 @@
 import React from "react";
 import style from "./style.module.scss";
 import { Player } from "@lottiefiles/react-lottie-player";
+import JsonData from "../../Assets/JsonFiles"
 
 function CongratulationsScreen({ children, text}) {
   return (
@@ -11,7 +12,8 @@ function CongratulationsScreen({ children, text}) {
             autoplay={true}
             loop={true}
             controls={true}
-            src={"https://assets3.lottiefiles.com/packages/lf20_4chtroo0.json"}
+            src={JsonData}
+            //src={"https://assets3.lottiefiles.com/packages/lf20_4chtroo0.json"}
             style={{ height: "190px", width: "190px" }}
           >            
           </Player>
