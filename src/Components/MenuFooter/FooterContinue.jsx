@@ -104,12 +104,12 @@ export const FooterStepTwo = () => {
     <>
       <div className={style.menuItems__cancleContinue}>
 
-        {!isLogin && <ButtonComp
+        <ButtonComp
           bordered={true}
           text={"Cancel"}
           maxWidth={"100%"}
           onClick={handleCancle}
-        />}
+        />
 
         <ButtonComp onClick={handleClick} text={"Continue"} maxWidth={"100%"} />
       </div>
