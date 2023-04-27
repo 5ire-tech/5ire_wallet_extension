@@ -24,7 +24,7 @@ function TransectionHistry({ selectedTransaction, account }) {
 
   //for opening the explorer tab
   const openExplorerTab = () => {
-    openBrowserTab(generateTransactionUrl(selectedTransaction.chain, selectedTransaction.txHash, selectedTransaction.isEvm));
+    selectedTransaction.txHash && openBrowserTab(generateTransactionUrl(selectedTransaction.chain, selectedTransaction.txHash, selectedTransaction.isEvm));
   }
 
 

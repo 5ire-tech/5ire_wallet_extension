@@ -5,6 +5,7 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
   LABELS,
+  WEI_IN_ONE_ETH,
 } from "../../Constants";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import SwapIcon from "../../Assets/SwapIcon.svg";
@@ -20,7 +21,6 @@ function ApproveTx() {
   const account = state.currentAccount;
 
   useEffect(() => {
-    console.log("gas data: ", activeSession.message.value);
     updateLoading(true);
     sendRuntimeMessage(
       MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
@@ -99,13 +99,11 @@ function ApproveTx() {
                 <div className={style.rejectedSec__flexList}>
                   <div className={style.rejectedSec__listReject__innerList}>
                     <h4>Value: </h4>
-                    <p>
-                      {activeSession.message?.value
-                        ? parseFloat(
-                            Number(activeSession.message.value)
-                          ).toString()
-                        : "0"}
-                    </p>
+                    <h4>
+                      {
+                           activeSession.message?.value || '0'
+                      }
+                    </h4>
                   </div>
 
                   <div className={style.rejectedSec__listReject__innerList}>

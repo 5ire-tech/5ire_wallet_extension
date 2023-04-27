@@ -30,7 +30,7 @@ export default class WindowManager {
    * This lets us differentiate between the cases where we close the
    * notification popup v.s. when the user closes the popup window directly.
    */
-  markAsAutomaticallyClosed() {
+  markAsAutomaticallyClosed = () => {
     this._popupAutomaticallyClosed = true;
   }
 
@@ -39,7 +39,7 @@ export default class WindowManager {
    * notification windows are given a 'popup' type.
    *
    */
-  async showPopup(route = "") {
+  showPopup = async (route = "") => {
 
 
       //position control's
@@ -85,10 +85,19 @@ export default class WindowManager {
 
 
   /**
+   * get all currently opened window and remove extra windows
+   */
+  filterAndRemoveWindows = async (filterId) => {
+    const allPopupWindows = await this.getAllPopupWindows();
+    const otherWindowThanTask = allPopupWindows.filter((item) => item.id !== filterId);
+    for(let itemWindow of otherWindowThanTask) this.closePopup(itemWindow.id);
+  }
+
+  /**
    * close the current active popup
    * @param {*} popupId 
    */
-  async closePopup(popupId) {
+  closePopup = async (popupId) => {
     await this.closeWindow(popupId);
   }
 
@@ -147,7 +156,12 @@ export default class WindowManager {
 
     //get the window using the window id
     async getWindowById(windowId) {
-      return await Browser.windows.get(windowId);
+      try {
+        const window = await Browser.windows.get(windowId);
+        return window;
+      } catch (err) {
+        return null;
+      }
     }
   
     //focus on window 
@@ -160,6 +174,12 @@ export default class WindowManager {
       await Browser.windows.update(windowId, { left, top });
     }
   
+    //get all windows
+    async getAllPopupWindows() {
+      const allWindows = await Browser.windows.getAll({windowTypes: ['popup']});
+      return allWindows;
+    }
+
     //get the last focus window
     async getLastFocusedWindow() {
       const windowObject = await Browser.windows.getLastFocused();

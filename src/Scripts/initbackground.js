@@ -479,12 +479,12 @@ class TransactionQueue {
 
 
   //callback for native signer new transaction
-  newNativeSignerTransactionAddedEventCallback = async () => {
-    if (isNullorUndef(TransactionQueue.transactionIntervalId)) {
-      await this.processQueuedTransaction();
-      TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus))
-    }
-  }
+  // newNativeSignerTransactionAddedEventCallback = async () => {
+  //   if (isNullorUndef(TransactionQueue.transactionIntervalId)) {
+  //     await this.processQueuedTransaction();
+  //     TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus))
+  //   }
+  // }
 
 
   /******************************** Internal methods ***********************/
@@ -534,7 +534,7 @@ export class ExtensionEventHandle {
   bindAllEvents = () => {
     this.bindAutoBalanceUpdateEvent();
     this.bindTransactionProcessingEvents();
-    this.bindNewNativeSignerTransactionEvents();
+    // this.bindNewNativeSignerTransactionEvents();
     this.bindErrorHandlerEvent();
   }
 
@@ -550,9 +550,9 @@ export class ExtensionEventHandle {
     ExtensionEventHandle.eventEmitter.on(INTERNAL_EVENT_LABELS.NEW_TRANSACTION_INQUEUE, this.transactionQueue.newTransactionAddedEventCallback);
   }
 
-  bindNewNativeSignerTransactionEvents = async () => {
-    ExtensionEventHandle.eventEmitter.on(INTERNAL_EVENT_LABELS.NEW_NATIVE_SIGNER_TRANSACTION_INQUEUE, this.transactionQueue.newNativeSignerTransactionAddedEventCallback)
-  }
+  // bindNewNativeSignerTransactionEvents = async () => {
+  //   ExtensionEventHandle.eventEmitter.on(INTERNAL_EVENT_LABELS.NEW_NATIVE_SIGNER_TRANSACTION_INQUEUE, this.transactionQueue.newNativeSignerTransactionAddedEventCallback)
+  // }
 
   //bind auto balance update event
   bindAutoBalanceUpdateEvent = async () => {
@@ -653,6 +653,7 @@ class ExternalTxTasks {
 
   //close the current popup session
   closePopupSession = async (message) => {
+    log("close message: ", message)
     ExternalWindowControl.isApproved = message.data?.approve;
     const externalWindowControl = ExternalWindowControl.getInstance();
     await externalWindowControl.closeActiveSessionPopup();
