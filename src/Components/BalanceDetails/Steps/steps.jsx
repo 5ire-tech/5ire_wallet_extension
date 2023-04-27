@@ -1,28 +1,62 @@
 import React from "react";
-// import style from "./style.module.scss";
+import style from "./style.module.scss";
 
 export function StepHeaders({ active, isCreate = true }) {
-    return (<>
-        {
-            isCreate ?
-                <div style={{ color: "white" }}>
-                    <p>{active}</p>
-                    <li className={active === 1 && ""}>1</li>
-                    <li className={active === 2 && ""}>2</li>
-                    <li className={active === 3 && ""}>3</li>
-                    <li className={active === 4 && ""}>3</li>
-                </div>
-                :
-                <div >
-                    <p>{active}</p>
-                    <li className={active === 1 && ""}>1</li>
-                    <li className={active === 2 && ""}>2</li>
-                    <li className={active === 3 && ""}>3</li>
-                </div>
-        }
+  return (
+    <>
+      {isCreate ? (
+        <div className={style.steps} style={{ color: "white" }}>
+          {/* <p>{active}</p> */}
+          <div className={`${style.innerStep} ${style.innerStepLast}`}>
+            <div
+              className={`${style.stepsItems} ${active === 1 && style.active}`}
+            >
+              1
+            </div>
+          </div>
+          <div className={style.innerStep}>
+            <div
+              className={`${style.stepsItems} ${active === 2 && style.active}`}
+            >
+              2
+            </div>
+          </div>
+          <div className={`${style.innerStep}`}>
+            <div
+              className={`${style.stepsItems} ${active === 3 && style.active}`}
+            >
+              3
+            </div>
+          </div>
+          <div className={`${style.innerStep}`}>
+            <div
+              className={`${style.stepsItems} ${active === 4 && style.active}`}
+            >
+              4
+            </div>
+          </div>
+          {/* <div className={active === 4 && style.active}>3</div> */}
+        </div>
+      ) : (
+        <div className="steps">
+          {/* <p>style.active</p> */}
+          <div
+            className={`${style.stepsItems} ${active === 1 && style.active}`}
+          >
+            1
+          </div>
+          <div
+            className={`${style.stepsItems} ${active === 2 && style.active}`}
+          >
+            2
+          </div>
+          <div
+            className={`${style.stepsItems} ${active === 3 && style.active}`}
+          >
+            3
+          </div>
+        </div>
+      )}
     </>
-
-    );
+  );
 }
-
-

@@ -147,7 +147,7 @@ function ForgotPassword() {
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Forgot password</h1>
         </div>
-        <div className={style.cardWhite__importWalletlinkOuter}>
+        <div className={`${style.cardWhite__importWalletlinkOuter} ${style.cardWhite__forgotPassword}`}>
           <div>
             <InputFieldOnly
               placeholder={"Enter wallet name"}

@@ -216,13 +216,13 @@ export const ApproveTx = () => {
           maxWidth={"100%"}
           isDisable={disableApproval}
         />
-      </div>
       <ButtonComp
         bordered={true}
         text={"Reject"}
         maxWidth={"100%"}
         onClick={() => handleClick(false)}
       />
+      </div>
     </>
   );
 };

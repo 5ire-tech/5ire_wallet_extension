@@ -73,7 +73,11 @@
       position: relative;
     }
   }
-
+  &__createPassText {
+    p {
+      padding-top: 0;
+    }
+  }
   &__noteSec {
     padding: 0 40px;
 
@@ -245,7 +249,10 @@
     display: flex;
     gap: 20px;
   }
-
+  &__forgotPassword {
+    padding-top: 12px;
+    gap: 30px;
+  }
   // Welcome Screen Css ends here //
 
   // Set Password Css Starts here //
@@ -518,6 +525,7 @@
   text-align: left;
   color: $red;
   position: absolute;
+  font-size: 12px;
 }
 .textElips {
   span {

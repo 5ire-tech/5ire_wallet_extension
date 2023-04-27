@@ -27,7 +27,7 @@ import {
   MESSAGE_EVENT_LABELS,
   RESTRICTED_URLS,
   TABS_EVENT,
-  WALLET_TYPES
+  WALLET_TYPES,
 } from "../../Constants/index";
 import { toast } from "react-toastify";
 import { isEqual } from "../../Utility/utility";
@@ -42,13 +42,18 @@ function MyAccount() {
   const [accounts, setAccounts] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [addressToRemove, setAddressToRemove] = useState(null);
-  const { allAccounts, state, updateState, removeHistory, externalControlsState } = useContext(AuthContext);
+  const {
+    allAccounts,
+    state,
+    updateState,
+    removeHistory,
+    externalControlsState,
+  } = useContext(AuthContext);
   const { connectedApps } = externalControlsState;
   const { balance, currentAccount } = state;
 
   useEffect(() => {
     setAccounts(allAccounts);
-
   }, [allAccounts]);
 
   const handleRemoveAcc = () => {
@@ -167,7 +172,17 @@ function MyAccount() {
           <div className={style.myAccountSec__leftSec}>
             <img src={DarkLogo} alt="logo" draggable={false} />
             <div className={style.myAccountSec__leftSec__accountConatct}>
-              <h2>{e?.accountName}{e?.type === WALLET_TYPES.IMPORTED_NATIVE ? <i> <small> (Imported)</small></i> : ""}</h2>
+              <h2>
+                {e?.accountName}
+                {e?.type === WALLET_TYPES.IMPORTED_NATIVE ? (
+                  <i>
+                    {" "}
+                    <small> (Imported)</small>
+                  </i>
+                ) : (
+                  ""
+                )}
+              </h2>
               <p>
                 {e?.accountName === currentAccount?.accountName ? (
                   balance?.totalBalance ? (
@@ -188,20 +203,21 @@ function MyAccount() {
           </div>
           <div className={style.myAccountSec__rytSec}>
             {/* <h2> */}
-            {e?.accountName === currentAccount?.accountName
-              ?
+            {e?.accountName === currentAccount?.accountName ? (
               <>
-                <img
-                  src={GreenCircle}
-                  alt="connectionLogo"
-                  draggable={false}
-                />
-                <h2 >{LABELS.ACTIVE}</h2>
+                <h2>
+                  {" "}
+                  <img
+                    src={GreenCircle}
+                    alt="connectionLogo"
+                    draggable={false}
+                  />
+                  {LABELS.ACTIVE}
+                </h2>
               </>
-              : <h2>
-                {LABELS.NOT_ACTIVE}
-              </h2>
-            }
+            ) : (
+              <h2>{LABELS.NOT_ACTIVE}</h2>
+            )}
             {/* </h2> */}
             {Number(e.accountIndex) === 0 && e.type === "hd_wallet" ? (
               ""

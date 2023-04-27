@@ -1,0 +1,56 @@
+.steps {
+  display: flex;
+  align-self: center;
+  justify-content: space-between;
+  gap: 39px;
+  padding-top: 16px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.innerStep > div::after {
+  border: 1px dashed #ffffff;
+  position: absolute;
+  width: 58px;
+  right: 36px;
+  content: "";
+  opacity: 0.5;
+}
+.stepsItems {
+  background: #0f2046;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 18px;
+  width: 30px;
+  height: 30px;
+  position: relative;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  .active {
+    background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
+    &::after {
+      opacity: 1;
+    }
+  }
+}
+
+.innerStep {
+  width: 48px;
+  height: 38px;
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    #077bfc 0%,
+    rgba(8, 19, 44, 0) 100%
+  );
+}
+.stepsItems.active {
+  background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
+}
+.stepsItems.active::after {
+    opacity: 1;
+  }
+
+.innerStepLast > div::after {
+  content: unset !important;
+}
