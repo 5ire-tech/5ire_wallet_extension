@@ -46,10 +46,18 @@
         font-size: 14px;
         opacity: 0.6;
         color: $white;
-        width: 120px;
-        white-space: nowrap;
-        overflow: hidden ;
-        text-overflow: ellipsis;
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        width: 100%;
+        
+        span{
+          max-width: 90px;
+          white-space: nowrap;
+          overflow: hidden ;
+          text-overflow: ellipsis;
+          display: inline-flex;
+        }
       
       }
     }

@@ -1,4 +1,4 @@
-export const EVM = "Evm";
+export const EVM = "EVM";
 export const EMTY_STR = "";
 export const ZERO_CHAR = '0';
 export const CURRENCY = "5ire";
@@ -193,8 +193,8 @@ export const LABELS = {
     ERRMESSAGE: "errMessage",
 
     CONTRACT: "Contract",
-    EVM_TO_NATIVE: "Evm to Native",
-    NATIVE_TO_EVM: "Native to Evm"
+    EVM_TO_NATIVE: "EVM to Native",
+    NATIVE_TO_EVM: "Native to EVM"
     
 };
 

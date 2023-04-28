@@ -8,6 +8,7 @@ import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
 import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
 import { PVT_KEY, NATIVE, EVM, COPIED, MNEMONIC } from "../../Constants/index.js";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx";
+import { ROUTES } from "../../Routes";
 
 function CreateWalletChain() {
 
@@ -46,7 +47,7 @@ function CreateWalletChain() {
         &&
         < StepHeaders active={4} />
       }
-      <MenuRestofHeaders title={"New Wallet Details"} />
+      <MenuRestofHeaders title={"New Wallet Details"} backTo={ROUTES.SET_PASS}/>
       <div className={style.copyButton}>
         <button
           className={style.cardWhite__addressInput__copyAll}
@@ -118,7 +119,7 @@ function CreateWalletChain() {
           {" "}
         </p>
       </div>
-      <div className={`${style.cardWhite__addressInput} ${style.textElips}`}>
+      <div className={`${style.cardWhite__addressInput}`}>
         <label>EVM Private Key:</label>
         <p className={style.cardWhite__addressInput__copyText}>
           <span className={isOpen.open2 && "blurContact"}>{newAccount?.evmPrivateKey}</span>

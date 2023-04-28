@@ -107,7 +107,7 @@ function CreateNewWallet() {
             </div>
           </div>
           <div className={style.setPassword__footerbuttons}>
-            <ButtonComp onClick={handleClick} text={"Create Wallet"} isDisable={isDisable} />
+            <ButtonComp onClick={handleClick} text={"Create Wallet"} isDisable={isDisable && warrning} />
             <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancle} />
           </div>
         </div>
