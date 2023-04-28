@@ -197,18 +197,18 @@ export class ExtensionStorageHandler {
     createOrRestore = async (message, state) => {
 
         const { vault, type, newAccount } = message;
-        const newState = { ...state, vault, isLogin: true };
 
-        if (type === LABELS.IMPORT) {
+        // if (type === LABELS.IMPORT) {
 
-            newState.currentAccount = {
-                evmAddress: newAccount.evmAddress,
-                accountName: newAccount.accountName,
-                accountIndex: newAccount.accountIndex,
-                nativeAddress: newAccount.nativeAddress,
-            }
-            newState.txHistory = this._txProperty(state, newAccount.accountName);
+        const currentAccount = {
+            evmAddress: newAccount.evmAddress,
+            accountName: newAccount.accountName,
+            accountIndex: newAccount.accountIndex,
+            nativeAddress: newAccount.nativeAddress,
         }
+        const txHistory = this._txProperty(state, newAccount.accountName);
+        // }
+        const newState = { ...state, vault, isLogin: true, currentAccount, txHistory };
 
         this._updateSession(LABELS.ISLOGIN, true);
         return await this._updateStorage(newState);
@@ -259,18 +259,22 @@ export class ExtensionStorageHandler {
         const newState = { ...state, vault: message.vault };
         if (message?.isInitialAccount) {
             newState.isLogin = false;
+            newState.currentAccount = userState.currentAccount;
+            if (newState?.txHistory[newState?.accountName]) {
+                delete newState.txHistory[newState?.accountName]          
+            }
         }
         return await this._updateStorage(newState);
 
     }
 
-    // remove specific account 
-    resetVaultAndPass = async (message, state) => {
-        console.log("resetVaultAndPass in Storage  ::: ", message);
-        const newState = { ...state, vault: null, isLogin: false };
-        await this._updateSession("isLogin", null);
-        return await this._updateStorage(newState);
-    }
+    
+    // resetVaultAndPass = async (message, state) => {
+
+    //     const newState = { ...state, vault: null, isLogin: false };
+    //     await this._updateSession("isLogin", null);
+    //     return await this._updateStorage(newState);
+    // }
 
 
     //*********************************** Internal methods **************************/

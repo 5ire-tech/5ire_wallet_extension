@@ -138,7 +138,6 @@ export const sendEventToTab = async (tabMessagePayload, connectedApps, emitWitho
 export const fixNumber = (num, decimalPlaces = 6, roundingMode = 8) => {
     try {
         const number = new BigNumber(Number(num)).toFixed(decimalPlaces, roundingMode).toString();
-        console.log("Number after rounding of ", number);
         return number;
     }
     catch (error) {
