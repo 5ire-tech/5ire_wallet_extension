@@ -33,6 +33,7 @@ export default function Context({ children }) {
   const [passVerified, setPassVerified] = useState(false);
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
   const [externalControlsState, setExternalControlState] = useState(externalControls);
+  const [backgroundError, setBackgroundError] = useState(null);
 
 
   Browser.storage.local.onChanged.addListener((changedData) => {
@@ -73,6 +74,8 @@ export default function Context({ children }) {
       }
       else if (message.event === MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT) {
         removeAccount(message.data);
+      } else if(message.event === MESSAGE_EVENT_LABELS.BACKGROUND_ERROR) {
+         setBackgroundError(message.data);
       }
 
       updateLoading(false);
@@ -199,6 +202,7 @@ export default function Context({ children }) {
     accountName,
     estimatedGas,
     passVerified,
+    backgroundError,
     externalControlsState,
     externalNativeTxDetails,
 
@@ -214,6 +218,7 @@ export default function Context({ children }) {
     setPrivateKey,
     setPassVerified,
     updateEstimatedGas,
+    setBackgroundError,
     setExternalControlState,
     setExternalNativeTxDetails,
     importAccountByMnemonics,

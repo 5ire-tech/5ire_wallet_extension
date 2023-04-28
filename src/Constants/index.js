@@ -112,7 +112,9 @@ export const ERROR_MESSAGES = {
     ACCOUNT_ACCESS_NOT_GRANTED: "The requested account has not been authorized by the user",
     SINGER_ERROR: "Error while signing the the raw/payload",
     EXTERNAL_NATIVE_TRANSACTION_ERROR: "Error while external native transaction.",
-    ERROR_WHILE_TRANSACTION: "Transaction failed, Error occured during transaction processing",
+    ERROR_WHILE_TRANSACTION: "Transaction failed, error occured during transaction processing",
+    ERROR_WHILE_GAS_ESTIMATION: "Gas Estimation Failed, something wrong happend while gas estimation",
+    INTERNAL_ERROR: "Something wrong happend, please try again",
 
 
     INVALID_PROPERTY: "Invalid property.",
@@ -241,6 +243,7 @@ export const MESSAGE_EVENT_LABELS = {
     EVM_TO_NATIVE_SWAP: "evmToNativeSwap",
     CLOSE_POPUP_SESSION: "closePopupSession",
     TX_HASH: "txHash",
+    BACKGROUND_ERROR: "backgroundError",
 
     LOCK: "lock",
     UNLOCK: "unlock",
@@ -273,6 +276,7 @@ export const STATE_CHANGE_ACTIONS = {
     TX_HISTORY_UPDATE: "updateTxHistory",
     CHANGE_NETWORK: "changeNetwork",
     CHANGE_ACCOUNT: "changeAccount",
+    REMOVE_HISTORY_ITEM: "removeHistoryItem",
 
     //external controls state
     ADD_NEW_TX_TASK: "addNewTxTask",
@@ -284,7 +288,8 @@ export const STATE_CHANGE_ACTIONS = {
     //transaction queue state
     ADD_NEW_TRANSACTION: "addNewTransaction",
     PROCESS_QUEUE_TRANSACTION: "processQueuedTransaction",
-    UPDATE_HISTORY_TRACK: "updateHistoryTrack"
+    UPDATE_HISTORY_TRACK: "updateHistoryTrack",
+    REMOVE_FAILED_TX: "removeFailedTx"
 }
 
 export const ERROR_EVENTS_LABELS = {

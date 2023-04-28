@@ -56,8 +56,6 @@ export class ExtensionStorageHandler {
             isNullorUndef(key) && !hasLength(key) && new Error(new ErrorPayload(ERRCODES.INVALID_ARGU_TYPE, ERROR_MESSAGES.INVALID_TYPE)).throw();
             isNullorUndef(data) && new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
-            // !isObject(data) && new Error(new ErrorPayload(ERRCODES.INVALID_ARGU_TYPE, ERROR_MESSAGES.INVALID_TYPE)).throw();
-
             if (isNullorUndef(ExtensionStorageHandler.instance)) {
                 ExtensionStorageHandler.instance = new ExtensionStorageHandler();
                 delete ExtensionStorageHandler.constructor
@@ -128,58 +126,72 @@ export class ExtensionStorageHandler {
         return await this._updateStorage(newState);
     }
 
+    //remove the history item
+    removeHistoryItem = async (data, state, options) => {
+        const {id} = data;
+        const newState = {...state};
+        newState.txHistory[options.account.accountName] = newState.txHistory[options.account.accountName].filter((item) => item.id !== id);
+        return await this._updateStorage(newState);
+    }
+
     /************************************ External Apps Control *********************/
 
     //add a new connection task
-    addNewConnectionTask = (data, state) => {
+    addNewConnectionTask = async (data, state) => {
         const newState = { ...state };
         newState.connectionQueue.push(data)
-        this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
+        return await this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
     }
 
     //update the popup id in currentTask
-    updateCurrentSession = (data, state) => {
+    updateCurrentSession = async (data, state) => {
         const newState = { ...state };
         newState.activeSession.popupId = data.popupId || newState.activeSession.popupId;
         newState.activeSession.route = data.route || newState.activeSession.route;
 
-        this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
+        return await this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
     }
 
     //select the next task as active
-    changeActiveSession = (data, state) => {
+    changeActiveSession = async (data, state) => {
         const activeSession = state.connectionQueue.shift();
         const newState = { ...state, activeSession: activeSession || null };
-        this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
+        return await this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
     }
 
     //update the connected status
-    appConnectionUpdate = (data, state) => {
+    appConnectionUpdate = async (data, state) => {
         const newState = { ...state };
         newState.connectedApps[data.origin] = { isConnected: data.connected }
-        this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
+        return await this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
     }
 
 
     /************************************ For Transaction Queue *********************/
     //add a new transaction task
-    addNewTransaction = (data, state) => {
+    addNewTransaction = async (data, state) => {
         const newState = { ...state };
         newState.txQueue.push(data)
-        this._updateStorage(newState, LABELS.TRANSACTION_QUEUE);
+        return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE);
     }
 
     //process new transaction
-    processQueuedTransaction = (data, state) => {
+    processQueuedTransaction = async (data, state) => {
         const queuedTransaction = state.txQueue.shift();
         const newState = { ...state, currentTransaction: queuedTransaction || null };
-        this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
+        return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
     }
 
     //update the transaction track into current processing transaction
-    updateHistoryTrack = (data, state) => {
+    updateHistoryTrack = async (data, state) => {
         const newState = { ...state, currentTransaction: { ...state?.currentTransaction, transactionHistoryTrack: data } };
-        this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
+        return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
+    }
+
+    //remove the current failed transaction
+    removeFailedTx = async (data, state) => {
+        const newState = {...state, currentTransaction: null};
+        return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
     }
 
     /**************************Keyring Related Tasks***********************************/
