@@ -33,6 +33,8 @@ export default function Context({ children }) {
   const [passVerified, setPassVerified] = useState(false);
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
   const [externalControlsState, setExternalControlState] = useState(externalControls);
+  const [showCongratLoader, setShowCongratLoader] = useState(false);
+  const [newWalletName, setNewWalletName] = useState("");
 
 
   Browser.storage.local.onChanged.addListener((changedData) => {
@@ -128,9 +130,16 @@ export default function Context({ children }) {
     // console.log("Data in import Context :::: ",data);
 
     if (data?.vault && data?.newAccount) {
-      navigate(ROUTES.WALLET);
+      setShowCongratLoader(true)
+      setTimeout(() => {
+        navigate(ROUTES.WALLET);
+        setShowCongratLoader(false)
+
+      }, 2000)
+
     } else if (data?.errCode === 3) {
       setInputError(data?.errMessage ? data.errMessage : "");
+      setShowCongratLoader(false)
     }
   };
 
@@ -201,6 +210,8 @@ export default function Context({ children }) {
     passVerified,
     externalControlsState,
     externalNativeTxDetails,
+    showCongratLoader,
+    newWalletName,
 
     //data setters
     setState,
@@ -217,6 +228,8 @@ export default function Context({ children }) {
     setExternalControlState,
     setExternalNativeTxDetails,
     importAccountByMnemonics,
+    setShowCongratLoader,
+    setNewWalletName
 
   }
 

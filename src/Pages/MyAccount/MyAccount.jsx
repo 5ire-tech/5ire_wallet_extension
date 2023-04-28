@@ -48,6 +48,7 @@ function MyAccount() {
     updateState,
     removeHistory,
     externalControlsState,
+    setNewWalletName,
   } = useContext(AuthContext);
   const { connectedApps } = externalControlsState;
   const { balance, currentAccount } = state;
@@ -90,6 +91,7 @@ function MyAccount() {
   };
 
   const hanldeCreateNewAcc = () => {
+    setNewWalletName('')
     navigate(ROUTES.CREATE_WALLET);
   };
 

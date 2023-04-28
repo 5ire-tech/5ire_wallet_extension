@@ -27,7 +27,6 @@ import CongratulationsScreen from "./CongratulationsScreen";
 function ImportWallet() {
   const navigate = useNavigate();
   const [isDisable, setDisable] = useState(true);
-  const [isRequestSent, setSentRequest] = useState(false);
   const [data, setData] = useState({ accName: "", key: "" });
   const [warrning, setWarrning] = useState({ acc: "", key: "" });
   const { state, userPass, allAccounts, inputError, setInputError } = useContext(AuthContext);
@@ -40,17 +39,13 @@ function ImportWallet() {
     }
   }, []);
 
+
   useEffect(() => {
     if (inputError) {
       setWarrning(p => ({ ...p, key: inputError }));
-    } 
-    // else if (!inputError && isRequestSent) {
-    //   setShow(true);
-    //   setTimeout(() => {
-    //     setShow(false);
-    //   }, 1000);
-    // }
-  }, [inputError, isRequestSent]);
+    }
+
+  }, [inputError]);
 
 
   useEffect(() => {
@@ -132,12 +127,9 @@ function ImportWallet() {
               acc: ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS,
             }));
           } else {
-            // setShow(true)
-            // setTimeout(() => {
-            // setShow(false)
+
             sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC, { mnemonic: data.key, name: data.accName.trim() });
-            setSentRequest(true);
-            // }, 2000)
+
           }
 
         }
@@ -154,7 +146,7 @@ function ImportWallet() {
   return (
     <div className={style.cardWhite} onKeyDown={handleClick}>
       {
-        !isLogin && <StepHeaders active={2} isCreate={false}/>
+        !isLogin && <StepHeaders active={2} isCreate={false} />
       }
       <MenuRestofHeaders logosilver={true} title="5irechain Wallet" />
       <div className={style.cardWhite__cardInner}>
@@ -197,7 +189,7 @@ function ImportWallet() {
           <ButtonComp onClick={handleClick} text={"Import"} isDisable={isDisable} />
           <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancel} />
         </div>
-        {show && <div className="loader">
+        {show && !warrning.key && <div className="loader">
           <CongratulationsScreen text={"Your wallet has been imported"} /></div>}
       </div>
     </div>
