@@ -38,7 +38,8 @@
     &__img {
       // filter: grayscale(1);
     }
-    &__active{
+
+    &__active {
       opacity: 100%;
     }
 
@@ -84,6 +85,7 @@
     padding: 16px 37px;
   }
 }
+
 // .aproveBtn{
 //   flex-direction: column;
 //   width: 100%;
@@ -97,6 +99,7 @@
   padding: 14px 16px;
   align-items: center;
   border-radius: 10px;
+  cursor: pointer;
 
   &__left {
     display: flex;
@@ -140,13 +143,17 @@
     height: 20px;
   }
 }
-.beginStyle{
+
+.beginStyle {
   flex-direction: column;
   gap: 23px;
 }
-.footerPrivacy{
+
+.footerPrivacy {
   padding-bottom: 32px;
-  a{
+  cursor: pointer;
+
+  a {
     color: $gray-8FA2B7;
     font-size: 14px;
     text-decoration: none;

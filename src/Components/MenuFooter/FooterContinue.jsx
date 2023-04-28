@@ -16,7 +16,7 @@ import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScr
 
 //Before We begin
 function FooterStepOne() {
-  const { state } = useContext(AuthContext);
+  const { state, setNewWalletName } = useContext(AuthContext);
   const navigate = useNavigate();
   const { isLogin } = state;
 
@@ -27,6 +27,7 @@ function FooterStepOne() {
 
   const handleClick = () => {
     // navigate(ROUTES.NEW_WALLET_DETAILS);
+    setNewWalletName('')
     navigate(ROUTES.CREATE_WALLET);
   }
 

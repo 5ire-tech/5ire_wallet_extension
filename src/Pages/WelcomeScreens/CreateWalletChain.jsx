@@ -47,7 +47,7 @@ function CreateWalletChain() {
         &&
         < StepHeaders active={4} />
       }
-      <MenuRestofHeaders title={"New Wallet Details"} backTo={ROUTES.SET_PASS}/>
+      <MenuRestofHeaders title={"New Wallet Details"} />
       <div className={style.copyButton}>
         <button
           className={style.cardWhite__addressInput__copyAll}
@@ -89,6 +89,16 @@ function CreateWalletChain() {
           <span className={isOpen.open1 && "blurContact"}>{newAccount?.mnemonic ? newAccount.mnemonic : newAccount.drivedMnemonic}</span>
           {
             isOpen?.open1 ?
+
+              <img
+                width={19}
+                height={16}
+                name="open1"
+                alt="eyeClose"
+                src={EyeCloseIcon}
+                draggable={false}
+                onClick={handleEyeOpen}
+              /> :
               <img
                 width={19}
                 height={12}
@@ -98,16 +108,7 @@ function CreateWalletChain() {
                 src={EyeOpenIcon}
                 onClick={handleEyeOpen}
               />
-              :
-              <img
-                width={19}
-                height={16}
-                name="open1"
-                alt="eyeClose"
-                src={EyeCloseIcon}
-                draggable={false}
-                onClick={handleEyeOpen}
-              />
+
           }
           <img
             name={MNEMONIC}
@@ -125,16 +126,7 @@ function CreateWalletChain() {
           <span className={isOpen.open2 && "blurContact"}>{newAccount?.evmPrivateKey}</span>
           {
             isOpen?.open2 ?
-              <img
-                width={19}
-                height={12}
-                name="open2"
-                alt="eyeOpen"
-                draggable={false}
-                src={EyeOpenIcon}
-                onClick={handleEyeOpen}
-              />
-              :
+
               <img
                 width={19}
                 height={16}
@@ -144,7 +136,17 @@ function CreateWalletChain() {
                 src={EyeCloseIcon}
                 onClick={handleEyeOpen}
 
+              /> :
+              <img
+                width={19}
+                height={12}
+                name="open2"
+                alt="eyeOpen"
+                draggable={false}
+                src={EyeOpenIcon}
+                onClick={handleEyeOpen}
               />
+
           }
           <img
             name={PVT_KEY}

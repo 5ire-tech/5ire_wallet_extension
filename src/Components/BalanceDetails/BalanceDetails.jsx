@@ -273,7 +273,11 @@ function BalanceDetails({ mt0 }) {
                         <>
                           <p>
                             <img
-                              src={isEqual(pathname, ROUTES.APPROVE_TXN) ? GreenCircle : GrayCircle}
+                              src={
+                                isEqual(pathname, ROUTES.APPROVE_TXN)
+                                  ? GreenCircle
+                                  : GrayCircle
+                              }
                               alt="connectionLogo"
                               draggable={false}
                             />
@@ -427,7 +431,11 @@ function BalanceDetails({ mt0 }) {
                     options={[
                       {
                         value: NETWORK.TEST_NETWORK,
-                        label: <span className="flexedItemSelect">Testnet</span>,
+                        label: <span className="flexedItemSelect">{NETWORK.TEST_NETWORK}</span>,
+                      },
+                      {
+                        value: NETWORK.UAT,
+                        label: <span className="flexedItemSelect">{NETWORK.UAT}</span>,
                       },
                       {
                         value: NETWORK.QA_NETWORK,
@@ -449,9 +457,19 @@ function BalanceDetails({ mt0 }) {
                   <p>
                     Total Balance :{" "}
                     <span>
-                      {balance?.totalBalance
-                        ? <><span className="totalBal">{balance.totalBalance}</span> {CURRENCY}</>
-                        : ""}{" "}
+                      {balance?.totalBalance ? (
+                        <>
+                          {" "}
+                          <Tooltip placement="bottom" title={balance.totalBalance}>
+                            <span className="totalBal">
+                              {balance.totalBalance}
+                            </span>
+                          </Tooltip>{" "}
+                          &nbsp;{CURRENCY}
+                        </>
+                      ) : (
+                        ""
+                      )}{" "}
                     </span>
                   </p>
                 </div>
