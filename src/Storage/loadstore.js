@@ -1,5 +1,5 @@
 import { localStorage, sessionStorage } from ".";
-import { hasLength, isEqual, isNullorUndef, isObject, isString, log, isEmpty, hasProperty } from "../Utility/utility";
+import { hasLength, isEqual, isNullorUndef, isString, isEmpty, hasProperty } from "../Utility/utility";
 import { userState, externalControls, transactionQueue } from "../Store/initialState";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import { ERRCODES, ERROR_MESSAGES, LABELS } from "../Constants";
