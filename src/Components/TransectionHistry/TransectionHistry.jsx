@@ -1,7 +1,7 @@
 import React from "react";
 import style from "./style.module.scss";
 import { toast } from "react-hot-toast";
-import { STATUS } from "../../Constants";
+import { CURRENCY, STATUS } from "../../Constants";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import DarkRyt from "../../Assets/darkRyt.svg";
@@ -97,11 +97,11 @@ function TransectionHistry({ selectedTransaction, account }) {
         </div>
         <div className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
           <h3>Fee</h3>
-          <span>{selectedTransaction?.gasUsed ? fixNumber(selectedTransaction?.gasUsed) : "Nil"}</span>
+          <span>{selectedTransaction?.gasUsed ? fixNumber(selectedTransaction?.gasUsed) + " " + CURRENCY : "Nil"}</span>
         </div>
       </div>
       <div className={style.transectionHistry__viewExplorer}>
-        <p onClick={openExplorerTab}>View on Explorer <img src={DarkRyt} alt="view on explorer"/></p>
+        <p onClick={openExplorerTab}>View on Explorer <img src={DarkRyt} alt="view on explorer" /></p>
       </div>
     </div>
   );

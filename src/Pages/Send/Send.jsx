@@ -20,15 +20,13 @@ import {
   EVM,
   LABELS,
   NATIVE,
+  TX_TYPE,
   ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
   EXISTENTIAL_DEPOSITE,
-  COPIED,
-  TX_TYPE,
 } from "../../Constants/index";
-import { shortner } from "../../Helper/helper";
-import CopyIcon from "../../Assets/CopyIcon.svg";
+
 
 function Send() {
   const [isEd, setEd] = useState(true);
@@ -77,10 +75,9 @@ function Send() {
     } else {
       if (activeTab.toLowerCase() === EVM.toLowerCase()) {
         if (estimatedGas && !data.amount) {
-
           const amount = Number(balance.evmBalance) - (Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0));
           setMaxAmount(amount);
-          updateEstimatedGas(null)
+          updateEstimatedGas(null);
 
           return;
         }
@@ -130,8 +127,10 @@ function Send() {
   //set the ED toggler state
   const onChangeToggler = (checked) => {
     setEd(checked);
+    setMaxAmount("");
     updateEstimatedGas(null);
-    setErr((p) => ({ ...p, amount: "" }));
+    setErr(p => ({ ...p, amount: "" }));
+    setData(p => ({ ...p, amount: "" }));
   };
 
   const validateAmount = () => {
