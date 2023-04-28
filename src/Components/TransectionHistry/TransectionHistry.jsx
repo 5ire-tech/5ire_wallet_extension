@@ -64,7 +64,7 @@ function TransectionHistry({ selectedTransaction, account }) {
                 <h3>{`From ${isEvm ? "EVM" : "Native"}`}</h3>
                 <span>{shortner(isEvm ? account.evmAddress : account.nativeAddress)}</span>
               </div>
-              <div className={style.transectionHistry__icon} onClick={handleClick} style={{ marginRight: "29px" }}>
+              <div className={style.transectionHistry__icon} style={{ marginRight: "29px" }}>
                 <img src={SwapIcon} alt="swapIcon" draggable={false} />
               </div>
               <div className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
