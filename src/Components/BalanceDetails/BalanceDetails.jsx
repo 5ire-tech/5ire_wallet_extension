@@ -273,7 +273,11 @@ function BalanceDetails({ mt0 }) {
                         <>
                           <p>
                             <img
-                              src={isEqual(pathname, ROUTES.APPROVE_TXN) ? GreenCircle : GrayCircle}
+                              src={
+                                isEqual(pathname, ROUTES.APPROVE_TXN)
+                                  ? GreenCircle
+                                  : GrayCircle
+                              }
                               alt="connectionLogo"
                               draggable={false}
                             />
@@ -451,11 +455,21 @@ function BalanceDetails({ mt0 }) {
               <div className={style.balanceDetails__innerBalance}>
                 <div className={style.balanceDetails__innerBalance__totalBalnce}>
                   <p>
-                    Total Balance : {" "}
+                    Total Balance :{" "}
                     <span>
-                      {balance?.totalBalance
-                        ? <><span className="totalBal">{balance.totalBalance} </span> &nbsp;{CURRENCY}</>
-                        : ""}{" "}
+                      {balance?.totalBalance ? (
+                        <>
+                          {" "}
+                          <Tooltip placement="bottom" title={balance.totalBalance}>
+                            <span className="totalBal">
+                              {balance.totalBalance}
+                            </span>
+                          </Tooltip>{" "}
+                          &nbsp;{CURRENCY}
+                        </>
+                      ) : (
+                        ""
+                      )}{" "}
                     </span>
                   </p>
                 </div>
