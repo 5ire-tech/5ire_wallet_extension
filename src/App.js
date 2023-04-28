@@ -29,6 +29,7 @@ import ApproveTx from "./Pages/RejectNotification/RejectNotification";
 import CreateWalletChain from "./Pages/WelcomeScreens/CreateWalletChain";
 import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
 import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
+import ValidatorNominatorTxns from "./Components/ValidatorNominatorTxns";
 
 
 function getParameterByName(name, url = window.location.href) {
@@ -179,6 +180,11 @@ function App(props) {
               element={<NativeTx />}
             />
 
+            <Route
+              index
+              path={ROUTES.VALIDATOR_NOMINATOR_TXN}
+              element={<ValidatorNominatorTxns />}
+            />
             <Route
               path={ROUTES.LOGIN_APPROVE}
               element={<WelcomeLayout children={<LoginApprove />} />}

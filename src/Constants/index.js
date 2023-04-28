@@ -195,7 +195,7 @@ export const LABELS = {
     CONTRACT: "Contract",
     EVM_TO_NATIVE: "Evm to Native",
     NATIVE_TO_EVM: "Native to Evm"
-    
+
 };
 
 export const HTTP_END_POINTS = {
@@ -229,6 +229,7 @@ export const WS_END_POINTS = {
 export const MESSAGE_EVENT_LABELS = {
     NATIVE_SIGNER: "nativeSigner",
     EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS: "externalNativeTransactionArgsAndGas",
+    VALIDATOR_NOMINATOR_FEE: "validatorAndNominatorFee",
     EVM_FEE: "evmFee",
     EVM_TX: "evmTransfer",
     BALANCE: "getBalance",
@@ -301,7 +302,8 @@ export const MESSAGE_TYPE_LABELS = {
     EXTERNAL_TX_APPROVAL: "externalTxApproval",
     EXTENSION_UI: "extensionUi",
     EXTENSION_UI_KEYRING: "extensionUiKeyring",
-    NETWORK_HANDLER: "networkHandler"
+    NETWORK_HANDLER: "networkHandler",
+    VALIDATOR_NOMINATOR_HANDLER: "validatorNominatorHandler",
 }
 
 export const ROUTE_FOR_APPROVAL_WINDOWS = {
@@ -331,4 +333,23 @@ export const RESTRICTED_URLS = ["chrome://extensions"]
 //third party url
 export const THRID_PARTY_APIS = {
     ESD: "https://www.4byte.directory/api/v1/signatures/?hex_signature="
+}
+
+export const VALIDATOR_NOMINATOR_METHOD = {
+    NATIVE_ADD_NOMINATOR: "native_add_nominator",
+    NATIVE_ADD_VALIDATOR: "native_add_validator",
+    NATIVE_NOMINATOR_BONDMORE: "native_nominator_bondmore",
+    NATIVE_NOMINATOR_PAYOUT: "native_nominator_payout",
+    NATIVE_RENOMINATE: "native_renominate",
+    NATIVE_RESTART_VALIDATOR: "native_restart_validator",
+    NATIVE_STOP_NOMINATOR: "native_stop_nominator",
+    NATIVE_STOP_VALIDATOR: "native_stop_validator",
+    NATIVE_UNBOND_NOMINATOR: "native_unbond_nominator",
+    NATIVE_UNBOND_VALIDATOR: "native_unbond_validator",
+    NATIVE_VALIDATOR_BONDMORE: "native_validator_bondmore",
+    NATIVE_VALIDATOR_PAYOUT: "native_validator_payout",
+    NATIVE_WITHDRAW_NOMINATOR: "native_withdraw_nominator",
+    NATIVE_WITHDRAW_NOMINATOR_UNBONDED: "native_withdraw_nominator_unbonded",
+    NATIVE_WITHDRAW_VALIDATOR: "native_withdraw_validator",
+    NATIVE_WITHDRAW_VALIDATOR_UNBONDED: "native_withdraw_validator_unbonded"
 }

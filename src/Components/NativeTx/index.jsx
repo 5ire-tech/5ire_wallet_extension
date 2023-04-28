@@ -5,22 +5,13 @@ import style from "../../Layout/style.module.scss";
 import footerstyle from "../MenuFooter/style.module.scss";
 import pageStyle from "../../Pages/RejectNotification/style.module.scss";
 import { useNavigate } from "react-router-dom";
-import { setUIdata, toggleLoader } from "../../Utility/redux_helper";
-import { useDispatch, useSelector } from "react-redux";
-import Browser from "webextension-polyfill";
+
 import ButtonComp from "../ButtonComp/ButtonComp";
 import {
-  assert,
-  compactToU8a,
-  isHex,
   isObject,
-  u8aConcat,
-  u8aEq,
 } from "@polkadot/util";
-import { BigNumber } from "bignumber.js";
 import { shortLongAddress } from "../../Utility/utility";
 import {
-  DECIMALS,
   MESSAGE_EVENT_LABELS,
   MESSAGE_TYPE_LABELS,
   SIGNER_METHODS,
@@ -42,16 +33,16 @@ function NativeSigner() {
   const navigate = useNavigate();
 
   const handleClick = async (isApproved) => {
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.NATIVE_SIGNER, {...externalNativeTxDetails, approve: isApproved, options: {account: state.currentAccount, network: state.currentNetwork, nativeSigner: true}});
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.NATIVE_SIGNER, { ...externalNativeTxDetails, approve: isApproved, options: { account: state.currentAccount, network: state.currentNetwork, nativeSigner: true } });
     navigate(ROUTES.WALLET);
   };
 
   useEffect(() => {
-      const method = activeSession.method;
-      if (SIGNER_METHODS.SIGN_PAYLOAD === method) {
+    const method = activeSession.method;
+    if (SIGNER_METHODS.SIGN_PAYLOAD === method) {
       updateLoading(true);
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS, {options: {account: state.currentAccount, network: state.currentNetwork}});
-      } else setFormattedMethod(SIGNER_METHODS.SIGN_RAW)
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS, { options: { account: state.currentAccount, network: state.currentNetwork } });
+    } else setFormattedMethod(SIGNER_METHODS.SIGN_RAW)
   }, [])
 
   function RecComponent({ data }) {
@@ -93,7 +84,7 @@ function NativeSigner() {
                         src={CopyIcon}
                         alt="copyIcon"
                         name="name"
-                        
+
                         draggable={false}
                       />{" "}
                     </h4>
@@ -104,11 +95,11 @@ function NativeSigner() {
                       {externalNativeTxDetails.method
                         ? externalNativeTxDetails.method
                         : formattedMethod}
-                          <img
+                      <img
                         src={CopyIcon}
                         alt="copyIcon"
                         name="name"
-                        
+
                         draggable={false}
                       />
                     </h4>
@@ -122,7 +113,7 @@ function NativeSigner() {
                         src={CopyIcon}
                         alt="copyIcon"
                         name="name"
-                        
+
                         draggable={false}
                       />
                     </h4>

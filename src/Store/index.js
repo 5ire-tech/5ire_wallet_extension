@@ -29,6 +29,8 @@ export default function Context({ children }) {
   const [accountName, setAccName] = useState(null);
   const [allAccounts, setAllAccounts] = useState([]);
   const [estimatedGas, setEstimatedGas] = useState(null);
+  const [valdatorNominatorFee, setValdatorNominatorFee] = useState(null);
+
   const [externalNativeTxDetails, setExternalNativeTxDetails] = useState(initialExternalNativeTransaction);
   const [passVerified, setPassVerified] = useState(false);
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
@@ -73,6 +75,8 @@ export default function Context({ children }) {
       }
       else if (message.event === MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT) {
         removeAccount(message.data);
+      } else if (message.event === MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE) {
+        setValdatorNominatorFee(message.data)
       }
 
       updateLoading(false);
@@ -201,6 +205,7 @@ export default function Context({ children }) {
     passVerified,
     externalControlsState,
     externalNativeTxDetails,
+    valdatorNominatorFee,
 
     //data setters
     setState,
@@ -217,6 +222,7 @@ export default function Context({ children }) {
     setExternalControlState,
     setExternalNativeTxDetails,
     importAccountByMnemonics,
+    setValdatorNominatorFee
 
   }
 

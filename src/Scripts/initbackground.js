@@ -10,7 +10,7 @@ import { txNotificationStringTemplate } from "./utils";
 import { NotificationAndBedgeManager } from "./platform";
 import { ExternalConnection, ExternalWindowControl } from "./controller";
 import { getDataLocal, ExtensionStorageHandler } from "../Storage/loadstore";
-import { CONNECTION_NAME, INTERNAL_EVENT_LABELS, DECIMALS, MESSAGE_TYPE_LABELS, STATE_CHANGE_ACTIONS, TX_TYPE, STATUS, LABELS, MESSAGE_EVENT_LABELS, AUTO_BALANCE_UPDATE_TIMER, TRANSACTION_STATUS_CHECK_TIMER, ONE_ETH_IN_GWEI, SIGNER_METHODS, TABS_EVENT } from "../Constants";
+import { CONNECTION_NAME, INTERNAL_EVENT_LABELS, DECIMALS, MESSAGE_TYPE_LABELS, STATE_CHANGE_ACTIONS, TX_TYPE, STATUS, LABELS, MESSAGE_EVENT_LABELS, AUTO_BALANCE_UPDATE_TIMER, TRANSACTION_STATUS_CHECK_TIMER, ONE_ETH_IN_GWEI, SIGNER_METHODS, TABS_EVENT, VALIDATOR_NOMINATOR_METHOD } from "../Constants";
 import { hasLength, isObject, isNullorUndef, hasProperty, log, isEqual, isString } from "../Utility/utility";
 import { HTTP_END_POINTS, API, HTTP_METHODS, EVM_JSON_RPC_METHODS, ERRCODES, ERROR_MESSAGES, ERROR_EVENTS_LABELS } from "../Constants";
 import { EVMRPCPayload, EventPayload, TransactionPayload, TransactionProcessingPayload, TabMessagePayload } from "../Utility/network_calls";
@@ -152,6 +152,25 @@ export class InitBackground {
           case SIGNER_METHODS.SIGN_RAW:
             await this.internalHandler.handleNativeSigner(data, localData);
             break;
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_NOMINATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_VALIDATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_BONDMORE:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_PAYOUT:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_RENOMINATE:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_RESTART_VALIDATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_STOP_NOMINATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_STOP_VALIDATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_UNBOND_NOMINATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_UNBOND_VALIDATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_BONDMORE:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_PAYOUT:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR_UNBONDED:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR_UNBONDED:
+            await this.internalHandler.handleValidatorNominatorTransactions(data, localData);
+
+            break
           default: data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.message.id, null, null, null, ERROR_MESSAGES.INVALID_METHOD))
         }
       } catch (err) {
@@ -589,6 +608,7 @@ class ExternalTxTasks {
   constructor() {
     this.transactionQueueHandler = TransactionQueue.getInstance();
     this.nativeSignerhandler = new NativeSigner();
+    this.validatorNominatorHandler = new ValidatorNominatorHandler();
   }
 
   //process and check external task (connection, tx approval)
@@ -644,6 +664,26 @@ class ExternalTxTasks {
 
         }
         else if (signerRes.error) sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, { result: null }, null, null, signerRes.error.errMessage));
+      }
+    }
+
+    //close the popup
+    await this.closePopupSession(message);
+  }
+
+
+  //handle the nominator and validator transaction
+  validatorNominatorMethods = async (message, state) => {
+    const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+
+    //check if the requested method is supported by the handler
+    if (hasProperty(this.validatorNominatorHandler, activeSession?.method)) {
+      if (message.data?.approve) {
+        const res = await this.validatorNominatorHandler[activeSession.method](activeSession.message, state);
+        if (!res.error) {
+          sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, { result: res.payload.data }));
+        }
+        else if (res.error) sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, { result: null }, null, null, res.error.errMessage));
       }
     }
 
@@ -1501,7 +1541,7 @@ export class KeyringHandler {
 }
 
 //network task handler
-class NetworkHandler {
+export class NetworkHandler {
   static instance = null;
   static api = {};
 

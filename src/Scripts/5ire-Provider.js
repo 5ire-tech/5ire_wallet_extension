@@ -1,7 +1,7 @@
 import { CONTENT_SCRIPT, INPAGE, getId } from "./constants";
 import { WindowPostMessageStream } from "./stream";
 import SafeEventEmitter from "@metamask/safe-event-emitter"
-import { HTTP_END_POINTS, SIGNER_METHODS } from "../Constants";
+import { HTTP_END_POINTS, SIGNER_METHODS, VALIDATOR_NOMINATOR_METHOD } from "../Constants";
 //stream for in-window communication
 const injectedStream = new WindowPostMessageStream({
   name: INPAGE,
@@ -32,23 +32,9 @@ export class FireProvider extends SafeEventEmitter {
       "eth_accounts",
       "connect"];
 
-    this.stakingMethods = [
-      "native_add_nominator",
-      "native_renominate",
-      "native_nominator_payout",
-      "native_validator_payout",
-      "native_stop_validator",
-      "native_stop_nominator",
-      "native_unbond_validator",
-      "native_unbond_nominator",
-      "native_withdraw_nominator",
-      "native_withdraw_validator",
-      "native_withdraw_nominator_unbonded",
-      "native_add_validator",
-      "native_validator_bondmore",
-      "native_restart_validator",
-      "native_nominator_bondmore"
-    ]
+    this.stakingMethods = Object.values(VALIDATOR_NOMINATOR_METHOD);
+
+
 
     this.restricted = [
       "get_endPoint",
@@ -95,22 +81,22 @@ export class FireProvider extends SafeEventEmitter {
   }
 
   /*********************************** Native Signer Handlers **********************************/
-    /**
-   * for sign transaction payload
-   * @param {object} payload 
-   */
-    async signPayload(payload) {
-      return await this.passReq(SIGNER_METHODS.SIGN_PAYLOAD, payload);
-    }
-  
-    /**
-   * for sign raw transaction
-   * @param {object} payload 
-   */
-    async signRaw(payload) {
-      return await this.passReq(SIGNER_METHODS.SIGN_RAW, payload);
-  
-    }
+  /**
+ * for sign transaction payload
+ * @param {object} payload 
+ */
+  async signPayload(payload) {
+    return await this.passReq(SIGNER_METHODS.SIGN_PAYLOAD, payload);
+  }
+
+  /**
+ * for sign raw transaction
+ * @param {object} payload 
+ */
+  async signRaw(payload) {
+    return await this.passReq(SIGNER_METHODS.SIGN_RAW, payload);
+
+  }
 
 
   //for checking JSON-RPC headers
@@ -193,7 +179,7 @@ export class FireProvider extends SafeEventEmitter {
         // if (method === "eth_requestAccounts" || method === "eth_accounts" || method === "disconnect") {
         //   message = { origin, method };
         // }
-        
+
         const transportRequestMessage = {
           id,
           message,

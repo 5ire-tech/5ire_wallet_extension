@@ -9,6 +9,7 @@ import { sendMessageToTab } from "../Utility/message_helper";
 import { isAlreadyConnected } from "./utils";
 import { generateErrorMessage } from "../Helper/helper";
 import BigNumber from "bignumber.js";
+import { ROUTES } from "../Routes";
 
 
 //control the external connections and window popup creation
@@ -53,11 +54,11 @@ export class ExternalWindowControl {
   newConnectionRequest = async (data, externalControlsState) => {
 
     const isOriginAlreadyExist = this._checkNewRequestOrigin(externalControlsState, data.origin);
-    
+
     //check if already connected or not
-    if(isEqual(data.route, ROUTE_FOR_APPROVAL_WINDOWS.CONNECTION_ROUTE)) {
+    if (isEqual(data.route, ROUTE_FOR_APPROVAL_WINDOWS.CONNECTION_ROUTE)) {
       const isAlreadyConnected = this._checkAlreadyConnected(externalControlsState, data.origin);
-      if(isAlreadyConnected) return;
+      if (isAlreadyConnected) return;
     }
 
     if (isOriginAlreadyExist) {
@@ -66,11 +67,11 @@ export class ExternalWindowControl {
     }
 
     const newConnectionRequest = new ExternalAppsRequest(data.id, data.tabId, data.message, data.method, data.origin, data.route, null);
-    await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.ADD_NEW_CONNECTION_TASK, newConnectionRequest, {localStateKey: LABELS.EXTERNAL_CONTROLS})
+    await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.ADD_NEW_CONNECTION_TASK, newConnectionRequest, { localStateKey: LABELS.EXTERNAL_CONTROLS })
 
     //set the pending task icon on chrome extension
     await this._showPendingTaskBedge();
-    
+
     //check if activeSession is null if yes then set the active session from pending queue
     if (!externalControlsState.activeSession) await this.changeActiveSession();
   }
@@ -80,7 +81,7 @@ export class ExternalWindowControl {
    * change the active session
    */
   changeActiveSession = async () => {
-    await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.CHANGE_ACTIVE_SESSION, {}, {localStateKey: LABELS.EXTERNAL_CONTROLS})
+    await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.CHANGE_ACTIVE_SESSION, {}, { localStateKey: LABELS.EXTERNAL_CONTROLS })
     // this.closeActiveSessionPopup();
 
     await this._showPendingTaskBedge()
@@ -95,7 +96,7 @@ export class ExternalWindowControl {
   activatePopupSession = async (activeSession) => {
     const popupId = await this.windowManager.showPopup(activeSession.route);
     ExternalWindowControl.eventListnerControl.push(popupId);
-    await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.UPDATE_CURRENT_SESSION, {popupId}, {localStateKey: LABELS.EXTERNAL_CONTROLS})
+    await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.UPDATE_CURRENT_SESSION, { popupId }, { localStateKey: LABELS.EXTERNAL_CONTROLS })
     log("popupid: ", popupId)
     await this.windowManager.filterAndRemoveWindows(popupId);
   }
@@ -106,21 +107,21 @@ export class ExternalWindowControl {
   closeActiveSessionPopup = async () => {
     const externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
 
-    if(externalControlsState.activeSession?.popupId) {
-    //set the pending task icon on chrome extension
- 
-    await this._showPendingTaskBedge()
+    if (externalControlsState.activeSession?.popupId) {
+      //set the pending task icon on chrome extension
 
-    //check if there is any window opened with popupid
-    const window = await this.windowManager.getWindowById(externalControlsState.activeSession.popupId);
-    if(!window) {
-      log("closed wihtout using the window");
-      this._sendRejectAndCloseResponse(externalControlsState.activeSession);
-      return;
-    }
+      await this._showPendingTaskBedge()
 
-    //if window find then close the window
-    await this.windowManager.closePopup(externalControlsState.activeSession.popupId);
+      //check if there is any window opened with popupid
+      const window = await this.windowManager.getWindowById(externalControlsState.activeSession.popupId);
+      if (!window) {
+        log("closed wihtout using the window");
+        this._sendRejectAndCloseResponse(externalControlsState.activeSession);
+        return;
+      }
+
+      //if window find then close the window
+      await this.windowManager.closePopup(externalControlsState.activeSession.popupId);
     }
 
   }
@@ -149,8 +150,8 @@ export class ExternalWindowControl {
    */
   _handleClose = async (windowId) => {
 
-    const {activeSession} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
-    if(!isEqual(activeSession?.popupId, windowId)) {
+    const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+    if (!isEqual(activeSession?.popupId, windowId)) {
       log("not match the current task: ", activeSession?.popupId, windowId);
       return;
     }
@@ -167,28 +168,28 @@ export class ExternalWindowControl {
    * @param {*} activeSession 
    */
   _sendRejectAndCloseResponse = async (activeSession) => {
-        //check if window is closed by close button
-        if(isNullorUndef(ExternalWindowControl.isApproved) || isEqual(ExternalWindowControl.isApproved, false)) {
-          activeSession?.tabId && sendMessageToTab(activeSession?.tabId, new TabMessagePayload(activeSession.id, {result: null}, null, null, ERROR_MESSAGES.REJECTED_BY_USER))
-        }
-    
-        
-        //change the current popup session
-        await this.changeActiveSession();
+    //check if window is closed by close button
+    if (isNullorUndef(ExternalWindowControl.isApproved) || isEqual(ExternalWindowControl.isApproved, false)) {
+      activeSession?.tabId && sendMessageToTab(activeSession?.tabId, new TabMessagePayload(activeSession.id, { result: null }, null, null, ERROR_MESSAGES.REJECTED_BY_USER))
+    }
 
-        if(isNullorUndef(ExternalWindowControl.isApproved)) {
-          await this._showPendingTaskBedge();
-         } 
 
-        //set the approve to null for next session
-        ExternalWindowControl.isApproved = null;
-      }
+    //change the current popup session
+    await this.changeActiveSession();
+
+    if (isNullorUndef(ExternalWindowControl.isApproved)) {
+      await this._showPendingTaskBedge();
+    }
+
+    //set the approve to null for next session
+    ExternalWindowControl.isApproved = null;
+  }
 
   /**
    * show the bedge
    */
-  _showPendingTaskBedge = async (externalControlsState=null) => {
-    if(!externalControlsState) externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+  _showPendingTaskBedge = async (externalControlsState = null) => {
+    if (!externalControlsState) externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
     log("here is pending task: ", externalControlsState.activeSession)
 
     //check if there is any pending task if found then show the pending task count in bedge
@@ -224,7 +225,7 @@ export class ExternalConnection {
     const account = state.currentAccount;
     const isEthReq = isEqual(data?.method, EVM_JSON_RPC_METHODS.ETH_REQUEST_ACCOUNT) || isEqual(data?.method, EVM_JSON_RPC_METHODS.ETH_ACCOUNTS);
 
-      const isConnected = isAlreadyConnected(externalControls.connectedApps, data.origin)
+    const isConnected = isAlreadyConnected(externalControls.connectedApps, data.origin)
 
     if (isConnected) {
       const res = isEthReq ? { method: data?.method, result: [account.evmAddress] }
@@ -264,6 +265,22 @@ export class ExternalConnection {
 
   }
 
+
+
+  //handle the validator and nominator related transactions
+  async handleValidatorNominatorTransactions(data, state) {
+
+    //check if the from account is our current account
+    //Todo restrict connection
+    // if (!isEqual(state.currentAccount.evmAddress?.toLowerCase(), data.message?.from)) {
+    //   sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.ACCOUNT_ACCESS_NOT_GRANTED));
+    //   return;
+    // }
+    console.log("Here data", data)
+    const externalControls = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+    await this.externalWindowController.newConnectionRequest({ route: ROUTES.VALIDATOR_NOMINATOR_TXN, ...data }, externalControls);
+
+  }
 
   //handle the signing of native transaction
   async handleNativeSigner(data, state) {
