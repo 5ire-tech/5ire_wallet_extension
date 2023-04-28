@@ -447,10 +447,10 @@ function BalanceDetails({ mt0 }) {
               <div className={style.balanceDetails__innerBalance}>
                 <div className={style.balanceDetails__innerBalance__totalBalnce}>
                   <p>
-                    Total Balance :{" "}
+                    Total Balance : {" "}
                     <span>
                       {balance?.totalBalance
-                        ? <><span className="totalBal">{balance.totalBalance}</span> {CURRENCY}</>
+                        ? <><span className="totalBal">{balance.totalBalance} </span> &nbsp;{CURRENCY}</>
                         : ""}{" "}
                     </span>
                   </p>
