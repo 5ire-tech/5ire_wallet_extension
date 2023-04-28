@@ -427,7 +427,11 @@ function BalanceDetails({ mt0 }) {
                     options={[
                       {
                         value: NETWORK.TEST_NETWORK,
-                        label: <span className="flexedItemSelect">Testnet</span>,
+                        label: <span className="flexedItemSelect">{NETWORK.TEST_NETWORK}</span>,
+                      },
+                      {
+                        value: NETWORK.UAT,
+                        label: <span className="flexedItemSelect">{NETWORK.UAT}</span>,
                       },
                       {
                         value: NETWORK.QA_NETWORK,
