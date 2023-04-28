@@ -16,7 +16,7 @@ import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScr
 
 //Before We begin
 function FooterStepOne() {
-  const { state } = useContext(AuthContext);
+  const { state, setNewWalletName } = useContext(AuthContext);
   const navigate = useNavigate();
   const { isLogin } = state;
 
@@ -27,6 +27,7 @@ function FooterStepOne() {
 
   const handleClick = () => {
     // navigate(ROUTES.NEW_WALLET_DETAILS);
+    setNewWalletName('')
     navigate(ROUTES.CREATE_WALLET);
   }
 
@@ -214,12 +215,12 @@ export const ApproveTx = () => {
           maxWidth={"100%"}
           isDisable={disableApproval}
         />
-      <ButtonComp
-        bordered={true}
-        text={"Reject"}
-        maxWidth={"100%"}
-        onClick={() => handleClick(false)}
-      />
+        <ButtonComp
+          bordered={true}
+          text={"Reject"}
+          maxWidth={"100%"}
+          onClick={() => handleClick(false)}
+        />
       </div>
     </>
   );
