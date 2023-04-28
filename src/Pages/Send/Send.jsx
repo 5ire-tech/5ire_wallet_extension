@@ -303,9 +303,10 @@ function Send() {
   };
 
   const activeSend = (e) => {
+    setDisable(true);
+    setMaxAmount("");
     setActiveTab(e.target.name);
     updateEstimatedGas(null);
-    setDisable(true);
     setErr({ to: "", amount: "" });
     setData({ to: "", amount: "" });
   };
@@ -322,8 +323,6 @@ function Send() {
     if (maxAmount > 0) {
       setData(p => ({ ...p, amount: maxAmount }));
       setErr(p => ({ ...p, amount: "" }));
-    } else {
-      setErr(p => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
     }
   }
 
