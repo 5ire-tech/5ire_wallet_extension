@@ -251,7 +251,7 @@ export const MESSAGE_EVENT_LABELS = {
     CREATE_OR_RESTORE: "createOrRestore",
     EXPORT_PRIVATE_KEY: "exportPrivatekey",
     EXPORT_SEED_PHRASE: "exportSeedPhrase",
-    RESET_VAULT_AND_PASS: "resetVaultAndPass",
+    // RESET_VAULT_AND_PASS: "resetVaultAndPass",
     VERIFY_USER_PASSWORD: "verifyUserPassword",
     IMPORT_BY_MNEMONIC: "importAccountByMnemonics",
 

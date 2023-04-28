@@ -64,8 +64,6 @@ export const FooterStepTwo = () => {
 
   const handleCancle = async () => {
 
-    console.log("IsLOGIN :::: ", isLogin);
-
     // if (isLogin) {
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT, { address: newAccount.evmAddress });
     // }
@@ -76,22 +74,22 @@ export const FooterStepTwo = () => {
 
   const handleClick = () => {
 
-    const currentAcc = {
-      evmAddress: newAccount?.evmAddress,
-      nativeAddress: newAccount?.nativeAddress,
-      accountName: newAccount?.accountName,
-      accountIndex: newAccount?.accountIndex,
-    };
+    // const currentAcc = {
+    //   evmAddress: newAccount?.evmAddress,
+    //   nativeAddress: newAccount?.nativeAddress,
+    //   accountName: newAccount?.accountName,
+    //   accountIndex: newAccount?.accountIndex,
+    // };
 
-    const txHis = {
-      ...txHistory,
-      [newAccount?.accountName]: []
-    };
+    // const txHis = {
+    //   ...txHistory,
+    //   [newAccount?.accountName]: []
+    // };
     setShow(true)
     setTimeout(() => {
       setShow(false)
-      updateState(LABELS.CURRENT_ACCOUNT, currentAcc);
-      updateState(LABELS.TX_HISTORY, txHis);
+      // updateState(LABELS.CURRENT_ACCOUNT, currentAcc);
+      // updateState(LABELS.TX_HISTORY, txHis);
 
       setNewAccount(newAccountInitialState);
       navigate(ROUTES.WALLET);

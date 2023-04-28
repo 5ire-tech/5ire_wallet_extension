@@ -122,6 +122,7 @@ export default function Context({ children }) {
 
     if (data?.type === "create") {
       setNewAccount(data.newAccount);
+      navigate(ROUTES.NEW_WALLET_DETAILS);
     }
   };
 
@@ -185,6 +186,8 @@ export default function Context({ children }) {
     delete newTx[accName];
     updateState(LABELS.TX_HISTORY, newTx)
   }
+
+
   const removeAccount = (data) => {
     setNewAccount(newAccountInitialState);
     if (data?.isInitialAccount) {
