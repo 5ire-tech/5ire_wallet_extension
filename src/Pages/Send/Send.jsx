@@ -371,7 +371,7 @@ function Send() {
         </div>
         <div className={style.sendSec__inFoAccount}>
           <Tooltip title="5irechain requires a minimum of 1 5ire token to keep your wallet active">
-            <img src={Info} />
+            <img src={Info} style={{ cursor: "pointer" }}/>
           </Tooltip>
           <h3>Transfer with account keep alive checks </h3>
           <Switch defaultChecked name="EdToggler" onChange={onChangeToggler} />

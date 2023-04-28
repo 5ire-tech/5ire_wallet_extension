@@ -46,7 +46,7 @@ function TransectionHistry({ selectedTransaction, account }) {
                 <h3>{`From ${isEvm ? "EVM" : "Native"}`}</h3>
                 <span>{shortner(isEvm ? account.evmAddress : account.nativeAddress)}</span>
               </div>
-              <div className={style.transectionHistry__icon} onClick={handleClick}>
+              <div className={style.transectionHistry__icon} onClick={handleClick} style={{ marginRight: "29px" }}>
                 <img src={SwapIcon} alt="swapIcon" draggable={false} />
               </div>
               <div className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
@@ -64,7 +64,7 @@ function TransectionHistry({ selectedTransaction, account }) {
                 <h3>{`From ${isEvm ? "EVM" : "Native"}`}</h3>
                 <span>{shortner(isEvm ? account.evmAddress : account.nativeAddress)}</span>
               </div>
-              <div className={style.transectionHistry__icon} onClick={handleClick}>
+              <div className={style.transectionHistry__icon} onClick={handleClick} style={{ marginRight: "29px" }}>
                 <img src={SwapIcon} alt="swapIcon" draggable={false} />
               </div>
               <div className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
@@ -91,7 +91,7 @@ function TransectionHistry({ selectedTransaction, account }) {
         </div>
       </div>
       <div className={style.transectionHistry__swapCopy} style={{ marginTop: "29px" }}>
-        <div className={style.transectionHistry__swapSec}>
+        <div className={`${style.transectionHistry__swapSec} ${style.transectionHistry__datetimeSwap}`}>
           <h3>Date & Time</h3>
           <span>{formatDate(selectedTransaction?.timeStamp)}</span>
         </div>

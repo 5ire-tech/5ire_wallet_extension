@@ -450,7 +450,7 @@ function BalanceDetails({ mt0 }) {
                   Total Balance :{" "}
                   <span>
                     {balance?.totalBalance
-                      ? `${balance.totalBalance} ${CURRENCY}`
+                      ? <><span className="totalBal">{balance.totalBalance}</span> {CURRENCY}</>
                       : ""}{" "}
                   </span>
                 </p>
