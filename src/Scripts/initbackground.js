@@ -918,7 +918,6 @@ export class TransactionsRPC {
         const nonce = await evmApi.eth.getTransactionCount(account.evmAddress);
         const feeRes = await this._getEvmFee(to, from, Math.round(data.value), state);
         const value = (Number(amt).noExponents()).toString();
-
         const transactions = {
           to,
           gas: 21000,
@@ -938,8 +937,9 @@ export class TransactionsRPC {
 
         if (signHash) {
 
-          //withdraw amount
-          const withdraw = await nativeApi.tx.evm.withdraw(to, (Number(amt).noExponents()).toString());
+          //withdraw amount from middle account 
+          const bal = await evmApi.eth.getBalance(to);
+          const withdraw = await nativeApi.tx.evm.withdraw(to, bal);
           const signRes = await withdraw.signAndSend(alice);
 
           transactionHistory.txHash = signHash;
