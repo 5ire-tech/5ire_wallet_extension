@@ -365,7 +365,9 @@
     &__wrapedText {
       max-width: 176px;
       padding: 12px 21px;
-      background: transparent linear-gradient(180deg, #00aeef1a 0%, #367cc71a 100%) 0% 0% no-repeat padding-box;
+      background: transparent
+        linear-gradient(180deg, #00aeef1a 0%, #367cc71a 100%) 0% 0% no-repeat
+        padding-box;
       border: 1px solid #00aeef;
       border-radius: 30px;
 
@@ -386,7 +388,6 @@
 }
 
 .activeDis_Modal {
-
   &__modalHeading {
     border-bottom: 1px solid #202a41;
     padding-bottom: 10px;
@@ -419,7 +420,16 @@
     display: flex;
     gap: 12px;
     align-items: center;
-
+    &__spanContact {
+      max-width: 79px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    width: 100%;
+    -webkit-text-fill-color: unset !important;
+    background: initial !important;
+    }
     &__accountConatct {
       text-align: left;
 
@@ -434,6 +444,7 @@
         font-size: 14px;
         opacity: 0.6;
         cursor: pointer;
+        display: flex;
       }
 
       span {
