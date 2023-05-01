@@ -1,4 +1,4 @@
-export const EVM = "Evm";
+export const EVM = "EVM";
 export const EMTY_STR = "";
 export const ZERO_CHAR = '0';
 export const CURRENCY = "5ire";
@@ -56,7 +56,8 @@ export const TX_TYPE = {
 
 export const NETWORK = {
     QA_NETWORK: "QA",
-    TEST_NETWORK: "Testnet"
+    TEST_NETWORK: "Testnet",
+    UAT: "UAT"
 };
 
 export const STATUS = {
@@ -196,9 +197,9 @@ export const LABELS = {
     ERRMESSAGE: "errMessage",
 
     CONTRACT: "Contract",
-    EVM_TO_NATIVE: "Evm to Native",
-    NATIVE_TO_EVM: "Native to Evm"
-    
+    EVM_TO_NATIVE: "EVM to Native",
+    NATIVE_TO_EVM: "Native to EVM"
+
 };
 
 export const HTTP_END_POINTS = {
@@ -215,17 +216,22 @@ export const SOCIAL_LINKS = {
 
 export const API = {
     TESTNET: "https://explorer-api.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
-    QA: "https://qa-api-exp.5ire.network/api/firechain/explorer/get-transaction-by-hash/"
+    QA: "https://qa-api-exp.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
+    UAT: "https://uat-api-exp.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
 };
 
 export const EXPLORERS = {
     TESTNET: "https://explorer.5ire.network",
-    QA: "https://qa-web-exp.5ire.network"
+    QA: "https://qa-web-exp.5ire.network",
+    UAT: "https://uat-http-nodes.5ire.network",
+
 }
 
 export const WS_END_POINTS = {
     QA: "wss://qa-wss-nodes.5ire.network",
-    TESTNET: "wss://wss-testnet.5ire.network"
+    TESTNET: "wss://wss-testnet.5ire.network",
+    UAT: "wss://uat-wss-nodes.5ire.network",
+
 };
 
 
@@ -255,7 +261,7 @@ export const MESSAGE_EVENT_LABELS = {
     CREATE_OR_RESTORE: "createOrRestore",
     EXPORT_PRIVATE_KEY: "exportPrivatekey",
     EXPORT_SEED_PHRASE: "exportSeedPhrase",
-    RESET_VAULT_AND_PASS: "resetVaultAndPass",
+    // RESET_VAULT_AND_PASS: "resetVaultAndPass",
     VERIFY_USER_PASSWORD: "verifyUserPassword",
     IMPORT_BY_MNEMONIC: "importAccountByMnemonics",
 

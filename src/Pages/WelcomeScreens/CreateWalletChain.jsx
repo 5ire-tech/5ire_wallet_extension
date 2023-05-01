@@ -8,6 +8,7 @@ import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
 import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
 import { PVT_KEY, NATIVE, EVM, COPIED, MNEMONIC } from "../../Constants/index.js";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx";
+import { ROUTES } from "../../Routes";
 
 function CreateWalletChain() {
 
@@ -88,6 +89,16 @@ function CreateWalletChain() {
           <span className={isOpen.open1 && "blurContact"}>{newAccount?.mnemonic ? newAccount.mnemonic : newAccount.drivedMnemonic}</span>
           {
             isOpen?.open1 ?
+
+              <img
+                width={19}
+                height={16}
+                name="open1"
+                alt="eyeClose"
+                src={EyeCloseIcon}
+                draggable={false}
+                onClick={handleEyeOpen}
+              /> :
               <img
                 width={19}
                 height={12}
@@ -97,16 +108,7 @@ function CreateWalletChain() {
                 src={EyeOpenIcon}
                 onClick={handleEyeOpen}
               />
-              :
-              <img
-                width={19}
-                height={16}
-                name="open1"
-                alt="eyeClose"
-                src={EyeCloseIcon}
-                draggable={false}
-                onClick={handleEyeOpen}
-              />
+
           }
           <img
             name={MNEMONIC}
@@ -118,22 +120,13 @@ function CreateWalletChain() {
           {" "}
         </p>
       </div>
-      <div className={`${style.cardWhite__addressInput} ${style.textElips}`}>
+      <div className={`${style.cardWhite__addressInput}`}>
         <label>EVM Private Key:</label>
         <p className={style.cardWhite__addressInput__copyText}>
           <span className={isOpen.open2 && "blurContact"}>{newAccount?.evmPrivateKey}</span>
           {
             isOpen?.open2 ?
-              <img
-                width={19}
-                height={12}
-                name="open2"
-                alt="eyeOpen"
-                draggable={false}
-                src={EyeOpenIcon}
-                onClick={handleEyeOpen}
-              />
-              :
+
               <img
                 width={19}
                 height={16}
@@ -143,7 +136,17 @@ function CreateWalletChain() {
                 src={EyeCloseIcon}
                 onClick={handleEyeOpen}
 
+              /> :
+              <img
+                width={19}
+                height={12}
+                name="open2"
+                alt="eyeOpen"
+                draggable={false}
+                src={EyeOpenIcon}
+                onClick={handleEyeOpen}
               />
+
           }
           <img
             name={PVT_KEY}

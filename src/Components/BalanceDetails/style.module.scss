@@ -45,9 +45,11 @@
         display: flex;
         align-items: center;
         gap: 8px;
+        cursor: pointer;
 
         span {
           font-size: 22px;
+          display: flex;
         }
       }
     }
@@ -69,6 +71,7 @@
       flex-direction: column;
       text-align: left;
       gap: 8px;
+      cursor: pointer;
 
       p {
         color: #f7faff;

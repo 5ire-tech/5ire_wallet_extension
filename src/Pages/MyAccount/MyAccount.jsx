@@ -48,6 +48,7 @@ function MyAccount() {
     updateState,
     removeHistory,
     externalControlsState,
+    setNewWalletName,
   } = useContext(AuthContext);
   const { connectedApps } = externalControlsState;
   const { balance, currentAccount } = state;
@@ -90,6 +91,7 @@ function MyAccount() {
   };
 
   const hanldeCreateNewAcc = () => {
+    setNewWalletName('')
     navigate(ROUTES.CREATE_WALLET);
   };
 
@@ -174,14 +176,14 @@ function MyAccount() {
             <div className={style.myAccountSec__leftSec__accountConatct}>
               <h2>
                 {e?.accountName}
-                {e?.type === WALLET_TYPES.IMPORTED_NATIVE ? (
+                {/* {e?.type === WALLET_TYPES.IMPORTED_NATIVE ? (
                   <i>
                     {" "}
                     <small> (Imported)</small>
                   </i>
                 ) : (
                   ""
-                )}
+                )} */}
               </h2>
               <p>
                 {e?.accountName === currentAccount?.accountName ? (

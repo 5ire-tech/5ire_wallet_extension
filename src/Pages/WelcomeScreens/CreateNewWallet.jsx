@@ -12,10 +12,9 @@ import { LABELS, REGEX, ERROR_MESSAGES, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABEL
 
 function CreateNewWallet() {
   const navigate = useNavigate();
-  const [data, setData] = useState("");
   const [warrning, setWarrning] = useState("");
   const [isDisable, setDisable] = useState(true);
-  const { state, updateState, setAccName, allAccounts } = useContext(AuthContext);
+  const { state, updateState, setAccName, allAccounts, setNewWalletName, newWalletName } = useContext(AuthContext);
   const { isLogin } = state;
 
   useEffect(() => {
@@ -25,22 +24,22 @@ function CreateNewWallet() {
   }, []);
 
   const handleChange = (e) => {
-    setData(e.target.value);
+    setNewWalletName(e.target.value);
     setWarrning("");
   };
 
   const validateAccName = () => {
 
-    if (data.trim().length === 0) {
+    if (newWalletName.trim().length === 0) {
       setWarrning(ERROR_MESSAGES.INPUT_REQUIRED);
       setDisable(true);
     }
-    else if (data.trim().length < 2 || data.trim().length >= 19) {
+    else if (newWalletName.trim().length < 2 || newWalletName.trim().length >= 19) {
       setWarrning(ERROR_MESSAGES.INPUT_BETWEEN_2_TO_18);
       setDisable(true);
     }
 
-    else if (!REGEX.WALLET_NAME.test(data)) {
+    else if (!REGEX.WALLET_NAME.test(newWalletName)) {
       setWarrning(ERROR_MESSAGES.ALPHANUMERIC_CHARACTERS);
       setDisable(true);
     }
@@ -53,19 +52,19 @@ function CreateNewWallet() {
 
   const handleClick = () => {
 
-    if (!warrning && data.trim()) {
+    if (!warrning && newWalletName.trim()) {
 
       if (isLogin) {
-        const match = allAccounts?.find((a) => a.accountName === data.trim());
+        const match = allAccounts?.find((a) => a.accountName === newWalletName.trim());
         if (match) {
           setWarrning(ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS);
         } else {
-          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.ADD_ACCOUNT, { name: data.trim() });
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.ADD_ACCOUNT, { name: newWalletName.trim() });
           navigate(ROUTES.NEW_WALLET_DETAILS);
         }
       }
       else {
-        setAccName(data.trim());
+        setAccName(newWalletName.trim());
         navigate(ROUTES.SET_PASS + "/" + LABELS.CREATE);
       }
 
@@ -96,7 +95,7 @@ function CreateNewWallet() {
           <div className={style.cardWhite__importWalletlinkOuter}>
             <div>
               <InputFieldOnly
-                value={data}
+                value={newWalletName}
                 coloredBg={true}
                 name={LABELS.ACCOUNT_NAME}
                 placeholderBaseColor={true}
@@ -108,7 +107,7 @@ function CreateNewWallet() {
             </div>
           </div>
           <div className={style.setPassword__footerbuttons}>
-            <ButtonComp onClick={handleClick} text={"Create Wallet"} isDisable={isDisable} />
+            <ButtonComp onClick={handleClick} text={"Create Wallet"} isDisable={isDisable && warrning} />
             <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancle} />
           </div>
         </div>

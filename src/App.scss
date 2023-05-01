@@ -517,3 +517,10 @@
 .blurContact { 
   filter: blur(2px);
 }
+.totalBal{
+  display: inline-block !important;
+    max-width: 190px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

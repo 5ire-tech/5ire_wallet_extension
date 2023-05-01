@@ -9,6 +9,7 @@ import ButtonComp from "../ButtonComp/ButtonComp.jsx";
 import { NATIVE, EVM, COPIED, PVT_KEY, MNEMONIC } from "../../Constants/index";
 import Exportprivate from "../../Assets/PNG/exportprivate.png";
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx";
+import { shortner } from "../../Helper/helper";
 
 function ManageWallet() {
   const navigate = useNavigate();
@@ -49,9 +50,10 @@ function ManageWallet() {
           </div>
           <div className={style.wallet}>
             <div className={style.wallet__addressInput}>
+
               <label>Native Chain Address:</label>
               <p className={style.wallet__addressInput__copyText}>
-                <span>{currentAccount?.nativeAddress}</span>
+                <span>{shortner(currentAccount?.nativeAddress, 15, 15)}</span>
                 <img src={CopyIcon} alt="copyIcon" name={NATIVE} onClick={handleCopy} draggable={false} />{" "}
               </p>
             </div>
@@ -60,7 +62,7 @@ function ManageWallet() {
             <div className={style.wallet__addressInput}>
               <label>EVM Chain Address:</label>
               <p className={style.wallet__addressInput__copyText}>
-                <span>{currentAccount?.evmAddress}</span>
+                <span>{shortner(currentAccount?.evmAddress, 15, 15)}</span>
                 <img src={CopyIcon} alt="copyIcon" name={EVM} onClick={handleCopy} draggable={false} />{" "}
               </p>
             </div>

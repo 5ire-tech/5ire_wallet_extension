@@ -34,6 +34,8 @@ export default function Context({ children }) {
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
   const [externalControlsState, setExternalControlState] = useState(externalControls);
   const [backgroundError, setBackgroundError] = useState(null);
+  const [showCongratLoader, setShowCongratLoader] = useState(false);
+  const [newWalletName, setNewWalletName] = useState("");
 
 
   Browser.storage.local.onChanged.addListener((changedData) => {
@@ -123,6 +125,7 @@ export default function Context({ children }) {
 
     if (data?.type === "create") {
       setNewAccount(data.newAccount);
+      navigate(ROUTES.NEW_WALLET_DETAILS);
     }
   };
 
@@ -131,9 +134,16 @@ export default function Context({ children }) {
     // console.log("Data in import Context :::: ",data);
 
     if (data?.vault && data?.newAccount) {
-      navigate(ROUTES.WALLET);
+      setShowCongratLoader(true)
+      setTimeout(() => {
+        navigate(ROUTES.WALLET);
+        setShowCongratLoader(false)
+
+      }, 2000)
+
     } else if (data?.errCode === 3) {
       setInputError(data?.errMessage ? data.errMessage : "");
+      setShowCongratLoader(false)
     }
   };
 
@@ -179,6 +189,8 @@ export default function Context({ children }) {
     delete newTx[accName];
     updateState(LABELS.TX_HISTORY, newTx)
   }
+
+
   const removeAccount = (data) => {
     setNewAccount(newAccountInitialState);
     if (data?.isInitialAccount) {
@@ -205,6 +217,8 @@ export default function Context({ children }) {
     backgroundError,
     externalControlsState,
     externalNativeTxDetails,
+    showCongratLoader,
+    newWalletName,
 
     //data setters
     setState,
@@ -222,6 +236,8 @@ export default function Context({ children }) {
     setExternalControlState,
     setExternalNativeTxDetails,
     importAccountByMnemonics,
+    setShowCongratLoader,
+    setNewWalletName
 
   }
 
