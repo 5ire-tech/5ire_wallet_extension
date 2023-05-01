@@ -309,7 +309,9 @@ export const MESSAGE_TYPE_LABELS = {
 export const ROUTE_FOR_APPROVAL_WINDOWS = {
     APPROVE_TX: "approve-tx",
     CONNECTION_ROUTE: "login-approve",
-    NATIVE_TX: "native-tx"
+    NATIVE_TX: "native-tx",
+    VALIDATOR_NOMINATOR_TXN: "validator-nomiator-tx",
+
 }
 
 

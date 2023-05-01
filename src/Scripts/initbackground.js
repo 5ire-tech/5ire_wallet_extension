@@ -20,6 +20,7 @@ import { Connection } from "../Helper/connection.helper";
 import { Error, ErrorPayload } from "../Utility/error_helper"
 import { sendMessageToTab, sendRuntimeMessage } from "../Utility/message_helper";
 import { assert, compactToU8a, isHex, u8aConcat, u8aEq, u8aWrapBytes } from "@polkadot/util"
+import ValidatorNominatorHandler from "./nativehelper";
 
 
 //for initilization of background events
@@ -92,7 +93,6 @@ export class InitBackground {
     Browser.runtime.onMessage.addListener(async (message, sender) => {
 
       const localData = await getDataLocal(LABELS.STATE);
-
       //checks for event from extension ui
       if (isEqual(message?.type, MESSAGE_TYPE_LABELS.INTERNAL_TX) || isEqual(message?.type, MESSAGE_TYPE_LABELS.FEE_AND_BALANCE)) {
         await this.rpcRequestProcessor.rpcCallsMiddleware(message, localData);
@@ -613,10 +613,11 @@ class ExternalTxTasks {
 
   //process and check external task (connection, tx approval)
   processExternalTask = async (message, state) => {
-
     if (isEqual(message.event, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION)) await this.closePopupSession(message, state)
     else if (isEqual(MESSAGE_EVENT_LABELS.EVM_TX, message.event)) await this.externalEvmTransaction(message, state);
-    else if (isEqual(MESSAGE_EVENT_LABELS.NATIVE_SIGNER, message.event)) await this.nativeSigner(message, state)
+    else if (isEqual(MESSAGE_EVENT_LABELS.NATIVE_SIGNER, message.event)) await this.nativeSigner(message, state);
+    else if (isEqual(MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE, message.event)) await this.validatorNominatorMethods(message, state)
+
   }
 
   //handle the evm external transaction
@@ -678,17 +679,32 @@ class ExternalTxTasks {
 
     //check if the requested method is supported by the handler
     if (hasProperty(this.validatorNominatorHandler, activeSession?.method)) {
-      if (message.data?.approve) {
-        const res = await this.validatorNominatorHandler[activeSession.method](activeSession.message, state);
+      if (message.data?.options?.isFee || message.data?.options?.isApproved) {
+        const res = await this.validatorNominatorHandler[activeSession?.method](state, activeSession.message, message.data?.options?.isFee);
+        console.log("ABC", res)
         if (!res.error) {
-          sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, { result: res.payload.data }));
+          const uiData = this.validatorNominatorHandler.get_formatted_method(activeSession?.method, activeSession.message)
+          if (message.data?.options?.isFee) {
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND, message.event, { fee: res.data, ...uiData })
+          } else {
+
+            sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, { result: res.data }));
+            await this.closePopupSession(message);
+
+          }
         }
-        else if (res.error) sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, { result: null }, null, null, res.error.errMessage));
+        else if (res.error) {
+          sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, { result: null }, null, null, res.error));
+          await this.closePopupSession(message);
+
+        }
+      } else {
+        sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, { result: null }, null, null, "Transaction rejected by user"));
+        await this.closePopupSession(message);
       }
     }
 
     //close the popup
-    await this.closePopupSession(message);
   }
 
   //close the current popup session

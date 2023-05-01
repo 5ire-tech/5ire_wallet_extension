@@ -276,9 +276,8 @@ export class ExternalConnection {
     //   sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.ACCOUNT_ACCESS_NOT_GRANTED));
     //   return;
     // }
-    console.log("Here data", data)
     const externalControls = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
-    await this.externalWindowController.newConnectionRequest({ route: ROUTES.VALIDATOR_NOMINATOR_TXN, ...data }, externalControls);
+    await this.externalWindowController.newConnectionRequest({ route: ROUTE_FOR_APPROVAL_WINDOWS.VALIDATOR_NOMINATOR_TXN, ...data }, externalControls);
 
   }
 
