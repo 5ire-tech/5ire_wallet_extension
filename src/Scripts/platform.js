@@ -87,10 +87,16 @@ export default class WindowManager {
   /**
    * get all currently opened window and remove extra windows
    */
-  filterAndRemoveWindows = async (filterId) => {
+  filterAndRemoveWindows = async (filterId, isRemoveAll) => {
     const allPopupWindows = await this.getAllPopupWindows();
+
+    if(isRemoveAll) {
+      for(let itemWindow of allPopupWindows) await this.closePopup(itemWindow.id);
+      return;
+    }
+
     const otherWindowThanTask = allPopupWindows.filter((item) => item.id !== filterId);
-    for(let itemWindow of otherWindowThanTask) this.closePopup(itemWindow.id);
+    for(let itemWindow of otherWindowThanTask) await this.closePopup(itemWindow.id);
   }
 
   /**

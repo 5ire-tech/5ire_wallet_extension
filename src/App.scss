@@ -134,8 +134,8 @@
     }
   }
   textarea {
-    height: 70px;
-    padding-right: 38px;
+    min-height: 70px;
+    max-height: 70px;
   }
 }
 .ant-input-group-wrapper {
@@ -500,7 +500,7 @@
 .ant-dropdown .ant-dropdown-menu,
 .ant-dropdown-menu-submenu .ant-dropdown-menu {
   background-color: #06142cf7 !important;
-  // border: 1px solid #fff !important;
+  border: 1px solid #fff !important;
 }
 .pasteTextArea {
   transform: translateY(-50%);
