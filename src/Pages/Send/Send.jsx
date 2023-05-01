@@ -21,6 +21,7 @@ import {
   LABELS,
   NATIVE,
   TX_TYPE,
+  EXTRA_FEE,
   ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
@@ -79,7 +80,7 @@ function Send() {
     } else {
       if (activeTab.toLowerCase() === EVM.toLowerCase()) {
         if (estimatedGas && !data.amount && data.to) {
-          const amount = Number(balance.evmBalance) - (Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0));
+          const amount = Number(balance.evmBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0));
           setData(p => ({ ...p, amount: amount }));
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
 
@@ -100,7 +101,7 @@ function Send() {
         }
       } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
         if (estimatedGas && !data.amount && data.to) {
-          const amount = Number(balance.nativeBalance) - (Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0));
+          const amount = Number(balance.nativeBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0));
           setData(p => ({ ...p, amount: amount }));
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
 

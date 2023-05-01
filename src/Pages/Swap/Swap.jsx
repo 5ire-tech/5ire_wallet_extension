@@ -21,6 +21,7 @@ import {
   NATIVE,
   LABELS,
   TX_TYPE,
+  EXTRA_FEE,
   ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
   EXISTENTIAL_DEPOSITE,
@@ -72,7 +73,7 @@ function Swap() {
     else {
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
         if (estimatedGas && !amount) {
-          const amount = Number(balance.evmBalance) - (Number(estimatedGas) + 0.1 + (isEd ? EXISTENTIAL_DEPOSITE : 0));
+          const amount = Number(balance.evmBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0));
           setAmount(amount > 0 ? amount : "");
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
           return;
@@ -89,7 +90,7 @@ function Swap() {
 
       } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
         if (estimatedGas && !amount) {
-          const amount = Number(balance.nativeBalance) - (Number(estimatedGas) + 0.1 + (isEd ? EXISTENTIAL_DEPOSITE : 0));
+          const amount = Number(balance.nativeBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0));
           setAmount(amount > 0 ? amount : "");
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
           return;

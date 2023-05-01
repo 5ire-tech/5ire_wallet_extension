@@ -10,6 +10,8 @@ export const CONNECTION_NAME = "5IRE_EXT";
 export const MAIN_POPUP = "MAIN_POPUP";
 export const PORT_NAME = "WEBEXT_REDUX_TEST";
 export const UI_CONNECTION_NAME = "5IRE_EXT_UI";
+
+export const EXTRA_FEE = 1;
 export const WINDOW_WIDTH = 400;
 export const DECIMALS = 10 ** 18;
 export const WINDOW_HEIGHT = 620;
@@ -236,8 +238,7 @@ export const WS_END_POINTS = {
 
 
 export const MESSAGE_EVENT_LABELS = {
-    NATIVE_SIGNER: "nativeSigner",
-    EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS: "externalNativeTransactionArgsAndGas",
+    TX_HASH: "txHash",
     EVM_FEE: "evmFee",
     EVM_TX: "evmTransfer",
     BALANCE: "getBalance",
@@ -245,12 +246,13 @@ export const MESSAGE_EVENT_LABELS = {
     NATIVE_TX: "nativeTransfer",
     LOGIN_UPDATE: "loginUpdate",
     NOTIFICATION: "notification",
-    NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
+    NATIVE_SIGNER: "nativeSigner",
+    BACKGROUND_ERROR: "backgroundError",
     UPDATE_TX_HISTORY: "txupdatehistory",
     EVM_TO_NATIVE_SWAP: "evmToNativeSwap",
+    NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
     CLOSE_POPUP_SESSION: "closePopupSession",
-    TX_HASH: "txHash",
-    BACKGROUND_ERROR: "backgroundError",
+    EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS: "externalNativeTransactionArgsAndGas",
 
     LOCK: "lock",
     UNLOCK: "unlock",
