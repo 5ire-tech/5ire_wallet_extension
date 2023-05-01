@@ -42,6 +42,7 @@ export default InputFieldSimple;
 
 export const InputField = ({
   min,
+  key,
   mb0,
   type,
   name,
@@ -70,7 +71,7 @@ export const InputField = ({
         name={name}
         type={type ? type : "text"}
         min={min}
-        // max = {max}
+        key={key}
         value={value}
         autoComplete="off"
         onChange={onChange}
