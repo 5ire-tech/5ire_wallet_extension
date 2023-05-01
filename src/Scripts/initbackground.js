@@ -676,7 +676,6 @@ class ExternalTxTasks {
 
   //close the current popup session
   closePopupSession = async (message) => {
-    log("close message: ", message)
     ExternalWindowControl.isApproved = message.data?.approve;
     const externalWindowControl = ExternalWindowControl.getInstance();
     await externalWindowControl.closeActiveSessionPopup();
@@ -1243,7 +1242,6 @@ export class GeneralWalletRPC {
       const { evmApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
-      log(message)
       let toAddress = data.toAddress ? data.toAddress : data?.data ? account.evmAddress : account.nativeAddress;
       let amount = data?.value;
 

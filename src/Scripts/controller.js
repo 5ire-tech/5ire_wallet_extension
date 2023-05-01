@@ -2,7 +2,6 @@ import { ExtensionStorageHandler } from "../Storage/loadstore";
 import WindowManager, { NotificationAndBedgeManager } from "./platform";
 import { ExternalAppsRequest, TabMessagePayload } from "../Utility/network_calls";
 import { isEqual, log, isNullorUndef } from "../Utility/utility";
-import { setUIdata, toggleSite } from "../Utility/redux_helper";
 import { EVM_JSON_RPC_METHODS, HTTP_END_POINTS, LABELS, ROUTE_FOR_APPROVAL_WINDOWS, STATE_CHANGE_ACTIONS, ERROR_MESSAGES, SUCCESS_MESSAGES, DECIMALS } from "../Constants";
 import { getDataLocal } from "../Storage/loadstore";
 import { sendMessageToTab } from "../Utility/message_helper";
