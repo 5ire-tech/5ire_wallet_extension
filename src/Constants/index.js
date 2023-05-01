@@ -7,6 +7,7 @@ export const COPIED = "Copied!";
 export const MNEMONIC = "mnemonic";
 export const PVT_KEY = "privateKey";
 export const CONNECTION_NAME = "5IRE_EXT";
+export const MAIN_POPUP = "MAIN_POPUP";
 export const PORT_NAME = "WEBEXT_REDUX_TEST";
 export const UI_CONNECTION_NAME = "5IRE_EXT_UI";
 export const WINDOW_WIDTH = 400;

@@ -10,7 +10,7 @@ import { txNotificationStringTemplate } from "./utils";
 import { NotificationAndBedgeManager } from "./platform";
 import { ExternalConnection, ExternalWindowControl } from "./controller";
 import { getDataLocal, ExtensionStorageHandler } from "../Storage/loadstore";
-import { CONNECTION_NAME, INTERNAL_EVENT_LABELS, DECIMALS, MESSAGE_TYPE_LABELS, STATE_CHANGE_ACTIONS, TX_TYPE, STATUS, LABELS, MESSAGE_EVENT_LABELS, AUTO_BALANCE_UPDATE_TIMER, TRANSACTION_STATUS_CHECK_TIMER, ONE_ETH_IN_GWEI, SIGNER_METHODS, TABS_EVENT } from "../Constants";
+import { CONNECTION_NAME, INTERNAL_EVENT_LABELS, DECIMALS, MESSAGE_TYPE_LABELS, STATE_CHANGE_ACTIONS, TX_TYPE, STATUS, LABELS, MESSAGE_EVENT_LABELS, AUTO_BALANCE_UPDATE_TIMER, TRANSACTION_STATUS_CHECK_TIMER, ONE_ETH_IN_GWEI, SIGNER_METHODS, TABS_EVENT, MAIN_POPUP } from "../Constants";
 import { hasLength, isObject, isNullorUndef, hasProperty, log, isEqual, isString } from "../Utility/utility";
 import { HTTP_END_POINTS, API, HTTP_METHODS, EVM_JSON_RPC_METHODS, ERRCODES, ERROR_MESSAGES, ERROR_EVENTS_LABELS } from "../Constants";
 import { EVMRPCPayload, EventPayload, TransactionPayload, TransactionProcessingPayload, TabMessagePayload } from "../Utility/network_calls";
@@ -164,6 +164,7 @@ export class InitBackground {
   bindPopupEvents = async () => {
     Browser.runtime.onConnect.addListener(async (port) => {
 
+      
       //perform according to the port name
       if (port.name === CONNECTION_NAME) {
         //todo
@@ -184,7 +185,13 @@ export class InitBackground {
           //   InitBackground.balanceTimer = null;
           // }
         });
-      }
+      } 
+      // else if(port.name === MAIN_POPUP) {
+      //   ExternalWindowControl.mainPopupOpen = true;
+      //   port?.onDisconnect.addListener(() => {
+      //     ExternalWindowControl.mainPopupOpen = false;
+      //   })
+      // }
     });
   }
 
@@ -876,8 +883,6 @@ export class TransactionsRPC {
       const network = transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
       const { evmApi, nativeApi } = NetworkHandler.api[network];
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
-
-      throw "";
 
       transactionHistory.status = STATUS.PENDING;
 

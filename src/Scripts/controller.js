@@ -15,9 +15,7 @@ import BigNumber from "bignumber.js";
 export class ExternalWindowControl {
 
   static instance = null;
-  // static pendingTask = 0;
   static isApproved = null;
-  static eventListnerControl = [];
 
   constructor() {
     this.windowManager = WindowManager.getInstance(this._handleClose.bind(this));
@@ -35,12 +33,6 @@ export class ExternalWindowControl {
     }
     return ExternalWindowControl.instance
   }
-
-
-  // //decress the pending task count
-  // decressPendingTask = () => ExternalWindowControl.pendingTask -= 1;
-  // //increase the pending task count
-  // increasePendingTask = () => ExternalWindowControl.pendingTask += 1;
 
 
   /**
@@ -94,10 +86,8 @@ export class ExternalWindowControl {
    */
   activatePopupSession = async (activeSession) => {
     const popupId = await this.windowManager.showPopup(activeSession.route);
-    ExternalWindowControl.eventListnerControl.push(popupId);
     await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.UPDATE_CURRENT_SESSION, {popupId}, {localStateKey: LABELS.EXTERNAL_CONTROLS})
     log("popupid: ", popupId)
-    await this.windowManager.filterAndRemoveWindows(popupId);
   }
 
   /**
@@ -150,15 +140,13 @@ export class ExternalWindowControl {
   _handleClose = async (windowId) => {
 
     const {activeSession} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+    await this.windowManager.filterAndRemoveWindows(activeSession?.popupId, true);
+
     if(!isEqual(activeSession?.popupId, windowId)) {
       log("not match the current task: ", activeSession?.popupId, windowId);
       return;
     }
-
-    // const isWindowIdFound = ExternalWindowControl.eventListnerControl.findIndex((item) => windowId === item);
-    // if(isWindowIdFound >= 0) ExternalWindowControl.eventListnerControl = ExternalWindowControl.eventListnerControl.filter(item => item !== windowId);
-    // else return;
-
+    
     this._sendRejectAndCloseResponse(activeSession);
   }
 
@@ -167,6 +155,7 @@ export class ExternalWindowControl {
    * @param {*} activeSession 
    */
   _sendRejectAndCloseResponse = async (activeSession) => {
+
         //check if window is closed by close button
         if(isNullorUndef(ExternalWindowControl.isApproved) || isEqual(ExternalWindowControl.isApproved, false)) {
           activeSession?.tabId && sendMessageToTab(activeSession?.tabId, new TabMessagePayload(activeSession.id, {result: null}, null, null, ERROR_MESSAGES.REJECTED_BY_USER))
@@ -182,7 +171,7 @@ export class ExternalWindowControl {
 
         //set the approve to null for next session
         ExternalWindowControl.isApproved = null;
-      }
+  }
 
   /**
    * show the bedge
