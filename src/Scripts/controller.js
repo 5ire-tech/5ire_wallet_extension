@@ -111,7 +111,7 @@ export class ExternalWindowControl {
 
     //if window find then close the window
     await this.windowManager.closePopup(externalControlsState.activeSession.popupId);
-    } else this._sendRejectAndCloseResponse(externalControlsState.activeSession);
+    }
 
   }
 
