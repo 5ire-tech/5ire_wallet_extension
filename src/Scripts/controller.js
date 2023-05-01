@@ -2,7 +2,6 @@ import { ExtensionStorageHandler } from "../Storage/loadstore";
 import WindowManager, { NotificationAndBedgeManager } from "./platform";
 import { ExternalAppsRequest, TabMessagePayload } from "../Utility/network_calls";
 import { isEqual, log, isNullorUndef } from "../Utility/utility";
-import { setUIdata, toggleSite } from "../Utility/redux_helper";
 import { EVM_JSON_RPC_METHODS, HTTP_END_POINTS, LABELS, ROUTE_FOR_APPROVAL_WINDOWS, STATE_CHANGE_ACTIONS, ERROR_MESSAGES, SUCCESS_MESSAGES, DECIMALS } from "../Constants";
 import { getDataLocal } from "../Storage/loadstore";
 import { sendMessageToTab } from "../Utility/message_helper";
@@ -15,9 +14,7 @@ import BigNumber from "bignumber.js";
 export class ExternalWindowControl {
 
   static instance = null;
-  // static pendingTask = 0;
   static isApproved = null;
-  static eventListnerControl = [];
 
   constructor() {
     this.windowManager = WindowManager.getInstance(this._handleClose.bind(this));
@@ -35,12 +32,6 @@ export class ExternalWindowControl {
     }
     return ExternalWindowControl.instance
   }
-
-
-  // //decress the pending task count
-  // decressPendingTask = () => ExternalWindowControl.pendingTask -= 1;
-  // //increase the pending task count
-  // increasePendingTask = () => ExternalWindowControl.pendingTask += 1;
 
 
   /**
@@ -86,6 +77,7 @@ export class ExternalWindowControl {
     await this._showPendingTaskBedge()
     //show the popup after changing active session from pending queue
     const externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+    log("change the session: ", externalControlsState);
     externalControlsState.activeSession && this.activatePopupSession(externalControlsState.activeSession);
   }
 
@@ -94,10 +86,8 @@ export class ExternalWindowControl {
    */
   activatePopupSession = async (activeSession) => {
     const popupId = await this.windowManager.showPopup(activeSession.route);
-    ExternalWindowControl.eventListnerControl.push(popupId);
     await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.UPDATE_CURRENT_SESSION, {popupId}, {localStateKey: LABELS.EXTERNAL_CONTROLS})
     log("popupid: ", popupId)
-    await this.windowManager.filterAndRemoveWindows(popupId);
   }
 
   /**
@@ -121,7 +111,7 @@ export class ExternalWindowControl {
 
     //if window find then close the window
     await this.windowManager.closePopup(externalControlsState.activeSession.popupId);
-    }
+    } else this._sendRejectAndCloseResponse(externalControlsState.activeSession);
 
   }
 
@@ -149,16 +139,14 @@ export class ExternalWindowControl {
    */
   _handleClose = async (windowId) => {
 
+    await this.windowManager.filterAndRemoveWindows(null, true);
     const {activeSession} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+
     if(!isEqual(activeSession?.popupId, windowId)) {
       log("not match the current task: ", activeSession?.popupId, windowId);
       return;
     }
-
-    // const isWindowIdFound = ExternalWindowControl.eventListnerControl.findIndex((item) => windowId === item);
-    // if(isWindowIdFound >= 0) ExternalWindowControl.eventListnerControl = ExternalWindowControl.eventListnerControl.filter(item => item !== windowId);
-    // else return;
-
+    
     this._sendRejectAndCloseResponse(activeSession);
   }
 
@@ -167,22 +155,19 @@ export class ExternalWindowControl {
    * @param {*} activeSession 
    */
   _sendRejectAndCloseResponse = async (activeSession) => {
+
         //check if window is closed by close button
         if(isNullorUndef(ExternalWindowControl.isApproved) || isEqual(ExternalWindowControl.isApproved, false)) {
           activeSession?.tabId && sendMessageToTab(activeSession?.tabId, new TabMessagePayload(activeSession.id, {result: null}, null, null, ERROR_MESSAGES.REJECTED_BY_USER))
         }
     
         
+       //set the approve to null for next session
+       ExternalWindowControl.isApproved = null;
         //change the current popup session
         await this.changeActiveSession();
-
-        if(isNullorUndef(ExternalWindowControl.isApproved)) {
-          await this._showPendingTaskBedge();
-         } 
-
-        //set the approve to null for next session
-        ExternalWindowControl.isApproved = null;
-      }
+        await this._showPendingTaskBedge();
+  }
 
   /**
    * show the bedge
