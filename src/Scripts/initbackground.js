@@ -356,9 +356,9 @@ class TransactionQueue {
 
 
   //process next queued transaction
-  processQueuedTransaction = () => {
+  processQueuedTransaction = async () => {
     //dequeue next transaction and add it as processing transaction
-    this.services.updateLocalState(STATE_CHANGE_ACTIONS.PROCESS_QUEUE_TRANSACTION, {}, { localStateKey: LABELS.TRANSACTION_QUEUE })
+    await this.services.updateLocalState(STATE_CHANGE_ACTIONS.PROCESS_QUEUE_TRANSACTION, {}, { localStateKey: LABELS.TRANSACTION_QUEUE })
   }
 
 
@@ -420,8 +420,8 @@ class TransactionQueue {
 
   //set timer for updating the transaction status
   checkTransactionStatus = async () => {
-
-    //check if current transaction is there or not
+    try {
+      //check if current transaction is there or not
     const transactionQueue = await getDataLocal(LABELS.TRANSACTION_QUEUE);
     const hasPendingTx = transactionQueue.txQueue.length;
 
@@ -448,6 +448,7 @@ class TransactionQueue {
       const { transactionHistoryTrack: { txHash, isEvm, chain } } = currentTransaction;
       const transactionStatus = await this.services.getTransactionStatus(txHash, isEvm, chain);
 
+      log("status: ", transactionStatus?.status);
 
       //if transaction status is found ether Failed or Success
       if (transactionStatus?.status) {
@@ -482,6 +483,9 @@ class TransactionQueue {
       else {
         TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus))
       }
+    }
+    } catch (err) {
+      log("error while transaction processing: ", err)
     }
   }
 
@@ -929,7 +933,7 @@ export class TransactionsRPC {
         } else new Error(new ErrorPayload(ERRCODES.NETWORK_REQUEST, ERROR_MESSAGES.TX_FAILED)).throw();
       }
     } catch (err) {
-
+      log("error while evm to native swap: ", err)
       transactionHistory.status = transactionHistory.txHash ? STATUS.PENDING : STATUS.FAILED;
 
       payload = {
