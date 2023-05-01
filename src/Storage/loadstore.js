@@ -128,8 +128,8 @@ export class ExtensionStorageHandler {
 
     //remove the history item
     removeHistoryItem = async (data, state, options) => {
-        const {id} = data;
-        const newState = {...state};
+        const { id } = data;
+        const newState = { ...state };
         newState.txHistory[options.account.accountName] = newState.txHistory[options.account.accountName].filter((item) => item.id !== id);
         return await this._updateStorage(newState);
     }
@@ -190,7 +190,7 @@ export class ExtensionStorageHandler {
 
     //remove the current failed transaction
     removeFailedTx = async (data, state) => {
-        const newState = {...state, currentTransaction: null};
+        const newState = { ...state, currentTransaction: null };
         return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
     }
 
@@ -255,8 +255,15 @@ export class ExtensionStorageHandler {
 
     //add hd account
     addAccount = async (message, state) => {
-        const { vault } = message;
-        const newState = { ...state, vault };
+        const { vault, newAccount } = message;
+        const currentAccount = {
+            evmAddress: newAccount.evmAddress,
+            accountName: newAccount.accountName,
+            accountIndex: newAccount.accountIndex,
+            nativeAddress: newAccount.nativeAddress,
+        }
+        const txHistory = this._txProperty(state, newAccount.accountName);
+        const newState = { ...state, vault, currentAccount, txHistory };
         return await this._updateStorage(newState);
     };
 
@@ -273,14 +280,14 @@ export class ExtensionStorageHandler {
             newState.isLogin = false;
             newState.currentAccount = userState.currentAccount;
             if (newState?.txHistory[newState?.accountName]) {
-                delete newState.txHistory[newState?.accountName]          
+                delete newState.txHistory[newState?.accountName]
             }
         }
         return await this._updateStorage(newState);
 
     }
 
-    
+
     // resetVaultAndPass = async (message, state) => {
 
     //     const newState = { ...state, vault: null, isLogin: false };

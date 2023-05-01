@@ -1,17 +1,16 @@
 import { useEffect } from "react";
+import { Switch, Tooltip } from "antd";
 import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
 import { AuthContext } from "../../Store";
 import Info from "../../Assets/infoIcon.svg";
-import SmallLogo from "../../Assets/smallLogo.svg"
-import { shortner } from "../../Helper/helper";
+import { isEmpty } from "../../Utility/utility";
 import SwapIcon from "../../Assets/SwapIcon.svg";
-import ComplSwap from "../../Assets/succeslogo.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
+import SmallLogo from "../../Assets/smallLogo.svg";
+import ComplSwap from "../../Assets/succeslogo.svg";
 import React, { useState, useContext } from "react";
-import CopyIcon from "../../Assets/CopyIcon.svg";
-import { isEmpty, isEqual } from "../../Utility/utility";
 // import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
@@ -20,15 +19,13 @@ import { InputField } from "../../Components/InputField/InputFieldSimple";
 import {
   EVM,
   NATIVE,
-  COPIED,
   LABELS,
+  TX_TYPE,
   ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
   EXISTENTIAL_DEPOSITE,
   MESSAGE_EVENT_LABELS,
-  TX_TYPE,
 } from "../../Constants/index";
-import { Switch, Tooltip } from "antd";
 
 
 function Swap() {
@@ -40,39 +37,49 @@ function Swap() {
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [toFrom, setToFrom] = useState({ from: NATIVE, to: EVM });
   const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
-  const { balance, currentAccount } = state;
+  const { balance } = state;
 
-
+  //Reset the amount and error when to and from changes
   useEffect(() => {
     setAmount("");
     setError("");
+  }, [toFrom.to]);
 
-  }, [toFrom]);
+  //Reset the amount and error when to and from changes
+  useEffect(() => {
+    setAmount("");
+    setError("");
+  }, []);
 
-
+  //Get fee if to and amount is present
   useEffect(() => {
     const getData = setTimeout(() => {
-      if (!isEmpty(amount) && !error) {
+      if ((!isEmpty(amount) && !error && !estimatedGas)) {
         getFee();
-      } else {
-        updateEstimatedGas(null);
+      } else if (!amount || error || !estimatedGas) {
         setDisable(true);
       }
     }, 1000);
 
     return () => clearTimeout(getData);
 
-  }, [amount, error, isEd]);
+  }, [amount, error, isEd, toFrom.from, estimatedGas]);
 
 
+  //Check for Insufficent balance
   useEffect(() => {
     if (!estimatedGas) setDisable(true);
-
     else {
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
-        if ((Number(amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0)) >= Number(balance.evmBalance)) {
-          updateEstimatedGas(null);
+        if (estimatedGas && !amount) {
+          const amount = Number(balance.evmBalance) - (Number(estimatedGas) + 0.1 + (isEd ? EXISTENTIAL_DEPOSITE : 0));
+          setAmount(amount > 0 ? amount : "");
+          updateEstimatedGas(amount > 0 ? estimatedGas : null);
+          return;
+        }
+        else if ((Number(amount) + (Number(estimatedGas)) + (isEd ? EXISTENTIAL_DEPOSITE : 0)) > Number(balance.evmBalance)) {
           setDisable(true);
+          updateEstimatedGas(null);
           setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
 
         } else {
@@ -81,10 +88,15 @@ function Swap() {
         }
 
       } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
-
-        if ((Number(amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0)) >= Number(balance.nativeBalance)) {
-          updateEstimatedGas(null);
+        if (estimatedGas && !amount) {
+          const amount = Number(balance.nativeBalance) - (Number(estimatedGas) + 0.1 + (isEd ? EXISTENTIAL_DEPOSITE : 0));
+          setAmount(amount > 0 ? amount : "");
+          updateEstimatedGas(amount > 0 ? estimatedGas : null);
+          return;
+        }
+        if ((Number(amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0)) > Number(balance.nativeBalance)) {
           setDisable(true);
+          updateEstimatedGas(null);
           setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
 
         } else {
@@ -94,17 +106,10 @@ function Swap() {
 
       }
     }
-  }, [estimatedGas]);
+  }, [estimatedGas, amount, balance.nativeBalance, isEd, toFrom.from, balance.evmBalance]);
 
   const blockInvalidChar = e => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
 
-
-  //set the ED toggler state
-  const onChangeToggler = (checked) => {
-    setEd(checked);
-    updateEstimatedGas(null);
-    setError("");
-  };
 
   //validate amount
   const validateAmount = () => {
@@ -140,6 +145,7 @@ function Swap() {
     }
   };
 
+  //Perform swap
   const handleApprove = async (e) => {
     try {
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
@@ -156,23 +162,33 @@ function Swap() {
     }
   };
 
-
   //for getting the fee details
-  const getFee = async () => {
-
-    if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase()) {
-      updateLoading(true);
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, { value: amount, options: { account: state.currentAccount } });
-    } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase()) {
-      updateLoading(true);
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, { value: amount, options: { account: state.currentAccount } });
+  const getFee = async (loader = true) => {
+    if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase() && balance.nativeBalance) {
+      loader && updateLoading(true);
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE,
+        {
+          value: amount ? amount : balance?.nativeBalance,
+          options: {
+            account: state.currentAccount
+          }
+        });
+    } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase() && balance.evmBalance) {
+      loader && updateLoading(true);
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE,
+        {
+          value: amount ? amount : balance?.evmBalance,
+          options: {
+            account: state.currentAccount
+          }
+        }
+      );
     }
 
     updateEstimatedGas(null);
   };
 
-
-
+  //handle the changed value of inputs
   const handleChange = (e) => {
     const val = e.target.value;
     const arr = val.split(".");
@@ -197,7 +213,7 @@ function Swap() {
     }
   };
 
-
+  //Perform action on click of Enter
   const handleEnter = (e) => {
     if ((e.key === LABELS.ENTER)) {
       if (!disableBtn) {
@@ -206,16 +222,17 @@ function Swap() {
     }
   };
 
-
+  //handle Ok and cancel button of popup
   const handle_OK_Cancel = () => {
     setAmount("");
-    updateEstimatedGas(null);
     setDisable(true);
     setIsFaildOpen(false);
     setIsModalOpen(false);
+    updateEstimatedGas(null);
   };
 
 
+  //Set To and from
   const handleClick = () => {
 
     if (toFrom.from.toLowerCase() === EVM.toLowerCase()) { }
@@ -229,19 +246,56 @@ function Swap() {
 
   };
 
-
-  const handleCopy = (e) => {
-    if (e.target.name.toLowerCase() === NATIVE.toLowerCase())
-      navigator.clipboard.writeText(currentAccount?.nativeAddress);
-
-    if (e.target.name.toLowerCase() === EVM.toLowerCase())
-      navigator.clipboard.writeText(currentAccount?.evmAddress);
-
-    // if (e.target.name.toLowerCase() === "hash")
-    //   navigator.clipboard.writeText(txHash);
-
-    toast.success(COPIED);
+  //set the ED toggler state
+  const onChangeToggler = (checked) => {
+    setEd(checked);
+    setError("");
+    setAmount("");
+    updateEstimatedGas(null);
   };
+
+  //performs action when user click on max button
+  const handleMaxClick = () => {
+    setAmount("");
+    setError("");
+    getFee();
+  }
+
+  const suffix = (
+    <button className="maxBtn" onClick={handleMaxClick}>Max</button>
+  );
+
+  // useEffect(() => {
+  //   const getData = setTimeout(() => {
+  //     if (
+  //       (!isEmpty(amount) && !error)
+  //       ||
+  //       !amount
+  //     ) {
+  //       getFee(!amount ? false : true);
+  //     } else {
+  //       updateEstimatedGas(null);
+  //       setDisable(true);
+  //     }
+  //   }, 1000);
+
+  //   return () => clearTimeout(getData);
+
+  // }, [amount, error, isEd, maxAmount, toFrom.from]);
+
+
+  // const handleCopy = (e) => {
+  //   if (e.target.name.toLowerCase() === NATIVE.toLowerCase())
+  //     navigator.clipboard.writeText(currentAccount?.nativeAddress);
+
+  //   if (e.target.name.toLowerCase() === EVM.toLowerCase())
+  //     navigator.clipboard.writeText(currentAccount?.evmAddress);
+
+  //   // if (e.target.name.toLowerCase() === "hash")
+  //   //   navigator.clipboard.writeText(txHash);
+
+  //   toast.success(COPIED);
+  // };
 
 
   return (
@@ -288,6 +342,8 @@ function Swap() {
           <div>
             <InputField
               min={"0"}
+              key="swapInput"
+              name={"swapAmount"}
               type="number"
               value={amount}
               coloredBg={true}
@@ -302,6 +358,7 @@ function Swap() {
                   5ire
                 </span>
               }
+              suffix={suffix}
 
             />
             <p className="errorText">{error}</p>
