@@ -338,7 +338,7 @@ function BalanceDetails({ mt0 }) {
                               <h2>{e.accountName}</h2>
 
                               {e?.accountName === currentAccount?.accountName ? (
-                                <p>{`${balance?.totalBalance} 5ire`}</p>
+                                <p><span className={style.activeDis_Modal__leftSec__spanContact}>{`${balance?.totalBalance} `}</span>5ire</p>
                               ) : (
                                 <p
                                   classname={style.activeDis_Modal__switchAcc}
