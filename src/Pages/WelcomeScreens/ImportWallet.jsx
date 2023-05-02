@@ -3,12 +3,12 @@ import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import TextArea from "antd/es/input/TextArea";
 import { useNavigate } from "react-router-dom";
+import CongratulationsScreen from "./CongratulationsScreen";
 import React, { useState, useEffect, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { isEmpty, validateMnemonic } from "../../Utility/utility";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
-// import PrivacyPolicy from "../../Components/MenuFooter/PrivacyPolicy";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 import {
@@ -19,7 +19,6 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
-import CongratulationsScreen from "./CongratulationsScreen";
 
 
 
@@ -96,7 +95,7 @@ function ImportWallet() {
       setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
       setDisable(true);
     }
-    else if (!validateMnemonic(data.key)) {
+    else if (!validateMnemonic(data?.key?.trim())) {
       setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INVALID_MNEMONIC }));
       setDisable(true);
     }
@@ -107,14 +106,14 @@ function ImportWallet() {
 
   const handleClick = async (e) => {
     if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
-      if (!warrning.key && !warrning.acc && data.accName && data.key) {
+      if (!warrning.key && !warrning.acc && data?.accName && data?.key) {
 
         if (userPass && !isLogin) {
 
           setShow(true)
           setTimeout(() => {
             setShow(false)
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: userPass, opts: { mnemonic: data.key, name: data.accName.trim() }, type: LABELS.IMPORT });
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: userPass, opts: { mnemonic: data?.key?.trim(), name: data?.accName?.trim() }, type: LABELS.IMPORT });
           }, 2000)
 
 
@@ -128,7 +127,7 @@ function ImportWallet() {
             }));
           } else {
 
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC, { mnemonic: data.key, name: data.accName.trim() });
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC, { mnemonic: data?.key?.trim(), name: data.accName.trim() });
 
           }
 

@@ -187,7 +187,7 @@ function Send() {
 
   //for getting the fee details
   const getFee = async (loader = true) => {
-    if (activeTab.toLowerCase() === NATIVE.toLowerCase() && balance.nativeBalance) {
+    if (activeTab.toLowerCase() === NATIVE.toLowerCase() && Number(balance.nativeBalance) > 0) {
       loader && updateLoading(true);
 
       //calculate the native fee
@@ -200,7 +200,7 @@ function Send() {
           options: { account: state.currentAccount },
         }
       );
-    } else if (activeTab.toLowerCase() === EVM.toLowerCase() && balance.evmBalance) {
+    } else if (activeTab.toLowerCase() === EVM.toLowerCase() && Number(balance.evmBalance) > 0) {
       loader && updateLoading(true);
 
       //calculate the evm fee
