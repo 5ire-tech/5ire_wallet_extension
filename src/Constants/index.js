@@ -11,7 +11,7 @@ export const MAIN_POPUP = "MAIN_POPUP";
 export const PORT_NAME = "WEBEXT_REDUX_TEST";
 export const UI_CONNECTION_NAME = "5IRE_EXT_UI";
 
-export const EXTRA_FEE = 1;
+export const EXTRA_FEE = 0.001;
 export const WINDOW_WIDTH = 400;
 export const DECIMALS = 10 ** 18;
 export const WINDOW_HEIGHT = 620;
@@ -97,7 +97,7 @@ export const ERROR_MESSAGES = {
     LOGOUT_ERR: "Error while logging out",
     INVALID_MNEMONIC: "Invalid mnemonic.",
     INCORRECT_PASS: "Incorrect password.",
-    INCORRECT_ADDRESS: "Incorrect address.",
+    INCORRECT_ADDRESS: "Invalid address.",
     INPUT_REQUIRED: "This field is required.",
     PASS_DONT_MATCH: "Passwords do not match.",
     INSUFFICENT_BALANCE: "Insufficent Balance.",

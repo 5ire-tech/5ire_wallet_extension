@@ -85,9 +85,14 @@ function TransectionHistry({ selectedTransaction, account }) {
         </div>
         <div className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
           <h3>Transaction ID</h3>
-          <span>{selectedTransaction?.txHash && shortner(selectedTransaction?.txHash)}
-            <img src={CopyIcon} alt="copyIcon" onClick={() => handleClick(selectedTransaction?.txHash)} />
-          </span>
+          {
+            selectedTransaction?.txHash ?
+              <span>{shortner(selectedTransaction?.txHash)}
+                <img src={CopyIcon} alt="copyIcon" onClick={() => handleClick(selectedTransaction?.txHash)} />
+              </span>
+              :
+              <span >N/A</span>
+          }
         </div>
       </div>
       <div className={style.transectionHistry__swapCopy} style={{ marginTop: "29px" }}>
@@ -97,11 +102,11 @@ function TransectionHistry({ selectedTransaction, account }) {
         </div>
         <div className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
           <h3>Fee</h3>
-          <span>{selectedTransaction?.gasUsed ? fixNumber(selectedTransaction?.gasUsed) + " " + CURRENCY : "Nil"}</span>
+          <span>{selectedTransaction?.gasUsed ? fixNumber(selectedTransaction?.gasUsed) + " " + CURRENCY : "N/A"}</span>
         </div>
       </div>
       <div className={style.transectionHistry__viewExplorer}>
-        <p onClick={openExplorerTab}>View on Explorer <img src={DarkRyt} alt="view on explorer" /></p>
+        <p className={selectedTransaction.txHash ? "" : ""} disabled={selectedTransaction.txHash ? false : true} onClick={openExplorerTab}>View on Explorer <img src={DarkRyt} alt="view on explorer" /></p>
       </div>
     </div>
   );
