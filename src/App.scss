@@ -1,6 +1,13 @@
 @import "./styles/__vars.scss";
+body {
+  max-width: 400px;
+  display: flex;
+  justify-content: center;
+}
 .App {
   text-align: center;
+  max-width: 400px;
+
   // min-height: 100vh;
 }
 .WelcomeLayout {
