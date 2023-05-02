@@ -23,6 +23,10 @@ function EnterPassword() {
   const { inputError, setInputError, passVerified, setPassVerified } = useContext(AuthContext);
 
   useEffect(() => {
+    setInputError('')
+  }, [])
+
+  useEffect(() => {
     if (inputError || !data) {
       setDisable(true);
     } else {
