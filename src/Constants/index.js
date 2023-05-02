@@ -97,7 +97,7 @@ export const ERROR_MESSAGES = {
     LOGOUT_ERR: "Error while logging out",
     INVALID_MNEMONIC: "Invalid mnemonic.",
     INCORRECT_PASS: "Incorrect password.",
-    INCORRECT_ADDRESS: "Incorrect address.",
+    INCORRECT_ADDRESS: "Invalid address.",
     INPUT_REQUIRED: "This field is required.",
     PASS_DONT_MATCH: "Passwords do not match.",
     INSUFFICENT_BALANCE: "Insufficent Balance.",
