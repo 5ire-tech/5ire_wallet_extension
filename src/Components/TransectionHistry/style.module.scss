@@ -72,8 +72,9 @@
 
 
   }
-  &__datetimeSwap{
-    span{
+
+  &__datetimeSwap {
+    span {
       width: auto !important;
       word-break: break-word;
       white-space: initial;
@@ -143,5 +144,11 @@
 
   &__failed {
     color: #FF6332 !important;
+  }
+
+  &:disabled {
+    &:hover {
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
   }
 }

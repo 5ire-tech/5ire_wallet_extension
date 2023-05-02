@@ -2,7 +2,7 @@ import React from 'react';
 import style from "./style.module.scss";
 import Swap from "../../Assets/swap.svg";
 import Sent from "../../Assets/sent.svg";
-import { STATUS } from '../../Constants';
+import { EVM, LABELS, NATIVE, STATUS } from '../../Constants';
 import { fixNumber, numFormatter } from "../../Helper/helper";
 import { formatDate, shortner } from "../../Helper/helper"
 
@@ -18,7 +18,8 @@ export default function HistoryItem({ historyItem, handleHistoryOpen }) {
 
           <div className={style.historySec__historyMarketSwap__leftContact} onClick={() => { handleHistoryOpen(historyItem) }}>
             <h3>{historyItem.type}</h3>
-            <p>{historyItem.to && historyItem.to.length > 40 ? shortner(historyItem.to) : historyItem.to}</p>
+            {/* <p>{historyItem.to && historyItem.to.length > 40 ? shortner(historyItem.to) : historyItem.to}</p> */}
+            <p>{historyItem?.to && historyItem?.to?.length > 40 ? (historyItem?.to?.startsWith(5) ? NATIVE : EVM) : historyItem.to}</p>
           </div>
 
         </div>

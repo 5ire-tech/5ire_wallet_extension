@@ -11,7 +11,7 @@ export const MAIN_POPUP = "MAIN_POPUP";
 export const PORT_NAME = "WEBEXT_REDUX_TEST";
 export const UI_CONNECTION_NAME = "5IRE_EXT_UI";
 
-export const EXTRA_FEE = 1;
+export const EXTRA_FEE = 0.001;
 export const WINDOW_WIDTH = 400;
 export const DECIMALS = 10 ** 18;
 export const WINDOW_HEIGHT = 620;
