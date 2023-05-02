@@ -8,15 +8,15 @@ import { Error, ErrorPayload } from "../Utility/error_helper";
 //Handle the window and notification creation
 export default class WindowManager {
   static instance = null;
-
-  constructor(bindCloseEvent) {
-    this.addOnRemovedListener(bindCloseEvent);
+  constructor(windowCloseCallback, windowCreateCallback) {
+    this.addOnRemovedListener(windowCloseCallback);
+    this.addOnWindowCreateListner(windowCreateCallback)
   }
 
   //Get instance from builder function
-  static getInstance(bindCloseEvent) {
+  static getInstance(windowCloseCallback ,windowCreateCallback) {
     if(!WindowManager.instance) {
-      WindowManager.instance = new WindowManager(bindCloseEvent);
+      WindowManager.instance = new WindowManager(windowCloseCallback, windowCreateCallback);
 
       delete WindowManager.constructor;
     }
@@ -41,10 +41,14 @@ export default class WindowManager {
    */
   showPopup = async (route = "") => {
 
-
       //position control's
       let left = 0;
       let top = 0;
+
+      if(this.popupId) {
+        this.focusWindow(this.popupId);
+        return;
+      }
       
       try {
         const lastFocused = await this.getLastFocusedWindow();
@@ -61,9 +65,8 @@ export default class WindowManager {
         top = Math.max(screenY, 0);
         left = Math.max(screenX + (outerWidth - WINDOW_WIDTH), 0);
       }
-      
-      const extensionURL = Browser.runtime.getURL("index.html") + `?route=${route}`;
 
+      const extensionURL = Browser.runtime.getURL("index.html") + `?route=${route}`;
 
       // create new approval window
       const popupWindow = await this.openWindow({
@@ -246,7 +249,7 @@ export default class WindowManager {
       }
     }
   
-    //add the listner for close btn
+    //add the listner for window close
     addOnRemovedListener(listener) {
      const hasListner = Browser.windows.onRemoved.hasListeners((id) => {log("Here is the has listner callback: ", id)})
 
@@ -255,6 +258,12 @@ export default class WindowManager {
         }
   
     }
+
+    //add the listner for create window event
+    addOnWindowCreateListner(windowCreateCallback) {
+      Browser.windows.onCreated.addListener(windowCreateCallback);
+    }
+
   
     //get all windows
     async getAllWindows() {

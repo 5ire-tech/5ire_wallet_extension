@@ -17,7 +17,7 @@ export class ExternalWindowControl {
   static isApproved = null;
 
   constructor() {
-    this.windowManager = WindowManager.getInstance(this._handleClose.bind(this));
+    this.windowManager = WindowManager.getInstance(this._handleClose, this._handleCreate);
     this.notificationAndBedgeHandler = NotificationAndBedgeManager.getInstance();
   }
 
@@ -77,7 +77,7 @@ export class ExternalWindowControl {
     await this._showPendingTaskBedge()
     //show the popup after changing active session from pending queue
     const externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
-    log("change the session: ", externalControlsState);
+    // log("change the session: ", externalControlsState);
     externalControlsState.activeSession && this.activatePopupSession(externalControlsState.activeSession);
   }
 
@@ -104,7 +104,7 @@ export class ExternalWindowControl {
     //check if there is any window opened with popupid
     const window = await this.windowManager.getWindowById(externalControlsState.activeSession.popupId);
     if(!window) {
-      log("closed wihtout using the window");
+      // log("closed wihtout using the window");
       this._sendRejectAndCloseResponse(externalControlsState.activeSession);
       return;
     }
@@ -135,7 +135,7 @@ export class ExternalWindowControl {
   }
 
   /**
-   * callback for close event
+   * callback for window close event
    */
   _handleClose = async (windowId) => {
 
@@ -143,11 +143,17 @@ export class ExternalWindowControl {
     const {activeSession} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
 
     if(!isEqual(activeSession?.popupId, windowId)) {
-      log("not match the current task: ", activeSession?.popupId, windowId);
+      // log("not match the current task: ", activeSession?.popupId, windowId);
       return;
     }
     
     this._sendRejectAndCloseResponse(activeSession);
+  }
+
+/**
+ * callback for window create event
+ */
+  _handleCreate = async (windowId) => {
   }
 
   /**
@@ -174,7 +180,7 @@ export class ExternalWindowControl {
    */
   _showPendingTaskBedge = async (externalControlsState=null) => {
     if(!externalControlsState) externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
-    log("here is pending task: ", externalControlsState.activeSession)
+    // log("here is pending task: ", externalControlsState.activeSession)
 
     //check if there is any pending task if found then show the pending task count in bedge
     let pendingTaskCount = externalControlsState.connectionQueue.length;
