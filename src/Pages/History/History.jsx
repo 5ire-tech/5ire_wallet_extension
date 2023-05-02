@@ -38,9 +38,9 @@ function History() {
       </div>
 
       {
-        (txHistory[currentAccount?.accountName] && txHistory[currentAccount?.accountName].length > 0) ?
+        (txHistory[currentAccount?.evmAddress] && txHistory[currentAccount?.evmAddress].length > 0) ?
           (
-            arrayReverser(txHistory[currentAccount?.accountName].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()))).map((data, index) => (
+            arrayReverser(txHistory[currentAccount?.evmAddress].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()))).map((data, index) => (
               <HistoryItem historyItem={data} handleHistoryOpen={handleHistoryOpen} key={CURRENCY + index} index={index} />
             ))
           ) : (<h4 className={style.noTxn}>No Transaction Found!</h4>)

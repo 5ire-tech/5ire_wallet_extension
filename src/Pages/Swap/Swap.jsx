@@ -165,7 +165,7 @@ function Swap() {
 
   //for getting the fee details
   const getFee = async (loader = true) => {
-    if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase() && balance.nativeBalance) {
+    if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase() && Number(balance?.nativeBalance) > 0) {
       loader && updateLoading(true);
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE,
         {
