@@ -71,12 +71,13 @@ function ManageWallet() {
             <ButtonComp
               onClick={() => navigate(ROUTES.ENTER_PASS + "/" + PVT_KEY)}
               text="Export Private Key"
-            ></ButtonComp>
-            <ButtonComp
+            >
+            </ButtonComp>
+            {/* <ButtonComp
               bordered={true}
               onClick={() => navigate(ROUTES.ENTER_PASS + "/" + MNEMONIC)}
               text="Reveal Mnemonic"
-            />
+            /> */}
           </div>
         </div>
       </div>

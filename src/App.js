@@ -3,7 +3,7 @@ import { ROUTES } from "./Routes";
 import Send from "./Pages/Send/Send";
 import Swap from "./Pages/Swap/Swap";
 import { AuthContext } from "./Store";
-import { EMTY_STR, MAIN_POPUP } from "./Constants";
+import { EMTY_STR } from "./Constants";
 import Wallet from "./Pages/Wallet/Wallet";
 import Loader from "./Pages/Loader/Loader";
 import NativeTx from "./Components/NativeTx";
@@ -14,6 +14,7 @@ import WelcomeLayout from "./Layout/WelcomeLayout";
 import MyAccount from "./Pages/MyAccount/MyAccount";
 import FixWidthLayout from "./Layout/FixWidthLayout";
 import PrivateKey from "./Components/Setting/PrivateKey";
+import ErrorModal from "./Components/ErrorModal/ErrorModal";
 import Beforebegin from "./Pages/WelcomeScreens/Beforebegin";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import EnterPassword from "./Components/Setting/EnterPassword";
@@ -29,7 +30,6 @@ import ApproveTx from "./Pages/RejectNotification/RejectNotification";
 import CreateWalletChain from "./Pages/WelcomeScreens/CreateWalletChain";
 import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
 import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
-import ErrorModal from "./Components/ErrorModal/ErrorModal";
 import CongratulationsScreen from "./Pages/WelcomeScreens/CongratulationsScreen";
 
 

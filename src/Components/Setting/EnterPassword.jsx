@@ -9,17 +9,18 @@ import ButtonComp from "../ButtonComp/ButtonComp";
 import InputFieldSimple from "../InputField/InputFieldSimple.jsx";
 import { sendRuntimeMessage } from "../../Utility/message_helper.js";
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
-import ModalCustom from "../ModalCustom/ModalCustom";
+// import ModalCustom from "../ModalCustom/ModalCustom";
 import { LABELS, ERROR_MESSAGES, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 
 function EnterPassword() {
 
-  const params = useParams();
+  // const params = useParams();
+  const navigate = useNavigate()
   const [data, setData] = useState("");
   const [isDisable, setDisable] = useState(true);
-  const [isModalOpen, setModalOpen] = useState(false);
+  // const [isModalOpen, setModalOpen] = useState(false);
   const { inputError, setInputError, passVerified, setPassVerified } = useContext(AuthContext);
 
   useEffect(() => {
@@ -36,8 +37,9 @@ function EnterPassword() {
 
   useEffect(() => {
     if (passVerified) {
-      setModalOpen(true);
+      // setModalOpen(true);
       setPassVerified(false);
+      navigate(ROUTES.PVT_KEY);
     }
   }, [passVerified]);
 
@@ -49,7 +51,7 @@ function EnterPassword() {
 
   const handle_OK_Cancel = () => {
     setData("");
-    setModalOpen(false);
+    // setModalOpen(false);
   };
 
 
@@ -102,13 +104,13 @@ function EnterPassword() {
               ></ButtonComp>
             </div>
           </div>
-          <ModalCustom
+          {/* <ModalCustom
             isModalOpen={isModalOpen}
             handleOk={handle_OK_Cancel}
             handleCancel={handle_OK_Cancel}
-          >
-            <PrivateKey id={params?.id} />
-          </ModalCustom>
+          > */}
+          {/* <PrivateKey id={params?.id} /> */}
+          {/* </ModalCustom> */}
         </div>
       </div>
     </>
