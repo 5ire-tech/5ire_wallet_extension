@@ -1,5 +1,5 @@
 import { localStorage, sessionStorage } from ".";
-import { hasLength, isEqual, isNullorUndef, isObject, isString, log, isEmpty, hasProperty } from "../Utility/utility";
+import { hasLength, isEqual, isNullorUndef, isString, isEmpty, hasProperty } from "../Utility/utility";
 import { userState, externalControls, transactionQueue } from "../Store/initialState";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import { ERRCODES, ERROR_MESSAGES, LABELS } from "../Constants";
@@ -55,8 +55,6 @@ export class ExtensionStorageHandler {
             //checks for invalid or undef argument
             isNullorUndef(key) && !hasLength(key) && new Error(new ErrorPayload(ERRCODES.INVALID_ARGU_TYPE, ERROR_MESSAGES.INVALID_TYPE)).throw();
             isNullorUndef(data) && new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
-
-            // !isObject(data) && new Error(new ErrorPayload(ERRCODES.INVALID_ARGU_TYPE, ERROR_MESSAGES.INVALID_TYPE)).throw();
 
             if (isNullorUndef(ExtensionStorageHandler.instance)) {
                 ExtensionStorageHandler.instance = new ExtensionStorageHandler();
@@ -128,58 +126,72 @@ export class ExtensionStorageHandler {
         return await this._updateStorage(newState);
     }
 
+    //remove the history item
+    removeHistoryItem = async (data, state, options) => {
+        const {id} = data;
+        const newState = {...state};
+        newState.txHistory[options.account.accountName] = newState.txHistory[options.account.accountName].filter((item) => item.id !== id);
+        return await this._updateStorage(newState);
+    }
+
     /************************************ External Apps Control *********************/
 
     //add a new connection task
-    addNewConnectionTask = (data, state) => {
+    addNewConnectionTask = async (data, state) => {
         const newState = { ...state };
         newState.connectionQueue.push(data)
-        this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
+        return await this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
     }
 
     //update the popup id in currentTask
-    updateCurrentSession = (data, state) => {
+    updateCurrentSession = async (data, state) => {
         const newState = { ...state };
         newState.activeSession.popupId = data.popupId || newState.activeSession.popupId;
         newState.activeSession.route = data.route || newState.activeSession.route;
 
-        this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
+        return await this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
     }
 
     //select the next task as active
-    changeActiveSession = (data, state) => {
+    changeActiveSession = async (data, state) => {
         const activeSession = state.connectionQueue.shift();
         const newState = { ...state, activeSession: activeSession || null };
-        this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
+        return await this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
     }
 
     //update the connected status
-    appConnectionUpdate = (data, state) => {
+    appConnectionUpdate = async (data, state) => {
         const newState = { ...state };
         newState.connectedApps[data.origin] = { isConnected: data.connected }
-        this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
+        return await this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
     }
 
 
     /************************************ For Transaction Queue *********************/
     //add a new transaction task
-    addNewTransaction = (data, state) => {
+    addNewTransaction = async (data, state) => {
         const newState = { ...state };
         newState.txQueue.push(data)
-        this._updateStorage(newState, LABELS.TRANSACTION_QUEUE);
+        return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE);
     }
 
     //process new transaction
-    processQueuedTransaction = (data, state) => {
+    processQueuedTransaction = async (data, state) => {
         const queuedTransaction = state.txQueue.shift();
         const newState = { ...state, currentTransaction: queuedTransaction || null };
-        this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
+        return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
     }
 
     //update the transaction track into current processing transaction
-    updateHistoryTrack = (data, state) => {
+    updateHistoryTrack = async (data, state) => {
         const newState = { ...state, currentTransaction: { ...state?.currentTransaction, transactionHistoryTrack: data } };
-        this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
+        return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
+    }
+
+    //remove the current failed transaction
+    removeFailedTx = async (data, state) => {
+        const newState = {...state, currentTransaction: null};
+        return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
     }
 
     /**************************Keyring Related Tasks***********************************/
@@ -197,18 +209,18 @@ export class ExtensionStorageHandler {
     createOrRestore = async (message, state) => {
 
         const { vault, type, newAccount } = message;
-        const newState = { ...state, vault, isLogin: true };
 
-        if (type === LABELS.IMPORT) {
+        // if (type === LABELS.IMPORT) {
 
-            newState.currentAccount = {
-                evmAddress: newAccount.evmAddress,
-                accountName: newAccount.accountName,
-                accountIndex: newAccount.accountIndex,
-                nativeAddress: newAccount.nativeAddress,
-            }
-            newState.txHistory = this._txProperty(state, newAccount.accountName);
+        const currentAccount = {
+            evmAddress: newAccount.evmAddress,
+            accountName: newAccount.accountName,
+            accountIndex: newAccount.accountIndex,
+            nativeAddress: newAccount.nativeAddress,
         }
+        const txHistory = this._txProperty(state, newAccount.accountName);
+        // }
+        const newState = { ...state, vault, isLogin: true, currentAccount, txHistory };
 
         this._updateSession(LABELS.ISLOGIN, true);
         return await this._updateStorage(newState);
@@ -259,18 +271,22 @@ export class ExtensionStorageHandler {
         const newState = { ...state, vault: message.vault };
         if (message?.isInitialAccount) {
             newState.isLogin = false;
+            newState.currentAccount = userState.currentAccount;
+            if (newState?.txHistory[newState?.accountName]) {
+                delete newState.txHistory[newState?.accountName]          
+            }
         }
         return await this._updateStorage(newState);
 
     }
 
-    // remove specific account 
-    resetVaultAndPass = async (message, state) => {
-        console.log("resetVaultAndPass in Storage  ::: ", message);
-        const newState = { ...state, vault: null, isLogin: false };
-        await this._updateSession("isLogin", null);
-        return await this._updateStorage(newState);
-    }
+    
+    // resetVaultAndPass = async (message, state) => {
+
+    //     const newState = { ...state, vault: null, isLogin: false };
+    //     await this._updateSession("isLogin", null);
+    //     return await this._updateStorage(newState);
+    // }
 
 
     //*********************************** Internal methods **************************/

@@ -12,10 +12,8 @@ function InputFieldSimple({
   coloredBg,
   placeholder,
   placeholderBaseColor,
-})
+}) {
 
- {
-  
   return (
     <Input.Password
       className={`${style.inputSimple} ${style.inputPassword} ${placeholderBaseColor ? "placeholderBaseColor" : ""
@@ -26,6 +24,7 @@ function InputFieldSimple({
       onKeyUp={keyUp}
       name={name}
       value={value}
+      autoComplete="off"
       // className={style.inputSimple}
       // placeholder={placeholder}
       iconRender={(visible) =>
@@ -57,7 +56,7 @@ export const InputField = ({
   placeholder,
   defaultValue,
   placeholderBaseColor,
-  suffix='',
+  suffix = '',
 }) => {
   // const suffix = (
   //   <button>Max</button>
@@ -73,6 +72,7 @@ export const InputField = ({
         min={min}
         // max = {max}
         value={value}
+        autoComplete="off"
         onChange={onChange}
         onKeyUp={keyUp}
         onKeyDown={keyDown}
@@ -105,6 +105,7 @@ export const InputFieldOnly = ({
     <div className={`${style.boxStyle} inputFieldOnly `}>
       <label className={style.boxStyle__label}>{label}</label>
       <Input
+        autoComplete="off"
         value={value}
         type={type ? type : "text"}
         className={`${style.inputSimple} ${placeholderBaseColor ? "placeholderBaseColor" : ""

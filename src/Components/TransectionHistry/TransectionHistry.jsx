@@ -1,7 +1,7 @@
 import React from "react";
 import style from "./style.module.scss";
 import { toast } from "react-hot-toast";
-import { STATUS } from "../../Constants";
+import { CURRENCY, STATUS } from "../../Constants";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import DarkRyt from "../../Assets/darkRyt.svg";
@@ -46,7 +46,7 @@ function TransectionHistry({ selectedTransaction, account }) {
                 <h3>{`From ${isEvm ? "EVM" : "Native"}`}</h3>
                 <span>{shortner(isEvm ? account.evmAddress : account.nativeAddress)}</span>
               </div>
-              <div className={style.transectionHistry__icon} onClick={handleClick}>
+              <div className={style.transectionHistry__icon} style={{ marginRight: "29px" }}>
                 <img src={SwapIcon} alt="swapIcon" draggable={false} />
               </div>
               <div className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
@@ -64,7 +64,7 @@ function TransectionHistry({ selectedTransaction, account }) {
                 <h3>{`From ${isEvm ? "EVM" : "Native"}`}</h3>
                 <span>{shortner(isEvm ? account.evmAddress : account.nativeAddress)}</span>
               </div>
-              <div className={style.transectionHistry__icon} onClick={handleClick}>
+              <div className={style.transectionHistry__icon} style={{ marginRight: "29px" }}>
                 <img src={SwapIcon} alt="swapIcon" draggable={false} />
               </div>
               <div className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
@@ -91,17 +91,17 @@ function TransectionHistry({ selectedTransaction, account }) {
         </div>
       </div>
       <div className={style.transectionHistry__swapCopy} style={{ marginTop: "29px" }}>
-        <div className={style.transectionHistry__swapSec}>
+        <div className={`${style.transectionHistry__swapSec} ${style.transectionHistry__datetimeSwap}`}>
           <h3>Date & Time</h3>
           <span>{formatDate(selectedTransaction?.timeStamp)}</span>
         </div>
         <div className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
           <h3>Fee</h3>
-          <span>{selectedTransaction?.gasUsed ? fixNumber(selectedTransaction?.gasUsed) : "Nil"}</span>
+          <span>{selectedTransaction?.gasUsed ? fixNumber(selectedTransaction?.gasUsed) + " " + CURRENCY : "Nil"}</span>
         </div>
       </div>
       <div className={style.transectionHistry__viewExplorer}>
-        <p onClick={openExplorerTab}>View on Explorer <img src={DarkRyt} alt="view on explorer"/></p>
+        <p onClick={openExplorerTab}>View on Explorer <img src={DarkRyt} alt="view on explorer" /></p>
       </div>
     </div>
   );

@@ -30,6 +30,8 @@ import CreateWalletChain from "./Pages/WelcomeScreens/CreateWalletChain";
 import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
 import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
 import ValidatorNominatorTxns from "./Components/ValidatorNominatorTxns";
+import ErrorModal from "./Components/ErrorModal/ErrorModal";
+import CongratulationsScreen from "./Pages/WelcomeScreens/CongratulationsScreen";
 
 
 function getParameterByName(name, url = window.location.href) {
@@ -43,7 +45,7 @@ function getParameterByName(name, url = window.location.href) {
 
 function App(props) {
   const navigate = useNavigate();
-  const { state, setState, isLoading, setExternalControlState, externalControlsState, newAccount } = useContext(AuthContext);
+  const { state, setState, isLoading, setExternalControlState, externalControlsState, newAccount, backgroundError, showCongratLoader } = useContext(AuthContext);
   const { isLogin, vault } = state;
 
   useEffect(() => {
@@ -216,6 +218,10 @@ function App(props) {
         />
       </Routes>
       {isLoading && <Loader />}
+      {!!backgroundError && <ErrorModal/>}
+      {showCongratLoader && <div className="loader">
+        <CongratulationsScreen text={"Your wallet has been imported"} /></div>}
+
     </div>
   );
 }

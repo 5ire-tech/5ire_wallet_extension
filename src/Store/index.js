@@ -35,6 +35,9 @@ export default function Context({ children }) {
   const [passVerified, setPassVerified] = useState(false);
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
   const [externalControlsState, setExternalControlState] = useState(externalControls);
+  const [backgroundError, setBackgroundError] = useState(null);
+  const [showCongratLoader, setShowCongratLoader] = useState(false);
+  const [newWalletName, setNewWalletName] = useState("");
 
 
   Browser.storage.local.onChanged.addListener((changedData) => {
@@ -77,6 +80,8 @@ export default function Context({ children }) {
         removeAccount(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE) {
         setValdatorNominatorFee(message.data)
+      } else if(message.event === MESSAGE_EVENT_LABELS.BACKGROUND_ERROR) {
+         setBackgroundError(message.data);
       }
 
       updateLoading(false);
@@ -124,6 +129,7 @@ export default function Context({ children }) {
 
     if (data?.type === "create") {
       setNewAccount(data.newAccount);
+      navigate(ROUTES.NEW_WALLET_DETAILS);
     }
   };
 
@@ -132,9 +138,16 @@ export default function Context({ children }) {
     // console.log("Data in import Context :::: ",data);
 
     if (data?.vault && data?.newAccount) {
-      navigate(ROUTES.WALLET);
+      setShowCongratLoader(true)
+      setTimeout(() => {
+        navigate(ROUTES.WALLET);
+        setShowCongratLoader(false)
+
+      }, 2000)
+
     } else if (data?.errCode === 3) {
       setInputError(data?.errMessage ? data.errMessage : "");
+      setShowCongratLoader(false)
     }
   };
 
@@ -180,6 +193,8 @@ export default function Context({ children }) {
     delete newTx[accName];
     updateState(LABELS.TX_HISTORY, newTx)
   }
+
+
   const removeAccount = (data) => {
     setNewAccount(newAccountInitialState);
     if (data?.isInitialAccount) {
@@ -203,9 +218,12 @@ export default function Context({ children }) {
     accountName,
     estimatedGas,
     passVerified,
+    newWalletName,
+    backgroundError,
+    showCongratLoader,
+    valdatorNominatorFee,
     externalControlsState,
     externalNativeTxDetails,
-    valdatorNominatorFee,
 
     //data setters
     setState,
@@ -215,15 +233,17 @@ export default function Context({ children }) {
     setInputError,
     updateLoading,
     setNewAccount,
-    removeHistory,
     setPrivateKey,
+    removeHistory,
     setPassVerified,
+    setNewWalletName,
+    setBackgroundError,
     updateEstimatedGas,
+    setShowCongratLoader,
+    setValdatorNominatorFee,
     setExternalControlState,
-    setExternalNativeTxDetails,
     importAccountByMnemonics,
-    setValdatorNominatorFee
-
+    setExternalNativeTxDetails,
   }
 
   return (

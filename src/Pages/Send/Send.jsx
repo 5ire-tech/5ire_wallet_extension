@@ -20,19 +20,18 @@ import {
   EVM,
   LABELS,
   NATIVE,
+  TX_TYPE,
   ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
   EXISTENTIAL_DEPOSITE,
-  COPIED,
-  TX_TYPE,
 } from "../../Constants/index";
-import { shortner } from "../../Helper/helper";
-import CopyIcon from "../../Assets/CopyIcon.svg";
+
 
 function Send() {
   const [isEd, setEd] = useState(true);
   const [disableBtn, setDisable] = useState(true);
+  const [maxAmount, setMaxAmount] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [err, setErr] = useState({ to: "", amount: "" });
@@ -51,12 +50,15 @@ function Send() {
   useEffect(() => {
     const getData = setTimeout(() => {
       if (
-        !err.to &&
-        !err.amount &&
-        data.amount.length > 0 &&
-        data.to.length > 0
+        (!err.to &&
+          !err.amount &&
+          data.amount &&
+          data.to) ||
+        (!err.to
+          && data?.to
+          && !data?.amount)
       ) {
-        getFee();
+        getFee(!data.amount ? false : true);
       } else {
         updateEstimatedGas(null);
         setDisable(true);
@@ -64,17 +66,25 @@ function Send() {
     }, 1000);
 
     return () => clearTimeout(getData);
-  }, [err.to, err.amount, data.to, data.amount, isEd]);
+  }, [err.to, err.amount, data?.to, data?.amount, isEd]);
+
 
   useEffect(() => {
     if (!estimatedGas) {
       setDisable(true);
     } else {
       if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-        if (
+        if (estimatedGas && !data.amount) {
+          const amount = Number(balance.evmBalance) - (Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0));
+          setMaxAmount(amount);
+          updateEstimatedGas(null);
+
+          return;
+        }
+        else if (
           Number(data.amount) +
-            Number(estimatedGas) +
-            (isEd ? EXISTENTIAL_DEPOSITE : 0) >=
+          Number(estimatedGas) +
+          (isEd ? EXISTENTIAL_DEPOSITE : 0) >
           Number(balance.evmBalance)
         ) {
           updateEstimatedGas(null);
@@ -85,10 +95,18 @@ function Send() {
           setErr((p) => ({ ...p, amount: "" }));
         }
       } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
-        if (
+        if (estimatedGas && !data.amount) {
+
+          const amount = Number(balance.nativeBalance) - (Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0));
+          setMaxAmount(amount);
+          updateEstimatedGas(null)
+
+          return;
+        }
+        else if (
           Number(data.amount) +
-            Number(estimatedGas) +
-            (isEd ? EXISTENTIAL_DEPOSITE : 0) >=
+          Number(estimatedGas) +
+          (isEd ? EXISTENTIAL_DEPOSITE : 0) >
           Number(balance.nativeBalance)
         ) {
           updateEstimatedGas(null);
@@ -100,23 +118,25 @@ function Send() {
         }
       }
     }
-  }, [estimatedGas]);
+  }, [estimatedGas, activeTab, balance?.evmBalance, balance.nativeBalance, data.amount, isEd]);
+
 
   const blockInvalidChar = (e) =>
     ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
 
   //set the ED toggler state
   const onChangeToggler = (checked) => {
-    console.log(`switch to ${checked}`);
     setEd(checked);
+    setMaxAmount("");
     updateEstimatedGas(null);
-    setErr((p) => ({ ...p, amount: "" }));
+    setErr(p => ({ ...p, amount: "" }));
+    setData(p => ({ ...p, amount: "" }));
   };
 
   const validateAmount = () => {
     if (!data.amount)
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INPUT_REQUIRED }));
-    else if (isNaN(data.amount))
+    if (isNaN(data.amount))
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.ENTER_AMOUNT_CORRECTLY }));
     else if (Number(data.amount) <= 0)
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.AMOUNT_CANT_BE_0 }));
@@ -161,27 +181,29 @@ function Send() {
     }
   };
 
-  const getFee = async () => {
-    if (activeTab.toLowerCase() === NATIVE.toLowerCase()) {
-      updateLoading(true);
+  const getFee = async (loader = true) => {
+    if (activeTab.toLowerCase() === NATIVE.toLowerCase() && balance.nativeBalance) {
+      loader && updateLoading(true);
+
       //calculate the native fee
       sendRuntimeMessage(
         MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
         MESSAGE_EVENT_LABELS.NATIVE_FEE,
         {
-          value: data.amount,
+          value: data?.amount ? data.amount : balance.nativeBalance,
           toAddress: data.to,
           options: { account: state.currentAccount },
         }
       );
-    } else if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-      updateLoading(true);
+    } else if (activeTab.toLowerCase() === EVM.toLowerCase() && balance.evmBalance) {
+      loader && updateLoading(true);
+
       //calculate the evm fee
       sendRuntimeMessage(
         MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
         MESSAGE_EVENT_LABELS.EVM_FEE,
         {
-          value: data.amount,
+          value: data?.amount ? data.amount : balance.evmBalance,
           toAddress: data.to,
           options: { account: state.currentAccount },
         }
@@ -223,18 +245,18 @@ function Send() {
     }
   };
 
-  const handleCopy = (e) => {
-    if (e.target.name.toLowerCase() === NATIVE.toLowerCase())
-      navigator.clipboard.writeText(currentAccount?.nativeAddress);
+  // const handleCopy = (e) => {
+  //   if (e.target.name.toLowerCase() === NATIVE.toLowerCase())
+  //     navigator.clipboard.writeText(currentAccount?.nativeAddress);
 
-    if (e.target.name.toLowerCase() === EVM.toLowerCase())
-      navigator.clipboard.writeText(currentAccount?.evmAddress);
+  //   if (e.target.name.toLowerCase() === EVM.toLowerCase())
+  //     navigator.clipboard.writeText(currentAccount?.evmAddress);
 
-    // if (e.target.name.toLowerCase() === "hash")
-    //   navigator.clipboard.writeText(txHash);
+  //   // if (e.target.name.toLowerCase() === "hash")
+  //   //   navigator.clipboard.writeText(txHash);
 
-    toast.success(COPIED);
-  };
+  //   toast.success(COPIED);
+  // };
 
   const handleApprove = async () => {
     try {
@@ -281,9 +303,10 @@ function Send() {
   };
 
   const activeSend = (e) => {
+    setDisable(true);
+    setMaxAmount("");
     setActiveTab(e.target.name);
     updateEstimatedGas(null);
-    setDisable(true);
     setErr({ to: "", amount: "" });
     setData({ to: "", amount: "" });
   };
@@ -295,8 +318,16 @@ function Send() {
     setData({ to: "", amount: "" });
     setIsModalOpen(false);
   };
+
+  const handleMaxClick = () => {
+    if (maxAmount > 0) {
+      setData(p => ({ ...p, amount: maxAmount }));
+      setErr(p => ({ ...p, amount: "" }));
+    }
+  }
+
   const suffix = (
-    <button className="maxBtn">Max</button>
+    <button className="maxBtn" onClick={handleMaxClick}>Max</button>
   );
 
   return (
@@ -309,10 +340,9 @@ function Send() {
               onClick={activeSend}
               name={NATIVE.toLowerCase()}
               className={`${style.sendSec__sendSwapbtn__buttons} 
-              ${
-                activeTab === NATIVE.toLowerCase() &&
+              ${activeTab === NATIVE.toLowerCase() &&
                 style.sendSec__sendSwapbtn__buttons__active
-              }
+                }
             `}
             >
               Native
@@ -320,10 +350,9 @@ function Send() {
             <button
               onClick={activeSend}
               name={EVM.toLowerCase()}
-              className={`${style.sendSec__sendSwapbtn__buttons}  ${
-                activeTab === EVM.toLowerCase() &&
+              className={`${style.sendSec__sendSwapbtn__buttons}  ${activeTab === EVM.toLowerCase() &&
                 style.sendSec__sendSwapbtn__buttons__active
-              }`}
+                }`}
             >
               EVM
             </button>
@@ -367,11 +396,11 @@ function Send() {
         </div>
         <div className={style.sendSec__txFeeBalance}>
           <h2>{estimatedGas ? `TX Fee : ${estimatedGas} 5IRE` : ""}</h2>
-          {/* <h3>Balance 00.0000 5IRE</h3> */}
+
         </div>
         <div className={style.sendSec__inFoAccount}>
           <Tooltip title="5irechain requires a minimum of 1 5ire token to keep your wallet active">
-            <img src={Info} />
+            <img src={Info} style={{ cursor: "pointer" }} alt="infoIcon" />
           </Tooltip>
           <h3>Transfer with account keep alive checks </h3>
           <Switch defaultChecked name="EdToggler" onChange={onChangeToggler} />

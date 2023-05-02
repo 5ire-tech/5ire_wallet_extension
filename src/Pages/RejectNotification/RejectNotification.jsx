@@ -9,7 +9,7 @@ import {
 } from "../../Constants";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import SwapIcon from "../../Assets/SwapIcon.svg";
-import CopyIcon from "../../Assets/CopyIcon.svg"
+import CopyIcon from "../../Assets/CopyIcon.svg";
 
 function ApproveTx() {
   const [activeTab, setActiveTab] = useState("detail");
@@ -76,39 +76,38 @@ function ApproveTx() {
                   <div className={style.rejectedSec__listReject__innerList}>
                     <h4>From: </h4>
                     <p>
-                      {account.evmAddress}{" "}
-                      <img
-                        draggable={false}
-                        src={CopyIcon}
-                        alt="copyIcon"
-                      />
+                      <span> {account.evmAddress} </span>
+                      <img draggable={false} src={CopyIcon} alt="copyIcon" style={{ cursor: "pointer" }}/>
                     </p>
                   </div>
-                  <div className={style.rejectedSec__icon}>
+                  <div
+                    className={style.rejectedSec__icon}
+                    style={{ marginTop: "30px" }}
+                  >
                     <img src={SwapIcon} alt="swapIcon" />
                   </div>
                   <div className={style.rejectedSec__listReject__innerList}>
                     <h4>To: </h4>
                     <p>
-                      {activeSession.message?.data
-                        ? LABELS.CONTRACT
-                        : activeSession.message?.to}
+                      <span>
+                        {" "}
+                        {activeSession.message?.data
+                          ? LABELS.CONTRACT
+                          : activeSession.message?.to}
+                      </span>
+                      <img draggable={false} src={CopyIcon} alt="copyIcon" style={{ cursor: "pointer" }}/>
                     </p>
                   </div>
                 </div>
                 <div className={style.rejectedSec__flexList}>
                   <div className={style.rejectedSec__listReject__innerList}>
                     <h4>Value: </h4>
-                    <h4>
-                      {
-                           activeSession.message?.value || '0'
-                      }
-                    </h4>
+                    <p><span>{activeSession.message?.value || "0"}</span></p>
                   </div>
 
                   <div className={style.rejectedSec__listReject__innerList}>
                     <h4>Fee: </h4>
-                    <p>{estimatedGas ? `${estimatedGas} 5ire` : ""}</p>
+                    <p><span>{estimatedGas ? `${estimatedGas} ` : ""}</span>5ire</p>
                   </div>
                 </div>
               </>

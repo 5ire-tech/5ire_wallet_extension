@@ -6,7 +6,7 @@ import ReactDOM from "react-dom/client";
 import { localStorage } from "./Storage";
 import browser from "webextension-polyfill";
 import { MemoryRouter } from "react-router-dom";
-import { CONNECTION_NAME, EMTY_STR, LABELS } from "./Constants";
+import { CONNECTION_NAME, EMTY_STR, LABELS, MAIN_POPUP } from "./Constants";
 import { getDataLocal } from "../src/Storage/loadstore"
 import { sessionStorage } from "../src/Storage/index";
 import { log } from "./Utility/utility";
@@ -57,6 +57,9 @@ const initApp = (data, externalControlsState) => {
 (async () => {
   try {
     browser.runtime.connect({ name: CONNECTION_NAME });
+
+    const window = browser.extension.getViews({type: "popup"});
+    if(window.length) browser.runtime.connect({ name: MAIN_POPUP });
 
     //inject the current state into main app
     const currentLocalState = await getDataLocal(LABELS.STATE);
