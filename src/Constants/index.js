@@ -206,6 +206,7 @@ export const LABELS = {
 
 export const HTTP_END_POINTS = {
     QA: "https://qa-http-nodes.5ire.network",
+    UAT: "https://uat-http-nodes.5ire.network",
     TESTNET: "https://rpc-testnet.5ire.network"
 };
 
