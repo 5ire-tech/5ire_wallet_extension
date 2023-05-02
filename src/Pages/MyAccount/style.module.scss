@@ -69,4 +69,16 @@
       gap: 4px;
     }
   }
+  &__dropDownSec{
+    position: relative;
+    &::before{
+      background-image: url("../../Assets/fillArow.svg");
+      position: absolute;
+      content: "";
+      width: 20px;
+      height: 20px;
+      top: 0;
+      right: 0;
+    }
+  }
 }

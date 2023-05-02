@@ -386,7 +386,7 @@ function Send() {
             />
             <span className={style.errorText}>{err.to}</span>
           </div>
-          <div style={{ marginTop: "14px" }}>
+          <div style={{ marginTop: "17px" }}>
             <InputField
               min={"0"}
               name="amount"
