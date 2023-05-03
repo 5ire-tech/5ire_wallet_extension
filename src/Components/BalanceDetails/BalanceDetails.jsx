@@ -237,12 +237,12 @@ function BalanceDetails({ mt0 }) {
                   isEqual(pathname, ROUTES.APPROVE_TXN) ||
                   isEqual(pathname, ROUTES.MY_ACCOUNT)) && (
                     <div
-                      className={`${isConnected
+                      className={`${isConnected && !isEqual(pathname, ROUTES.APPROVE_TXN)
                         ? style.balanceDetails__accountName
                         : style.balanceDetails__accountName1
                         } ${style.headerInfo}`}
                     >
-                      {isConnected ? (
+                      {isConnected && !isEqual(pathname, ROUTES.APPROVE_TXN) ? (
                         <>
                           <p onClick={headerActive}>
                             <img
