@@ -31,7 +31,6 @@ import CreateWalletChain from "./Pages/WelcomeScreens/CreateWalletChain";
 import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
 import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
 import ValidatorNominatorTxns from "./Components/ValidatorNominatorTxns";
-import ErrorModal from "./Components/ErrorModal/ErrorModal";
 import CongratulationsScreen from "./Pages/WelcomeScreens/CongratulationsScreen";
 
 
