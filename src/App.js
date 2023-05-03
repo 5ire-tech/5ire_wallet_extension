@@ -219,7 +219,7 @@ function App(props) {
         />
       </Routes>
       {isLoading && <Loader />}
-      {!!backgroundError && <ErrorModal />}
+      <ErrorModal />
       {showCongratLoader && <div className="loader">
         <CongratulationsScreen text={"Your wallet has been imported"} /></div>}
 
