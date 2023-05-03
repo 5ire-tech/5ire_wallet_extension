@@ -18,6 +18,19 @@
       border-radius: 25px;
     }
   }
+  &__txnDetail{
+    &__txnContact{
+      max-width: initial !important;
+      flex-direction: initial !important;
+      p{
+        display: inline-block !important;
+        width: 180px;
+        white-space: nowrap;
+        overflow: hidden !important;
+        text-overflow: ellipsis;
+      }
+    }
+  }
   &__listReject {
     padding: 25px 0;
     &__innerList {

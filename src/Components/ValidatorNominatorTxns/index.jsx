@@ -96,28 +96,28 @@ function ValidatorNominatorTxns() {
                                         Txn Detail
                                     </button>
                                 </div>
-                                <div className={pageStyle.rejectedSec__listReject}>
+                                <div className={`${pageStyle.rejectedSec__listReject} ${pageStyle.rejectedSec__txnDetail}`}>
 
-                                    <div className={pageStyle.rejectedSec__listReject__innerList}>
+                                    <div className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact}`}>
                                         <h4>From: </h4>
-                                        <h4>{shortLongAddress(String(state?.currentAccount?.nativeAddress))}</h4>
+                                        <p>{shortLongAddress(String(state?.currentAccount?.nativeAddress))}</p>
                                     </div>
-                                    <div className={pageStyle.rejectedSec__listReject__innerList}>
+                                    <div className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact}`}>
                                         <h4>Method: </h4>
-                                        <h4>{valdatorNominatorFee?.methodName || ""}</h4>
+                                        <p>{valdatorNominatorFee?.methodName || ""}</p>
                                     </div>
 
                                     {formatParams(activeSession?.message).map((d) => {
-                                        return <div key={d.key} className={pageStyle.rejectedSec__listReject__innerList}>
+                                        return <div key={d.key} className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact}`}>
                                             <h4>{d.key}: </h4>
 
-                                            <h4>{d.value}</h4>
+                                            <p>{d.value}</p>
                                         </div>
                                     })}
 
-                                    <div className={pageStyle.rejectedSec__listReject__innerList}>
+                                    <div className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact}`}>
                                         <h4>Estimated Fee: </h4>
-                                        <h4>{valdatorNominatorFee?.fee} 5IRE</h4>
+                                        <p>{valdatorNominatorFee?.fee} 5IRE</p>
                                     </div>
                                 </div>
                             </div>

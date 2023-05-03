@@ -255,6 +255,7 @@ function MyAccount() {
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
         centered
+        closeIcon={false}
       >
         <div className={`${style.activeDis_Modal} yesnoPopup`}>
            <center> 
