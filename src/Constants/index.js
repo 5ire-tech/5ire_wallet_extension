@@ -199,7 +199,10 @@ export const LABELS = {
 
     CONTRACT: "Contract",
     EVM_TO_NATIVE: "EVM to Native",
-    NATIVE_TO_EVM: "Native to EVM"
+    NATIVE_TO_EVM: "Native to EVM",
+
+    //for section and method's
+    STACKING_REWARD: "staking.Rewarded"
 
 };
 
