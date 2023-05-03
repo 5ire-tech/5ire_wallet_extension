@@ -240,7 +240,12 @@ export class ExtensionStorageHandler {
             accountIndex: newAccount.accountIndex,
             nativeAddress: newAccount.nativeAddress,
         }
-        const txHistory = this._txProperty({ txHistory: {} }, newAccount.accountName);
+        let txHistory = {};
+
+        if (state?.txHistory?.hasOwnProperty(newAccount.evmAddress))
+            txHistory[newAccount?.evmAddress] = state.txHistory[newAccount.evmAddress];
+        else
+            txHistory = this._txProperty({ txHistory: {} }, newAccount.accountName);
 
         const newState = { ...state, vault, txHistory, currentAccount: currentAcc, isLogin: true }
         this._updateSession(LABELS.ISLOGIN, true);
