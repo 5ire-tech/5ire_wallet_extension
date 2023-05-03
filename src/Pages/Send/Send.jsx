@@ -73,11 +73,6 @@ function Send() {
       data.to &&
       !estimatedGas
     )) {
-      console.log(" !err.to && !err.amount data.amount && data.to && !estimatedGas");
-
-      console.log("error amount ", err.amount);
-      console.log("amount ", data.amount);
-      console.log("fee ", estimatedGas);
       const getData = setTimeout(() => {
         getFee();
       }, 1000);
@@ -459,7 +454,7 @@ function Send() {
 
         </div>
         <div className={style.sendSec__inFoAccount}>
-          <Tooltip title="5irechain requires a minimum of 1 5ire token to keep your wallet active">
+          <Tooltip title="5irechain requires a minimum of 1 5ire to keep your wallet active">
             <img src={Info} style={{ cursor: "pointer" }} alt="infoIcon" />
           </Tooltip>
           <h3>Transfer with account keep alive checks </h3>

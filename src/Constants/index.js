@@ -6,8 +6,8 @@ export const NATIVE = "Native";
 export const COPIED = "Copied!";
 export const MNEMONIC = "mnemonic";
 export const PVT_KEY = "privateKey";
-export const CONNECTION_NAME = "5IRE_EXT";
 export const MAIN_POPUP = "MAIN_POPUP";
+export const CONNECTION_NAME = "5IRE_EXT";
 export const PORT_NAME = "WEBEXT_REDUX_TEST";
 export const UI_CONNECTION_NAME = "5IRE_EXT_UI";
 
@@ -15,11 +15,11 @@ export const EXTRA_FEE = 0.001;
 export const WINDOW_WIDTH = 400;
 export const DECIMALS = 10 ** 18;
 export const WINDOW_HEIGHT = 620;
+export const EXISTENTIAL_DEPOSITE = 1;
 export const ONE_ETH_IN_GWEI = 1000000000;
 export const AUTO_BALANCE_UPDATE_TIMER = 8000;
-export const TRANSACTION_STATUS_CHECK_TIMER = 5000;
-export const EXISTENTIAL_DEPOSITE = 1;
 export const WEI_IN_ONE_ETH = 1000000000000000000;
+export const TRANSACTION_STATUS_CHECK_TIMER = 5000;
 
 
 
@@ -49,25 +49,25 @@ export const STORAGE = {
 }
 
 export const TX_TYPE = {
-    SEND: "Transfer",
     SWAP: "Swap",
+    SEND: "Transfer",
+    NATIVE_APP: "Native App",
+    NATIVE_SIGNER: "Native Signer",
     CONTRACT_EXECUTION: "Contract Execution",
     CONTRACT_DEPLOYMENT: "Contract Deployement",
-    NATIVE_SIGNER: "Native Signer",
-    NATIVE_APP: "Native App"
 };
 
 export const NETWORK = {
+    UAT: "UAT",
     QA_NETWORK: "QA",
     TEST_NETWORK: "Testnet",
-    UAT: "UAT"
 };
 
 export const STATUS = {
     FAILED: "Failed",
+    QUEUED: "Queued",
     PENDING: "Pending",
     SUCCESS: "Success",
-    QUEUED: "Queued"
 };
 
 export const HTTP_METHODS = {
@@ -89,8 +89,8 @@ export const EVM_JSON_RPC_METHODS = {
 };
 
 export const SIGNER_METHODS = {
+    SIGN_RAW: "signRaw",
     SIGN_PAYLOAD: "signPayload",
-    SIGN_RAW: "signRaw"
 };
 
 export const ERROR_MESSAGES = {
@@ -104,30 +104,30 @@ export const ERROR_MESSAGES = {
     INSUFFICENT_BALANCE: "Insufficent Balance.",
     UNDEF_PROPERTY: "Object not has given property",
     AMOUNT_CANT_BE_0: "Amount can't be 0 or less than 0",
-    AMOUNT_CANT_LESS_THEN_ONE: "Amount can't be less than 1",
+    SINGER_ERROR: "Error while signing the the raw/payload",
     ENTER_AMOUNT_CORRECTLY: "Please enter amount correctly.",
     WALLET_NAME_ALREADY_EXISTS: "Wallet name already exists.",
     NOT_VALID_JSON_RPC_METHOD: "JSON-RPC method is not valid.",
+    INTERNAL_ERROR: "Something wrong happend, please try again",
     PASS_CREATED_SUCCESS: "Successfully created password for user.",
+    AMOUNT_CANT_LESS_THEN_ONE: "Swap amount can't be less than 1 5ire",
     ALPHANUMERIC_CHARACTERS: "Please enter alphanumeric characters only.",
     MNEMONICS_ALREADY_EXISTS: "Wallet with this mnemonic already exists.",
     NOT_YOUR_OWN_ADDRESS: "Recipient address should not be your own address.",
-    CREATE_PASS_MSG: "Password must have at least 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
+    EXTERNAL_NATIVE_TRANSACTION_ERROR: "Error while external native transaction.",
     ACCESS_NOT_GRANTED: "The requested method has not been authorized by the user",
     ACCOUNT_ACCESS_NOT_GRANTED: "The requested account has not been authorized by the user",
-    SINGER_ERROR: "Error while signing the the raw/payload",
-    EXTERNAL_NATIVE_TRANSACTION_ERROR: "Error while external native transaction.",
     ERROR_WHILE_TRANSACTION: "Transaction failed, error occured during transaction processing",
     ERROR_WHILE_GAS_ESTIMATION: "Gas Estimation Failed, something wrong happend while gas estimation",
-    INTERNAL_ERROR: "Something wrong happend, please try again",
-
+    CREATE_PASS_MSG: "Password must have at leas t 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
+    
 
     INVALID_PROPERTY: "Invalid property.",
     UNDEF_DATA: "Value is null or undefined.",
     INVALID_TYPE: "argument type is invalid.",
     REJECTED_BY_USER: "Request rejected by user.",
-    UNABLE_TO_REMOVE_ACC: "Unable to remove the account.",
     NETWORK_REQUEST: "Network error try after sometime",
+    UNABLE_TO_REMOVE_ACC: "Unable to remove the account.",
     TX_FAILED: "Transaction failed. some wrong happend.",
     INVALID_METHOD: "Method is not the part of system.",
     INVAILD_ERROR_MESSAGE: "Error message must be an object.",
@@ -215,38 +215,39 @@ export const HTTP_END_POINTS = {
 };
 
 export const SOCIAL_LINKS = {
-    POLICY: "https://5ire-wallet-extension.s3.amazonaws.com/5ire-wallet-extension-privacy-policy.pdf",
-    LINKDIN: "https://www.linkedin.com/company/5irechain/",
-    INSTAGRAM: "https://www.instagram.com/5irechain/",
     FACEBOOK: "https://www.facebook.com/5irechain/",
+    INSTAGRAM: "https://www.instagram.com/5irechain/",
+    LINKDIN: "https://www.linkedin.com/company/5irechain/",
+    POLICY: "https://5ire-wallet-extension.s3.amazonaws.com/5ire-wallet-extension-privacy-policy.pdf",
 }
 
 export const API = {
-    TESTNET: "https://explorer-api.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
     QA: "https://qa-api-exp.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
     UAT: "https://uat-api-exp.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
+    TESTNET: "https://explorer-api.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
 };
 
 export const EXPLORERS = {
-    TESTNET: "https://explorer.5ire.network",
     QA: "https://qa-web-exp.5ire.network",
     QA: "https://uat-web-exp.5ire.network",
+    TESTNET: "https://explorer.5ire.network",
 
 }
 
 export const WS_END_POINTS = {
     QA: "wss://qa-wss-nodes.5ire.network",
-    TESTNET: "wss://wss-testnet.5ire.network",
     UAT: "wss://uat-wss-nodes.5ire.network",
+    TESTNET: "wss://wss-testnet.5ire.network",
 
 };
 
 
 export const MESSAGE_EVENT_LABELS = {
     NATIVE_SIGNER: "nativeSigner",
-    EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS: "externalNativeTransactionArgsAndGas",
     VALIDATOR_NOMINATOR_FEE: "validatorNominatorFee",
     VALIDATOR_NOMINATOR_TRANSACTION: "validatorNominatorTransaction",
+    EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS: "externalNativeTransactionArgsAndGas",
+
     TX_HASH: "txHash",
     EVM_FEE: "evmFee",
     EVM_TX: "evmTransfer",
@@ -279,33 +280,33 @@ export const MESSAGE_EVENT_LABELS = {
 }
 
 export const INTERNAL_EVENT_LABELS = {
+    ERROR: "error",
     CONNECTION: "connection",
     BALANCE_FETCH: "balanceFetch",
     NEW_TRANSACTION_INQUEUE: "newTransactionInQueue",
     NEW_NATIVE_SIGNER_TRANSACTION_INQUEUE: "newNativeSignerTransactionInQueue",
-    ERROR: "error"
 }
 
 export const STATE_CHANGE_ACTIONS = {
     BALANCE: "updateBalance",
     TX_HISTORY: "addNewTxHistory",
-    TX_HISTORY_UPDATE: "updateTxHistory",
     CHANGE_NETWORK: "changeNetwork",
     CHANGE_ACCOUNT: "changeAccount",
+    TX_HISTORY_UPDATE: "updateTxHistory",
     REMOVE_HISTORY_ITEM: "removeHistoryItem",
 
     //external controls state
     ADD_NEW_TX_TASK: "addNewTxTask",
-    ADD_NEW_CONNECTION_TASK: "addNewConnectionTask",
     CHANGE_ACTIVE_SESSION: "changeActiveSession",
     APP_CONNECTION_UPDATE: "appConnectionUpdate",
     UPDATE_CURRENT_SESSION: "updateCurrentSession",
+    ADD_NEW_CONNECTION_TASK: "addNewConnectionTask",
 
     //transaction queue state
+    REMOVE_FAILED_TX: "removeFailedTx",
     ADD_NEW_TRANSACTION: "addNewTransaction",
-    PROCESS_QUEUE_TRANSACTION: "processQueuedTransaction",
     UPDATE_HISTORY_TRACK: "updateHistoryTrack",
-    REMOVE_FAILED_TX: "removeFailedTx"
+    PROCESS_QUEUE_TRANSACTION: "processQueuedTransaction",
 }
 
 export const ERROR_EVENTS_LABELS = {
@@ -316,20 +317,20 @@ export const ERROR_EVENTS_LABELS = {
 }
 
 export const MESSAGE_TYPE_LABELS = {
-    FEE_AND_BALANCE: "feeAndBalance",
+    EXTENSION_UI: "extensionUi",
     INTERNAL_TX: "internalTx",
+    FEE_AND_BALANCE: "feeAndBalance",
+    NETWORK_HANDLER: "networkHandler",
     EXTENSION_BACKGROUND: "extensionBackground",
     EXTERNAL_TX_APPROVAL: "externalTxApproval",
-    EXTENSION_UI: "extensionUi",
     EXTENSION_UI_KEYRING: "extensionUiKeyring",
-    NETWORK_HANDLER: "networkHandler",
     VALIDATOR_NOMINATOR_HANDLER: "validatorNominatorHandler",
 }
 
 export const ROUTE_FOR_APPROVAL_WINDOWS = {
+    NATIVE_TX: "native-tx",
     APPROVE_TX: "approve-tx",
     CONNECTION_ROUTE: "login-approve",
-    NATIVE_TX: "native-tx",
     VALIDATOR_NOMINATOR_TXN: "validator-nomiator-tx",
 
 }
@@ -341,7 +342,12 @@ export const WALLET_TYPES = {
     IMPORTED_NATIVE: "imported_native"
 }
 
-export const CONNECTION_METHODS = ["connect", "eth_requestAccounts", "eth_accounts", "get_endPoint"];
+export const CONNECTION_METHODS = [
+    "connect",
+    "eth_requestAccounts",
+    "eth_accounts",
+    "get_endPoint"
+];
 
 export const KEYRING_EVENTS = {
     STATE_CHANGED: "valut_state",
@@ -358,20 +364,20 @@ export const THRID_PARTY_APIS = {
 }
 
 export const VALIDATOR_NOMINATOR_METHOD = {
+    NATIVE_RENOMINATE: "native_renominate",
     NATIVE_ADD_NOMINATOR: "native_add_nominator",
     NATIVE_ADD_VALIDATOR: "native_add_validator",
-    NATIVE_NOMINATOR_BONDMORE: "native_nominator_bondmore",
-    NATIVE_NOMINATOR_PAYOUT: "native_nominator_payout",
-    NATIVE_RENOMINATE: "native_renominate",
-    NATIVE_RESTART_VALIDATOR: "native_restart_validator",
     NATIVE_STOP_NOMINATOR: "native_stop_nominator",
     NATIVE_STOP_VALIDATOR: "native_stop_validator",
     NATIVE_UNBOND_NOMINATOR: "native_unbond_nominator",
+    NATIVE_NOMINATOR_PAYOUT: "native_nominator_payout",
     NATIVE_UNBOND_VALIDATOR: "native_unbond_validator",
-    NATIVE_VALIDATOR_BONDMORE: "native_validator_bondmore",
     NATIVE_VALIDATOR_PAYOUT: "native_validator_payout",
+    NATIVE_RESTART_VALIDATOR: "native_restart_validator",
+    NATIVE_NOMINATOR_BONDMORE: "native_nominator_bondmore",
+    NATIVE_VALIDATOR_BONDMORE: "native_validator_bondmore",
     NATIVE_WITHDRAW_NOMINATOR: "native_withdraw_nominator",
-    NATIVE_WITHDRAW_NOMINATOR_UNBONDED: "native_withdraw_nominator_unbonded",
     NATIVE_WITHDRAW_VALIDATOR: "native_withdraw_validator",
+    NATIVE_WITHDRAW_NOMINATOR_UNBONDED: "native_withdraw_nominator_unbonded",
     NATIVE_WITHDRAW_VALIDATOR_UNBONDED: "native_withdraw_validator_unbonded"
 }
