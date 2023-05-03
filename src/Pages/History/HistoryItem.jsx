@@ -2,9 +2,10 @@ import React from 'react';
 import style from "./style.module.scss";
 import Swap from "../../Assets/swap.svg";
 import Sent from "../../Assets/sent.svg";
-import { EVM, LABELS, NATIVE, STATUS } from '../../Constants';
+import { EVM, LABELS, NATIVE, STATUS, TX_TYPE } from '../../Constants';
 import { fixNumber, numFormatter } from "../../Helper/helper";
 import { formatDate, shortner } from "../../Helper/helper"
+import { isEqual } from '../../Utility/utility';
 
 export default function HistoryItem({ historyItem, handleHistoryOpen }) {
   return (
@@ -17,7 +18,7 @@ export default function HistoryItem({ historyItem, handleHistoryOpen }) {
           <img alt="hash" src={historyItem.intermidateHash ? Swap : Sent} />
 
           <div className={style.historySec__historyMarketSwap__leftContact} onClick={() => { handleHistoryOpen(historyItem) }}>
-            <h3>{historyItem.type}</h3>
+            <h3>{isEqual(historyItem?.type, TX_TYPE.NATIVE_APP) ? historyItem?.method : historyItem.type}</h3>
             {/* <p>{historyItem.to && historyItem.to.length > 40 ? shortner(historyItem.to) : historyItem.to}</p> */}
             <p>{historyItem?.to && historyItem?.to?.length > 40 ? (historyItem?.to?.startsWith(5) ? NATIVE : EVM) : historyItem.to}</p>
           </div>
