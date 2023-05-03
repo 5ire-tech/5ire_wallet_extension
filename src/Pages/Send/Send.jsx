@@ -21,6 +21,7 @@ import {
   LABELS,
   NATIVE,
   TX_TYPE,
+  EXTRA_FEE,
   ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
@@ -31,7 +32,7 @@ import {
 function Send() {
   const [isEd, setEd] = useState(true);
   const [disableBtn, setDisable] = useState(true);
-  const [maxAmount, setMaxAmount] = useState("");
+  const [isMaxDisabled, setMaxDisabled] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [err, setErr] = useState({ to: "", amount: "" });
@@ -42,42 +43,48 @@ function Send() {
 
   const { balance, currentAccount } = state;
 
+  // Reset the amount, to and error evm and native address changed
   useEffect(() => {
     setData({ to: "", amount: "" });
     setErr({ to: "", amount: "" });
   }, [currentAccount?.evmAddress, currentAccount?.nativeAddress]);
 
+
+  //Get fee if to and amount is present
   useEffect(() => {
     const getData = setTimeout(() => {
-      if (
-        (!err.to &&
-          !err.amount &&
-          data.amount &&
-          data.to) ||
-        (!err.to
-          && data?.to
-          && !data?.amount)
+      if ((
+        !err.to &&
+        !err.amount &&
+        data.amount &&
+        data.to &&
+        !estimatedGas
+      )) {
+        getFee();
+      } else if (err.to) {
+        setMaxDisabled(true);
+      } else if (
+        !data.amount ||
+        !data.to ||
+        !estimatedGas
       ) {
-        getFee(!data.amount ? false : true);
-      } else {
-        updateEstimatedGas(null);
         setDisable(true);
       }
     }, 1000);
 
     return () => clearTimeout(getData);
-  }, [err.to, err.amount, data?.to, data?.amount, isEd]);
+  }, [err.to, err.amount, data?.to, data?.amount, isEd, estimatedGas]);
 
-
+  //Check for Insufficent balance
   useEffect(() => {
     if (!estimatedGas) {
       setDisable(true);
     } else {
       if (activeTab.toLowerCase() === EVM.toLowerCase()) {
-        if (estimatedGas && !data.amount) {
-          const amount = Number(balance.evmBalance) - (Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0));
-          setMaxAmount(amount);
-          updateEstimatedGas(null);
+        if (estimatedGas && !data.amount && data.to) {
+          const amount = Number(balance.evmBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0));
+          setData(p => ({ ...p, amount: amount > 0 ? amount : "" }));
+          updateEstimatedGas(amount > 0 ? estimatedGas : null);
 
           return;
         }
@@ -95,11 +102,10 @@ function Send() {
           setErr((p) => ({ ...p, amount: "" }));
         }
       } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
-        if (estimatedGas && !data.amount) {
-
-          const amount = Number(balance.nativeBalance) - (Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0));
-          setMaxAmount(amount);
-          updateEstimatedGas(null)
+        if (estimatedGas && !data.amount && data.to) {
+          const amount = Number(balance.nativeBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0));
+          setData(p => ({ ...p, amount: amount }));
+          updateEstimatedGas(amount > 0 ? estimatedGas : null);
 
           return;
         }
@@ -121,18 +127,18 @@ function Send() {
   }, [estimatedGas, activeTab, balance?.evmBalance, balance.nativeBalance, data.amount, isEd]);
 
 
-  const blockInvalidChar = (e) =>
-    ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
+  const blockInvalidChar = (e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
 
   //set the ED toggler state
   const onChangeToggler = (checked) => {
     setEd(checked);
-    setMaxAmount("");
     updateEstimatedGas(null);
+    setMaxDisabled(true);
     setErr(p => ({ ...p, amount: "" }));
     setData(p => ({ ...p, amount: "" }));
   };
 
+  //validate amount
   const validateAmount = () => {
     if (!data.amount)
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INPUT_REQUIRED }));
@@ -151,6 +157,7 @@ function Send() {
     }
   };
 
+  //validate to address
   const validateToAddress = async () => {
     if (activeTab.toLowerCase() === EVM.toLowerCase()) {
       if (!data.to)
@@ -163,7 +170,10 @@ function Send() {
         let res = await validateAddress(data.to);
 
         if (res.error) setErr((p) => ({ ...p, to: res.data }));
-        else setErr((p) => ({ ...p, to: "" }));
+        else {
+          setErr((p) => ({ ...p, to: "" }));
+          setMaxDisabled(false);
+        }
       }
     } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
       if (!data.to)
@@ -176,13 +186,18 @@ function Send() {
         let res = await validateAddress(data.to);
 
         if (res.error) setErr((p) => ({ ...p, to: res.data }));
-        else setErr((p) => ({ ...p, to: "" }));
+        else {
+          setErr((p) => ({ ...p, to: "" }));
+          setMaxDisabled(false);
+        }
+
       }
     }
   };
 
+  //for getting the fee details
   const getFee = async (loader = true) => {
-    if (activeTab.toLowerCase() === NATIVE.toLowerCase() && balance.nativeBalance) {
+    if (activeTab.toLowerCase() === NATIVE.toLowerCase() && Number(balance.nativeBalance) > 0) {
       loader && updateLoading(true);
 
       //calculate the native fee
@@ -195,7 +210,7 @@ function Send() {
           options: { account: state.currentAccount },
         }
       );
-    } else if (activeTab.toLowerCase() === EVM.toLowerCase() && balance.evmBalance) {
+    } else if (activeTab.toLowerCase() === EVM.toLowerCase() && Number(balance.evmBalance) > 0) {
       loader && updateLoading(true);
 
       //calculate the evm fee
@@ -211,6 +226,7 @@ function Send() {
     }
   };
 
+  //handle the changed value of inputs
   const handleChange = (e) => {
     if (e.target.name === LABELS.AMOUNT) {
       const arr = e.target.value.split(".");
@@ -228,15 +244,17 @@ function Send() {
       }
     } else {
       if (data.to !== e.target.value.trim()) {
-        setData((p) => ({
+        setData(p => ({
           ...p,
           [e.target.name]: e.target.value.trim(),
         }));
         updateEstimatedGas(null);
+        setData(p => ({ ...p, amount: "" }))
       }
     }
   };
 
+  //Perform action on click of Enter
   const handleEnter = (e) => {
     if (e.key === LABELS.ENTER) {
       if (!disableBtn) {
@@ -245,19 +263,7 @@ function Send() {
     }
   };
 
-  // const handleCopy = (e) => {
-  //   if (e.target.name.toLowerCase() === NATIVE.toLowerCase())
-  //     navigator.clipboard.writeText(currentAccount?.nativeAddress);
-
-  //   if (e.target.name.toLowerCase() === EVM.toLowerCase())
-  //     navigator.clipboard.writeText(currentAccount?.evmAddress);
-
-  //   // if (e.target.name.toLowerCase() === "hash")
-  //   //   navigator.clipboard.writeText(txHash);
-
-  //   toast.success(COPIED);
-  // };
-
+  //Perform Transfer
   const handleApprove = async () => {
     try {
       if (activeTab.toLowerCase() === EVM.toLowerCase()) {
@@ -304,13 +310,13 @@ function Send() {
 
   const activeSend = (e) => {
     setDisable(true);
-    setMaxAmount("");
-    setActiveTab(e.target.name);
     updateEstimatedGas(null);
+    setActiveTab(e.target.name);
     setErr({ to: "", amount: "" });
     setData({ to: "", amount: "" });
   };
 
+  //handle Ok and cancel button of popup
   const handle_OK_Cancel = () => {
     updateEstimatedGas(null);
     setDisable(true);
@@ -319,16 +325,35 @@ function Send() {
     setIsModalOpen(false);
   };
 
+  //performs action when user click on max button
   const handleMaxClick = () => {
-    if (maxAmount > 0) {
-      setData(p => ({ ...p, amount: maxAmount }));
+    if ((!err.to && data?.to)) {
+      getFee();
+      setData(p => ({ ...p, amount: "" }));
       setErr(p => ({ ...p, amount: "" }));
     }
+    // if (maxAmount > 0) {
+    //   setData(p => ({ ...p, amount: maxAmount }));
+    //   setErr(p => ({ ...p, amount: "" }));
+    // }
   }
 
   const suffix = (
-    <button className="maxBtn" onClick={handleMaxClick}>Max</button>
+    <button disabled={isMaxDisabled} className="maxBtn" onClick={handleMaxClick}>Max</button>
   );
+
+  // const handleCopy = (e) => {
+  //   if (e.target.name.toLowerCase() === NATIVE.toLowerCase())
+  //     navigator.clipboard.writeText(currentAccount?.nativeAddress);
+
+  //   if (e.target.name.toLowerCase() === EVM.toLowerCase())
+  //     navigator.clipboard.writeText(currentAccount?.evmAddress);
+
+  //   // if (e.target.name.toLowerCase() === "hash")
+  //   //   navigator.clipboard.writeText(txHash);
+
+  //   toast.success(COPIED);
+  // };
 
   return (
     <>
@@ -371,12 +396,13 @@ function Send() {
             />
             <span className={style.errorText}>{err.to}</span>
           </div>
-          <div style={{ marginTop: "14px" }}>
+          <div style={{ marginTop: "17px" }}>
             <InputField
               min={"0"}
               name="amount"
               type={"number"}
               coloredBg={true}
+              key="sendInput"
               value={data.amount}
               keyUp={validateAmount}
               onChange={handleChange}

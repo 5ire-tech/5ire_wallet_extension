@@ -1,6 +1,13 @@
 @import "./styles/__vars.scss";
+body {
+  max-width: 400px;
+  display: flex;
+  justify-content: center;
+}
 .App {
   text-align: center;
+  max-width: 400px;
+
   // min-height: 100vh;
 }
 .WelcomeLayout {
@@ -484,9 +491,19 @@
     gap: 10px;
     justify-content: center;
     margin-top: 8px;
+    padding-bottom: 24px;
+    // display: flex;
+    // flex-direction: column;
+    // justify-content: left;
+    // align-items: baseline;
+    // text-align: left;
+    // gap: 10px;
+    // margin-top: 10px;
   }
   h3 {
-    padding-right: 13px;
+    padding-right: 14px;
+    font-size: 14px;
+        padding-top: 24px;
   }
   .btnYesNo {
     background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
@@ -495,6 +512,14 @@
     padding: 7px 21px;
     color: #fff;
     cursor: pointer;
+    // background: -webkit-linear-gradient(#0071ff, #54f0d1);
+    // -webkit-background-clip: text;
+    // -webkit-text-fill-color: transparent;
+    // background-clip: text;
+    // text-fill-color: transparent;
+    // font-size: 16px;
+    // border: 0;
+    // padding: 8px 0;
   }
 }
 .ant-dropdown .ant-dropdown-menu,

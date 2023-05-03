@@ -1,9 +1,10 @@
 import browser from "webextension-polyfill";
+import { isManifestV3 } from "../Scripts/utils";
 
 const getLocalStorage = async (key) => {
 
-        const localState = await browser.storage.local.get(key);
-        return localState[key] ? localState : null;
+    const localState = await browser.storage.local.get(key);
+    return localState[key] ? localState : null;
 }
 
 const setLocalStorage = async (data) => {
@@ -47,6 +48,6 @@ export const localStorage = {
 }
 
 export const sessionStorage = {
-    set: setSessionStorage,
-    get: getSessionStorage
+    set: isManifestV3 ? setSessionStorage : setLocalStorage,
+    get: isManifestV3 ? getSessionStorage : getLocalStorage
 }

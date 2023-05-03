@@ -1,8 +1,9 @@
 import Browser from "webextension-polyfill";
-import { WINDOW_HEIGHT, WINDOW_WIDTH,ERRCODES,ERROR_MESSAGES } from "../Constants";
+import { WINDOW_HEIGHT, WINDOW_WIDTH, ERRCODES, ERROR_MESSAGES } from "../Constants";
 import { log, hasLength, isString, isNumber } from "../Utility/utility";
-import {isNullorUndef} from "../Utility/utility";
+import { isNullorUndef } from "../Utility/utility";
 import { Error, ErrorPayload } from "../Utility/error_helper";
+import { isManifestV3 } from "./utils";
 
 
 //Handle the window and notification creation
@@ -83,7 +84,12 @@ export default class WindowManager {
         await this.updateWindowPosition(popupWindow.id, left, top);
       }
 
-      return popupWindow.id;
+    // Firefox currently ignores left/top for create, but it works for update
+    if (popupWindow.left !== left && popupWindow.state !== "fullscreen") {
+      await this.updateWindowPosition(popupWindow.id, left, top);
+    }
+
+    return popupWindow.id;
   }
 
 
@@ -93,13 +99,13 @@ export default class WindowManager {
   filterAndRemoveWindows = async (filterId, isRemoveAll) => {
     const allPopupWindows = await this.getAllPopupWindows();
 
-    if(isRemoveAll) {
-      for(let itemWindow of allPopupWindows) await this.closePopup(itemWindow.id);
+    if (isRemoveAll) {
+      for (let itemWindow of allPopupWindows) await this.closePopup(itemWindow.id);
       return;
     }
 
     const otherWindowThanTask = allPopupWindows.filter((item) => item.id !== filterId);
-    for(let itemWindow of otherWindowThanTask) await this.closePopup(itemWindow.id);
+    for (let itemWindow of otherWindowThanTask) await this.closePopup(itemWindow.id);
   }
 
   /**
@@ -140,159 +146,162 @@ export default class WindowManager {
 
 
   /************************************ Internal Window Control Methods ************************************/
-    //reload the extension
-    reload() {
-      Browser.runtime.reload();
-    }
-  
-    //open tab
-    async openTab(options) {
-      const newTab = await Browser.tabs.create(options);
-      return newTab;
-    }
-  
-    //open window
-    async openWindow(options) {
-      const newWindow = await Browser.windows.create(options);
-      return newWindow;
-    }
-  
-    //close window
-    async closeWindow(windowId) {
-      await Browser.windows.remove(windowId);
-  
-    }
+  //reload the extension
+  reload() {
+    Browser.runtime.reload();
+  }
 
-    //get the window using the window id
-    async getWindowById(windowId) {
-      try {
-        const window = await Browser.windows.get(windowId);
-        return window;
-      } catch (err) {
-        return null;
+  //open tab
+  async openTab(options) {
+    const newTab = await Browser.tabs.create(options);
+    return newTab;
+  }
+
+  //open window
+  async openWindow(options) {
+    const newWindow = await Browser.windows.create(options);
+    return newWindow;
+  }
+
+  //close window
+  async closeWindow(windowId) {
+    await Browser.windows.remove(windowId);
+
+  }
+
+  //get the window using the window id
+  async getWindowById(windowId) {
+    try {
+      const window = await Browser.windows.get(windowId);
+      return window;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  //focus on window 
+  async focusWindow(windowId) {
+    await Browser.windows.update(windowId, { focused: true });
+  }
+
+  //update window position
+  async updateWindowPosition(windowId, left, top) {
+    await Browser.windows.update(windowId, { left, top });
+  }
+
+  //get all windows
+  async getAllPopupWindows() {
+    const allWindows = await Browser.windows.getAll({ windowTypes: ['popup'] });
+    return allWindows;
+  }
+
+  //get the last focus window
+  async getLastFocusedWindow() {
+    const windowObject = await Browser.windows.getLastFocused();
+    return windowObject;
+  }
+
+  //close the current window
+  async closeCurrentWindow() {
+    const windowDetails = await Browser.windows.getCurrent();
+    Browser.windows.remove(windowDetails.id);
+  }
+
+  //get the app version
+  getVersion() {
+    const { version, version_name: versionName } =
+      Browser.runtime.getManifest();
+
+    const versionParts = version.split(".");
+    if (versionName) {
+      if (versionParts.length < 4) {
+        throw new Error(`Version missing build number: '${version}'`);
       }
-    }
-  
-    //focus on window 
-    async focusWindow(windowId) {
-      await Browser.windows.update(windowId, { focused: true });
-    }
-  
-    //update window position
-    async updateWindowPosition(windowId, left, top) {
-      await Browser.windows.update(windowId, { left, top });
-    }
-  
-    //get all windows
-    async getAllPopupWindows() {
-      const allWindows = await Browser.windows.getAll({windowTypes: ['popup']});
-      return allWindows;
-    }
-
-    //get the last focus window
-    async getLastFocusedWindow() {
-      const windowObject = await Browser.windows.getLastFocused();
-      return windowObject;
-    }
-  
-    //close the current window
-    async closeCurrentWindow() {
-      const windowDetails = await Browser.windows.getCurrent();
-      Browser.windows.remove(windowDetails.id);
-    }
-  
-    //get the app version
-    getVersion() {
-      const { version, version_name: versionName } =
-        Browser.runtime.getManifest();
-  
-      const versionParts = version.split(".");
-      if (versionName) {
-        if (versionParts.length < 4) {
-          throw new Error(`Version missing build number: '${version}'`);
-        }
-        // On Chrome, a more descriptive representation of the version is stored in the
-        // `version_name` field for display purposes. We use this field instead of the `version`
-        // field on Chrome for non-main builds (i.e. Flask, Beta) because we want to show the
-        // version in the SemVer-compliant format "v[major].[minor].[patch]-[build-type].[build-number]",
-        // yet Chrome does not allow letters in the `version` field.
-        return versionName;
-        // A fourth version part is sometimes present for "rollback" Chrome builds
-      } else if (![3, 4].includes(versionParts.length)) {
-        throw new Error(`Invalid version: ${version}`);
-      } else if (versionParts[2].match(/[^\d]/u)) {
-        // On Firefox, the build type and build version are in the third part of the version.
-        const [major, minor, patchAndPrerelease] = versionParts;
-        const matches = patchAndPrerelease.match(/^(\d+)([A-Za-z]+)(\d)+$/u);
-        if (isNullorUndef(matches)) {
-          throw new Error(`Version contains invalid prerelease: ${version}`);
-        }
-        const [, patch, buildType, buildVersion] = matches;
-        return `${major}.${minor}.${patch}-${buildType}.${buildVersion}`;
+      // On Chrome, a more descriptive representation of the version is stored in the
+      // `version_name` field for display purposes. We use this field instead of the `version`
+      // field on Chrome for non-main builds (i.e. Flask, Beta) because we want to show the
+      // version in the SemVer-compliant format "v[major].[minor].[patch]-[build-type].[build-number]",
+      // yet Chrome does not allow letters in the `version` field.
+      return versionName;
+      // A fourth version part is sometimes present for "rollback" Chrome builds
+    } else if (![3, 4].includes(versionParts.length)) {
+      throw new Error(`Invalid version: ${version}`);
+    } else if (versionParts[2].match(/[^\d]/u)) {
+      // On Firefox, the build type and build version are in the third part of the version.
+      const [major, minor, patchAndPrerelease] = versionParts;
+      const matches = patchAndPrerelease.match(/^(\d+)([A-Za-z]+)(\d)+$/u);
+      if (isNullorUndef(matches)) {
+        throw new Error(`Version contains invalid prerelease: ${version}`);
       }
-  
-      // If there is no `version_name` and there are only 3 or 4 version parts, then this is not a
-      // prerelease and the version requires no modification.
-      return version;
-    }
-  
-    //get the platform (os) information
-    getPlatformInfo(cb) {
-      try {
-        const platformInfo = Browser.runtime.getPlatformInfo();
-        cb(platformInfo);
-        return;
-      } catch (e) {
-        cb(e);
-        // eslint-disable-next-line no-useless-return
-        return;
-      }
-    }
-  
-    //add the listner for window close
-    addOnRemovedListener(listener) {
-     const hasListner = Browser.windows.onRemoved.hasListeners((id) => {log("Here is the has listner callback: ", id)})
-
-        if(!hasListner) {
-          Browser.windows.onRemoved.addListener(listener);
-        }
-  
+      const [, patch, buildType, buildVersion] = matches;
+      return `${major}.${minor}.${patch}-${buildType}.${buildVersion}`;
     }
 
-    //add the listner for create window event
-    addOnWindowCreateListner(windowCreateCallback) {
+    // If there is no `version_name` and there are only 3 or 4 version parts, then this is not a
+    // prerelease and the version requires no modification.
+    return version;
+  }
+
+  //get the platform (os) information
+  getPlatformInfo(cb) {
+    try {
+      const platformInfo = Browser.runtime.getPlatformInfo();
+      cb(platformInfo);
+      return;
+    } catch (e) {
+      cb(e);
+      // eslint-disable-next-line no-useless-return
+      return;
+    }
+  }
+
+  //add the listner for close btn
+  addOnRemovedListener(listener) {
+    let hasListener;
+    if (isManifestV3)
+      hasListener = Browser.windows.onRemoved.hasListeners((id) => { log("Here is the has listner callback: ", id) })
+    else
+      hasListener = Browser.windows.onRemoved.hasListener((id) => { log("Here is the has listner callback: ", id) })
+
+    if (!hasListener) {
+      Browser.windows.onRemoved.addListener(listener);
+    }
+
+  }
+
+  //add the listner for create window event
+  addOnWindowCreateListner(windowCreateCallback) {
       Browser.windows.onCreated.addListener(windowCreateCallback);
     }
 
-  
-    //get all windows
-    async getAllWindows() {
-      const windows = await Browser.windows.getAll();
-      return windows;
-    }
-  
-    //get active tab
-    async getActiveTabs() {
-      const tabs = await Browser.tabs.query({ active: true });
-      return tabs;
-    }
-  
-    //get current active tab
-    async currentTab() {
-      const tab = await Browser.tabs.getCurrent();
-      return tab;
-    }
-  
-    //switch between tabs
-    async switchToTab(tabId) {
-      const tab = await Browser.tabs.update(tabId, { highlighted: true });
-      return tab;
-    }
-  
-    //close a tab using tabId
-    async closeTab(tabId) {
-      await Browser.tabs.remove(tabId);
-    }
+  //get all windows
+  async getAllWindows() {
+    const windows = await Browser.windows.getAll();
+    return windows;
+  }
+
+  //get active tab
+  async getActiveTabs() {
+    const tabs = await Browser.tabs.query({ active: true });
+    return tabs;
+  }
+
+  //get current active tab
+  async currentTab() {
+    const tab = await Browser.tabs.getCurrent();
+    return tab;
+  }
+
+  //switch between tabs
+  async switchToTab(tabId) {
+    const tab = await Browser.tabs.update(tabId, { highlighted: true });
+    return tab;
+  }
+
+  //close a tab using tabId
+  async closeTab(tabId) {
+    await Browser.tabs.remove(tabId);
+  }
 }
 
 //manage the notification's and bedge's
@@ -301,29 +310,29 @@ export class NotificationAndBedgeManager {
 
   //get the already created instance
   static getInstance = () => {
-      if(!NotificationAndBedgeManager.instance) {
-        NotificationAndBedgeManager.instance = new NotificationAndBedgeManager();
-        delete NotificationAndBedgeManager.constructor;
-      }
-      return NotificationAndBedgeManager.instance
+    if (!NotificationAndBedgeManager.instance) {
+      NotificationAndBedgeManager.instance = new NotificationAndBedgeManager();
+      delete NotificationAndBedgeManager.constructor;
+    }
+    return NotificationAndBedgeManager.instance
   }
 
   //show extension notifications
   showNotification(message, title = "5ire", type = "basic") {
-    
-    if(!isString(message) && !hasLength(message)) new Error(new ErrorPayload(ERRCODES.CHECK_FAIL, ERROR_MESSAGES.INVALID_TYPE)).throw();
-      
+
+    if (!isString(message) && !hasLength(message)) new Error(new ErrorPayload(ERRCODES.CHECK_FAIL, ERROR_MESSAGES.INVALID_TYPE)).throw();
+
     Browser.notifications.create("", {
-            iconUrl: Browser.runtime.getURL("logo192.png"),
-            message,
-            title,
-            type,
-          });
+      iconUrl: Browser.runtime.getURL("logo192.png"),
+      message,
+      title,
+      type,
+    });
   }
 
   //show the bedge on extension icon
   showBedge(bedgeMessage) {
     const isNum = isNumber(bedgeMessage);
-    Browser.action.setBadgeText({text: isNum ? bedgeMessage > 0 ? String(bedgeMessage) : "" : bedgeMessage });
+    Browser.action.setBadgeText({ text: isNum ? bedgeMessage > 0 ? String(bedgeMessage) : "" : bedgeMessage });
   }
 }

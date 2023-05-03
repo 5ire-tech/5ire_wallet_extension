@@ -10,6 +10,8 @@ export const CONNECTION_NAME = "5IRE_EXT";
 export const MAIN_POPUP = "MAIN_POPUP";
 export const PORT_NAME = "WEBEXT_REDUX_TEST";
 export const UI_CONNECTION_NAME = "5IRE_EXT_UI";
+
+export const EXTRA_FEE = 0.001;
 export const WINDOW_WIDTH = 400;
 export const DECIMALS = 10 ** 18;
 export const WINDOW_HEIGHT = 620;
@@ -96,7 +98,7 @@ export const ERROR_MESSAGES = {
     LOGOUT_ERR: "Error while logging out",
     INVALID_MNEMONIC: "Invalid mnemonic.",
     INCORRECT_PASS: "Incorrect password.",
-    INCORRECT_ADDRESS: "Incorrect address.",
+    INCORRECT_ADDRESS: "Invalid address.",
     INPUT_REQUIRED: "This field is required.",
     PASS_DONT_MATCH: "Passwords do not match.",
     INSUFFICENT_BALANCE: "Insufficent Balance.",
@@ -208,6 +210,7 @@ export const LABELS = {
 
 export const HTTP_END_POINTS = {
     QA: "https://qa-http-nodes.5ire.network",
+    UAT: "https://uat-http-nodes.5ire.network",
     TESTNET: "https://rpc-testnet.5ire.network"
 };
 
@@ -244,6 +247,7 @@ export const MESSAGE_EVENT_LABELS = {
     EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS: "externalNativeTransactionArgsAndGas",
     VALIDATOR_NOMINATOR_FEE: "validatorNominatorFee",
     VALIDATOR_NOMINATOR_TRANSACTION: "validatorNominatorTransaction",
+    TX_HASH: "txHash",
     EVM_FEE: "evmFee",
     EVM_TX: "evmTransfer",
     BALANCE: "getBalance",
@@ -251,12 +255,11 @@ export const MESSAGE_EVENT_LABELS = {
     NATIVE_TX: "nativeTransfer",
     LOGIN_UPDATE: "loginUpdate",
     NOTIFICATION: "notification",
-    NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
+    BACKGROUND_ERROR: "backgroundError",
     UPDATE_TX_HISTORY: "txupdatehistory",
     EVM_TO_NATIVE_SWAP: "evmToNativeSwap",
+    NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
     CLOSE_POPUP_SESSION: "closePopupSession",
-    TX_HASH: "txHash",
-    BACKGROUND_ERROR: "backgroundError",
 
     LOCK: "lock",
     UNLOCK: "unlock",

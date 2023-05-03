@@ -36,6 +36,7 @@ import {
   checkStringInclusionIntoArray,
   sendEventToTab,
 } from "../../Helper/helper";
+import fillArow from "../../Assets/fillArow.svg";
 
 function MyAccount() {
   const navigate = useNavigate();
@@ -91,7 +92,7 @@ function MyAccount() {
   };
 
   const hanldeCreateNewAcc = () => {
-    setNewWalletName('')
+    setNewWalletName("");
     navigate(ROUTES.CREATE_WALLET);
   };
 
@@ -176,14 +177,14 @@ function MyAccount() {
             <div className={style.myAccountSec__leftSec__accountConatct}>
               <h2>
                 {e?.accountName}
-                {/* {e?.type === WALLET_TYPES.IMPORTED_NATIVE ? (
+                {e?.type === WALLET_TYPES.IMPORTED_NATIVE ? (
                   <i>
                     {" "}
                     <small> (Imported)</small>
                   </i>
                 ) : (
                   ""
-                )} */}
+                )}
               </h2>
               <p>
                 {e?.accountName === currentAccount?.accountName ? (
@@ -225,6 +226,7 @@ function MyAccount() {
               ""
             ) : (
               <Dropdown
+              placement="bottomRight" arrow={{ pointAtCenter: true }}
                 menu={{
                   items: [
                     {
@@ -232,6 +234,7 @@ function MyAccount() {
                       label: (
                         <span onClick={() => handleModalOpen(e.evmAddress)}>
                           Remove
+                          {/* <img src={fillArow} /> */}
                         </span>
                       ),
                     },
@@ -251,10 +254,11 @@ function MyAccount() {
         isModalOpen={isModalOpen}
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
+        centered
       >
         <div className={`${style.activeDis_Modal} yesnoPopup`}>
-          <center>
-            <h3 style={{ color: "white" }}>
+           <center> 
+             <h3 style={{ color: "white" }}>
               Are you sure, you want to remove this account ?
             </h3>
             <div className="innerContct">
@@ -266,7 +270,7 @@ function MyAccount() {
                 No
               </button>
             </div>
-          </center>
+          </center> 
         </div>
       </ModalCustom>
     </div>

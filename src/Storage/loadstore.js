@@ -86,7 +86,8 @@ export class ExtensionStorageHandler {
     addNewTxHistory = async (data, state, options) => {
 
         const newState = { ...state }
-        newState.txHistory[options.account.accountName].push(data);
+        newState.txHistory[options?.account?.evmAddress].push(data);
+        // newState.txHistory[options.account.accountName].push(data);
         const status = await this._updateStorage(newState);
         return status;
 
@@ -95,7 +96,8 @@ export class ExtensionStorageHandler {
     //update transaction
     updateTxHistory = async (data, state, options) => {
         const newState = { ...state };
-        const txHistory = newState.txHistory[options.account.accountName];
+        const txHistory = newState.txHistory[options.account?.evmAddress];
+        // const txHistory = newState.txHistory[options.account.accountName];
 
         const txIndex = txHistory.findIndex((item) => {
             return item.id === data.id
@@ -105,7 +107,8 @@ export class ExtensionStorageHandler {
         if (0 > txIndex) return false;
         //set the updated status into localstorage
         txHistory[txIndex] = data;
-        newState.txHistory[options.account.accountName] = txHistory;
+        newState.txHistory[options.account?.evmAddress] = txHistory;
+        // newState.txHistory[options.account.accountName] = txHistory;
 
         //update the history
         return await this._updateStorage(newState);
@@ -128,9 +131,10 @@ export class ExtensionStorageHandler {
 
     //remove the history item
     removeHistoryItem = async (data, state, options) => {
-        const {id} = data;
-        const newState = {...state};
-        newState.txHistory[options.account.accountName] = newState.txHistory[options.account.accountName].filter((item) => item.id !== id);
+        const { id } = data;
+        const newState = { ...state };
+        newState.txHistory[options.account?.evmAddress] = newState.txHistory[options.account?.evmAddress].filter((item) => item.id !== id);
+        // newState.txHistory[options.account.accountName] = newState.txHistory[options.account.accountName].filter((item) => item.id !== id);
         return await this._updateStorage(newState);
     }
 
@@ -190,7 +194,7 @@ export class ExtensionStorageHandler {
 
     //remove the current failed transaction
     removeFailedTx = async (data, state) => {
-        const newState = {...state, currentTransaction: null};
+        const newState = { ...state, currentTransaction: null };
         return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
     }
 
@@ -218,7 +222,7 @@ export class ExtensionStorageHandler {
             accountIndex: newAccount.accountIndex,
             nativeAddress: newAccount.nativeAddress,
         }
-        const txHistory = this._txProperty(state, newAccount.accountName);
+        const txHistory = this._txProperty(state, newAccount.evmAddress);
         // }
         const newState = { ...state, vault, isLogin: true, currentAccount, txHistory };
 
@@ -243,20 +247,28 @@ export class ExtensionStorageHandler {
         return await this._updateStorage(newState);
     };
 
-
+    //import account by mnemonic
     importAccountByMnemonics = async (message, state) => {
         // console.log("essage in loadstore import ", message);
 
         const { newAccount, vault } = message;
-        const txHistory = this._txProperty(state, newAccount.accountName);
+        const txHistory = this._txProperty(state, newAccount.evmAddress);
         const newState = { ...state, vault, txHistory, currentAccount: newAccount }
         return await this._updateStorage(newState);
     };
 
+
     //add hd account
     addAccount = async (message, state) => {
-        const { vault } = message;
-        const newState = { ...state, vault };
+        const { vault, newAccount } = message;
+        const currentAccount = {
+            evmAddress: newAccount.evmAddress,
+            accountName: newAccount.accountName,
+            accountIndex: newAccount.accountIndex,
+            nativeAddress: newAccount.nativeAddress,
+        }
+        const txHistory = this._txProperty(state, newAccount.evmAddress);
+        const newState = { ...state, vault, currentAccount, txHistory };
         return await this._updateStorage(newState);
     };
 
@@ -273,14 +285,14 @@ export class ExtensionStorageHandler {
             newState.isLogin = false;
             newState.currentAccount = userState.currentAccount;
             if (newState?.txHistory[newState?.accountName]) {
-                delete newState.txHistory[newState?.accountName]          
+                delete newState.txHistory[newState?.accountName]
             }
         }
         return await this._updateStorage(newState);
 
     }
 
-    
+
     // resetVaultAndPass = async (message, state) => {
 
     //     const newState = { ...state, vault: null, isLogin: false };

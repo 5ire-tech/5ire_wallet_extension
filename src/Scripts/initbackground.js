@@ -37,7 +37,6 @@ export class InitBackground {
     this.internalHandler = ExternalConnection.getInstance();
     this.keyringHandler = KeyringHandler.getInstance();
     this.externalTaskHandler = new ExternalTxTasks();
-    this.keyringHandler = KeyringHandler.getInstance();
 
     if (!InitBackground.balanceTimer) {
       InitBackground.balanceTimer = this._balanceUpdate();
@@ -356,7 +355,7 @@ class TransactionQueue {
     TransactionQueue.transactionIntervalId = transactionIntervalId;
   }
 
-
+  
   //add new transaction
   addNewTransaction = async (transactionProcessingPayload) => {
     //add the transaction history track
