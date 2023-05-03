@@ -34,6 +34,7 @@ function Swap() {
   const [error, setError] = useState("");
   const [amount, setAmount] = useState("");
   const [disableBtn, setDisable] = useState(true);
+  const [isMaxDisabled, setMaxDisabled] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [toFrom, setToFrom] = useState({ from: NATIVE, to: EVM });
@@ -46,11 +47,19 @@ function Swap() {
     setError("");
   }, [toFrom.to]);
 
-  //Reset the amount and error when to and from changes
+
   useEffect(() => {
-    setAmount("");
-    setError("");
-  }, []);
+    if (
+      (toFrom.from === EVM && Number(balance.evmBalance) < 1) ||
+      (toFrom.from === NATIVE && Number(balance.nativeBalance) < 1)
+    ) {
+      setMaxDisabled(true);
+    } else {
+      setMaxDisabled(false);
+    }
+
+  }, [balance.evmBalance, balance.nativeBalance, toFrom.from]);
+
 
   //Get fee if to and amount is present
   useEffect(() => {
@@ -74,9 +83,14 @@ function Swap() {
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
         if (estimatedGas && !amount) {
           const amount = Number(balance.evmBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0));
-          setAmount(amount > 0 ? amount : "");
-          updateEstimatedGas(amount > 0 ? estimatedGas : null);
+
+          setAmount(amount >= 1 ? amount : "");
+          updateEstimatedGas(amount >= 1 ? estimatedGas : null);
+          !(Number(amount) >= 1) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+          // Number(amount) < 1 && setError(ERROR_MESSAGES.AMOUNT_CANT_LESS_THEN_ONE);
+
           return;
+
         }
         else if ((Number(amount) + (Number(estimatedGas)) + (isEd ? EXISTENTIAL_DEPOSITE : 0)) > Number(balance.evmBalance)) {
           setDisable(true);
@@ -90,10 +104,18 @@ function Swap() {
 
       } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
         if (estimatedGas && !amount) {
+
           const amount = Number(balance.nativeBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0));
-          setAmount(amount > 0 ? amount : "");
-          updateEstimatedGas(amount > 0 ? estimatedGas : null);
+
+
+          setAmount(amount >= 1 ? amount : "");
+          updateEstimatedGas(amount >= 1 ? estimatedGas : null);
+          !(Number(amount) >= 1) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+          // Number(amount) < 1 && setError(ERROR_MESSAGES.AMOUNT_CANT_LESS_THEN_ONE);
+
+          // setError(amount > 0 ? "" : ERROR_MESSAGES.INSUFFICENT_BALANCE);
           return;
+
         }
         if ((Number(amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0)) > Number(balance.nativeBalance)) {
           setDisable(true);
@@ -263,7 +285,7 @@ function Swap() {
   }
 
   const suffix = (
-    <button className="maxBtn" onClick={handleMaxClick}>Max</button>
+    <button disabled={isMaxDisabled} className="maxBtn" onClick={handleMaxClick}>Max</button>
   );
 
   // useEffect(() => {
