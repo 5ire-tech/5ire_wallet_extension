@@ -230,7 +230,7 @@ export const API = {
 export const EXPLORERS = {
     TESTNET: "https://explorer.5ire.network",
     QA: "https://qa-web-exp.5ire.network",
-    UAT: "https://uat-http-nodes.5ire.network",
+    QA: "https://uat-web-exp.5ire.network",
 
 }
 

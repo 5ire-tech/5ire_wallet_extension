@@ -57,7 +57,7 @@ function PrivateKey() {
         <div className={`flexedContent`}>
           <div className={style.enterPassword}>
             <div className={style.commonHeadeing}>
-              <h1>Your Private Key</h1>
+              <h1>Your Secret Keys</h1>
             </div>
             <div className={style.wallet}>
               <div className={style.wallet__addressInput}>
