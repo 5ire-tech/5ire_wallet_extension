@@ -105,7 +105,6 @@ export class ExternalWindowControl {
       //check if there is any window opened with popupid
       const window = await this.windowManager.getWindowById(externalControlsState.activeSession.popupId);
       if (!window) {
-        log("closed wihtout using the window");
         this._sendRejectAndCloseResponse(externalControlsState.activeSession);
         return;
       }
@@ -140,11 +139,11 @@ export class ExternalWindowControl {
    */
   _handleClose = async (windowId) => {
 
-    await this.windowManager.filterAndRemoveWindows(null, true);
     const {activeSession} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+    await this.windowManager.filterAndRemoveWindows(null, true);
 
     if(!isEqual(activeSession?.popupId, windowId)) {
-      // log("not match the current task: ", activeSession?.popupId, windowId);
+      log("not match the current task: ", activeSession?.popupId, windowId);
       return;
     }
     
@@ -162,6 +161,8 @@ export class ExternalWindowControl {
    * @param {*} activeSession 
    */
   _sendRejectAndCloseResponse = async (activeSession) => {
+
+    log("here is status: ", ExternalWindowControl.isApproved);
 
         //check if window is closed by close button
         if(isNullorUndef(ExternalWindowControl.isApproved) || isEqual(ExternalWindowControl.isApproved, false)) {
@@ -260,16 +261,8 @@ export class ExternalConnection {
 
   //handle the validator and nominator related transactions
   async handleValidatorNominatorTransactions(data, state) {
-
-    //check if the from account is our current account
-    //Todo restrict connection
-    // if (!isEqual(state.currentAccount.evmAddress?.toLowerCase(), data.message?.from)) {
-    //   sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.ACCOUNT_ACCESS_NOT_GRANTED));
-    //   return;
-    // }
     const externalControls = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
     await this.externalWindowController.newConnectionRequest({ route: ROUTE_FOR_APPROVAL_WINDOWS.VALIDATOR_NOMINATOR_TXN, ...data }, externalControls);
-
   }
 
   //handle the signing of native transaction

@@ -51,7 +51,8 @@ export const TX_TYPE = {
     SWAP: "Swap",
     CONTRACT_EXECUTION: "Contract Execution",
     CONTRACT_DEPLOYMENT: "Contract Deployement",
-    NATIVE_SIGNER: "Native Signer"
+    NATIVE_SIGNER: "Native Signer",
+    NATIVE_APP: "Native App"
 };
 
 export const NETWORK = {
@@ -238,7 +239,8 @@ export const WS_END_POINTS = {
 export const MESSAGE_EVENT_LABELS = {
     NATIVE_SIGNER: "nativeSigner",
     EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS: "externalNativeTransactionArgsAndGas",
-    VALIDATOR_NOMINATOR_FEE: "validatorAndNominatorFee",
+    VALIDATOR_NOMINATOR_FEE: "validatorNominatorFee",
+    VALIDATOR_NOMINATOR_TRANSACTION: "validatorNominatorTransaction",
     EVM_FEE: "evmFee",
     EVM_TX: "evmTransfer",
     BALANCE: "getBalance",

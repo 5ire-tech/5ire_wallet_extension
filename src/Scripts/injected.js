@@ -2,6 +2,7 @@ import { WindowPostMessageStream } from "./stream";
 import { ACCOUNT_CHANGED_EVENT, CONTENT_SCRIPT, INPAGE } from "./constants";
 import { FireProvider } from "./5ire-Provider";
 import { TABS_EVENT } from "../Constants";
+import { log } from "../Utility/utility";
 
 const injectedStream = new WindowPostMessageStream({
   name: INPAGE,

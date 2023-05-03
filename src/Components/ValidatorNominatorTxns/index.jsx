@@ -1,35 +1,61 @@
 import { Layout } from "antd";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import style from "../../Layout/style.module.scss";
 import footerstyle from "../MenuFooter/style.module.scss"
 import pageStyle from "../../Pages/RejectNotification/style.module.scss"
 import ButtonComp from "../ButtonComp/ButtonComp";
-import { MESSAGE_EVENT_LABELS, MESSAGE_TYPE_LABELS } from "../../Constants";
+import { ERROR_MESSAGES, MESSAGE_EVENT_LABELS, MESSAGE_TYPE_LABELS, TX_TYPE } from "../../Constants";
 import { shortLongAddress } from "../../Utility/utility";
 import { AuthContext } from "../../Store";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../Routes";
 
 
 
 function ValidatorNominatorTxns() {
-    const { Content } = Layout;
+    const navigate = useNavigate();
+    const [disableApproval, setDisableApproval] = useState(false);
     const {
         state,
         externalControlsState: { activeSession },
         valdatorNominatorFee,
         updateLoading,
+        setValdatorNominatorFee,
+        backgroundError
     } = useContext(AuthContext);
+    const { Content } = Layout;
 
 
+      //check if user has sufficent balance to make transaction
+  useEffect(() => {
+
+    if ((Number(activeSession.message?.value) + Number(valdatorNominatorFee?.fee)) >= Number(state.balance.evmBalance)) {
+      toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+      setDisableApproval(true);
+      setValdatorNominatorFee(null);
+      return;
+    } else {
+        setDisableApproval(false)
+    }
+  }, [valdatorNominatorFee?.fee]);
+
+
+  //calculate the transaction fee
     useEffect(() => {
         updateLoading(true);
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE, { options: { isFee: true } });
-
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE, {});
+        setDisableApproval(!valdatorNominatorFee?.fee);
     }, [])
 
+
+    //process the transaction
     function handleClick(isApproved) {
-        updateLoading(true);
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE, { options: { isFee: false, isApproved } });
+        // updateLoading(true);
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_TRANSACTION, {approve: isApproved, options: {account: state.currentAccount, isEvm: false, network: state.currentNetwork, type: TX_TYPE.NATIVE_APP } });
+        setValdatorNominatorFee(null);
+        navigate(ROUTES.WALLET);
     }
 
 
@@ -110,6 +136,7 @@ function ValidatorNominatorTxns() {
                         onClick={() => handleClick(true)}
                         text={"Approve"}
                         maxWidth={"100%"}
+                        isDisable={disableApproval}
                     />
                 </div>
             </div>

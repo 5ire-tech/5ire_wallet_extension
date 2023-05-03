@@ -185,13 +185,11 @@ export const ApproveTx = () => {
   //check if user has sufficent balance to make transaction
   useEffect(() => {
 
-
     if ((Number(activeSession.message?.value) + Number(estimatedGas)) >= Number(state.balance.evmBalance)) {
       toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       setDisableApproval(true);
       return;
     }
-
   }, [estimatedGas]);
 
 

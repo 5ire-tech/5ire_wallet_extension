@@ -306,6 +306,7 @@ class RpcRequestProcessor {
 
   //parse and send the message related to fee and balance
   parseGeneralRpc = async (rpcResponse) => {
+
     if (!rpcResponse.error) {
       //change the state in local storage
       if (rpcResponse.stateChangeKey) await this.services.updateLocalState(rpcResponse.stateChangeKey, rpcResponse.payload.data, rpcResponse.payload?.options)
@@ -395,7 +396,7 @@ class TransactionQueue {
     } catch (err) {
       log("error while saving the transaction", err)
       const error = new ErrorPayload(ERRCODES.INTERNAL, err.message);
-      return new EventPayload(null, null, null, [], error);
+      return new EventPayload(null, null, {data: currentTransaction?.transactionHistoryTrack}, [], error);
     }
   }
 
@@ -403,23 +404,18 @@ class TransactionQueue {
   //parse the response after processing the transaction
   parseTransactionResponse = async () => {
 
-    // //check if next transaction is native signer transaction
-    // const { currentTransaction:{options} } = await getDataLocal(LABELS.TRANSACTION_QUEUE);
-    // if(options?.nativeSigner) {
-    //   ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.NEW_NATIVE_SIGNER_TRANSACTION_INQUEUE);
-    //   return;
-    // }
-
     //perform the current active transactions 
     const transactionResponse = await this.processTransaction();
+
     const { txHash } = transactionResponse.payload?.data;
 
     //check if there is error payload into response
     if (!transactionResponse.error) {
       //if transaction is external then send the response to spefic tab
       if (transactionResponse.payload.options?.externalTransaction && txHash) {
+        const {payload:{options:{type}}} = transactionResponse;
         const { externalTransaction } = transactionResponse.payload.options;
-        const externalResponse = { method: externalTransaction.method, result: txHash }
+        const externalResponse = { method: externalTransaction.method, result: isEqual(type, TX_TYPE.NATIVE_APP) ? {txHash} : txHash }
         sendMessageToTab(externalTransaction?.tabId, new TabMessagePayload(externalTransaction.id, externalResponse));
       }
 
@@ -429,7 +425,14 @@ class TransactionQueue {
       if (txHash) this._updateQueueAndHistory(transactionResponse);
       else {
         transactionResponse?.payload && await this.services.updateLocalState(STATE_CHANGE_ACTIONS.REMOVE_HISTORY_ITEM, {id: transactionResponse.payload.data?.id}, transactionResponse.payload?.options)
-        await this.services.updateLocalState(STATE_CHANGE_ACTIONS.REMOVE_FAILED_TX, {}, {localStateKey: LABELS.TRANSACTION_QUEUE})
+        await this.services.updateLocalState(STATE_CHANGE_ACTIONS.REMOVE_FAILED_TX, {}, {localStateKey: LABELS.TRANSACTION_QUEUE});
+
+        //if transaction is external send the error response back to requester tab
+        if(transactionResponse.payload.options?.externalTransaction) {
+          const { externalTransaction } = transactionResponse.payload.options;
+          sendMessageToTab(externalTransaction?.tabId, new TabMessagePayload(externalTransaction.id, {result: null}, externalTransaction.method, null, isString(transactionResponse.error) ? transactionResponse.error : ERROR_MESSAGES.ERROR_WHILE_TRANSACTION));
+        }
+
         ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, transactionResponse.error);
       }
     }
@@ -466,14 +469,18 @@ class TransactionQueue {
       const { transactionHistoryTrack: { txHash, isEvm, chain } } = currentTransaction;
       const transactionStatus = await this.services.getTransactionStatus(txHash, isEvm, chain);
 
-      log("status: ", transactionStatus?.status);
-
       //if transaction status is found ether Failed or Success
       if (transactionStatus?.status) {
 
         //update the transaction after getting the confirmation
         transactionHistoryTrack.status = transactionStatus.status;
-        transactionHistoryTrack.to = !!transactionHistoryTrack.intermidateHash ? transactionHistoryTrack.to : transactionHistoryTrack.isEvm ? transactionStatus.to || transactionStatus.contractAddress : transactionHistoryTrack.to;
+
+        //check the transaction type and save the to recipent according to type
+        if(isEqual(transactionHistoryTrack?.type, TX_TYPE.NATIVE_APP)) 
+          transactionHistoryTrack.to = transactionStatus?.sectionmethod
+        else
+          transactionHistoryTrack.to = !!transactionHistoryTrack.intermidateHash ? transactionHistoryTrack.to : transactionHistoryTrack.isEvm ? transactionStatus.to || transactionStatus.contractAddress : transactionHistoryTrack.to;
+
         transactionHistoryTrack.gasUsed = transactionHistoryTrack.isEvm ? (Number(transactionStatus?.gasUsed) / ONE_ETH_IN_GWEI).toString() : transactionStatus?.txFee
 
         //update the transaction status and other details after confirmation
@@ -642,7 +649,7 @@ class ExternalTxTasks {
     if (isEqual(message.event, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION)) await this.closePopupSession(message, state)
     else if (isEqual(MESSAGE_EVENT_LABELS.EVM_TX, message.event)) await this.externalEvmTransaction(message, state);
     else if (isEqual(MESSAGE_EVENT_LABELS.NATIVE_SIGNER, message.event)) await this.nativeSigner(message, state);
-    else if (isEqual(MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE, message.event)) await this.validatorNominatorMethods(message, state)
+    else if (isEqual(MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_TRANSACTION, message.event)) await this.validatorNominatorTransaction(message, state)
 
   }
 
@@ -651,7 +658,7 @@ class ExternalTxTasks {
     const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
 
     //process the external evm transactions
-    const externalTransactionProcessingPayload = new TransactionProcessingPayload({ ...activeSession.message, options: { ...message?.data.options, externalTransaction: { ...activeSession } } }, message.event, null, activeSession.message?.data, { ...message?.data.options, externalTransaction: { ...activeSession } });
+    const externalTransactionProcessingPayload = new TransactionProcessingPayload({ ...activeSession.message, options: { ...message?.data.options, externalTransaction: { ...activeSession }}}, message.event, null, activeSession.message?.data, { ...message?.data.options, externalTransaction: { ...activeSession } });
 
     await this.transactionQueueHandler.addNewTransaction(externalTransactionProcessingPayload);
   }
@@ -700,37 +707,19 @@ class ExternalTxTasks {
 
 
   //handle the nominator and validator transaction
-  validatorNominatorMethods = async (message, state) => {
-    const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+  validatorNominatorTransaction = async (message, state) => {
 
-    //check if the requested method is supported by the handler
-    if (hasProperty(this.validatorNominatorHandler, activeSession?.method)) {
-      if (message.data?.options?.isFee || message.data?.options?.isApproved) {
-        const res = await this.validatorNominatorHandler[activeSession?.method](state, activeSession.message, message.data?.options?.isFee);
-        console.log("ABC", res)
-        if (!res.error) {
-          const uiData = this.validatorNominatorHandler.get_formatted_method(activeSession?.method, activeSession.message)
-          if (message.data?.options?.isFee) {
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND, message.event, { fee: res.data, ...uiData })
-          } else {
+      if (message.data?.approve) {
+        const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
 
-            sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, { result: res.data }));
-            await this.closePopupSession(message);
-
-          }
-        }
-        else if (res.error) {
-          sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, { result: null }, null, null, res.error));
-          await this.closePopupSession(message);
-
-        }
-      } else {
-        sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, { result: null }, null, null, "Transaction rejected by user"));
-        await this.closePopupSession(message);
+        //process the external evm transactions
+        const externalTransactionProcessingPayload = new TransactionProcessingPayload({ ...activeSession.message, options: { ...message?.data.options, externalTransaction: { ...activeSession }}}, message.event, null, activeSession.message?.data, { ...message?.data.options, externalTransaction: { ...activeSession } });
+    
+        await this.transactionQueueHandler.addNewTransaction(externalTransactionProcessingPayload);
       }
-    }
 
-    //close the popup
+      //close the popup
+      await this.closePopupSession(message);
   }
 
   //close the current popup session
@@ -823,7 +812,7 @@ export class TransactionsRPC {
   constructor() {
     this.hybridKeyring = HybridKeyring.getInstance();
     this.services = new Services();
-
+    this.nominatorValidatorHandler = ValidatorNominatorHandler.getInstance();
   }
 
   //********************************** Evm ***************************************/
@@ -1196,6 +1185,18 @@ export class TransactionsRPC {
     }
   };
 
+
+  validatorNominatorTransaction = async (message, state) => {
+    try {
+      const eventPayload = await this.nominatorValidatorHandler.handleNativeAppsTask(state, message, false);
+      return eventPayload;
+    } catch (err) {
+      const payload = {options: message?.options, data: message?.transactionHistoryTrack};
+
+      return new EventPayload(null, null, payload, [], new ErrorPayload(ERRCODES.ERROR_WHILE_TRANSACTION, err.message));
+    }
+  }
+
   /**************************************** Internal Methods *****************************/
   //internal method for getting the evm fee
   _getEvmFee = async (to, from, amount, state, data = "") => {
@@ -1225,6 +1226,7 @@ export class GeneralWalletRPC {
 
   constructor() {
     this.hybridKeyring = HybridKeyring.getInstance();
+    this.nominatorValidatorHandler = ValidatorNominatorHandler.getInstance();
   }
 
   //for fething the balance of both (evm and native)
@@ -1464,6 +1466,16 @@ export class GeneralWalletRPC {
     } catch (err) {
       log("error formatting and getting the native external ", err)
       return new EventPayload(null, message.event, null, [], new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, err.message))
+    }
+  }
+
+  //calculate the fee for nominator and validator
+  validatorNominatorFee = async (message, state) => {
+    try {
+        const eventPayload = await this.nominatorValidatorHandler.handleNativeAppsTask(state, message, true);
+        return eventPayload;
+    } catch (err) {
+      return new EventPayload(null, null, null, [], new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, err.message));
     }
   }
 
