@@ -32,7 +32,7 @@ import {
 function Send() {
   const [isEd, setEd] = useState(true);
   const [disableBtn, setDisable] = useState(true);
-  // const [maxAmount, setMaxAmount] = useState("");
+  const [isMaxDisabled, setMaxDisabled] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [err, setErr] = useState({ to: "", amount: "" });
@@ -61,6 +61,8 @@ function Send() {
         !estimatedGas
       )) {
         getFee();
+      } else if (err.to) {
+        setMaxDisabled(true);
       } else if (
         !data.amount ||
         !data.to ||
@@ -81,7 +83,7 @@ function Send() {
       if (activeTab.toLowerCase() === EVM.toLowerCase()) {
         if (estimatedGas && !data.amount && data.to) {
           const amount = Number(balance.evmBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0));
-          setData(p => ({ ...p, amount: amount }));
+          setData(p => ({ ...p, amount: amount > 0 ? amount : "" }));
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
 
           return;
@@ -131,6 +133,7 @@ function Send() {
   const onChangeToggler = (checked) => {
     setEd(checked);
     updateEstimatedGas(null);
+    setMaxDisabled(true);
     setErr(p => ({ ...p, amount: "" }));
     setData(p => ({ ...p, amount: "" }));
   };
@@ -167,7 +170,10 @@ function Send() {
         let res = await validateAddress(data.to);
 
         if (res.error) setErr((p) => ({ ...p, to: res.data }));
-        else setErr((p) => ({ ...p, to: "" }));
+        else {
+          setErr((p) => ({ ...p, to: "" }));
+          setMaxDisabled(false);
+        }
       }
     } else if (activeTab?.toLowerCase() === NATIVE.toLowerCase()) {
       if (!data.to)
@@ -180,7 +186,11 @@ function Send() {
         let res = await validateAddress(data.to);
 
         if (res.error) setErr((p) => ({ ...p, to: res.data }));
-        else setErr((p) => ({ ...p, to: "" }));
+        else {
+          setErr((p) => ({ ...p, to: "" }));
+          setMaxDisabled(false);
+        }
+
       }
     }
   };
@@ -329,7 +339,7 @@ function Send() {
   }
 
   const suffix = (
-    <button className="maxBtn" onClick={handleMaxClick}>Max</button>
+    <button disabled={isMaxDisabled} className="maxBtn" onClick={handleMaxClick}>Max</button>
   );
 
   // const handleCopy = (e) => {

@@ -1,15 +1,16 @@
 import style from "./style.module.scss";
-import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../../Store";
+import CopyIcon from "../../Assets/CopyIcon.svg";
+import SwapIcon from "../../Assets/SwapIcon.svg";
+import { toast } from "react-hot-toast";
+import React, { useState, useContext, useEffect } from "react";
+import { sendRuntimeMessage } from "../../Utility/message_helper";
 import {
+  LABELS,
+  COPIED,
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
-  LABELS,
-  WEI_IN_ONE_ETH,
 } from "../../Constants";
-import { sendRuntimeMessage } from "../../Utility/message_helper";
-import SwapIcon from "../../Assets/SwapIcon.svg";
-import CopyIcon from "../../Assets/CopyIcon.svg";
 
 function ApproveTx() {
   const [activeTab, setActiveTab] = useState("detail");
@@ -50,20 +51,18 @@ function ApproveTx() {
             <button
               onClick={activeDetail}
               className={`${style.rejectedSec__sendSwapbtn__buttons} 
-              ${
-                activeTab === "detail" &&
+              ${activeTab === "detail" &&
                 style.rejectedSec__sendSwapbtn__buttons__active
-              }
+                }
             `}
             >
               Details
             </button>
             <button
               onClick={activeData}
-              className={`${style.rejectedSec__sendSwapbtn__buttons}  ${
-                activeTab === "data" &&
+              className={`${style.rejectedSec__sendSwapbtn__buttons}  ${activeTab === "data" &&
                 style.rejectedSec__sendSwapbtn__buttons__active
-              }`}
+                }`}
             >
               HEX Data
             </button>
@@ -77,7 +76,16 @@ function ApproveTx() {
                     <h4>From: </h4>
                     <p>
                       <span> {account.evmAddress} </span>
-                      <img draggable={false} src={CopyIcon} alt="copyIcon" style={{ cursor: "pointer" }}/>
+                      <img
+                        alt="copyIcon"
+                        src={CopyIcon}
+                        draggable={false}
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          navigator.clipboard.writeText(account?.evmAddress);
+                          toast.success(COPIED);
+                        }}
+                      />
                     </p>
                   </div>
                   <div
@@ -95,7 +103,19 @@ function ApproveTx() {
                           ? LABELS.CONTRACT
                           : activeSession.message?.to}
                       </span>
-                      <img draggable={false} src={CopyIcon} alt="copyIcon" style={{ cursor: "pointer" }}/>
+                      <img
+                        src={CopyIcon}
+                        alt="copyIcon"
+                        draggable={false}
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          navigator.clipboard.writeText(
+                            activeSession.message?.data
+                              ? LABELS.CONTRACT
+                              : activeSession.message?.to
+                          )
+                          toast.success(COPIED);
+                        }} />
                     </p>
                   </div>
                 </div>
