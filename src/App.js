@@ -3,7 +3,7 @@ import { ROUTES } from "./Routes";
 import Send from "./Pages/Send/Send";
 import Swap from "./Pages/Swap/Swap";
 import { AuthContext } from "./Store";
-import { EMTY_STR, MAIN_POPUP } from "./Constants";
+import { EMTY_STR } from "./Constants";
 import Wallet from "./Pages/Wallet/Wallet";
 import Loader from "./Pages/Loader/Loader";
 import NativeTx from "./Components/NativeTx";

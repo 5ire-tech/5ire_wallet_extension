@@ -25,7 +25,7 @@ function History() {
   // };
 
   const handleHistoryOpen = (data) => {
-    if (txHistory.hasOwnProperty(currentAccount.accountName)) {
+    if (txHistory.hasOwnProperty(currentAccount.evmAddress)) {
       setSelectedTransaction(data);
       setOpen1(true);
     }
