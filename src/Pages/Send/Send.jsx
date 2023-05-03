@@ -66,25 +66,30 @@ function Send() {
 
   //Get fee if to and amount is present
   useEffect(() => {
-    const getData = setTimeout(() => {
-      if ((
-        !err.to &&
-        !err.amount &&
-        data.amount &&
-        data.to &&
-        !estimatedGas
-      )) {
-        getFee();
-      } else if (
-        !data.amount ||
-        !data.to ||
-        !estimatedGas
-      ) {
-        setDisable(true);
-      }
-    }, 1000);
+    if ((
+      !err.to &&
+      !err.amount &&
+      data.amount &&
+      data.to &&
+      !estimatedGas
+    )) {
+      console.log(" !err.to && !err.amount data.amount && data.to && !estimatedGas");
 
-    return () => clearTimeout(getData);
+      console.log("error amount ", err.amount);
+      console.log("amount ", data.amount);
+      console.log("fee ", estimatedGas);
+      const getData = setTimeout(() => {
+        getFee();
+      }, 1000);
+      return () => clearTimeout(getData);
+    } else if (
+      !data.amount ||
+      !data.to ||
+      !estimatedGas
+    ) {
+      setDisable(true);
+    }
+
   }, [err.to, err.amount, data?.to, data?.amount, isEd, estimatedGas]);
 
   //Check for Insufficent balance
@@ -331,7 +336,7 @@ function Send() {
         setIsModalOpen(true);
       }
 
-      updateEstimatedGas("");
+      // updateEstimatedGas("");
     } catch (error) {
       toast.error(ERROR_MESSAGES.ERR_OCCURED);
     }
@@ -347,9 +352,9 @@ function Send() {
 
   //handle Ok and cancel button of popup
   const handle_OK_Cancel = () => {
-    updateEstimatedGas(null);
     setDisable(true);
     setIsFaildOpen(false);
+    updateEstimatedGas(null);
     setData({ to: "", amount: "" });
     setIsModalOpen(false);
   };
