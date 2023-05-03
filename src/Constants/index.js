@@ -125,7 +125,7 @@ export const ERROR_MESSAGES = {
     INVALID_PROPERTY: "Invalid property.",
     UNDEF_DATA: "Value is null or undefined.",
     INVALID_TYPE: "argument type is invalid.",
-    REJECTED_BY_USER: "Session is rejected by user.",
+    REJECTED_BY_USER: "Request rejected by user.",
     UNABLE_TO_REMOVE_ACC: "Unable to remove the account.",
     NETWORK_REQUEST: "Network error try after sometime",
     TX_FAILED: "Transaction failed. some wrong happend.",
