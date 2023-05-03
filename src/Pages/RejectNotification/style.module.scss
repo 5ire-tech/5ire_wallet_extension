@@ -5,12 +5,14 @@
     padding: 30px 37px;
     padding-bottom: 0;
   }
+
   &__flexList {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 25px;
   }
+
   &__icon {
     img {
       background: #132c64;
@@ -18,8 +20,37 @@
       border-radius: 25px;
     }
   }
+
+  &__txnDetail {
+    &__txnContact {
+      max-width: initial !important;
+      flex-direction: initial !important;
+
+      p {
+        display: inline-block !important;
+        width: 180px;
+        white-space: nowrap;
+        overflow: hidden !important;
+        text-overflow: ellipsis;
+      }
+    }
+
+    &__txnContact1 {
+      max-width: initial !important;
+      flex-direction: initial !important;
+
+      p {
+        display: inline-block !important;
+        width: 180px;
+        white-space: nowrap;
+        overflow: hidden !important;
+      }
+    }
+  }
+
   &__listReject {
     padding: 25px 0;
+
     &__innerList {
       display: flex;
       justify-content: space-between;
@@ -30,18 +61,20 @@
       text-align: left;
       gap: 8px;
       max-width: 115px;
+
       h4 {
         color: $white;
         font-size: 14px;
         width: 100%;
         display: inline-block;
-    // width: 180px;
-    white-space: nowrap;
-    overflow: hidden !important;
-    text-overflow: ellipsis;
-    display: flex;
-    gap: 4px;
+        // width: 180px;
+        white-space: nowrap;
+        overflow: hidden !important;
+        text-overflow: ellipsis;
+        display: flex;
+        gap: 4px;
       }
+
       p {
         font-size: 14px;
         opacity: 0.6;
@@ -50,32 +83,35 @@
         gap: 4px;
         align-items: center;
         width: 100%;
-        
-        span{
+
+        span {
           max-width: 90px;
           white-space: nowrap;
-          overflow: hidden ;
+          overflow: hidden;
           text-overflow: ellipsis;
           // display: inline-flex;
         }
-      
+
       }
     }
-    &__innerDataList{
-      h4{
+
+    &__innerDataList {
+      h4 {
         color: $white;
         font-size: 16px;
         width: 100%;
-        line-height:28px;
+        line-height: 28px;
         font-weight: 400;
       }
     }
   }
+
   &__sendSwapbtn {
     display: flex;
     border-radius: 12px;
     background: #0e1e41;
     border: 1px solid #102658;
+
     &__buttons {
       background: #0e1e41;
       // border-radius: 12px 0 0px 12px;
@@ -86,6 +122,7 @@
       border: 0;
       font-size: 15px;
       padding: 14px;
+
       &__active {
         background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
         // border: 1px solid rgba(255, 255, 255, 0.5);

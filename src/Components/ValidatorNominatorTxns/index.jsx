@@ -28,21 +28,21 @@ function ValidatorNominatorTxns() {
     const { Content } = Layout;
 
 
-      //check if user has sufficent balance to make transaction
-  useEffect(() => {
+    //check if user has sufficent balance to make transaction
+    useEffect(() => {
 
-    if ((Number(activeSession.message?.value) + Number(valdatorNominatorFee?.fee)) >= Number(state.balance.evmBalance)) {
-      toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
-      setDisableApproval(true);
-      setValdatorNominatorFee(null);
-      return;
-    } else {
-        setDisableApproval(false)
-    }
-  }, [valdatorNominatorFee?.fee]);
+        if ((Number(activeSession.message?.value) + Number(valdatorNominatorFee?.fee)) >= Number(state.balance.evmBalance)) {
+            toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+            setDisableApproval(true);
+            setValdatorNominatorFee(null);
+            return;
+        } else {
+            setDisableApproval(false)
+        }
+    }, [valdatorNominatorFee?.fee]);
 
 
-  //calculate the transaction fee
+    //calculate the transaction fee
     useEffect(() => {
         updateLoading(true);
         sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE, {});
@@ -53,7 +53,7 @@ function ValidatorNominatorTxns() {
     //process the transaction
     function handleClick(isApproved) {
         // updateLoading(true);
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_TRANSACTION, {approve: isApproved, options: {account: state.currentAccount, isEvm: false, network: state.currentNetwork, type: TX_TYPE.NATIVE_APP } });
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_TRANSACTION, { approve: isApproved, options: { account: state.currentAccount, isEvm: false, network: state.currentNetwork, type: TX_TYPE.NATIVE_APP } });
         setValdatorNominatorFee(null);
         navigate(ROUTES.WALLET);
     }
@@ -96,28 +96,28 @@ function ValidatorNominatorTxns() {
                                         Txn Detail
                                     </button>
                                 </div>
-                                <div className={pageStyle.rejectedSec__listReject}>
+                                <div className={`${pageStyle.rejectedSec__listReject} ${pageStyle.rejectedSec__txnDetail}`}>
 
-                                    <div className={pageStyle.rejectedSec__listReject__innerList}>
+                                    <div className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact1}`}>
                                         <h4>From: </h4>
-                                        <h4>{shortLongAddress(String(state?.currentAccount?.nativeAddress))}</h4>
+                                        <p>{shortLongAddress(String(state?.currentAccount?.nativeAddress), 8, 6)}</p>
                                     </div>
-                                    <div className={pageStyle.rejectedSec__listReject__innerList}>
+                                    <div className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact}`}>
                                         <h4>Method: </h4>
-                                        <h4>{valdatorNominatorFee?.methodName || ""}</h4>
+                                        <p>{valdatorNominatorFee?.methodName || ""}</p>
                                     </div>
 
                                     {formatParams(activeSession?.message).map((d) => {
-                                        return <div key={d.key} className={pageStyle.rejectedSec__listReject__innerList}>
+                                        return <div key={d.key} className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact}`}>
                                             <h4>{d.key}: </h4>
 
-                                            <h4>{d.value}</h4>
+                                            <p>{d.value}</p>
                                         </div>
                                     })}
 
-                                    <div className={pageStyle.rejectedSec__listReject__innerList}>
+                                    <div className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact}`}>
                                         <h4>Estimated Fee: </h4>
-                                        <h4>{valdatorNominatorFee?.fee} 5IRE</h4>
+                                        <p>{valdatorNominatorFee?.fee} 5IRE</p>
                                     </div>
                                 </div>
                             </div>
