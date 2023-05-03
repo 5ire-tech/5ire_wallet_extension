@@ -69,7 +69,8 @@ function ManageWallet() {
           </div>
           <div className={style.btn_icon}>
             <ButtonComp
-              onClick={() => navigate(ROUTES.ENTER_PASS + "/" + PVT_KEY)}
+              onClick={() => navigate(ROUTES.ENTER_PASS)}
+              // onClick={() => navigate(ROUTES.ENTER_PASS + "/" + PVT_KEY)}
               text="Export Private Key"
             >
             </ButtonComp>
