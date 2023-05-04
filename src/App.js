@@ -32,7 +32,6 @@ import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
 import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
 import ValidatorNominatorTxns from "./Components/ValidatorNominatorTxns";
 import CongratulationsScreen from "./Pages/WelcomeScreens/CongratulationsScreen";
-import { log } from "./Utility/utility";
 
 
 function getParameterByName(name, url = window.location.href) {
@@ -77,7 +76,6 @@ function App(props) {
     }
 
 
-    log("here is the data: ", isLogin, vault);
 
     if (!isLogin && vault) {
       navigate(ROUTES.UNLOACK_WALLET, {
