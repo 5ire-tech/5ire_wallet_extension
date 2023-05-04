@@ -66,25 +66,25 @@ function Send() {
 
   //Get fee if to and amount is present
   useEffect(() => {
-    const getData = setTimeout(() => {
-      if ((
-        !err.to &&
-        !err.amount &&
-        data.amount &&
-        data.to &&
-        !estimatedGas
-      )) {
+    if ((
+      !err.to &&
+      !err.amount &&
+      data.amount &&
+      data.to &&
+      !estimatedGas
+    )) {
+      const getData = setTimeout(() => {
         getFee();
-      } else if (
-        !data.amount ||
-        !data.to ||
-        !estimatedGas
-      ) {
-        setDisable(true);
-      }
-    }, 1000);
+      }, 1000);
+      return () => clearTimeout(getData);
+    } else if (
+      !data.amount ||
+      !data.to ||
+      !estimatedGas
+    ) {
+      setDisable(true);
+    }
 
-    return () => clearTimeout(getData);
   }, [err.to, err.amount, data?.to, data?.amount, isEd, estimatedGas]);
 
   //Check for Insufficent balance
@@ -331,7 +331,7 @@ function Send() {
         setIsModalOpen(true);
       }
 
-      updateEstimatedGas("");
+      // updateEstimatedGas("");
     } catch (error) {
       toast.error(ERROR_MESSAGES.ERR_OCCURED);
     }
@@ -347,9 +347,9 @@ function Send() {
 
   //handle Ok and cancel button of popup
   const handle_OK_Cancel = () => {
-    updateEstimatedGas(null);
     setDisable(true);
     setIsFaildOpen(false);
+    updateEstimatedGas(null);
     setData({ to: "", amount: "" });
     setIsModalOpen(false);
   };
@@ -454,7 +454,7 @@ function Send() {
 
         </div>
         <div className={style.sendSec__inFoAccount}>
-          <Tooltip title="5irechain requires a minimum of 1 5ire token to keep your wallet active">
+          <Tooltip title="5irechain requires a minimum of 1 5ire to keep your wallet active">
             <img src={Info} style={{ cursor: "pointer" }} alt="infoIcon" />
           </Tooltip>
           <h3>Transfer with account keep alive checks </h3>

@@ -34,6 +34,7 @@ function Swap() {
   const [error, setError] = useState("");
   const [amount, setAmount] = useState("");
   const [disableBtn, setDisable] = useState(true);
+  const [maxClicked, setMaxClicked] = useState(false);
   const [isMaxDisabled, setMaxDisabled] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
@@ -63,15 +64,16 @@ function Swap() {
 
   //Get fee if to and amount is present
   useEffect(() => {
-    const getData = setTimeout(() => {
-      if ((!isEmpty(amount) && !error && !estimatedGas)) {
-        getFee();
-      } else if (!amount || error || !estimatedGas) {
-        setDisable(true);
-      }
-    }, 1000);
 
-    return () => clearTimeout(getData);
+    if ((amount && !error && !estimatedGas)) {
+      const getData = setTimeout(() => {
+        getFee();
+      }, 1000);
+      return () => clearTimeout(getData);
+    } else if (!amount || error || !estimatedGas) {
+      setDisable(true);
+    }
+
 
   }, [amount, error, isEd, toFrom.from, estimatedGas]);
 
@@ -81,18 +83,20 @@ function Swap() {
     if (!estimatedGas) setDisable(true);
     else {
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
-        if (estimatedGas && !amount) {
-          const amount = Number(balance.evmBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0));
+        if (estimatedGas && !amount && maxClicked) {
+          const value = Number(balance.evmBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0));
 
-          setAmount(amount >= 1 ? amount : "");
-          updateEstimatedGas(amount >= 1 ? estimatedGas : null);
-          !(Number(amount) >= 1) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+          setAmount(Number(value) >= 1 ? value : "");
+          updateEstimatedGas(Number(value) >= 1 ? estimatedGas : null);
+          !(Number(value) >= 1) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
           // Number(amount) < 1 && setError(ERROR_MESSAGES.AMOUNT_CANT_LESS_THEN_ONE);
+          setMaxClicked(false);
 
           return;
 
         }
         else if ((Number(amount) + (Number(estimatedGas)) + (isEd ? EXISTENTIAL_DEPOSITE : 0)) > Number(balance.evmBalance)) {
+
           setDisable(true);
           updateEstimatedGas(null);
           setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
@@ -103,14 +107,15 @@ function Swap() {
         }
 
       } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
-        if (estimatedGas && !amount) {
+        if (estimatedGas && !amount && maxClicked) {
 
-          const amount = Number(balance.nativeBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0));
+          const value = Number(balance.nativeBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0));
 
+          setAmount(Number(value) >= 1 ? value : "");
+          updateEstimatedGas(Number(value) >= 1 ? estimatedGas : null);
+          !(Number(value) >= 1) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+          setMaxClicked(false);
 
-          setAmount(amount >= 1 ? amount : "");
-          updateEstimatedGas(amount >= 1 ? estimatedGas : null);
-          !(Number(amount) >= 1) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
           // Number(amount) < 1 && setError(ERROR_MESSAGES.AMOUNT_CANT_LESS_THEN_ONE);
 
           // setError(amount > 0 ? "" : ERROR_MESSAGES.INSUFFICENT_BALANCE);
@@ -174,12 +179,15 @@ function Swap() {
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
         sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP, { value: amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SWAP, isEvm: true, to: LABELS.EVM_TO_NATIVE } });
         setIsModalOpen(true);
+        // updateEstimatedGas(null)
+
       } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
         sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP, { value: amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SWAP, isEvm: false, to: LABELS.NATIVE_TO_EVM } });
         setIsModalOpen(true);
+        // updateEstimatedGas(null);
       }
 
-      updateEstimatedGas("");
+      // updateEstimatedGas("");
     } catch (error) {
       toast.error("Error occured.");
     }
@@ -279,6 +287,7 @@ function Swap() {
 
   //performs action when user click on max button
   const handleMaxClick = () => {
+    setMaxClicked(true)
     setAmount("");
     setError("");
     getFee();
@@ -436,8 +445,8 @@ function Swap() {
           {/* <h3>Balance 00.0000 5IRE</h3> */}
         </div>
         <div className={style.swap__inFoAccount}>
-          <Tooltip title="5irechain requires a minimum of 1 5ire token to keep your wallet active">
-            <img src={Info} />
+          <Tooltip title="5irechain requires a minimum of 1 5ire to keep your wallet active">
+            <img src={Info} alt="infoImage"/>
           </Tooltip>
           <h3>Transfer with account keep alive checks </h3>
           <Switch defaultChecked onChange={onChangeToggler} />
