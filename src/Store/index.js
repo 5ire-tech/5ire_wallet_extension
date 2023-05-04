@@ -188,11 +188,11 @@ export default function Context({ children }) {
   }
 
   // remove entries of history of specific account from TxHistory
-  const removeHistory = (accName) => {
-    const newTx = { ...state.txHistory };
-    delete newTx[accName];
-    updateState(LABELS.TX_HISTORY, newTx)
-  }
+  // const removeHistory = (accName) => {
+  //   const newTx = { ...state.txHistory };
+  //   delete newTx[accName];
+  //   updateState(LABELS.TX_HISTORY, newTx)
+  // }
 
 
   const removeAccount = (data) => {
@@ -234,7 +234,7 @@ export default function Context({ children }) {
     updateLoading,
     setNewAccount,
     setPrivateKey,
-    removeHistory,
+    // removeHistory,
     setPassVerified,
     setNewWalletName,
     setBackgroundError,

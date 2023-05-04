@@ -64,64 +64,60 @@ function MenuFooter() {
       {(pathname === ROUTES.WALLET ||
         pathname === ROUTES.HISTORY_P ||
         pathname === ROUTES.MY_ACCOUNT) && (
-        <>
-          <Link
-            to={ROUTES.WALLET} // onClick={handleHistoryOpen}
-            className={`${style.menuItems__items} ${
-              pathname === ROUTES.WALLET ? style.menuItems__items__active : ""
-            }`}
-          >
-            <div className={style.menuItems__items__img}>
-              <img src={Wallet} alt="HistoryIcon" draggable={false} />
-            </div>
-            <span className={style.menuItems__items__title}>Wallet</span>
-          </Link>
-          <Link
-            to={ROUTES.HISTORY_P} // onClick={handleHistoryOpen}
-            className={`${style.menuItems__items} ${
-              pathname === ROUTES.HISTORY_P
-                ? style.menuItems__items__active
-                : ""
-            }`}
-          >
-            <div className={style.menuItems__items__img}>
-              <img src={HistoryIcon} alt="HistoryIcon" draggable={false} />
-            </div>
-            <span className={style.menuItems__items__title}>History</span>
-          </Link>
+          <>
+            <Link
+              to={ROUTES.WALLET} // onClick={handleHistoryOpen}
+              className={`${style.menuItems__items} ${pathname === ROUTES.WALLET ? style.menuItems__items__active : ""
+                }`}
+            >
+              <div className={style.menuItems__items__img}>
+                <img src={Wallet} alt="HistoryIcon" draggable={false} />
+              </div>
+              <span className={style.menuItems__items__title}>Wallet</span>
+            </Link>
+            <Link
+              to={ROUTES.HISTORY_P} // onClick={handleHistoryOpen}
+              className={`${style.menuItems__items} ${pathname === ROUTES.HISTORY_P
+                  ? style.menuItems__items__active
+                  : ""
+                }`}
+            >
+              <div className={style.menuItems__items__img}>
+                <img src={HistoryIcon} alt="HistoryIcon" draggable={false} />
+              </div>
+              <span className={style.menuItems__items__title}>History</span>
+            </Link>
 
-          <Link
-            to={ROUTES.MY_ACCOUNT}
-            onClick={handleMyAccOpen}
-            className={`${style.menuItems__items} ${
-              pathname === ROUTES.MY_ACCOUNT
-                ? style.menuItems__items__active
-                : ""
-            }`}
-          >
-            <div className={style.menuItems__items__img}>
-              <img src={Myaccount} alt="Myaccount" draggable={false} />
-            </div>
-            <span className={style.menuItems__items__title}>My Accounts</span>
-          </Link>
+            <Link
+              to={ROUTES.MY_ACCOUNT}
+              onClick={handleMyAccOpen}
+              className={`${style.menuItems__items} ${pathname === ROUTES.MY_ACCOUNT
+                  ? style.menuItems__items__active
+                  : ""
+                }`}
+            >
+              <div className={style.menuItems__items__img}>
+                <img src={Myaccount} alt="Myaccount" draggable={false} />
+              </div>
+              <span className={style.menuItems__items__title}>My Accounts</span>
+            </Link>
 
-          <Link
-            onClick={() => setOpen2(true)}
-            className={`${style.menuItems__items} ${
-              pathname === ROUTES.MANAGE_WALLET
-                ? style.menuItems__items__active
-                : ""
-            }`}
-          >
-            <div className={style.menuItems__items__img}>
-              <img src={Setting} alt="Setting" draggable={false} />
-            </div>
-            <span className={style.menuItems__items__title}>Settings</span>
-          </Link>
-        </>
-      )}
+            <Link
+              onClick={() => setOpen2(true)}
+              className={`${style.menuItems__items} ${pathname === ROUTES.MANAGE_WALLET
+                  ? style.menuItems__items__active
+                  : ""
+                }`}
+            >
+              <div className={style.menuItems__items__img}>
+                <img src={Setting} alt="Setting" draggable={false} />
+              </div>
+              <span className={style.menuItems__items__title}>Settings</span>
+            </Link>
+          </>
+        )}
 
-      <Drawer
+      {/* <Drawer
         title={
           <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             Transaction History
@@ -167,9 +163,9 @@ function MenuFooter() {
         ) : (
           <h4 className={style.noTxn}>No Transaction Found!</h4>
         )}
-      </Drawer>
+      </Drawer> */}
 
-      <Drawer
+      {/* <Drawer
         height={404}
         title={
           <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -213,7 +209,7 @@ function MenuFooter() {
             </div>
           </div>
         </Link>
-        {/* <Link to={ROUTES.PRIVACY_POLICY}> */}
+        // {<Link to={ROUTES.PRIVACY_POLICY}> 
         <div
           className={style.sttings}
           style={{ marginTop: "14px" }}
@@ -246,10 +242,10 @@ function MenuFooter() {
             />
           </div>
         </div>
-        {/* </Link> */}
+    
 
         <SocialAccount />
-      </Drawer>
+      </Drawer> */}
 
       {pathname === ROUTES.BEFORE_BEGIN && <FooterStepOne />}
       {(pathname === ROUTES.NEW_WALLET_DETAILS) && <FooterStepTwo />}

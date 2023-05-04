@@ -122,6 +122,11 @@ function App(props) {
               element={<WelcomeLayout children={<ForgotPassword />} />}
             />
 
+            <Route
+              path="*"
+              element={<WelcomeLayout children={<WelcomeScreen />} />}
+            />
+
           </>
         ) : (
           <>
@@ -191,6 +196,10 @@ function App(props) {
             <Route
               path={ROUTES.LOGIN_APPROVE}
               element={<WelcomeLayout children={<LoginApprove />} />}
+            />
+            <Route
+              path="*"
+              element={<WelcomeLayout children={<Wallet />} />}
             />
           </>
         )}

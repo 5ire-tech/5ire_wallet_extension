@@ -245,7 +245,7 @@ export class ExtensionStorageHandler {
         if (state?.txHistory?.hasOwnProperty(newAccount.evmAddress))
             txHistory[newAccount?.evmAddress] = state.txHistory[newAccount.evmAddress];
         else
-            txHistory = this._txProperty({ txHistory: {} }, newAccount.accountName);
+            txHistory = this._txProperty({ txHistory: {} }, newAccount.evmAddress);
 
         const newState = { ...state, vault, txHistory, currentAccount: currentAcc, isLogin: true }
         this._updateSession(LABELS.ISLOGIN, true);
@@ -283,15 +283,16 @@ export class ExtensionStorageHandler {
         return await this._updateStorage(newState);
     }
 
+    //todo
     // remove specific account 
     removeAccount = async (message, state) => {
         const newState = { ...state, vault: message.vault };
+        if (newState?.txHistory[newState?.currentAccount.evmAddress]) {
+            delete newState.txHistory[newState?.currentAccount.evmAddress]
+        }
         if (message?.isInitialAccount) {
             newState.isLogin = false;
             newState.currentAccount = userState.currentAccount;
-            if (newState?.txHistory[newState?.accountName]) {
-                delete newState.txHistory[newState?.accountName]
-            }
         }
         return await this._updateStorage(newState);
 

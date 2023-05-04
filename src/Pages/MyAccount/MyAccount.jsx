@@ -62,25 +62,25 @@ function MyAccount() {
     if (!addressToRemove) {
       toast.error(ERROR_MESSAGES.UNABLE_TO_REMOVE_ACC);
     } else {
-      //Remove account
-      sendRuntimeMessage(
-        MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
-        MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT,
-        { address: addressToRemove }
-      );
       if (
         currentAccount.evmAddress === addressToRemove ||
         currentAccount.nativeAddress === addressToRemove
       ) {
-        const index = accounts.findIndex((acc) => {
-          return (
-            acc.evmAddress === addressToRemove ||
-            acc.nativeAddress === addressToRemove
-          );
-        });
+        //Remove account
+        sendRuntimeMessage(
+          MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+          MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT,
+          { address: addressToRemove }
+        );
+
+        const index = accounts.findIndex(acc => (
+          acc.evmAddress === addressToRemove ||
+          acc.nativeAddress === addressToRemove
+        )
+        );
 
         updateState(LABELS.CURRENT_ACCOUNT, accounts[index - 1]);
-        removeHistory(accounts[index].accountName);
+        // removeHistory(accounts[index].accountName);
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
           MESSAGE_EVENT_LABELS.BALANCE,
@@ -226,7 +226,7 @@ function MyAccount() {
               ""
             ) : (
               <Dropdown
-              placement="bottomRight" arrow={{ pointAtCenter: true }}
+                placement="bottomRight" arrow={{ pointAtCenter: true }}
                 menu={{
                   items: [
                     {
@@ -258,8 +258,8 @@ function MyAccount() {
         closeIcon={false}
       >
         <div className={`${style.activeDis_Modal} yesnoPopup`}>
-           <center> 
-             <h3 style={{ color: "white" }}>
+          <center>
+            <h3 style={{ color: "white" }}>
               Are you sure, you want to remove this account ?
             </h3>
             <div className="innerContct">
@@ -271,7 +271,7 @@ function MyAccount() {
                 No
               </button>
             </div>
-          </center> 
+          </center>
         </div>
       </ModalCustom>
     </div>
