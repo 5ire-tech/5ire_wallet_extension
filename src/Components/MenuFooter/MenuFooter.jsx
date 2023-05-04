@@ -121,7 +121,7 @@ function MenuFooter() {
         </>
       )}
 
-      <Drawer
+      {/* <Drawer
         title={
           <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             Transaction History
@@ -167,7 +167,7 @@ function MenuFooter() {
         ) : (
           <h4 className={style.noTxn}>No Transaction Found!</h4>
         )}
-      </Drawer>
+      </Drawer> */}
 
       <Drawer
         height={404}

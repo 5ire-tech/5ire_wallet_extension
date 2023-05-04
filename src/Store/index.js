@@ -188,9 +188,9 @@ export default function Context({ children }) {
   }
 
   // remove entries of history of specific account from TxHistory
-  const removeHistory = (accName) => {
+  const removeHistory = (address) => {
     const newTx = { ...state.txHistory };
-    delete newTx[accName];
+    delete newTx[address];
     updateState(LABELS.TX_HISTORY, newTx)
   }
 

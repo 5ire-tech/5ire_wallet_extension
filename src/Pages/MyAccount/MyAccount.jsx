@@ -80,7 +80,7 @@ function MyAccount() {
         });
 
         updateState(LABELS.CURRENT_ACCOUNT, accounts[index - 1]);
-        removeHistory(accounts[index].accountName);
+        removeHistory(accounts[index].evmAddress);
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
           MESSAGE_EVENT_LABELS.BALANCE,
