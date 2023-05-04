@@ -32,6 +32,7 @@ import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
 import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
 import ValidatorNominatorTxns from "./Components/ValidatorNominatorTxns";
 import CongratulationsScreen from "./Pages/WelcomeScreens/CongratulationsScreen";
+import { log } from "./Utility/utility";
 
 
 function getParameterByName(name, url = window.location.href) {
@@ -45,7 +46,7 @@ function getParameterByName(name, url = window.location.href) {
 
 function App(props) {
   const navigate = useNavigate();
-  const { state, setState, isLoading, setExternalControlState, externalControlsState, newAccount, backgroundError, showCongratLoader } = useContext(AuthContext);
+  const { state, setState, isLoading, setExternalControlState, externalControlsState, newAccount, showCongratLoader } = useContext(AuthContext);
   const { isLogin, vault } = state;
 
   useEffect(() => {
@@ -75,6 +76,8 @@ function App(props) {
       return;
     }
 
+
+    log("here is the data: ", isLogin, vault);
 
     if (!isLogin && vault) {
       navigate(ROUTES.UNLOACK_WALLET, {

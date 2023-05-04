@@ -57,8 +57,6 @@ function BalanceDetails({ mt0 }) {
 
   const { balance, currentAccount, currentNetwork } = state;
 
-
-  //handle the network and account change
   useEffect(() => {
     //check if current app is connected with extension
     getCurrentTabDetails().then((tabDetails) => {
@@ -75,9 +73,8 @@ function BalanceDetails({ mt0 }) {
       MESSAGE_EVENT_LABELS.GET_ACCOUNTS,
       {}
     );
-  }, [currentNetwork, currentAccount.accountName]);
+  }, [currentNetwork, currentAccount.evmAddress]);
 
-  
   //network change handler
   const handleNetworkChange = async (network) => {
     //change the network
