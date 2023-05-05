@@ -45,7 +45,7 @@ function getParameterByName(name, url = window.location.href) {
 
 function App(props) {
   const navigate = useNavigate();
-  const { state, setState, isLoading, setExternalControlState, externalControlsState, newAccount, backgroundError, showCongratLoader } = useContext(AuthContext);
+  const { state, setState, isLoading, setExternalControlState, externalControlsState, newAccount, showCongratLoader } = useContext(AuthContext);
   const { isLogin, vault } = state;
 
   useEffect(() => {

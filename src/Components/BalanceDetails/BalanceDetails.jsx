@@ -69,11 +69,6 @@ function BalanceDetails({ mt0 }) {
     });
 
     sendRuntimeMessage(
-      MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
-      MESSAGE_EVENT_LABELS.BALANCE,
-      {}
-    );
-    sendRuntimeMessage(
       MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
       MESSAGE_EVENT_LABELS.GET_ACCOUNTS,
       {}

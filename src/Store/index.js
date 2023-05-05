@@ -80,8 +80,8 @@ export default function Context({ children }) {
         removeAccount(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE) {
         setValdatorNominatorFee(message.data)
-      } else if(message.event === MESSAGE_EVENT_LABELS.BACKGROUND_ERROR) {
-         setBackgroundError(message.data);
+      } else if (message.event === MESSAGE_EVENT_LABELS.BACKGROUND_ERROR) {
+        setBackgroundError(message.data);
       }
 
       updateLoading(false);

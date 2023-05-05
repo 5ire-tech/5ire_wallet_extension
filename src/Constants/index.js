@@ -231,7 +231,6 @@ export const EXPLORERS = {
     QA: "https://qa-web-exp.5ire.network",
     UAT: "https://uat-web-exp.5ire.network",
     TESTNET: "https://explorer.5ire.network",
-
 }
 
 export const WS_END_POINTS = {
