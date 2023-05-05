@@ -1,31 +1,22 @@
 import style from "./style.module.scss";
 import { ROUTES } from "../../Routes";
-import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../Store";
-import browser from "webextension-polyfill";
 import { useNavigate } from "react-router-dom";
 import ButtonComp from "../ButtonComp/ButtonComp";
-import { EVM_JSON_RPC_METHODS, LABELS, STATE_CHANGE_ACTIONS, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, ERROR_MESSAGES } from "../../Constants/index";
-import { useDispatch, useSelector } from "react-redux";
+import { EVM_JSON_RPC_METHODS, LABELS, STATE_CHANGE_ACTIONS, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, ERROR_MESSAGES, TX_TYPE, DECIMALS } from "../../Constants/index";
+import React, { useContext, useEffect, useState } from "react";
 import { newAccountInitialState } from "../../Store/initialState";
-import { connectionObj, Connection } from "../../Helper/connection.helper";
-import {
-  setUIdata,
-  toggleLoader,
-} from "../../Utility/redux_helper";
-
-
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
 import { isEqual } from "../../Utility/utility";
 import { sendMessageToTab, sendRuntimeMessage } from "../../Utility/message_helper";
 import { TabMessagePayload } from "../../Utility/network_calls";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
+import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
 
 
-
-//Wallet of Before We begin
+//Before We begin
 function FooterStepOne() {
-  const { state } = useContext(AuthContext);
+  const { state, setNewWalletName } = useContext(AuthContext);
   const navigate = useNavigate();
   const { isLogin } = state;
 
@@ -36,13 +27,14 @@ function FooterStepOne() {
 
   const handleClick = () => {
     // navigate(ROUTES.NEW_WALLET_DETAILS);
+    setNewWalletName('')
     navigate(ROUTES.CREATE_WALLET);
   }
 
   return (
     <>
-      <div className={`${style.menuItems__cancleContinue } ${style.beginStyle}`}>
-      <ButtonComp
+      <div className={`${style.menuItems__cancleContinue} ${style.beginStyle}`}>
+        <ButtonComp
           onClick={handleClick}
           text={"Continue"}
           maxWidth={"100%"}
@@ -53,7 +45,7 @@ function FooterStepOne() {
           text={"Cancel"}
           maxWidth={"100%"}
         />
-       
+
       </div>
     </>
   );
@@ -61,34 +53,66 @@ function FooterStepOne() {
 
 //Footer of New wallet Detail Page
 export const FooterStepTwo = () => {
-  const { state, setNewAccount } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [show, setShow] = useState(false)
 
 
-  const handleCancle = () => {
-    setNewAccount(newAccountInitialState);
-    navigate(ROUTES.DEFAULT);
+  const { state, setNewAccount, newAccount, updateState } = useContext(AuthContext);
+
+  const { txHistory, isLogin } = state;
+
+
+  const handleCancle = async () => {
+
+    // if (isLogin) {
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT, { address: newAccount.evmAddress });
+    // }
+
+
+
   };
 
   const handleClick = () => {
-    setNewAccount(newAccountInitialState);
-    navigate(ROUTES.WALLET);
+
+    // const currentAcc = {
+    //   evmAddress: newAccount?.evmAddress,
+    //   nativeAddress: newAccount?.nativeAddress,
+    //   accountName: newAccount?.accountName,
+    //   accountIndex: newAccount?.accountIndex,
+    // };
+
+    // const txHis = {
+    //   ...txHistory,
+    //   [newAccount?.accountName]: []
+    // };
+    setShow(true)
+    setTimeout(() => {
+      setShow(false)
+      // updateState(LABELS.CURRENT_ACCOUNT, currentAcc);
+      // updateState(LABELS.TX_HISTORY, txHis);
+
+      setNewAccount(newAccountInitialState);
+      navigate(ROUTES.WALLET);
+    }, 2000)
+
+
   };
 
   return (
     <>
       <div className={style.menuItems__cancleContinue}>
-        {!state.isLogin && (
-          <ButtonComp
-            bordered={true}
-            text={"Cancel"}
-            maxWidth={"100%"}
-            onClick={handleCancle}
-          />
-        )}
+
+        <ButtonComp
+          bordered={true}
+          text={"Cancel"}
+          maxWidth={"100%"}
+          onClick={handleCancle}
+        />
 
         <ButtonComp onClick={handleClick} text={"Continue"} maxWidth={"100%"} />
       </div>
+      {show && <div className="loader">
+        <CongratulationsScreen text={"Your wallet has been created"} /></div>}
     </>
   );
 };
@@ -98,7 +122,7 @@ export const FooterStepTwo = () => {
 export const ApproveLogin = () => {
   const { state, externalControlsState } = useContext(AuthContext);
   const account = state.currentAccount;
-  const {activeSession} = externalControlsState;
+  const { activeSession } = externalControlsState;
   const navigate = useNavigate();
 
 
@@ -107,24 +131,24 @@ export const ApproveLogin = () => {
 
     if (isApproved) {
       //add the app into connected list
-      await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.APP_CONNECTION_UPDATE, {connected: true, origin: activeSession.origin}, {localStateKey: LABELS.EXTERNAL_CONTROLS})
+      await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.APP_CONNECTION_UPDATE, { connected: true, origin: activeSession.origin }, { localStateKey: LABELS.EXTERNAL_CONTROLS })
 
       //check if current connection request is for evm
       const isEthReq = isEqual(activeSession.method, EVM_JSON_RPC_METHODS.ETH_REQUEST_ACCOUNT) || isEqual(activeSession.method, EVM_JSON_RPC_METHODS.ETH_ACCOUNTS)
 
       const res = isEthReq ? { method: activeSession.method, result: [account.evmAddress] } : {
-          result: {
-            evmAddress: account.evmAddress,
-            nativeAddress: account.nativeAddress,
-          }
-        };
+        result: {
+          evmAddress: account.evmAddress,
+          nativeAddress: account.nativeAddress,
+        }
+      };
 
       //send the message to tab after approve request
       sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, res))
     }
-    
+
     //send closure message to backend
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION, {approve: isApproved});
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION, { approve: isApproved });
     navigate(ROUTES.WALLET);
   }
 
@@ -132,7 +156,7 @@ export const ApproveLogin = () => {
   return (
     <>
       <div className={`${style.menuItems__cancleContinue} approveBtn`}>
-      <ButtonComp
+        <ButtonComp
           onClick={() => handleClick(true)}
           text={"Approve"}
           maxWidth={"100%"}
@@ -143,7 +167,7 @@ export const ApproveLogin = () => {
           maxWidth={"100%"}
           onClick={() => handleClick(false)}
         />
-     
+
       </div>
     </>
   );
@@ -153,14 +177,15 @@ export const ApproveLogin = () => {
 //approve the evm transactions
 export const ApproveTx = () => {
   const { state, externalControlsState, estimatedGas } = useContext(AuthContext);
-  const {activeSession} = externalControlsState;
+  const { activeSession } = externalControlsState;
   const [disableApproval, setDisableApproval] = useState(false);
 
   const navigate = useNavigate();
 
   //check if user has sufficent balance to make transaction
   useEffect(() => {
-    if((Number(activeSession.message?.value) + Number(estimatedGas)) >= Number(state.balance.evmBalance)) {
+
+    if ((Number(activeSession.message?.value) + Number(estimatedGas)) >= Number(state.balance.evmBalance)) {
       toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       setDisableApproval(true);
       return;
@@ -169,8 +194,11 @@ export const ApproveTx = () => {
 
 
   function handleClick(isApproved) {
-    if (isApproved) sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.EVM_TX, {options: {account: state.currentAccount}});
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION, {approve: isApproved});
+    if (isApproved) {
+      const txType = activeSession.message?.data && activeSession.message?.to ? TX_TYPE.CONTRACT_EXECUTION : TX_TYPE.CONTRACT_DEPLOYMENT;
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.EVM_TX, { options: { account: state.currentAccount, network: state.currentNetwork, type: txType, isEvm: true } });
+    }
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION, { approve: isApproved });
     navigate(ROUTES.WALLET);
   }
 
@@ -178,16 +206,16 @@ export const ApproveTx = () => {
     <>
       <div className={`${style.menuItems__cancleContinue} approveBtn`}>
         <ButtonComp
-          bordered={true}
-          text={"Reject"}
-          maxWidth={"100%"}
-          onClick={() => handleClick(false)}
-        />
-        <ButtonComp
           onClick={() => handleClick(true)}
           text={"Approve"}
           maxWidth={"100%"}
           isDisable={disableApproval}
+        />
+        <ButtonComp
+          bordered={true}
+          text={"Reject"}
+          maxWidth={"100%"}
+          onClick={() => handleClick(false)}
         />
       </div>
     </>

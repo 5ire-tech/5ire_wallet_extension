@@ -4,20 +4,22 @@
   background-color: #0e1f45;
   display: flex;
   justify-content: center;
+  width: 400px;
+  margin:  0 auto;
   &__inner {
     height: 599px;
     background-color: $blue-08132C;
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-width: 404px;
+    max-width: 400px;
   }
   &__innerBgChange {
     background-color: $inputBg;
   }
   &__content {
     // padding: 0 28px 24px;
-    // overflow-y: scroll;
+    overflow-y: scroll;
     flex: 1 1 0%;
     &__paddingX {
       padding-left: 0;

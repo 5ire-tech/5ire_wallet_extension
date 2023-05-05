@@ -1,12 +1,12 @@
 import QRCode from "react-qr-code";
 import { ROUTES } from "../../Routes";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import Browser from "webextension-polyfill";
 import ThreeDot from "../../Assets/dot3.svg";
-import { shortner } from "../../Helper/helper";
-import { Dropdown, Select, Space } from "antd";
+import { sendEventToTab, shortner } from "../../Helper/helper";
+import { Dropdown, Select, Space, Tooltip } from "antd";
 import WalletQr from "../../Assets/QRicon.svg";
 import { useLocation } from "react-router-dom";
 import CopyIcon from "../../Assets/CopyIcon.svg";
@@ -16,11 +16,12 @@ import ModalCustom from "../ModalCustom/ModalCustom";
 import GreenCircle from "../../Assets/greencircle.svg";
 import React, { useEffect, useState, useContext } from "react";
 import DownArrowSuffix from "../../Assets/DownArrowSuffix.svg";
+import Info from "../../Assets/infoIcon.svg";
 // import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
 import { isEqual, isNullorUndef, log } from "../../Utility/utility";
-import { getCurrentTabUId, getCurrentTabUrl } from "../../Scripts/utils";
+import { getCurrentTabDetails } from "../../Scripts/utils";
 
 import {
   EVM,
@@ -35,9 +36,10 @@ import {
   MESSAGE_EVENT_LABELS,
   ACCOUNT_CHANGED_EVENT,
   STATE_CHANGE_ACTIONS,
-
+  TABS_EVENT,
+  HTTP_END_POINTS,
 } from "../../Constants/index";
-
+import { TabMessagePayload } from "../../Utility/network_calls";
 
 function BalanceDetails({ mt0 }) {
   const getLocation = useLocation();
@@ -47,37 +49,45 @@ function BalanceDetails({ mt0 }) {
   const [isHeaderActive, setHeaderActive] = useState(false);
   const [isNewSite, setNewSite] = useState(false);
   const [url, setUrl] = useState("");
-  const { state, updateState, externalControlsState, allAccounts } = useContext(AuthContext);
+  const { state, updateState, externalControlsState, allAccounts } =
+    useContext(AuthContext);
 
   const { connectedApps } = externalControlsState;
   const { pathname } = getLocation;
 
-  const {
-    balance,
-    currentAccount,
-    currentNetwork,
-  } = state;
-
+  const { balance, currentAccount, currentNetwork } = state;
 
   useEffect(() => {
     //check if current app is connected with extension
-    getCurrentTabUrl((tabUrl) => {
-      const isConnectionExist = connectedApps[tabUrl];
+    getCurrentTabDetails().then((tabDetails) => {
+      const isConnectionExist = connectedApps[tabDetails.tabUrl];
       if (isConnectionExist?.isConnected) {
         setIsConnected(isConnectionExist.isConnected);
       }
-      setUrl(tabUrl);
+      setUrl(tabDetails.tabUrl);
       setNewSite(isNullorUndef(isConnectionExist));
     });
 
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.BALANCE, {});
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.GET_ACCOUNTS, {});
+    sendRuntimeMessage(
+      MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
+      MESSAGE_EVENT_LABELS.BALANCE,
+      {}
+    );
+    sendRuntimeMessage(
+      MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+      MESSAGE_EVENT_LABELS.GET_ACCOUNTS,
+      {}
+    );
   }, [currentNetwork, currentAccount.evmAddress]);
 
-
-  const handleNetworkChange = (network) => {
+  //network change handler
+  const handleNetworkChange = async (network) => {
     //change the network
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.NETWORK_HANDLER, MESSAGE_EVENT_LABELS.NETWORK_CHANGE, {})
+    sendRuntimeMessage(
+      MESSAGE_TYPE_LABELS.NETWORK_HANDLER,
+      MESSAGE_EVENT_LABELS.NETWORK_CHANGE,
+      {}
+    );
     updateState(LABELS.CURRENT_NETWORK, network);
 
     updateState(LABELS.BALANCE, {
@@ -85,32 +95,47 @@ function BalanceDetails({ mt0 }) {
       nativeBalance: ZERO_CHAR,
       totalBalance: ZERO_CHAR,
     });
+
+    //send the network change event to current opned tab if its connected
+    sendEventToTab(
+      new TabMessagePayload(
+        TABS_EVENT.NETWORK_CHANGE_EVENT,
+        { result: { network, url: HTTP_END_POINTS[network.toUpperCase()] } },
+        null,
+        TABS_EVENT.NETWORK_CHANGE_EVENT
+      ),
+      connectedApps
+    );
   };
 
-  const onSelectAcc = name => {
+  //account change handler
+  const onSelectAcc = (name) => {
     //update the current account
-    const acc = allAccounts.find(acc => acc.accountName === name);
+    const acc = allAccounts.find((acc) => acc.accountName === name);
     updateState(LABELS.CURRENT_ACCOUNT, acc);
 
     //fetch balance of changed account
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.BALANCE, {});
+    sendRuntimeMessage(
+      MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
+      MESSAGE_EVENT_LABELS.BALANCE,
+      {}
+    );
 
     //send account details whenever account is changed
-    getCurrentTabUId((id) => {
-      getCurrentTabUrl((url) => {
-        if (!(url === "chrome://extensions")) {
-          Browser.tabs.sendMessage(id, {
-            id: ACCOUNT_CHANGED_EVENT,
-            method: ACCOUNT_CHANGED_EVENT,
-            response: {
-              evmAddress: acc.evmAddress,
-              nativeAddress: acc.nativeAddress,
-            },
-          });
-        }
-      });
-    });
-
+    sendEventToTab(
+      new TabMessagePayload(
+        TABS_EVENT.ACCOUNT_CHANGE_EVENT,
+        {
+          result: {
+            evmAddress: acc.evmAddress,
+            nativeAddress: acc.nativeAddress,
+          },
+        },
+        null,
+        TABS_EVENT.ACCOUNT_CHANGE_EVENT
+      ),
+      connectedApps
+    );
   };
 
   const handleCopy = (e) => {
@@ -148,31 +173,76 @@ function BalanceDetails({ mt0 }) {
 
   //handle the disconnect
   const handleDisconnect = async () => {
-      await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.APP_CONNECTION_UPDATE, { connected: false, origin: url }, { localStateKey: LABELS.EXTERNAL_CONTROLS });
-      setIsConnected(false);
-  }
+    const isAnyError = await ExtensionStorageHandler.updateStorage(
+      STATE_CHANGE_ACTIONS.APP_CONNECTION_UPDATE,
+      { connected: false, origin: url },
+      { localStateKey: LABELS.EXTERNAL_CONTROLS }
+    );
+    setIsConnected(false);
+
+    //send the disconnect event to extension
+    !isAnyError &&
+      sendEventToTab(
+        new TabMessagePayload(
+          TABS_EVENT.WALLET_DISCONNECTED_EVEN,
+          { result: null },
+          null,
+          TABS_EVENT.WALLET_DISCONNECTED_EVEN
+        ),
+        connectedApps
+      );
+  };
 
   //handle the connect
   const handleConnect = async () => {
-      await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.APP_CONNECTION_UPDATE, { connected: true, origin: url }, { localStateKey: LABELS.EXTERNAL_CONTROLS });
-      setIsConnected(true);
-  }
+    const isAnyError = await ExtensionStorageHandler.updateStorage(
+      STATE_CHANGE_ACTIONS.APP_CONNECTION_UPDATE,
+      { connected: true, origin: url },
+      { localStateKey: LABELS.EXTERNAL_CONTROLS }
+    );
+    setIsConnected(true);
+
+    //send the disconnect event to extension
+    !isAnyError &&
+      sendEventToTab(
+        new TabMessagePayload(
+          TABS_EVENT.WALLET_CONNECTED_EVENT,
+          {
+            result: {
+              evmAddress: currentAccount.evmAddress,
+              nativeAddress: currentAccount.nativeAddress,
+            },
+          },
+          null,
+          TABS_EVENT.WALLET_CONNECTED_EVENT
+        ),
+        connectedApps,
+        true
+      );
+  };
 
   return (
     <>
-      {(isEqual(pathname, ROUTES.WALLET) || isEqual(pathname, ROUTES.SWAP_APPROVE) || isEqual(pathname, ROUTES.APPROVE_TXN) ||
-        isEqual(pathname, ROUTES.HISTORY_P) || isEqual(pathname, ROUTES.MY_ACCOUNT)) 
-        &&
-        ( <div className={`${style.balanceDetails} ${mt0 ? mt0 : EMTY_STR}`}>
+      {(isEqual(pathname, ROUTES.WALLET) ||
+        isEqual(pathname, ROUTES.SWAP_APPROVE) ||
+        isEqual(pathname, ROUTES.APPROVE_TXN) ||
+        isEqual(pathname, ROUTES.HISTORY_P) ||
+        isEqual(pathname, ROUTES.MY_ACCOUNT)) && (
+          <div className={`${style.balanceDetails} ${mt0 ? mt0 : EMTY_STR}`}>
             <div className={style.balanceDetails__decoratedSec}>
               <>
                 <img src={DarkLogo} alt="logo" draggable={false} />
-                { 
-                  (isEqual(pathname, ROUTES.WALLET) || isEqual(pathname, ROUTES.HISTORY_P) || isEqual(pathname, ROUTES.MY_ACCOUNT))
-                  && 
-                  (
-                    <div className={style.balanceDetails__accountName}>
-                      {isConnected ? (
+                {(isEqual(pathname, ROUTES.WALLET) ||
+                  isEqual(pathname, ROUTES.HISTORY_P) ||
+                  isEqual(pathname, ROUTES.APPROVE_TXN) ||
+                  isEqual(pathname, ROUTES.MY_ACCOUNT)) && (
+                    <div
+                      className={`${isConnected && !isEqual(pathname, ROUTES.APPROVE_TXN)
+                        ? style.balanceDetails__accountName
+                        : style.balanceDetails__accountName1
+                        } ${style.headerInfo}`}
+                    >
+                      {isConnected && !isEqual(pathname, ROUTES.APPROVE_TXN) ? (
                         <>
                           <p onClick={headerActive}>
                             <img
@@ -180,30 +250,57 @@ function BalanceDetails({ mt0 }) {
                               alt="connectionLogo"
                               draggable={false}
                             />
-                            {currentAccount?.accountName ? currentAccount?.accountName : ""}
+                            {currentAccount?.accountName
+                              ? currentAccount?.accountName
+                              : ""}
+                            <img src={Info} />
                           </p>
-                          <span>
-                            {currentAccount?.evmAddress ? shortner(currentAccount.evmAddress) : ""}{" "}
+                          {/* <span>
+                            {currentAccount?.evmAddress
+                              ? shortner(currentAccount.evmAddress)
+                              : ""}{" "}
                             <img
                               draggable={false}
                               src={CopyIcon}
                               alt="copyIcon"
                               name={EVM}
                               onClick={handleCopy}
-                              style={{cursor: "pointer"}}
+                              style={{ cursor: "pointer" }}
                             />
-                          </span>
+                          </span> */}
                         </>
                       ) : (
                         <>
-                          <p onClick={headerActive}>
+                          <p>
                             <img
-                              src={GrayCircle}
+                              src={
+                                isEqual(pathname, ROUTES.APPROVE_TXN)
+                                  ? GreenCircle
+                                  : GrayCircle
+                              }
                               alt="connectionLogo"
                               draggable={false}
                             />
-                            {currentAccount?.accountName ? currentAccount?.accountName : ""}
+                            {currentAccount?.accountName
+                              ? currentAccount?.accountName
+                              : ""}
                           </p>
+                          {/* <Dropdown
+                            placement="bottom"
+                            menu={{
+                              items: [
+                                {
+                                  key: 1,
+                                  label: <span>View Connected Details</span>,
+                                },
+                              ],
+                            }}
+                            trigger="hover"
+                          >
+                            <Space style={{ cursor: "pointer" }}>
+                              <img src={Info} />
+                            </Space>
+                          </Dropdown> */}
                         </>
                       )}
                     </div>
@@ -216,11 +313,21 @@ function BalanceDetails({ mt0 }) {
                   <div className={style.activeDis_Modal}>
                     <div className={style.activeDis_Modal__modalHeading}>
                       <h3>{url.replace(/[a-z]+:\/\//, "")}</h3>
-                      {(!url.startsWith("http") || isNewSite) && <p>5ire Extension is not connected to this site. To connect to a web3 site, find and click the connect button.</p>}
+                      {(!url.startsWith("http") || isNewSite) && (
+                        <p>
+                          5ire Extension is not connected to this site. To connect
+                          to a web3 site, find and click the connect button.
+                        </p>
+                      )}
                     </div>
-                    {
-                      (url.startsWith("http") && !isNewSite) && allAccounts.length > 0 && allAccounts.map((e, i) => (
-                        <div className={style.activeDis_Modal__accountActive} key={i + e?.accountName}>
+                    {url.startsWith("http") &&
+                      !isNewSite &&
+                      allAccounts.length > 0 &&
+                      allAccounts.map((e, i) => (
+                        <div
+                          className={style.activeDis_Modal__accountActive}
+                          key={i + e?.accountName}
+                        >
                           <div className={style.activeDis_Modal__leftSec}>
                             <img src={DarkLogo} alt="logo" />
                             <div
@@ -230,37 +337,60 @@ function BalanceDetails({ mt0 }) {
                             >
                               <h2>{e.accountName}</h2>
 
-                              {
-                                e?.accountName === currentAccount?.accountName
-                                  ?
-                                  <p>{`${balance?.totalBalance} 5ire`}</p>
-                                  :
-                                  <p classname={style.activeDis_Modal__switchAcc} onClick={() => onSelectAcc(e?.accountName)}>
-                                    Switch Account
-                                  </p>
-                              }
-
+                              {e?.accountName === currentAccount?.accountName ? (
+                                <p><span className={style.activeDis_Modal__leftSec__spanContact}>{`${balance?.totalBalance} `}</span>5ire</p>
+                              ) : (
+                                <p
+                                  classname={style.activeDis_Modal__switchAcc}
+                                  onClick={() => onSelectAcc(e?.accountName)}
+                                >
+                                  Switch Account
+                                </p>
+                              )}
                             </div>
                           </div>
                           <div className={style.activeDis_Modal__rytSec}>
                             <h2>
-                              {
-                                (e.accountName === currentAccount?.accountName && isConnected) ?
-                                  <img src={GreenCircle} alt="connectionLogo" draggable={false} />
-                                  :
-                                  <img src={GrayCircle} alt="connectionLogo" draggable={false} />
-                              }{" "}
-                              {(e.accountName === currentAccount?.accountName && isConnected) ? LABELS.CONNECTED : LABELS.NOT_CONNECTED}
+                              {e.accountName === currentAccount?.accountName &&
+                                isConnected ? (
+                                <img
+                                  src={GreenCircle}
+                                  alt="connectionLogo"
+                                  draggable={false}
+                                />
+                              ) : (
+                                <img
+                                  src={GrayCircle}
+                                  alt="connectionLogo"
+                                  draggable={false}
+                                />
+                              )}{" "}
+                              {e.accountName === currentAccount?.accountName &&
+                                isConnected
+                                ? LABELS.CONNECTED
+                                : LABELS.NOT_CONNECTED}
                             </h2>
-                            {
-                              (e.accountName === currentAccount?.accountName) && <Dropdown
+                            {e.accountName === currentAccount?.accountName && (
+                              <Dropdown
                                 menu={{
                                   items: [
                                     {
                                       key: i,
-                                      label: <span onClick={isConnected ? handleDisconnect : handleConnect}>{isConnected ? "Disconnected": "Connect"}</span>,
+                                      label: (
+                                        <span
+                                          onClick={
+                                            isConnected
+                                              ? handleDisconnect
+                                              : handleConnect
+                                          }
+                                        >
+                                          {isConnected
+                                            ? "Disconnected"
+                                            : "Connect"}
+                                        </span>
+                                      ),
                                     },
-                                  ]
+                                  ],
                                 }}
                                 trigger="click"
                               >
@@ -268,12 +398,10 @@ function BalanceDetails({ mt0 }) {
                                   <img src={ThreeDot} alt="3dots" />
                                 </Space>
                               </Dropdown>
-                            }
+                            )}
                           </div>
                         </div>
-                      ))
-                    }
-
+                      ))}
                   </div>
                 </ModalCustom>
                 <div className={style.balanceDetails__selectStyle}>
@@ -303,7 +431,11 @@ function BalanceDetails({ mt0 }) {
                     options={[
                       {
                         value: NETWORK.TEST_NETWORK,
-                        label: <span className="flexedItemSelect">Testnet</span>,
+                        label: <span className="flexedItemSelect">{NETWORK.TEST_NETWORK}</span>,
+                      },
+                      {
+                        value: NETWORK.UAT,
+                        label: <span className="flexedItemSelect">{NETWORK.UAT}</span>,
                       },
                       {
                         value: NETWORK.QA_NETWORK,
@@ -323,7 +455,22 @@ function BalanceDetails({ mt0 }) {
               <div className={style.balanceDetails__innerBalance}>
                 <div className={style.balanceDetails__innerBalance__totalBalnce}>
                   <p>
-                    Total Balance : <span>{balance?.totalBalance ? `${balance.totalBalance} ${CURRENCY}` : ""} </span>
+                    Total Balance :{" "}
+                    <span>
+                      {balance?.totalBalance ? (
+                        <>
+                          {" "}
+                          <Tooltip placement="bottom" title={balance.totalBalance}>
+                            <span className="totalBal">
+                              {balance.totalBalance}
+                            </span>
+                          </Tooltip>{" "}
+                          &nbsp;{CURRENCY}
+                        </>
+                      ) : (
+                        ""
+                      )}{" "}
+                    </span>
                   </p>
                 </div>
                 <div className={style.balanceDetails__innerBalance__chainBalance}>
@@ -334,10 +481,16 @@ function BalanceDetails({ mt0 }) {
                       className={style.balanceDetails__innerBalance__balanceName}
                     >
                       <p>Native Chain Balance</p>
-                      <h3>
-                        {/* <img src={WalletCardLogo} draggable={false} alt="walletLogo" /> */}
-                        {balance?.nativeBalance ? balance?.nativeBalance : ""}
-                      </h3>
+                      <Tooltip
+                        title={
+                          balance?.nativeBalance ? balance?.nativeBalance : ""
+                        }
+                      >
+                        <h3>
+                          {/* <img src={WalletCardLogo} draggable={false} alt="walletLogo" /> */}
+                          {balance?.nativeBalance ? balance?.nativeBalance : ""}
+                        </h3>
+                      </Tooltip>
                     </div>
                     <div className={style.balanceDetails__innerBalance__walletQa}>
                       <img
@@ -357,10 +510,14 @@ function BalanceDetails({ mt0 }) {
                       className={style.balanceDetails__innerBalance__balanceName}
                     >
                       <p>EVM Chain Balance</p>
-                      <h3>
-                        {/* <img src={WalletCardLogo} draggable={false} alt="balanceLogo" /> */}
-                        {balance?.evmBalance ? balance?.evmBalance : ""}
-                      </h3>
+                      <Tooltip
+                        title={balance?.evmBalance ? balance?.evmBalance : ""}
+                      >
+                        <h3>
+                          {/* <img src={WalletCardLogo} draggable={false} alt="balanceLogo" /> */}
+                          {balance?.evmBalance ? balance?.evmBalance : ""}
+                        </h3>
+                      </Tooltip>
                     </div>
                     <div className={style.balanceDetails__innerBalance__walletQa}>
                       <img
@@ -402,7 +559,11 @@ function BalanceDetails({ mt0 }) {
                       size={200}
                       style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                       viewBox={`0 0 256 256`}
-                      value={currentAccount?.nativeAddress ? currentAccount?.nativeAddress : ""}
+                      value={
+                        currentAccount?.nativeAddress
+                          ? currentAccount?.nativeAddress
+                          : ""
+                      }
                     />
                   </div>
                   <div className={style.balanceDetails__nativemodal__modalOr}>
@@ -413,7 +574,9 @@ function BalanceDetails({ mt0 }) {
                   </p>
                   <div className={style.balanceDetails__nativemodal__wrapedText}>
                     <p>
-                      {currentAccount?.nativeAddress ? shortner(currentAccount?.nativeAddress) : ""}
+                      {currentAccount?.nativeAddress
+                        ? shortner(currentAccount?.nativeAddress)
+                        : ""}
                       <img
                         draggable={false}
                         src={CopyIcon}
@@ -454,7 +617,11 @@ function BalanceDetails({ mt0 }) {
                       size={200}
                       style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                       viewBox={`0 0 256 256`}
-                      value={currentAccount?.evmAddress ? currentAccount.evmAddress : ""}
+                      value={
+                        currentAccount?.evmAddress
+                          ? currentAccount.evmAddress
+                          : ""
+                      }
                     />
                   </div>
                   <div className={style.balanceDetails__nativemodal__modalOr}>
@@ -465,7 +632,9 @@ function BalanceDetails({ mt0 }) {
                   </p>
                   <div className={style.balanceDetails__nativemodal__wrapedText}>
                     <p>
-                      {currentAccount?.evmAddress ? shortner(currentAccount?.evmAddress) : ""}
+                      {currentAccount?.evmAddress
+                        ? shortner(currentAccount?.evmAddress)
+                        : ""}
                       <img
                         draggable={false}
                         src={CopyIcon}

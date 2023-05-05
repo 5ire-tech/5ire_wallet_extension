@@ -12,16 +12,17 @@ import SimpleKeyring from '@metamask/eth-simple-keyring';
 import { WALLET_TYPES, KEYRING_EVENTS } from "../Constants";
 import { ERRCODES, ERROR_MESSAGES } from "../Constants/index";
 import { ErrorPayload, Error } from "../Utility/error_helper";
+import { message } from "antd";
 // import { mnemonicToMiniSecret, ed25519PairFromSeed } from "@polkadot/util-crypto";
 
 
 
 export class HybridKeyring extends EventEmitter {
 
-    static vault = "";
     static ethKeyring;
+    static vault = null;
     static polkaKeyring;
-    static password = "";
+    static password = null;
     static keyrings = [];
     static accounts = [];
     static instance = null;
@@ -31,6 +32,7 @@ export class HybridKeyring extends EventEmitter {
 
     //return the already initlized instance if there is no instance then it will create it.
     static getInstance = () => {
+
         if (!HybridKeyring.instance) {
             HybridKeyring.instance = new HybridKeyring();
             HybridKeyring.initKeyring();
@@ -86,7 +88,6 @@ export class HybridKeyring extends EventEmitter {
    * @param {string} vault 
    */
     async loadPersistData(password, vault) {
-
         const res = await protector.decryptWithDetail(password, vault);
 
 
@@ -139,10 +140,9 @@ export class HybridKeyring extends EventEmitter {
      * @returns 
      */
     async verifyUserPassword(message) {
-        const { password } = message.data;
+        const { password } = message?.data;
         const verifiedResponse = await this._verifyPassword(password);
         const verified = verifiedResponse.vault ? true : false;
-
         return new EventPayload(message.event, message.event, { verified }, [], false);
     }
 
@@ -197,7 +197,7 @@ export class HybridKeyring extends EventEmitter {
         }
 
         //We allow only one root account
-        if (HybridKeyring?.accounts?.length > 0) {
+        if (HybridKeyring.accounts.length > 0) {
             return HybridKeyring.accounts
         }
         HybridKeyring.password = password;
@@ -208,7 +208,6 @@ export class HybridKeyring extends EventEmitter {
 
         const ethAccounts = HybridKeyring.ethKeyring.getAccounts()
         const nativeAccounts = this._generateNativeAccounts(data);
-
 
         for (let i = 0; i < data.numberOfAccounts; i++) {
             const acc = {
@@ -244,6 +243,7 @@ export class HybridKeyring extends EventEmitter {
      * @returns 
      */
     async addAccount(message) {
+
         const { name } = message.data;
 
         if (HybridKeyring.accounts.length <= 0) {
@@ -257,6 +257,7 @@ export class HybridKeyring extends EventEmitter {
         const existingHdAccounts = oldAccounts.length
         const mainPair = HybridKeyring.polkaKeyring.getPair(oldAccounts[0]?.nativeAddress);
         const newKr = mainPair.derive("//" + existingHdAccounts);
+        HybridKeyring.polkaKeyring.addPair(newKr)
         const newAcc = {
             nativeAddress: newKr.address,
             evmAddress: Web3.utils.toChecksumAddress(eth[0]),
@@ -273,7 +274,7 @@ export class HybridKeyring extends EventEmitter {
         const keyResponse = await this._exportEthAccountByAddress(newAcc.evmAddress, HybridKeyring.password);
 
         newAcc.evmPrivateKey = keyResponse ? keyResponse : "";
-        newAcc.drivePath = "//" + existingHdAccounts;
+        newAcc.drivedMnemonic = await this._exportNativeAccountByAddress(newAcc.nativeAddress, HybridKeyring.password);;
 
         const response = await this._persistData(HybridKeyring.password);
 
@@ -353,67 +354,76 @@ export class HybridKeyring extends EventEmitter {
      * @returns 
      */
     async importAccountByMnemonics(message) {
-        try {
-            const { mnemonic, name } = message?.data;
-            const keyWallet = ethers.Wallet.fromMnemonic(mnemonic)
-            const isExist = HybridKeyring.accounts.find(acc => acc.evmAddress === keyWallet.address);
+        // try {
 
-            if (isExist)
-                throw new Error("Account already exist");
+        const { mnemonic, name } = message?.data;
+        const keyWallet = ethers.Wallet.fromMnemonic(mnemonic)
+        const isExist = HybridKeyring.accounts.find(acc => acc.evmAddress === keyWallet.address);
 
-            //Handle Keyring
-            let keyring = this._getKeyringData(WALLET_TYPES.IMPORTED_NATIVE)
-
-            if (keyring) {
-                keyring.mnemonics.push(mnemonic);
-                keyring.numberOfAccounts++;
-            } else {
-                //Check if simple eth keyring not exists in array
-                const newKeyring = {
-                    numberOfAccounts: 1,
-                    mnemonics: [mnemonic],
-                    type: WALLET_TYPES.IMPORTED_NATIVE,
-                    accounts: []
-                }
-                HybridKeyring.keyrings.push(newKeyring)
-                keyring = newKeyring;
-            }
-
-            //Eth flow
-            const oldKeys = await HybridKeyring.simpleEthKeyring.serialize();
-            oldKeys.push(keyWallet.privateKey)
-            await HybridKeyring.simpleEthKeyring.deserialize(oldKeys);
-            const ethAddress = Web3.utils.toChecksumAddress(keyWallet.address);
-
-            //Generate native account from private key
-            const newKr = HybridKeyring.polkaKeyring.addFromUri(mnemonic);
-
-            const newAcc = {
-                nativeAddress: newKr.address,
-                evmAddress: ethAddress,
-                type: WALLET_TYPES.IMPORTED_NATIVE,
-                accountName: name || WALLET_TYPES.IMPORTED_NATIVE + "_" + keyring.numberOfAccounts,
-                accountIndex: keyring.accounts.length
-            }
-            HybridKeyring.accounts.push(newAcc);
-
-            //Push data for backup purpose
-            keyring.accounts.push(newAcc)
-            this.emit(KEYRING_EVENTS.ACCOUNT_ADDED, newAcc);
-            const response = await this._persistData(HybridKeyring.password);
-
-            const payload = {
-                newAccount: newAcc,
-                vault: response.vault
-            };
-
-            // return newAcc
-            return new EventPayload(message.event, message.event, payload, [], false);
-
-        } catch (error) {
-            console.log("error in import account by mnemonic : ", error);
-            return new Error(new ErrorPayload(ERRCODES.INTERNAL, ERROR_MESSAGES.INVALID_PROPERTY)).throw();
+        if (isExist) {
+            // throw new Error({ code: ERRCODES.INVALID_INPUT, message: ERROR_MESSAGES.MNEMONICS_ALREADY_EXISTS });
+            return new Error(new ErrorPayload(ERRCODES.INVALID_INPUT, ERROR_MESSAGES.MNEMONICS_ALREADY_EXISTS)).throw();
         }
+
+        //Handle Keyring
+        let keyring = this._getKeyringData(WALLET_TYPES.IMPORTED_NATIVE)
+
+        if (keyring) {
+            keyring.mnemonics.push(mnemonic);
+            keyring.numberOfAccounts++;
+        } else {
+            //Check if simple eth keyring not exists in array
+            const newKeyring = {
+                numberOfAccounts: 1,
+                mnemonics: [mnemonic],
+                type: WALLET_TYPES.IMPORTED_NATIVE,
+                accounts: []
+            }
+            HybridKeyring.keyrings.push(newKeyring)
+            keyring = newKeyring;
+        }
+
+        //Eth flow
+        const oldKeys = await HybridKeyring.simpleEthKeyring.serialize();
+        oldKeys.push(keyWallet.privateKey)
+        await HybridKeyring.simpleEthKeyring.deserialize(oldKeys);
+        const ethAddress = Web3.utils.toChecksumAddress(keyWallet.address);
+
+        //Generate native account from private key
+        const newKr = HybridKeyring.polkaKeyring.addFromUri(mnemonic);
+
+        const newAcc = {
+            nativeAddress: newKr.address,
+            evmAddress: ethAddress,
+            type: WALLET_TYPES.IMPORTED_NATIVE,
+            accountName: name || WALLET_TYPES.IMPORTED_NATIVE + "_" + keyring.numberOfAccounts,
+            accountIndex: keyring.accounts.length
+        }
+        HybridKeyring.accounts.push(newAcc);
+
+        //Push data for backup purpose
+        keyring.accounts.push(newAcc)
+        this.emit(KEYRING_EVENTS.ACCOUNT_ADDED, newAcc);
+        const response = await this._persistData(HybridKeyring.password);
+
+        const payload = {
+            newAccount: newAcc,
+            vault: response.vault
+        };
+
+        // console.log("Event payloadd :: ", new EventPayload(message.event, message.event, payload, [], false));
+
+        // return newAcc
+        return new EventPayload(message.event, message.event, payload, [], false);
+
+        // } catch (error) {
+        //     console.log("error in import account by mnemonic : ", error);
+        //     if (error?.code) {
+        //         return new Error(new ErrorPayload(error.code, error.message)).throw();
+        //     } else {
+        //         return new Error(new ErrorPayload(ERRCODES.INTERNAL, ERROR_MESSAGES.INVALID_PROPERTY)).throw();
+        //     }
+        // }
 
 
     }
@@ -423,7 +433,6 @@ export class HybridKeyring extends EventEmitter {
     * @param {object} message 
     */
     async removeAccount(message) {
-        console.log("Message ::: ", message);
         const { address } = message?.data;
         const password = message?.data?.password ? message?.data?.password : HybridKeyring.password;
 
@@ -431,7 +440,6 @@ export class HybridKeyring extends EventEmitter {
         const info = HybridKeyring.accounts.find(acc => acc.evmAddress === address || acc.nativeAddress === address);
 
         if (!info)
-
             throw new Error("No account exist with this address");
 
         const keyring = this._getKeyringData(info.type)
@@ -453,17 +461,29 @@ export class HybridKeyring extends EventEmitter {
         keyring.accounts = keyring.accounts.filter(acc => acc.evmAddress !== info.evmAddress)
         HybridKeyring.accounts = HybridKeyring.accounts.filter(acc => acc.evmAddress !== info.evmAddress)
 
-        //Persist state
-        const prsistRes = await this._persistData(HybridKeyring.password)
-        const payload = {
-            vault: prsistRes.vault,
-            accounts: HybridKeyring.accounts
+        let payload = {
+            vault: null,
+            accounts: [],
+            isInitialAccount: true
         }
+
+        //Persist state
+        if (HybridKeyring.accounts.length > 0) {
+            const prsistRes = await this._persistData(HybridKeyring.password)
+            payload = {
+                vault: prsistRes.vault,
+                accounts: HybridKeyring.accounts
+            }
+            payload.isInitialAccount = false;
+
+        } else {
+            await this.resetVaultAndPass();
+        }
+
 
         // return accounts
         return new EventPayload(message.event, message.event, payload, [], false);
     }
-
     /**
       * Forgot Password by Mnemonic
       * @param {object} message
@@ -471,7 +491,7 @@ export class HybridKeyring extends EventEmitter {
     async forgotPassByMnemonic(message) {
         try {
             HybridKeyring.initKeyring();
-            HybridKeyring.vault = "";
+            HybridKeyring.vault = null;
             HybridKeyring.accounts = [];
             const createRes = await this.createOrRestore(message);
             return createRes;
@@ -555,6 +575,12 @@ export class HybridKeyring extends EventEmitter {
      * @returns 
      */
     getAccounts(message) {
+        // console.log("HYBRIDKEYRING accounts::: ",HybridKeyring.accounts);
+        // console.log("HYBRIDKEYRING ethKeyring::: ",HybridKeyring.ethKeyring);
+        // console.log("HYBRIDKEYRING polkaKeyring::: ",HybridKeyring.polkaKeyring);
+        // console.log("HYBRIDKEYRING keyrings::: ",HybridKeyring.keyrings);
+        // console.log("HYBRIDKEYRING vault::: ",HybridKeyring.vault);
+        // console.log("HYBRIDKEYRING password::: ",HybridKeyring.password);
         return new EventPayload(null, message.event, HybridKeyring.accounts, [], false);
     }
 
@@ -615,6 +641,17 @@ export class HybridKeyring extends EventEmitter {
         return new EventPayload(message.event, message.event, payload, [], false);
     }
 
+    async resetVaultAndPass() {
+        HybridKeyring.polkaKeyring = null;
+        HybridKeyring.ethKeyring = null;
+        HybridKeyring.simpleEthKeyring = null;
+        HybridKeyring.vault = null;
+        HybridKeyring.accounts = [];
+        HybridKeyring.password = null;
+        HybridKeyring.keyrings = [];
+        HybridKeyring.initKeyring();
+    }
+
 
     /******************************** Internal methods ***********************/
     /**
@@ -633,6 +670,7 @@ export class HybridKeyring extends EventEmitter {
             for (let i = 1; i < data.numberOfAccounts; i++) {
                 const derivedPair = keyringPair.derive("//" + i);
                 // const derivedPair = HybridKeyring.polkaKeyring.addFromUri(data.mnemonic + "//" + i)
+                HybridKeyring.polkaKeyring.addPair(derivedPair)
                 accounts.push(derivedPair.address)
             }
         }
@@ -691,7 +729,7 @@ export class HybridKeyring extends EventEmitter {
             const data = this._getKeyringData(WALLET_TYPES.IMPORTED_NATIVE)
             return data.mnemonics[acc.accountIndex];
         } else {
-            throw new Error("Invalid keyring");
+            new Error(new ErrorPayload(ERRCODES.KEYRING_ERROR, "Invalid keyring")).throw();
         }
     }
 
@@ -713,6 +751,7 @@ export class HybridKeyring extends EventEmitter {
      * @param {string} password 
      */
     async _persistData(password) {
+
         const res = await protector.encryptWithDetail(password, HybridKeyring.keyrings);
         this.emit(KEYRING_EVENTS.STATE_CHANGED, res);
         HybridKeyring.vault = res.vault

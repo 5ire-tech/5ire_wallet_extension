@@ -37,26 +37,28 @@ export class EVMRPCPayload {
 
 //paylod for rpc response from rpc operations
 export class EventPayload {
+
   constructor(stateChangeKey, eventForEmitting, payload, moreEvent = [], error = null) {
-    this.stateChangeKey = stateChangeKey
-    this.eventEmit = eventForEmitting
-    this.payload = payload
-    this.moreEvent = moreEvent
-    this.error = error
+      this.stateChangeKey = stateChangeKey
+      this.eventEmit = eventForEmitting
+      this.payload = payload
+      this.moreEvent = moreEvent
+      this.error = error
   }
+
 }
 
 
 //payload creator for tab messages
 export class TabMessagePayload {
-  constructor(id, response, method=null, error = null) {
+  constructor(id, response, method = null, event = null, error = null) {
     this.id = id;
     this.response = response;
+    this.event = event;
     this.method = method
     this.error = error;
   }
 }
-
 
 //create the external app request payload for saving and further processing
 export class ExternalAppsRequest {
@@ -84,7 +86,7 @@ export class TransactionProcessingPayload {
 
 //for main transaction payload
 export class TransactionPayload {
-  constructor(to = "", amount = 0, isEvm = null, chain = "QA", type = "", txHash = "", status = STATUS.QUEUED, intermidateHash = null, gasUsed = null) {
+  constructor(to = "", amount = 0, isEvm = null, chain = "QA", type = "", txHash = "", status = STATUS.QUEUED, intermidateHash = null, gasUsed = null, args = null, method = null) {
     this.to = to;
     this.amount = amount;
     this.isEvm = isEvm;
@@ -96,6 +98,7 @@ export class TransactionPayload {
     this.gasUsed = gasUsed;
     this.id = getUUID();
     this.timeStamp = new Date().toString();
-    this.functionExecuted = null;
+    this.method = method
+    this.args = args;
   }
 }

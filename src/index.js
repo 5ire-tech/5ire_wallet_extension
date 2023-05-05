@@ -6,11 +6,11 @@ import ReactDOM from "react-dom/client";
 import { localStorage } from "./Storage";
 import browser from "webextension-polyfill";
 import { MemoryRouter } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import { CONNECTION_NAME, EMTY_STR, LABELS} from "./Constants";
+import { CONNECTION_NAME, EMTY_STR, LABELS, MAIN_POPUP } from "./Constants";
 import { getDataLocal } from "../src/Storage/loadstore"
 import { sessionStorage } from "../src/Storage/index";
 import { log } from "./Utility/utility";
+import { Toaster } from 'react-hot-toast';
 
 //For Dev Enviroment Check
 // const isDev = process.env.NODE_ENV === "development";
@@ -44,23 +44,13 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 //init the main app
 const initApp = (data, externalControlsState) => {
   root.render(
-    <Context>
-      <MemoryRouter>
+    <MemoryRouter>
+      <Context>
         <App data={data} externalControlsState={externalControlsState} />
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
-      </MemoryRouter>
-    </Context>
+
+        <Toaster />
+      </Context>
+    </MemoryRouter>
   );
 };
 
@@ -68,9 +58,12 @@ const initApp = (data, externalControlsState) => {
   try {
     browser.runtime.connect({ name: CONNECTION_NAME });
 
+    const window = browser.extension.getViews({type: "popup"});
+    if(window.length) browser.runtime.connect({ name: MAIN_POPUP });
+
     //inject the current state into main app
     const currentLocalState = await getDataLocal(LABELS.STATE);
-    const externalControlsState  = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+    const externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
     const loginState = await sessionStorage.get(LABELS.ISLOGIN);
 
     currentLocalState.isLogin = !loginState?.isLogin ? false : currentLocalState?.isLogin;

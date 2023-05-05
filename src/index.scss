@@ -11,8 +11,9 @@ html,
 body {
   margin: 0;
   // height: 700px;
-  width: 400px;
+  // width: 400px;
   overflow: hidden;
+  background-color: #092145;
 }
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
@@ -69,4 +70,5 @@ button:disabled {
   // margin-top: 10px;
   position: absolute;
   white-space: nowrap;
+  font-size: 12px;
 }

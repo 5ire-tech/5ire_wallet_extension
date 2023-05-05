@@ -1,14 +1,14 @@
-import { useContext, useState } from "react";
-import { ROUTES } from "../../Routes";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
-import "react-toastify/dist/ReactToastify.css";
+import { useContext, useState } from "react";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
 import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
+import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
 import { PVT_KEY, NATIVE, EVM, COPIED, MNEMONIC } from "../../Constants/index.js";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx";
+import { ROUTES } from "../../Routes";
 
 function CreateWalletChain() {
 
@@ -28,7 +28,7 @@ function CreateWalletChain() {
 
     if (e.target.name === EVM) navigator.clipboard.writeText(newAccount?.evmAddress);
 
-    if (e.target.name === MNEMONIC) navigator.clipboard.writeText(newAccount?.mnemonic);
+    if (e.target.name === MNEMONIC) navigator.clipboard.writeText(newAccount?.mnemonic ? newAccount?.mnemonic : newAccount?.drivedMnemonic);
 
     if (e.target.name === PVT_KEY) navigator.clipboard.writeText(newAccount?.evmPrivateKey);
 
@@ -42,7 +42,12 @@ function CreateWalletChain() {
 
   return (
     <div className={style.cardWhite}>
-      <MenuRestofHeaders backTo={ROUTES.BEFORE_BEGIN} title={"Create New Wallet"} />
+      {
+        newAccount?.mnemonic
+        &&
+        < StepHeaders active={4} />
+      }
+      <MenuRestofHeaders title={"New Wallet Details"} />
       <div className={style.copyButton}>
         <button
           className={style.cardWhite__addressInput__copyAll}
@@ -53,64 +58,9 @@ function CreateWalletChain() {
         </button>
       </div>
       <div className={style.cardWhite__addressInput}>
-        <label>{!newAccount?.mnemonic && newAccount.drivePath ? "Drived Path:" : "Mnemonic Phrase:"}</label>
-        <p className={style.cardWhite__addressInput__copyText}>
-          <span>
-            {
-              !newAccount?.mnemonic && newAccount?.drivePath ? newAccount.drivePath : newAccount.mnemonic
-            }
-          </span>
-          {
-            newAccount?.mnemonic &&
-            <img
-              name={MNEMONIC}
-              src={CopyIcon}
-              alt="copyIcon"
-              draggable={false}
-              onClick={handleCopy}
-            />
-          }
-          {" "}
-        </p>
-      </div>
-      <div className={`${style.cardWhite__addressInput} ${style.textElips}`}>
-        <label>EVM Private Key:</label>
-        <p className={style.cardWhite__addressInput__copyText}>
-          <span>{newAccount?.evmPrivateKey}</span>
-          <img
-            name={PVT_KEY}
-            src={CopyIcon}
-            alt="copyIcon"
-            onClick={handleCopy}
-          />{" "}
-        </p>
-      </div>
-      <div className={style.cardWhite__addressInput}>
-        <label>Evm Chain Address:</label>
+        <label>EVM Chain Address:</label>
         <p className={style.cardWhite__addressInput__copyText}>
           <span>{newAccount?.evmAddress}</span>
-          {
-            isOpen?.open1 ?
-              <img
-                width={19}
-                height={12}
-                alt="eyeOpen"
-                name="open1"
-                draggable={false}
-                src={EyeOpenIcon}
-                onClick={handleEyeOpen}
-              />
-              :
-              <img
-                width={19}
-                height={16}
-                name="open1"
-                alt="eyeClose"
-                src={EyeCloseIcon}
-                draggable={false}
-                onClick={handleEyeOpen}
-              />
-          }
           <img
             name={EVM}
             src={CopyIcon}
@@ -124,29 +74,6 @@ function CreateWalletChain() {
         <label> Native Chain Address:</label>
         <p className={style.cardWhite__addressInput__copyText}>
           <span>{newAccount?.nativeAddress}</span>
-          {
-            isOpen?.open2 ?
-              <img
-                width={19}
-                height={12}
-                name="open2"
-                alt="eyeOpen"
-                draggable={false}
-                src={EyeOpenIcon}
-                onClick={handleEyeOpen}
-              />
-              :
-              <img
-                width={19}
-                height={16}
-                alt="eyeClose"
-                name="open2"
-                draggable={false}
-                src={EyeCloseIcon}
-                onClick={handleEyeOpen}
-
-              />
-          }
           <img
             name={NATIVE}
             src={CopyIcon}
@@ -156,6 +83,79 @@ function CreateWalletChain() {
           />{" "}
         </p >
       </div >
+      <div className={style.cardWhite__addressInput}>
+        <label>Mnemonic Phrase: </label>
+        <p className={style.cardWhite__addressInput__copyText}>
+          <span className={isOpen.open1 && "blurContact"}>{newAccount?.mnemonic ? newAccount.mnemonic : newAccount.drivedMnemonic}</span>
+          {
+            isOpen?.open1 ?
+
+              <img
+                width={19}
+                height={16}
+                name="open1"
+                alt="eyeClose"
+                src={EyeCloseIcon}
+                draggable={false}
+                onClick={handleEyeOpen}
+              /> :
+              <img
+                width={19}
+                height={12}
+                alt="eyeOpen"
+                name="open1"
+                draggable={false}
+                src={EyeOpenIcon}
+                onClick={handleEyeOpen}
+              />
+
+          }
+          <img
+            name={MNEMONIC}
+            src={CopyIcon}
+            alt="copyIcon"
+            draggable={false}
+            onClick={handleCopy}
+          />
+          {" "}
+        </p>
+      </div>
+      <div className={`${style.cardWhite__addressInput}`}>
+        <label>EVM Private Key:</label>
+        <p className={style.cardWhite__addressInput__copyText}>
+          <span className={isOpen.open2 && "blurContact"}>{newAccount?.evmPrivateKey}</span>
+          {
+            isOpen?.open2 ?
+
+              <img
+                width={19}
+                height={16}
+                alt="eyeClose"
+                name="open2"
+                draggable={false}
+                src={EyeCloseIcon}
+                onClick={handleEyeOpen}
+
+              /> :
+              <img
+                width={19}
+                height={12}
+                name="open2"
+                alt="eyeOpen"
+                draggable={false}
+                src={EyeOpenIcon}
+                onClick={handleEyeOpen}
+              />
+
+          }
+          <img
+            name={PVT_KEY}
+            src={CopyIcon}
+            alt="copyIcon"
+            onClick={handleCopy}
+          />{" "}
+        </p>
+      </div>
     </div >
   );
 }

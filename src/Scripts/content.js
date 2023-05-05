@@ -2,7 +2,7 @@ import Browser from "webextension-polyfill";
 import { WindowPostMessageStream } from "./stream";
 import { CONTENT_SCRIPT, INPAGE } from "./constants";
 import { isManifestV3 } from "./utils";
-import { SIGNER_METHODS } from "../Constants";
+import { SIGNER_METHODS, VALIDATOR_NOMINATOR_METHOD } from "../Constants";
 
 
 const contentStream = new WindowPostMessageStream({
@@ -14,7 +14,7 @@ const contentStream = new WindowPostMessageStream({
 
 contentStream.on("data", async (data) => {
 
-  if(!data?.method) return;
+  if (!data?.method) return;
 
   try {
     switch (data.method) {
@@ -22,6 +22,22 @@ contentStream.on("data", async (data) => {
       case "eth_requestAccounts":
       case "eth_accounts":
       case "disconnect":
+      case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_NOMINATOR:
+      case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_VALIDATOR:
+      case VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_BONDMORE:
+      case VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_PAYOUT:
+      case VALIDATOR_NOMINATOR_METHOD.NATIVE_RENOMINATE:
+      case VALIDATOR_NOMINATOR_METHOD.NATIVE_RESTART_VALIDATOR:
+      case VALIDATOR_NOMINATOR_METHOD.NATIVE_STOP_NOMINATOR:
+      case VALIDATOR_NOMINATOR_METHOD.NATIVE_STOP_VALIDATOR:
+      case VALIDATOR_NOMINATOR_METHOD.NATIVE_UNBOND_NOMINATOR:
+      case VALIDATOR_NOMINATOR_METHOD.NATIVE_UNBOND_VALIDATOR:
+      case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_BONDMORE:
+      case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_PAYOUT:
+      case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR:
+      case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR_UNBONDED:
+      case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR:
+      case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR_UNBONDED:
         Browser.runtime.sendMessage(data);
         break;
 

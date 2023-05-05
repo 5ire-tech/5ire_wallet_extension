@@ -3,16 +3,17 @@ import { Input } from "antd";
 import style from "./style.module.scss";
 import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
 import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
-
 function InputFieldSimple({
   name,
   keyUp,
+  value,
   onChange,
   minHeight,
   coloredBg,
   placeholder,
   placeholderBaseColor,
 }) {
+
   return (
     <Input.Password
       className={`${style.inputSimple} ${style.inputPassword} ${placeholderBaseColor ? "placeholderBaseColor" : ""
@@ -20,8 +21,10 @@ function InputFieldSimple({
       placeholder={placeholder}
       style={{ minHeight: minHeight }}
       onChange={onChange}
-      name={name}
       onKeyUp={keyUp}
+      name={name}
+      value={value}
+      autoComplete="off"
       // className={style.inputSimple}
       // placeholder={placeholder}
       iconRender={(visible) =>
@@ -39,6 +42,7 @@ export default InputFieldSimple;
 
 export const InputField = ({
   min,
+  key,
   mb0,
   type,
   name,
@@ -53,7 +57,11 @@ export const InputField = ({
   placeholder,
   defaultValue,
   placeholderBaseColor,
+  suffix = '',
 }) => {
+  // const suffix = (
+  //   <button>Max</button>
+  // );
   return (
     <div className={`${style.boxStyle} inputField ${mb0 ? style.mb0 : ""}`}>
       <label htmlFor={name} className={`${style.boxStyle__label}`}>
@@ -62,9 +70,10 @@ export const InputField = ({
       <Input
         name={name}
         type={type ? type : "text"}
-        min = {min}
-        // max = {max}
+        min={min}
+        key={key}
         value={value}
+        autoComplete="off"
         onChange={onChange}
         onKeyUp={keyUp}
         onKeyDown={keyDown}
@@ -75,6 +84,7 @@ export const InputField = ({
         addonAfter={addonAfter}
         defaultValue={defaultValue}
         placeholder={placeholder}
+        suffix={suffix}
       />
     </div>
   );
@@ -96,6 +106,7 @@ export const InputFieldOnly = ({
     <div className={`${style.boxStyle} inputFieldOnly `}>
       <label className={style.boxStyle__label}>{label}</label>
       <Input
+        autoComplete="off"
         value={value}
         type={type ? type : "text"}
         className={`${style.inputSimple} ${placeholderBaseColor ? "placeholderBaseColor" : ""

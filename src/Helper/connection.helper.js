@@ -25,11 +25,11 @@ export class Connection {
             //create the connection
             if (!Connection.nativeApi[networkMode]) Connection.nativeApi[networkMode] = await this.createNativeConnection(HTTP_END_POINTS[networkMode.toUpperCase()]);
             if (!Connection.evmApi[networkMode]) Connection.evmApi[networkMode] = this.createEvmConnection(HTTP_END_POINTS[networkMode.toUpperCase()]);
-                
+
             return {
-                    nativeApi: Connection.nativeApi[networkMode],
-                    evmApi: Connection.evmApi[networkMode]
-                }
+                nativeApi: Connection.nativeApi[networkMode],
+                evmApi: Connection.evmApi[networkMode]
+            }
 
         } catch (err) {
             ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.FAILED_TO_CONNECT_NETWORK, err.message));

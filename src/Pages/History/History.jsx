@@ -1,20 +1,17 @@
-import React, { useContext, useState } from "react";
-import Swap from "../../Assets/swap.svg";
-import Sent from "../../Assets/sent.svg";
+import { Drawer } from "antd";
 import HistoryItem from "./HistoryItem";
 import style from "./style.module.scss";
-import { Drawer } from "antd";
+import { AuthContext } from "../../Store";
+import { CURRENCY } from "../../Constants/index";
+import React, { useContext, useState } from "react";
 import { arrayReverser } from "../../Utility/utility";
 import ModalCloseIcon from "../../Assets/ModalCloseIcon.svg";
-import { AuthContext } from "../../Store";
 import TransectionHistry from "../../Components/TransectionHistry/TransectionHistry";
-import { formatDate, shortner } from "../../Helper/helper";
-import { CURRENCY, EMTY_STR, TX_TYPE } from "../../Constants/index";
-import { log, hasProperty } from "../../Utility/utility"
+
 
 function History() {
   const [open1, setOpen1] = useState(false);
-  const [open2, setOpen2] = useState(false);
+  // const [open2, setOpen2] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const { state } = useContext(AuthContext);
   const { currentNetwork, txHistory, currentAccount } = state;
@@ -23,12 +20,12 @@ function History() {
     setOpen1(false);
   };
 
-  const onClose2 = () => {
-    setOpen2(false);
-  };
+  // const onClose2 = () => {
+  //   setOpen2(false);
+  // };
 
   const handleHistoryOpen = (data) => {
-    if (txHistory.hasOwnProperty(currentAccount.accountName)) {
+    if (txHistory.hasOwnProperty(currentAccount.evmAddress)) {
       setSelectedTransaction(data);
       setOpen1(true);
     }
@@ -41,9 +38,9 @@ function History() {
       </div>
 
       {
-        (txHistory[currentAccount?.accountName] && txHistory[currentAccount?.accountName].length > 0) ?
+        (txHistory[currentAccount?.evmAddress] && txHistory[currentAccount?.evmAddress].length > 0) ?
           (
-            arrayReverser(txHistory[currentAccount?.accountName].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()))).map((data, index) => (
+            arrayReverser(txHistory[currentAccount?.evmAddress].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()))).map((data, index) => (
               <HistoryItem historyItem={data} handleHistoryOpen={handleHistoryOpen} key={CURRENCY + index} index={index} />
             ))
           ) : (<h4 className={style.noTxn}>No Transaction Found!</h4>)

@@ -30,7 +30,7 @@ function WelcomeScreen() {
           </Link>
         </div>
       </div>
-      <PrivacyPolicy/>
+      {/* <PrivacyPolicy/> */}
     </div>
   );
 }

@@ -1,12 +1,21 @@
 import Send from "../Send/Send";
 import Swap from "../Swap/Swap.jsx";
-import React, { useState } from "react";
 import style from "./style.module.scss";
 import SwapLogo from "../../Assets/swaptab.svg";
 import TransferLogo from "../../Assets/transfertab.svg";
+import React, { useEffect, useState, useContext } from "react";
+import { AuthContext } from "../../Store";
+
+
 function Wallet() {
 
   const [activeTab, setActiveTab] = useState("send");
+  const {  updateEstimatedGas } = useContext(AuthContext);
+  
+  useEffect(() => {
+    updateEstimatedGas(null)
+  }, [activeTab]);
+
   const activeSend = () => {
     setActiveTab("send");
   };
@@ -26,7 +35,7 @@ function Wallet() {
                 }
             `}
             >
-              <img src={TransferLogo}/>Transfer
+              <img src={TransferLogo} alt="transferLogo" />Transfer
             </button>
             <button
               onClick={activeSwap}
@@ -34,7 +43,7 @@ function Wallet() {
                 style.wallet__sendSwapbtn__buttons__active
                 }`}
             >
-           <img src={SwapLogo}/>   Swap
+              <img src={SwapLogo} alt="swapLogo" />   Swap
             </button>
           </div>
         </div>

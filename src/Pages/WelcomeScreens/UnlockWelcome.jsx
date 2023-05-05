@@ -24,25 +24,25 @@ function UnlockWelcome() {
   const { verifyPass } = useAuth()
   const [pass, setPass] = useState("");
   const [isDisable, setDisable] = useState(true);
-  const { state, passError, setPassError } = useContext(AuthContext);
+  const { state, inputError, setInputError } = useContext(AuthContext);
   const { vault } = state;
 
   useEffect(() => {
-    if (passError || !pass) {
+    if (inputError || !pass) {
       setDisable(true);
     } else {
       setDisable(false);
     }
-  }, [passError, pass]);
+  }, [inputError, pass]);
 
   const handleChange = (e) => {
     setPass(e.target.value);
-    setPassError("");
+    setInputError("");
   };
 
   const validateInput = () => {
     if (isEmpty(pass)) {
-      setPassError(ERROR_MESSAGES.INPUT_REQUIRED);
+      setInputError(ERROR_MESSAGES.INPUT_REQUIRED);
       setDisable(true);
     }
   };
@@ -50,36 +50,38 @@ function UnlockWelcome() {
   const handleClick = async (e) => {
     if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
 
-      if (state?.pass && state?.oldAccounts && pass && !passError) {
+      if (state?.pass && state?.oldAccounts && pass && !inputError) {
 
         const passRes = await verifyPass(pass, state.pass);
-
+        
         if (!passRes.error) {
 
           if (state?.oldAccounts.length > 0) {
 
             for (let i = 0; i < state.oldAccounts.length; i++) {
+              
               const mnemonic = decryptor(state?.oldAccounts[i].temp1m, state?.pass);
               if (i === 0)
                 sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: pass, opts: { mnemonic, name: state?.oldAccounts[0]?.accountName }, type: "import" });
               else
                 sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC, { mnemonic, name: state?.oldAccounts[i].accountName });
+
             }
 
             const newState = { ...state };
             delete newState.oldAccounts;
             delete newState.pass;
-            console.log("New State ::: ", newState);
+  
             // setState(newState);
             StorageUpdator.ExtensionStorageHandler.updateStorage("updateMainState", newState)
           }
 
         }
         else {
-          setPassError(passRes.data);
+          setInputError(passRes.data);
         }
 
-      } else if (pass && !passError) {
+      } else if (pass && !inputError) {
         sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.UNLOCK, { password: pass, vault: vault });
       }
     }
@@ -109,7 +111,7 @@ function UnlockWelcome() {
               keyUp={validateInput}
               coloredBg={true}
             />
-            <p className={style.errorText}>{passError ? passError : ""}</p>
+            <p className={style.errorText}>{inputError ? inputError : ""}</p>
           </div>
           <div className={style.forgotLink}>
             <Link to={ROUTES.FORGOT_PASSWORD}>Forgot password?</Link>

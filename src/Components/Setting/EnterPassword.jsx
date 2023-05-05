@@ -1,47 +1,63 @@
 import { useContext } from "react";
 import { ROUTES } from "../../Routes";
+import PrivateKey from "./PrivateKey";
 import style from "./style.module.scss";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../Store/index";
 import { isEmpty } from "../../Utility/utility.js"
 import ButtonComp from "../ButtonComp/ButtonComp";
 import InputFieldSimple from "../InputField/InputFieldSimple.jsx";
 import { sendRuntimeMessage } from "../../Utility/message_helper.js";
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+// import ModalCustom from "../ModalCustom/ModalCustom";
 import { LABELS, ERROR_MESSAGES, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
+import { useParams, useNavigate } from "react-router-dom";
 
 
 function EnterPassword() {
 
-  const navigate = useNavigate();
+  // const params = useParams();
+  const navigate = useNavigate()
   const [data, setData] = useState("");
-  const { passError, setPassError, passVerified} = useContext(AuthContext);
   const [isDisable, setDisable] = useState(true);
+  // const [isModalOpen, setModalOpen] = useState(false);
+  const { inputError, setInputError, passVerified, setPassVerified } = useContext(AuthContext);
 
   useEffect(() => {
-    if (passError || !data) {
+    setInputError('')
+  }, [])
+
+  useEffect(() => {
+    if (inputError || !data) {
       setDisable(true);
     } else {
       setDisable(false);
     }
-  }, [passError, data]);
+  }, [inputError, data]);
 
-  useEffect(()=>{
+  useEffect(() => {
     if (passVerified) {
+      // setModalOpen(true);
+      setPassVerified(false);
       navigate(ROUTES.PVT_KEY);
     }
-  },[passVerified]);
+  }, [passVerified]);
 
 
   const handleChange = (e) => {
     setData(e.target.value);
-    setPassError("");
+    setInputError("");
   }
+
+  const handle_OK_Cancel = () => {
+    setData("");
+    // setModalOpen(false);
+  };
+
 
   const validateInput = () => {
     if (isEmpty(data)) {
-      setPassError(ERROR_MESSAGES.INPUT_REQUIRED);
+      setInputError(ERROR_MESSAGES.INPUT_REQUIRED);
       setDisable(true);
     }
   }
@@ -49,8 +65,8 @@ function EnterPassword() {
   const handleClick = async (e) => {
 
     if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
-      if (!passError) {
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.VERIFY_USER_PASSWORD, { password: data});
+      if (!inputError) {
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.VERIFY_USER_PASSWORD, { password: data });
       }
     }
 
@@ -63,30 +79,38 @@ function EnterPassword() {
         <div className={`flexedContent`}>
           <div className={style.enterPassword}>
             <div className={style.commonHeadeing}>
-              {/* <h1>Enter Password</h1> */}
               <p>
                 Your password is used to unlock your wallet and will allow
                 wallet to export your Private Key
               </p>
             </div>
             <InputFieldSimple
-              placeholder={"Enter Password"}
-              placeholderBaseColor={true}
-              onChange={handleChange}
-              keyUp={validateInput}
-              coloredBg={true}
               type="password"
+              value={data}
+              coloredBg={true}
               name={LABELS.PASS}
+              keyUp={validateInput}
+              onChange={handleChange}
+              placeholderBaseColor={true}
+              placeholder={"Enter Password"}
             />
-            <p className={style.errorText}>{passError ? passError : ""}</p>
+            <p className={style.errorText}>{inputError ? inputError : ""}</p>
             <div>
               <ButtonComp
                 onClick={handleClick}
+                // onClick={() => handleModalOpen}
                 text="Continue"
                 isDisable={isDisable}
               ></ButtonComp>
             </div>
           </div>
+          {/* <ModalCustom
+            isModalOpen={isModalOpen}
+            handleOk={handle_OK_Cancel}
+            handleCancel={handle_OK_Cancel}
+          > */}
+          {/* <PrivateKey id={params?.id} /> */}
+          {/* </ModalCustom> */}
         </div>
       </div>
     </>
