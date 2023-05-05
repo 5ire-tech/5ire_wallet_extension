@@ -32,7 +32,7 @@ export const getDataLocal = async (key) => {
             await localStorage.set({ transactionQueue });
             return transactionQueue
         }
-    
+
         return localState[key];
 
     } catch (err) {

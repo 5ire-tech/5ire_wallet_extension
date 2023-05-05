@@ -75,8 +75,7 @@ function App(props) {
       return;
     }
 
-
-    if ((!isLogin && !vault && state?.pass) || (!isLogin && vault)) {
+    if ((!isLogin && vault) || state?.pass) {
       navigate(ROUTES.UNLOACK_WALLET, {
         state: {
           redirectRoute: route ? ROUTES.DEFAULT + route : EMTY_STR,

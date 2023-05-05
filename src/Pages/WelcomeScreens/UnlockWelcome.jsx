@@ -18,7 +18,7 @@ import {
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
 
-import * as StorageUpdator  from "../../Storage/loadstore";
+import * as StorageUpdator from "../../Storage/loadstore";
 
 function UnlockWelcome() {
   const { verifyPass } = useAuth()
