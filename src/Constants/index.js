@@ -27,8 +27,8 @@ export const TRANSACTION_STATUS_CHECK_TIMER = 5000;
 export const TABS_EVENT = {
     ACCOUNT_CHANGE_EVENT: "accountChange",
     NETWORK_CHANGE_EVENT: "networkChange",
-    WALLET_CONNECTED_EVENT: "walletConnected",
-    WALLET_DISCONNECTED_EVEN: "walletDisconnected"
+    WALLET_CONNECTED_EVENT: "connect",
+    WALLET_DISCONNECTED_EVEN: "disconnect"
 }
 
 
@@ -120,7 +120,7 @@ export const ERROR_MESSAGES = {
     ERROR_WHILE_TRANSACTION: "Transaction failed, error occured during transaction processing",
     ERROR_WHILE_GAS_ESTIMATION: "Gas Estimation Failed, something wrong happend while gas estimation",
     CREATE_PASS_MSG: "Password must have at leas t 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
-    
+
 
     INVALID_PROPERTY: "Invalid property.",
     UNDEF_DATA: "Value is null or undefined.",
