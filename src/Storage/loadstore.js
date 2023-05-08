@@ -227,7 +227,7 @@ export class ExtensionStorageHandler {
 
     // set the new Account
     createOrRestore = async (message, state) => {
-
+        console.log("CreateOrRestore..........");
         const { vault, type, newAccount } = message;
 
         // if (type === LABELS.IMPORT) {
@@ -238,9 +238,40 @@ export class ExtensionStorageHandler {
             accountIndex: newAccount.accountIndex,
             nativeAddress: newAccount.nativeAddress,
         }
-        const txHistory = this._txProperty(state, newAccount.evmAddress);
-        // }
-        const newState = { ...state, vault, isLogin: true, currentAccount, txHistory };
+        let txHistory = this._txProperty(state, newAccount.evmAddress);
+        const newState = { ...state, vault, isLogin: true, currentAccount };
+
+        console.log("State.oldAccounts : ", state?.oldAccounts);
+
+        if (state?.oldAccounts) {
+            const index = state.oldAccounts.findIndex(e => e?.evmAddress === newAccount?.evmAddress);
+            const account = state.oldAccounts[index];
+
+            console.log("Account in cretate ::: ", account);
+            const oldtxHistory = [];
+
+            for (let i = 0; i < account.txHistory.length; i++) {
+                const tx = {
+                    ...account.txHistory[i],
+                    args: null,
+                    gasUsed: "",
+                    method: null,
+                    timeStamp: account.txHistory[i].dateTime,
+                    txHash: account.txHistory[i].txHash?.mainHash,
+                    intermidateHash: account.txHistory[i].txHash?.hash,
+                }
+                oldtxHistory.push(tx);
+            }
+
+            txHistory = this._txProperty(state, newAccount.evmAddress, oldtxHistory);
+
+            if (state?.oldAccounts?.length === index + 1) delete newState.oldAccounts
+            delete newState.pass;
+        }
+
+        newState.txHistory = txHistory;
+
+        console.log("newState in Create: ", newState);
 
         this._updateSession(LABELS.ISLOGIN, true);
         return await this._updateStorage(newState);
@@ -270,11 +301,36 @@ export class ExtensionStorageHandler {
 
     //import account by mnemonic
     importAccountByMnemonics = async (message, state) => {
-        // console.log("essage in loadstore import ", message);
-
+        console.log("ImportBy mnemonic .......");
         const { newAccount, vault } = message;
-        const txHistory = this._txProperty(state, newAccount.evmAddress);
-        const newState = { ...state, vault, txHistory, currentAccount: newAccount }
+        let txHistory = this._txProperty(state, newAccount.evmAddress);
+        const newState = { ...state, vault, currentAccount: newAccount }
+
+        if (state?.oldAccounts) {
+            const index = state.oldAccounts.findIndex(e => e?.evmAddress === newAccount?.evmAddress);
+            console.log("Account ::: ", state.oldAccounts[index]);
+            const account = state.oldAccounts[index];
+            const oldtxHistory = [];
+
+            for (let i = 0; i < account.txHistory.length; i++) {
+                const tx = {
+                    ...account.txHistory[i],
+                    args: null,
+                    gasUsed: "",
+                    method: null,
+                    timeStamp: account.txHistory[i].dateTime,
+                    txHash: account.txHistory[i].txHash?.mainHash,
+                    intermidateHash: account.txHistory[i].txHash?.hash,
+                }
+                oldtxHistory.push(tx);
+            }
+
+            txHistory = this._txProperty(state, newAccount.evmAddress, oldtxHistory);
+            // txHistory = this._txProperty(state, newAccount.evmAddress, [...state.oldAccounts[index].txHistory]);           
+            if (state?.oldAccounts?.length === index + 1) delete newState.oldAccounts
+        }
+        newState.txHistory = txHistory;
+        console.log("NewState in Import :::: ", newState);
         return await this._updateStorage(newState);
     };
 
@@ -333,10 +389,10 @@ export class ExtensionStorageHandler {
         await sessionStorage.set({ [key]: state })
     }
 
-    _txProperty = (state, accountName) => {
+    _txProperty = (state, accountName, oldHistory) => {
         return {
             ...state.txHistory,
-            [accountName]: []
+            [accountName]: oldHistory ? oldHistory : []
         };
     }
 

@@ -224,7 +224,7 @@ export class HybridKeyring extends EventEmitter {
         const newAcc = { ...HybridKeyring.accounts[HybridKeyring.accounts.length - 1] };
 
         const key = await this._persistData(password);
-        const keyResponse = await this._exportEthAccountByAddress(newAcc.evmAddress, HybridKeyring.password);
+        const keyResponse = await this._exportEthAccountByAddress(newAcc?.evmAddress, HybridKeyring.password);
 
 
         newAcc.evmPrivateKey = keyResponse ? keyResponse : "";
@@ -271,10 +271,10 @@ export class HybridKeyring extends EventEmitter {
         keyring.accounts.push(newAcc);
         this.emit(KEYRING_EVENTS.ACCOUNT_ADDED, newAcc);
 
-        const keyResponse = await this._exportEthAccountByAddress(newAcc.evmAddress, HybridKeyring.password);
+        const keyResponse = await this._exportEthAccountByAddress(newAcc?.evmAddress, HybridKeyring.password);
 
         newAcc.evmPrivateKey = keyResponse ? keyResponse : "";
-        newAcc.drivedMnemonic = await this._exportNativeAccountByAddress(newAcc.nativeAddress, HybridKeyring.password);;
+        newAcc.drivedMnemonic = await this._exportNativeAccountByAddress(newAcc?.nativeAddress, HybridKeyring.password);;
 
         const response = await this._persistData(HybridKeyring.password);
 
@@ -297,7 +297,7 @@ export class HybridKeyring extends EventEmitter {
 
 
         const keyWallet = new ethers.Wallet(pvtKey)
-        const isExist = HybridKeyring.accounts.find(acc => acc.evmAddress === keyWallet.address);
+        const isExist = HybridKeyring.accounts.find(acc => acc?.evmAddress === keyWallet.address);
 
         if (isExist)
             // throw ("Account already exist");
@@ -358,7 +358,7 @@ export class HybridKeyring extends EventEmitter {
 
         const { mnemonic, name } = message?.data;
         const keyWallet = ethers.Wallet.fromMnemonic(mnemonic)
-        const isExist = HybridKeyring.accounts.find(acc => acc.evmAddress === keyWallet.address);
+        const isExist = HybridKeyring.accounts.find(acc => acc?.evmAddress === keyWallet.address);
 
         if (isExist) {
             // throw new Error({ code: ERRCODES.INVALID_INPUT, message: ERROR_MESSAGES.MNEMONICS_ALREADY_EXISTS });
@@ -437,7 +437,7 @@ export class HybridKeyring extends EventEmitter {
         const password = message?.data?.password ? message?.data?.password : HybridKeyring.password;
 
         await this._verifyPassword(password);
-        const info = HybridKeyring.accounts.find(acc => acc.evmAddress === address || acc.nativeAddress === address);
+        const info = HybridKeyring.accounts.find(acc => acc?.evmAddress === address || acc?.nativeAddress === address);
 
         if (!info)
             throw new Error("No account exist with this address");
@@ -445,21 +445,21 @@ export class HybridKeyring extends EventEmitter {
         const keyring = this._getKeyringData(info.type)
 
         if (info.type === WALLET_TYPES.HD) {
-            HybridKeyring.ethKeyring.removeAccount(info.evmAddress)
+            HybridKeyring.ethKeyring.removeAccount(info?.evmAddress)
 
         } else if (info.type === WALLET_TYPES.ETH_SIMPLE) {
-            HybridKeyring.simpleEthKeyring.removeAccount(info.evmAddress)
+            HybridKeyring.simpleEthKeyring.removeAccount(info?.evmAddress)
             keyring.private_keys.splice(info.accountIndex, 1)
         } else if (info.type === WALLET_TYPES.IMPORTED_NATIVE) {
-            HybridKeyring.simpleEthKeyring.removeAccount(info.evmAddress)
+            HybridKeyring.simpleEthKeyring.removeAccount(info?.evmAddress)
             keyring.mnemonics.splice(info.accountIndex, 1)
         }
-        HybridKeyring.polkaKeyring.removePair(info.nativeAddress)
+        HybridKeyring.polkaKeyring.removePair(info?.nativeAddress)
 
 
         keyring.numberOfAccounts--;
-        keyring.accounts = keyring.accounts.filter(acc => acc.evmAddress !== info.evmAddress)
-        HybridKeyring.accounts = HybridKeyring.accounts.filter(acc => acc.evmAddress !== info.evmAddress)
+        keyring.accounts = keyring.accounts.filter(acc => acc?.evmAddress !== info?.evmAddress)
+        HybridKeyring.accounts = HybridKeyring.accounts.filter(acc => acc?.evmAddress !== info?.evmAddress)
 
         let payload = {
             vault: null,
@@ -511,7 +511,7 @@ export class HybridKeyring extends EventEmitter {
     async removeEthAccount(password, address) {
 
         await this._verifyPassword(password)
-        const info = HybridKeyring.accounts.find(acc => acc.evmAddress === address);
+        const info = HybridKeyring.accounts.find(acc => acc?.evmAddress === address);
 
         if (!info)
             throw new Error("No account exist with this address")
@@ -530,8 +530,8 @@ export class HybridKeyring extends EventEmitter {
         }
 
         keyring.numberOfAccounts--;
-        keyring.accounts = keyring.accounts.filter(acc => acc.evmAddress !== address)
-        HybridKeyring.accounts = HybridKeyring.accounts.filter(acc => acc.evmAddress !== address)
+        keyring.accounts = keyring.accounts.filter(acc => acc?.evmAddress !== address)
+        HybridKeyring.accounts = HybridKeyring.accounts.filter(acc => acc?.evmAddress !== address)
 
         //Persist state
         await this._persistData(HybridKeyring.password)
@@ -546,7 +546,7 @@ export class HybridKeyring extends EventEmitter {
     async removeNativeAccount(password, address) {
         await this._verifyPassword(password)
 
-        const info = HybridKeyring.accounts.find(acc => acc.nativeAddress === address);
+        const info = HybridKeyring.accounts.find(acc => acc?.nativeAddress === address);
 
         if (!info)
             throw new Error("No account exist with this address")
@@ -562,8 +562,8 @@ export class HybridKeyring extends EventEmitter {
         HybridKeyring.polkaKeyring.removePair(address)
 
         keyring.numberOfAccounts--;
-        keyring.accounts = keyring.accounts.filter(acc => acc.nativeAddress !== address)
-        HybridKeyring.accounts = HybridKeyring.accounts.filter(acc => acc.nativeAddress !== address)
+        keyring.accounts = keyring.accounts.filter(acc => acc?.nativeAddress !== address)
+        HybridKeyring.accounts = HybridKeyring.accounts.filter(acc => acc?.nativeAddress !== address)
 
         //Persist state
         await this._persistData(HybridKeyring.password)
@@ -597,7 +597,7 @@ export class HybridKeyring extends EventEmitter {
 
     async signEthTx(address, tx) {
 
-        const acc = HybridKeyring.accounts.find(acc => acc.evmAddress === address);
+        const acc = HybridKeyring.accounts.find(acc => acc?.evmAddress === address);
 
         const common = Common.custom({ chainId: 997, networkId: 1 }, { hardfork: "london" })
         const txn = TransactionFactory.fromTxData(tx, { common });
@@ -688,7 +688,7 @@ export class HybridKeyring extends EventEmitter {
 
         await this._verifyPassword(password);
 
-        const acc = HybridKeyring.accounts.find(acc => acc.evmAddress === address);
+        const acc = HybridKeyring.accounts.find(acc => acc?.evmAddress === address);
         if (!acc) {
             throw new Error("Invalid address");
         }
@@ -713,7 +713,7 @@ export class HybridKeyring extends EventEmitter {
 
         await this._verifyPassword(password);
 
-        const acc = HybridKeyring.accounts.find(acc => acc.nativeAddress === address);
+        const acc = HybridKeyring.accounts.find(acc => acc?.nativeAddress === address);
         if (!acc) {
             throw new Error("Invalid address")
         }

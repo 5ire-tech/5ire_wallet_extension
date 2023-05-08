@@ -53,13 +53,13 @@ function UnlockWelcome() {
       if (state?.pass && state?.oldAccounts && pass && !inputError) {
 
         const passRes = await verifyPass(pass, state.pass);
-        
+
         if (!passRes.error) {
 
           if (state?.oldAccounts.length > 0) {
 
             for (let i = 0; i < state.oldAccounts.length; i++) {
-              
+
               const mnemonic = decryptor(state?.oldAccounts[i].temp1m, state?.pass);
               if (i === 0)
                 sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: pass, opts: { mnemonic, name: state?.oldAccounts[0]?.accountName }, type: "import" });
@@ -68,12 +68,13 @@ function UnlockWelcome() {
 
             }
 
-            const newState = { ...state };
-            delete newState.oldAccounts;
-            delete newState.pass;
-  
+            // const newState = { ...state };
+
+            // delete newState.oldAccounts;
+            // delete newState.pass;
+
             // setState(newState);
-            StorageUpdator.ExtensionStorageHandler.updateStorage("updateMainState", newState)
+            // StorageUpdator.ExtensionStorageHandler.updateStorage("updateMainState", newState)
           }
 
         }
