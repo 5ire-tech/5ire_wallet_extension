@@ -65,11 +65,12 @@ function UnlockWelcome() {
             <InputFieldSimple
               // type="password"
               name={"key"}
-              onChange={handleChange}
-              placeholder={"Enter Password"}
-              placeholderBaseColor={true}
-              keyUp={validateInput}
               coloredBg={true}
+              keyUp={validateInput}
+              onChange={handleChange}
+              placeholderBaseColor={true}
+              placeholder={"Enter Password"}
+              onDrop={e => { e.preventDefault() }}
             />
             <p className={style.errorText}>{inputError ? inputError : ""}</p>
           </div>

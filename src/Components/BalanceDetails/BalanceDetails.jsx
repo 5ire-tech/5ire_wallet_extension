@@ -3,10 +3,9 @@ import { ROUTES } from "../../Routes";
 import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
-import Browser from "webextension-polyfill";
+import Info from "../../Assets/infoIcon.svg";
 import ThreeDot from "../../Assets/dot3.svg";
-import { sendEventToTab, shortner } from "../../Helper/helper";
-import { Dropdown, Select, Space, Tooltip } from "antd";
+// import Browser from "webextension-polyfill";
 import WalletQr from "../../Assets/QRicon.svg";
 import { useLocation } from "react-router-dom";
 import CopyIcon from "../../Assets/CopyIcon.svg";
@@ -14,14 +13,14 @@ import DarkLogo from "../../Assets/DarkLogo.svg";
 import GrayCircle from "../../Assets/graycircle.svg";
 import ModalCustom from "../ModalCustom/ModalCustom";
 import GreenCircle from "../../Assets/greencircle.svg";
+import { Dropdown, Select, Space, Tooltip } from "antd";
+import { getCurrentTabDetails } from "../../Scripts/utils";
+import { sendEventToTab, shortner } from "../../Helper/helper";
 import React, { useEffect, useState, useContext } from "react";
 import DownArrowSuffix from "../../Assets/DownArrowSuffix.svg";
-import Info from "../../Assets/infoIcon.svg";
-// import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
-import { isEqual, isNullorUndef, log } from "../../Utility/utility";
-import { getCurrentTabDetails } from "../../Scripts/utils";
+import { isEqual, isNullorUndef, } from "../../Utility/utility";
 
 import {
   EVM,
@@ -32,12 +31,12 @@ import {
   EMTY_STR,
   CURRENCY,
   ZERO_CHAR,
-  MESSAGE_TYPE_LABELS,
-  MESSAGE_EVENT_LABELS,
-  ACCOUNT_CHANGED_EVENT,
-  STATE_CHANGE_ACTIONS,
   TABS_EVENT,
   HTTP_END_POINTS,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS,
+  STATE_CHANGE_ACTIONS,
+  // ACCOUNT_CHANGED_EVENT,
 } from "../../Constants/index";
 import { TabMessagePayload } from "../../Utility/network_calls";
 
@@ -248,7 +247,7 @@ function BalanceDetails({ mt0 }) {
                             {currentAccount?.accountName
                               ? currentAccount?.accountName
                               : ""}
-                            <img src={Info} />
+                            <img src={Info} alt="infoIcon" />
                           </p>
                           {/* <span>
                             {currentAccount?.evmAddress

@@ -297,6 +297,7 @@ function Swap() {
     <button disabled={isMaxDisabled} className="maxBtn" onClick={handleMaxClick}>Max</button>
   );
 
+
   // useEffect(() => {
   //   const getData = setTimeout(() => {
   //     if (
@@ -374,23 +375,24 @@ function Swap() {
           <div>
             <InputField
               min={"0"}
-              key="swapInput"
-              name={"swapAmount"}
               type="number"
               value={amount}
+              key="swapInput"
+              suffix={suffix}
               coloredBg={true}
+              name={"swapAmount"}
               keyUp={validateAmount}
               onChange={handleChange}
               keyDown={blockInvalidChar}
               placeholderBaseColor={true}
               placeholder={"Enter Amount"}
+              onDrop={e => { e.preventDefault() }}
               addonAfter={
                 <span className={style.swap__pasteText}>
                   <img src={SmallLogo} alt="walletLogo" draggable={false} />
                   5ire
                 </span>
               }
-              suffix={suffix}
 
             />
             <p className="errorText">{error}</p>
@@ -399,54 +401,14 @@ function Swap() {
               Balance 00.0000 5IRE
             </span> */}
           </div>
-          {/* <div className={style.swap__activeBalnce}>
-            <button
-              onClick={activeIst}
-              className={`${style.swap__activeBalanceSelect__buttons} 
-              ${
-                activeTab === "one" &&
-                style.swap__activeBalanceSelect__buttons__active
-              }
-            `}
-            >
-              25 %
-            </button>
-            <button
-              onClick={activeSecond}
-              className={`${style.swap__activeBalanceSelect__buttons}  ${
-                activeTab === "two" &&
-                style.swap__activeBalanceSelect__buttons__active
-              }`}
-            >
-              50 %
-            </button>
-            <button
-              onClick={activeThree}
-              className={`${style.swap__activeBalanceSelect__buttons}  ${
-                activeTab === "three" &&
-                style.swap__activeBalanceSelect__buttons__active
-              }`}
-            >
-              70 %
-            </button>
-            <button
-              onClick={activeFour}
-              className={`${style.swap__activeBalanceSelect__buttons}  ${
-                activeTab === "four" &&
-                style.swap__activeBalanceSelect__buttons__active
-              }`}
-            >
-              100 %
-            </button>
-          </div> */}
         </div>
         <div className={style.swap__txFeeBalance}>
           <h2>{estimatedGas ? `TX Fee : ${estimatedGas} 5IRE` : ""}</h2>
-          {/* <h3>Balance 00.0000 5IRE</h3> */}
+
         </div>
         <div className={style.swap__inFoAccount}>
           <Tooltip title="5irechain requires a minimum of 1 5ire to keep your wallet active">
-            <img src={Info} alt="infoImage"/>
+            <img src={Info} alt="infoImage" />
           </Tooltip>
           <h3>Transfer with account keep alive checks </h3>
           <Switch defaultChecked onChange={onChangeToggler} />

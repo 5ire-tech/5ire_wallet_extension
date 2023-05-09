@@ -85,14 +85,15 @@ function EnterPassword() {
               </p>
             </div>
             <InputFieldSimple
-              type="password"
               value={data}
+              type="password"
               coloredBg={true}
               name={LABELS.PASS}
               keyUp={validateInput}
               onChange={handleChange}
               placeholderBaseColor={true}
               placeholder={"Enter Password"}
+              onDrop={e => { e.preventDefault() }}
             />
             <p className={style.errorText}>{inputError ? inputError : ""}</p>
             <div>

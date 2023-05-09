@@ -257,6 +257,7 @@ function Send() {
 
   //handle the changed value of inputs
   const handleChange = (e) => {
+
     if (e.target.name === LABELS.AMOUNT) {
       const arr = e.target.value.split(".");
       if (arr.length > 1) {
@@ -278,7 +279,7 @@ function Send() {
           [e.target.name]: e.target.value.trim(),
         }));
         updateEstimatedGas(null);
-        setData(p => ({ ...p, amount: "" }))
+        setData(p => ({ ...p, amount: "" }));
       }
     }
   };
@@ -361,10 +362,6 @@ function Send() {
       setData(p => ({ ...p, amount: "" }));
       setErr(p => ({ ...p, amount: "" }));
     }
-    // if (maxAmount > 0) {
-    //   setData(p => ({ ...p, amount: maxAmount }));
-    //   setErr(p => ({ ...p, amount: "" }));
-    // }
   }
 
   const suffix = (
@@ -421,6 +418,7 @@ function Send() {
               onChange={handleChange}
               keyUp={validateToAddress}
               placeholderBaseColor={true}
+              onDrop={e => { e.preventDefault() }}
               placeholder={"Please enter recipient address"}
             />
             <span className={style.errorText}>{err.to}</span>
@@ -432,6 +430,7 @@ function Send() {
               type={"number"}
               coloredBg={true}
               key="sendInput"
+              onDrop={e => { e.preventDefault() }}
               value={data.amount}
               keyUp={validateAmount}
               onChange={handleChange}

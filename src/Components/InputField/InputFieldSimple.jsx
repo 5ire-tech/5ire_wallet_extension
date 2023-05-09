@@ -7,6 +7,7 @@ function InputFieldSimple({
   name,
   keyUp,
   value,
+  onDrop,
   onChange,
   minHeight,
   coloredBg,
@@ -16,6 +17,7 @@ function InputFieldSimple({
 
   return (
     <Input.Password
+      onDrop={onDrop}
       className={`${style.inputSimple} ${style.inputPassword} ${placeholderBaseColor ? "placeholderBaseColor" : ""
         } ${coloredBg ? style.inputField__coloredBg : ""}`}
       placeholder={placeholder}
@@ -49,19 +51,18 @@ export const InputField = ({
   value,
   label,
   keyUp,
+  onDrop,
   keyDown,
   onChange,
   coloredBg,
   addonAfter,
+  suffix = '',
   inputSelect,
   placeholder,
   defaultValue,
   placeholderBaseColor,
-  suffix = '',
 }) => {
-  // const suffix = (
-  //   <button>Max</button>
-  // );
+
   return (
     <div className={`${style.boxStyle} inputField ${mb0 ? style.mb0 : ""}`}>
       <label htmlFor={name} className={`${style.boxStyle__label}`}>
@@ -69,6 +70,7 @@ export const InputField = ({
       </label>
       <Input
         name={name}
+        onDrop={onDrop}
         type={type ? type : "text"}
         min={min}
         key={key}
@@ -98,14 +100,17 @@ export const InputFieldOnly = ({
   label,
   onChange,
   minHeight,
+  onDrop,
   coloredBg,
   placeholder,
   placeholderBaseColor,
 }) => {
+
   return (
     <div className={`${style.boxStyle} inputFieldOnly `}>
       <label className={style.boxStyle__label}>{label}</label>
       <Input
+        onDrop={onDrop}
         autoComplete="off"
         value={value}
         type={type ? type : "text"}
