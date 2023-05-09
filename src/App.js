@@ -32,7 +32,6 @@ import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
 import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
 import ValidatorNominatorTxns from "./Components/ValidatorNominatorTxns";
 import CongratulationsScreen from "./Pages/WelcomeScreens/CongratulationsScreen";
-import { log } from "./Utility/utility";
 
 
 function getParameterByName(name, url = window.location.href) {
@@ -119,6 +118,11 @@ function App(props) {
               element={<WelcomeLayout children={<ForgotPassword />} />}
             />
 
+            <Route
+              path="*"
+              element={<WelcomeLayout children={<WelcomeScreen />} />}
+            />
+
           </>
         ) : (
           <>
@@ -188,6 +192,10 @@ function App(props) {
             <Route
               path={ROUTES.LOGIN_APPROVE}
               element={<WelcomeLayout children={<LoginApprove />} />}
+            />
+            <Route
+              path="*"
+              element={<WelcomeLayout children={<Wallet />} />}
             />
           </>
         )}

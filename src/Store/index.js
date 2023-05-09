@@ -80,8 +80,8 @@ export default function Context({ children }) {
         removeAccount(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE) {
         setValdatorNominatorFee(message.data)
-      } else if(message.event === MESSAGE_EVENT_LABELS.BACKGROUND_ERROR) {
-         setBackgroundError(message.data);
+      } else if (message.event === MESSAGE_EVENT_LABELS.BACKGROUND_ERROR) {
+        setBackgroundError(message.data);
       }
 
       updateLoading(false);
@@ -188,11 +188,11 @@ export default function Context({ children }) {
   }
 
   // remove entries of history of specific account from TxHistory
-  const removeHistory = (address) => {
-    const newTx = { ...state.txHistory };
-    delete newTx[address];
-    updateState(LABELS.TX_HISTORY, newTx)
-  }
+  // const removeHistory = (accName) => {
+  //   const newTx = { ...state.txHistory };
+  //   delete newTx[accName];
+  //   updateState(LABELS.TX_HISTORY, newTx)
+  // }
 
 
   const removeAccount = (data) => {
@@ -234,7 +234,7 @@ export default function Context({ children }) {
     updateLoading,
     setNewAccount,
     setPrivateKey,
-    removeHistory,
+    // removeHistory,
     setPassVerified,
     setNewWalletName,
     setBackgroundError,
