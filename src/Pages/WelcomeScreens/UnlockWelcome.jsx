@@ -3,9 +3,9 @@ import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
 import { AuthContext } from "../../Store";
 import PlaceLogo from "../../Assets/PlaceLog.svg";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import React, { useEffect, useState, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
 import { isEmpty } from "../../Utility/utility";
@@ -58,23 +58,17 @@ function UnlockWelcome() {
 
           if (state?.oldAccounts.length > 0) {
 
+            const oldAccDetails = [];
+
             for (let i = 0; i < state.oldAccounts.length; i++) {
 
-              const mnemonic = decryptor(state?.oldAccounts[i].temp1m, state?.pass);
-              if (i === 0)
-                sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: pass, opts: { mnemonic, name: state?.oldAccounts[0]?.accountName }, type: "import" });
-              else
-                sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC, { mnemonic, name: state?.oldAccounts[i].accountName });
+              oldAccDetails.push({
+                mnemonic: decryptor(state?.oldAccounts[i].temp1m, state?.pass),
+                accountName: state?.oldAccounts[i]?.accountName
+              });
 
             }
-
-            // const newState = { ...state };
-
-            // delete newState.oldAccounts;
-            // delete newState.pass;
-
-            // setState(newState);
-            // StorageUpdator.ExtensionStorageHandler.updateStorage("updateMainState", newState)
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.RECOVER_OLD_ACCOUNTS, { password: pass, oldAccDetails, opts: {} });
           }
 
         }

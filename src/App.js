@@ -75,7 +75,10 @@ function App(props) {
       return;
     }
 
-    if ((!isLogin && vault) || state?.pass) {
+    // console.log("isLogin : ", isLogin);
+    // console.log("vault: ", vault);
+    // console.log("state.pass : ", state?.pass);
+    if ((!isLogin && vault) || (state?.pass && !isLogin && !vault)) {
       navigate(ROUTES.UNLOACK_WALLET, {
         state: {
           redirectRoute: route ? ROUTES.DEFAULT + route : EMTY_STR,

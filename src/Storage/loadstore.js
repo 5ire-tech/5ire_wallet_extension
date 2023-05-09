@@ -93,10 +93,10 @@ export class ExtensionStorageHandler {
         return await this._updateStorage(newState)
     }
 
-    //update the main State
-    updateMainState = async (data, state) => {
-        return await this._updateStorage(data);
-    }
+    // //update the main State
+    // updateMainState = async (data, state) => {
+    //     return await this._updateStorage(data);
+    // }
 
     //push the transactions
     addNewTxHistory = async (data, state, options) => {
@@ -227,51 +227,47 @@ export class ExtensionStorageHandler {
 
     // set the new Account
     createOrRestore = async (message, state) => {
-        console.log("CreateOrRestore..........");
         const { vault, type, newAccount } = message;
-
-        // if (type === LABELS.IMPORT) {
-
         const currentAccount = {
             evmAddress: newAccount.evmAddress,
             accountName: newAccount.accountName,
             accountIndex: newAccount.accountIndex,
             nativeAddress: newAccount.nativeAddress,
+            type: newAccount.type,
         }
-        let txHistory = this._txProperty(state, newAccount.evmAddress);
-        const newState = { ...state, vault, isLogin: true, currentAccount };
+        const txHistory = this._txProperty(state, newAccount.evmAddress);
+        const newState = { ...state, vault, isLogin: true, currentAccount, txHistory };
 
-        console.log("State.oldAccounts : ", state?.oldAccounts);
 
-        if (state?.oldAccounts) {
-            const index = state.oldAccounts.findIndex(e => e?.evmAddress === newAccount?.evmAddress);
-            const account = state.oldAccounts[index];
+        // if (state?.oldAccounts) {
+        //     const index = state.oldAccounts.findIndex(e => e?.evmAddress === newAccount?.evmAddress);
+        //     const account = state.oldAccounts[index];
 
-            console.log("Account in cretate ::: ", account);
-            const oldtxHistory = [];
+        //     console.log("Account in cretate ::: ", account);
+        //     const oldtxHistory = [];
 
-            for (let i = 0; i < account.txHistory.length; i++) {
-                const tx = {
-                    ...account.txHistory[i],
-                    args: null,
-                    gasUsed: "",
-                    method: null,
-                    timeStamp: account.txHistory[i].dateTime,
-                    txHash: account.txHistory[i].txHash?.mainHash,
-                    intermidateHash: account.txHistory[i].txHash?.hash,
-                }
-                oldtxHistory.push(tx);
-            }
+        //     for (let i = 0; i < account.txHistory.length; i++) {
+        //         const tx = {
+        //             ...account.txHistory[i],
+        //             args: null,
+        //             gasUsed: "",
+        //             method: null,
+        //             timeStamp: account.txHistory[i].dateTime,
+        //             txHash: account.txHistory[i].txHash?.mainHash,
+        //             intermidateHash: account.txHistory[i].txHash?.hash,
+        //         }
+        //         oldtxHistory.push(tx);
+        //     }
 
-            txHistory = this._txProperty(state, newAccount.evmAddress, oldtxHistory);
+        //     txHistory = this._txProperty(state, newAccount.evmAddress, oldtxHistory);
 
-            if (state?.oldAccounts?.length === index + 1) delete newState.oldAccounts
-            delete newState.pass;
-        }
+        //     if (state?.oldAccounts?.length === index + 1) delete newState.oldAccounts
+        //     delete newState.pass;
+        // }
 
-        newState.txHistory = txHistory;
+        // newState.txHistory = txHistory;
 
-        console.log("newState in Create: ", newState);
+        // console.log("newState in Create: ", newState);
 
         this._updateSession(LABELS.ISLOGIN, true);
         return await this._updateStorage(newState);
@@ -286,6 +282,7 @@ export class ExtensionStorageHandler {
             accountName: newAccount.accountName,
             accountIndex: newAccount.accountIndex,
             nativeAddress: newAccount.nativeAddress,
+            type: newAccount.type
         }
         let txHistory = {};
 
@@ -301,36 +298,9 @@ export class ExtensionStorageHandler {
 
     //import account by mnemonic
     importAccountByMnemonics = async (message, state) => {
-        console.log("ImportBy mnemonic .......");
         const { newAccount, vault } = message;
-        let txHistory = this._txProperty(state, newAccount.evmAddress);
-        const newState = { ...state, vault, currentAccount: newAccount }
-
-        if (state?.oldAccounts) {
-            const index = state.oldAccounts.findIndex(e => e?.evmAddress === newAccount?.evmAddress);
-            console.log("Account ::: ", state.oldAccounts[index]);
-            const account = state.oldAccounts[index];
-            const oldtxHistory = [];
-
-            for (let i = 0; i < account.txHistory.length; i++) {
-                const tx = {
-                    ...account.txHistory[i],
-                    args: null,
-                    gasUsed: "",
-                    method: null,
-                    timeStamp: account.txHistory[i].dateTime,
-                    txHash: account.txHistory[i].txHash?.mainHash,
-                    intermidateHash: account.txHistory[i].txHash?.hash,
-                }
-                oldtxHistory.push(tx);
-            }
-
-            txHistory = this._txProperty(state, newAccount.evmAddress, oldtxHistory);
-            // txHistory = this._txProperty(state, newAccount.evmAddress, [...state.oldAccounts[index].txHistory]);           
-            if (state?.oldAccounts?.length === index + 1) delete newState.oldAccounts
-        }
-        newState.txHistory = txHistory;
-        console.log("NewState in Import :::: ", newState);
+        const txHistory = this._txProperty(state, newAccount.evmAddress);
+        const newState = { ...state, vault, currentAccount: newAccount, txHistory }
         return await this._updateStorage(newState);
     };
 
@@ -343,6 +313,7 @@ export class ExtensionStorageHandler {
             accountName: newAccount.accountName,
             accountIndex: newAccount.accountIndex,
             nativeAddress: newAccount.nativeAddress,
+            type: newAccount.type,
         }
         const txHistory = this._txProperty(state, newAccount.evmAddress);
         const newState = { ...state, vault, currentAccount, txHistory };
@@ -367,17 +338,52 @@ export class ExtensionStorageHandler {
             newState.currentAccount = userState.currentAccount;
         }
         return await this._updateStorage(newState);
-
     }
 
 
-    // resetVaultAndPass = async (message, state) => {
+    recoverOldStateAccounts = async (message, state) => {
 
-    //     const newState = { ...state, vault: null, isLogin: false };
-    //     await this._updateSession("isLogin", null);
-    //     return await this._updateStorage(newState);
-    // }
+        const { vault, currentAccount } = message;
+        const newState = { ...state, vault, isLogin: true };
 
+        if (state?.oldAccounts) {
+            const txHistory = {};
+            for (let i = 0; i < state?.oldAccounts.length; i++) {
+                const account = state?.oldAccounts[i];
+                txHistory[account.evmAddress] = [];
+
+                for (let j = 0; j < account.txHistory?.length; j++) {
+                    const tx = {
+                        ...account.txHistory[j],
+                        args: null,
+                        gasUsed: "",
+                        method: null,
+                        timeStamp: account.txHistory[j]?.dateTime,
+                        txHash: account.txHistory[j]?.txHash?.mainHash,
+                        intermidateHash: account.txHistory[j]?.txHash?.hash,
+                    }
+
+                    txHistory[account.evmAddress].push(tx);
+                }
+            }
+
+            newState.txHistory = txHistory;
+            newState.currentAccount = {
+                evmAddress: currentAccount.evmAddress,
+                accountName: currentAccount.accountName,
+                accountIndex: currentAccount.accountIndex,
+                nativeAddress: currentAccount.nativeAddress,
+                type: currentAccount.type,
+
+            };
+            delete newState.oldAccounts;
+            delete newState.pass;
+
+        }
+
+        await this._updateSession(LABELS.ISLOGIN, true);
+        return await this._updateStorage(newState);
+    }
 
     //*********************************** Internal methods **************************/
     _updateStorage = async (state, key) => {
