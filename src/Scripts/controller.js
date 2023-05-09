@@ -241,10 +241,10 @@ export class ExternalConnection {
   async handleEthTransaction(data, state) {
 
     //check if the from account is our current account
-    // if (!isEqual(state.currentAccount.evmAddress?.toLowerCase(), data.message?.from)) {
-    //   sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.ACCOUNT_ACCESS_NOT_GRANTED));
-    //   return;
-    // }
+    if (!isEqual(state.currentAccount.evmAddress?.toLowerCase(), data.message?.from?.toLowerCase())) {
+      sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.ACCOUNT_ACCESS_NOT_GRANTED));
+      return;
+    }
 
     const externalControls = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
 
