@@ -87,7 +87,7 @@ export class ExternalWindowControl {
    */
   activatePopupSession = async (activeSession) => {
     const popupId = await this.windowManager.showPopup(activeSession.route);
-    await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.UPDATE_CURRENT_SESSION, {popupId}, {localStateKey: LABELS.EXTERNAL_CONTROLS})
+    await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.UPDATE_CURRENT_SESSION, { popupId }, { localStateKey: LABELS.EXTERNAL_CONTROLS })
     log("popupid: ", popupId)
   }
 
@@ -139,20 +139,20 @@ export class ExternalWindowControl {
    */
   _handleClose = async (windowId) => {
 
-    const {activeSession} = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+    const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
     await this.windowManager.filterAndRemoveWindows(null, true);
 
-    if(!isEqual(activeSession?.popupId, windowId)) {
+    if (!isEqual(activeSession?.popupId, windowId)) {
       log("not match the current task: ", activeSession?.popupId, windowId);
       return;
     }
-    
+
     this._sendRejectAndCloseResponse(activeSession);
   }
 
-/**
- * callback for window create event
- */
+  /**
+   * callback for window create event
+   */
   _handleCreate = async (windowId) => {
   }
 
@@ -164,24 +164,24 @@ export class ExternalWindowControl {
 
     log("here is status: ", ExternalWindowControl.isApproved);
 
-        //check if window is closed by close button
-        if(isNullorUndef(ExternalWindowControl.isApproved) || isEqual(ExternalWindowControl.isApproved, false)) {
-          activeSession?.tabId && sendMessageToTab(activeSession?.tabId, new TabMessagePayload(activeSession.id, {result: null}, null, null, ERROR_MESSAGES.REJECTED_BY_USER))
-        }
-    
-        
-       //set the approve to null for next session
-       ExternalWindowControl.isApproved = null;
-        //change the current popup session
-        await this.changeActiveSession();
-        await this._showPendingTaskBedge();
+    //check if window is closed by close button
+    if (isNullorUndef(ExternalWindowControl.isApproved) || isEqual(ExternalWindowControl.isApproved, false)) {
+      activeSession?.tabId && sendMessageToTab(activeSession?.tabId, new TabMessagePayload(activeSession.id, { result: null }, null, null, ERROR_MESSAGES.REJECTED_BY_USER))
+    }
+
+
+    //set the approve to null for next session
+    ExternalWindowControl.isApproved = null;
+    //change the current popup session
+    await this.changeActiveSession();
+    await this._showPendingTaskBedge();
   }
 
   /**
    * show the bedge
    */
-  _showPendingTaskBedge = async (externalControlsState=null) => {
-    if(!externalControlsState) externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+  _showPendingTaskBedge = async (externalControlsState = null) => {
+    if (!externalControlsState) externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
     // log("here is pending task: ", externalControlsState.activeSession)
 
     //check if there is any pending task if found then show the pending task count in bedge
@@ -241,10 +241,10 @@ export class ExternalConnection {
   async handleEthTransaction(data, state) {
 
     //check if the from account is our current account
-    if (!isEqual(state.currentAccount.evmAddress?.toLowerCase(), data.message?.from)) {
-      sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.ACCOUNT_ACCESS_NOT_GRANTED));
-      return;
-    }
+    // if (!isEqual(state.currentAccount.evmAddress?.toLowerCase(), data.message?.from)) {
+    //   sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.ACCOUNT_ACCESS_NOT_GRANTED));
+    //   return;
+    // }
 
     const externalControls = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
 
