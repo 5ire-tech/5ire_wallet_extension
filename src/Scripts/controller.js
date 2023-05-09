@@ -8,7 +8,6 @@ import { sendMessageToTab } from "../Utility/message_helper";
 import { isAlreadyConnected } from "./utils";
 import { generateErrorMessage } from "../Helper/helper";
 import BigNumber from "bignumber.js";
-import { ROUTES } from "../Routes";
 
 
 //control the external connections and window popup creation

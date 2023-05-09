@@ -49,8 +49,8 @@ function App(props) {
   const { state, setState, isLoading, setExternalControlState, externalControlsState, newAccount, showCongratLoader } = useContext(AuthContext);
   const { isLogin, vault } = state;
 
+  
   useEffect(() => {
-
     if (props.data && props.externalControlsState) {
       setState(props.data);
       setExternalControlState(props.externalControlsState);
@@ -62,10 +62,7 @@ function App(props) {
     } else {
       navigate(ROUTES.DEFAULT);
     }
-
   }, []);
-
-
 
 
   useEffect(() => {
@@ -75,9 +72,6 @@ function App(props) {
       navigate(`/${externalControlsState.activeSession.route}`);
       return;
     }
-
-
-    log("here is the data: ", isLogin, vault);
 
     if (!isLogin && vault) {
       navigate(ROUTES.UNLOACK_WALLET, {

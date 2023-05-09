@@ -58,8 +58,8 @@ const initApp = (data, externalControlsState) => {
   try {
     browser.runtime.connect({ name: CONNECTION_NAME });
 
-    const window = browser.extension.getViews({type: "popup"});
-    if(window.length) browser.runtime.connect({ name: MAIN_POPUP });
+    // const window = browser.extension.getViews({type: "popup"});
+    // if(window.length) browser.runtime.connect({ name: MAIN_POPUP });
 
     //inject the current state into main app
     const currentLocalState = await getDataLocal(LABELS.STATE);
