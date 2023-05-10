@@ -353,14 +353,15 @@ export class ExtensionStorageHandler {
                 txHistory[account.evmAddress] = [];
 
                 for (let j = 0; j < account.txHistory?.length; j++) {
+                    const oldTx = account.txHistory[j];
                     const tx = {
-                        ...account.txHistory[j],
+                        ...oldTx,
                         args: null,
                         gasUsed: "",
                         method: null,
-                        timeStamp: account.txHistory[j]?.dateTime,
-                        txHash: account.txHistory[j]?.txHash?.mainHash,
-                        intermidateHash: account.txHistory[j]?.txHash?.hash,
+                        timeStamp: oldTx?.dateTime,
+                        txHash: oldTx?.txHash?.mainHash ? oldTx?.txHash?.mainHash : oldTx?.txHash ? oldTx?.txHash : "",
+                        intermidateHash: oldTx?.txHash?.hash,
                     }
 
                     txHistory[account.evmAddress].push(tx);
