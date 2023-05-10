@@ -440,6 +440,10 @@
         text-transform: capitalize;
         font-size: 15px;
         color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        
       }
 
       p {
@@ -464,8 +468,18 @@
   &__rytSec {
     display: flex;
     gap: 13px;
+    max-width: 70px;
     align-items: center;
-
+    width: 100%;
+    h5{
+      border: 1px solid #fff;
+      border-radius: 12px;
+      padding: 2px 5px;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 600;
+      
+    }
     h2 {
       font-size: 13px;
       color: #ffffff;

@@ -80,8 +80,7 @@ function EnterPassword() {
           <div className={style.enterPassword}>
             <div className={style.commonHeadeing}>
               <p>
-                Your password is used to unlock your wallet and will allow
-                wallet to export your Private Key
+              Enter your wallet password to reveal secret keys
               </p>
             </div>
             <InputFieldSimple
