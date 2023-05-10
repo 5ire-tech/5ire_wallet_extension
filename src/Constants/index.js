@@ -25,8 +25,8 @@ export const TRANSACTION_STATUS_CHECK_TIMER = 5000;
 
 //tabs event
 export const TABS_EVENT = {
-    ACCOUNT_CHANGE_EVENT: "accountChange",
-    NETWORK_CHANGE_EVENT: "networkChange",
+    ACCOUNT_CHANGE_EVENT: "accountsChanged",
+    NETWORK_CHANGE_EVENT: "networkChanged",
     WALLET_CONNECTED_EVENT: "connect",
     WALLET_DISCONNECTED_EVEN: "disconnect"
 }
