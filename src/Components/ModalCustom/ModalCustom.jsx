@@ -5,7 +5,7 @@ import ModalCloseIcon from '../../Assets/ModalCloseIcon.svg'
 function ModalCustom({isModalOpen,handleOk,handleCancel, children,customClass,title,centered,closeIcon}) {
   return (
     <div >
-        <Modal closeIcon={<img src={ModalCloseIcon} alt="close" draggable={false}/>} title={title} className={`modalCustom ${customClass && customClass}`} open={isModalOpen} onOk={handleOk} onCancel={handleCancel} footer={false} centered={centered}>
+        <Modal closeIcon={<img src={ModalCloseIcon} alt="close" draggable={false} className="closeModalIcon"/>} title={title} className={`modalCustom ${customClass && customClass}`} open={isModalOpen} onOk={handleOk} onCancel={handleCancel} footer={false} centered={centered}>
 
         {children}
         

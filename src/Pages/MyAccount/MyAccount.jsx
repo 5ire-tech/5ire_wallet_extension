@@ -167,6 +167,7 @@ function MyAccount() {
       <div className={style.myAccountSec__accountHeading}>
         <h3>My Accounts</h3>
       </div>
+      <div className={style.myAccountScrool}>
       {accounts?.map((e, i) => (
         <div
           className={style.myAccountSec__accountActive}
@@ -206,7 +207,7 @@ function MyAccount() {
           </div>
           <div className={style.myAccountSec__rytSec}>
             {/* <h2> */}
-            {e?.accountName === currentAccount?.accountName ? (
+            {e?.accountName === currentAccount?.accountName && (
               <>
                 <h2>
                   {" "}
@@ -218,9 +219,8 @@ function MyAccount() {
                   {LABELS.ACTIVE}
                 </h2>
               </>
-            ) : (
-              <h2>{LABELS.NOT_ACTIVE}</h2>
-            )}
+            ) 
+            }
             {/* </h2> */}
             {Number(e.accountIndex) === 0 && e.type === "hd_wallet" ? (
               ""
@@ -250,6 +250,7 @@ function MyAccount() {
           </div>
         </div>
       ))}
+      </div>
       <ModalCustom
         isModalOpen={isModalOpen}
         handleOk={handle_OK_Cancel}

@@ -85,3 +85,15 @@
   color: rgb(255, 255, 255);
   text-align: center;
 }
+
+.histryDataScrol{
+  overflow: auto;
+  height: 420px;
+}
+.noTransaction{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+  gap: 8px;
+}

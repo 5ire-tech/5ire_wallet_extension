@@ -267,6 +267,7 @@ function BalanceDetails({ mt0 }) {
                       ) : (
                         <>
                           <p>
+                          <Tooltip placement="bottom" title={isEqual(pathname, ROUTES.APPROVE_TXN)?"Connected":"Not Connected"}>
                             <img
                               src={
                                 isEqual(pathname, ROUTES.APPROVE_TXN)
@@ -275,7 +276,9 @@ function BalanceDetails({ mt0 }) {
                               }
                               alt="connectionLogo"
                               draggable={false}
+                              className="ant-tooltip-open"
                             />
+                            </Tooltip>
                             {currentAccount?.accountName
                               ? currentAccount?.accountName
                               : ""}
@@ -339,7 +342,9 @@ function BalanceDetails({ mt0 }) {
                                   classname={style.activeDis_Modal__switchAcc}
                                   onClick={() => onSelectAcc(e?.accountName)}
                                 >
+                                  <span>
                                   Switch Account
+                                  </span>
                                 </p>
                               )}
                             </div>
@@ -551,7 +556,7 @@ function BalanceDetails({ mt0 }) {
                   </div>
                   <div className={style.balanceDetails__nativemodal__scanner}>
                     <QRCode
-                      size={200}
+                      size={180}
                       style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                       viewBox={`0 0 256 256`}
                       value={
@@ -564,13 +569,13 @@ function BalanceDetails({ mt0 }) {
                   <div className={style.balanceDetails__nativemodal__modalOr}>
                     <p>or</p>
                   </div>
-                  <p className={style.balanceDetails__nativemodal__addressText}>
+                  {/* <p className={style.balanceDetails__nativemodal__addressText}>
                     Your 5ire Native Address
-                  </p>
+                  </p> */}
                   <div className={style.balanceDetails__nativemodal__wrapedText}>
                     <p>
                       {currentAccount?.nativeAddress
-                        ? shortner(currentAccount?.nativeAddress)
+                        ? currentAccount?.nativeAddress
                         : ""}
                       <img
                         draggable={false}
@@ -581,9 +586,6 @@ function BalanceDetails({ mt0 }) {
                       />
                     </p>
                   </div>
-                  <div
-                    className={style.balanceDetails__nativemodal__footerbuttons}
-                  ></div>
                 </div>
               </div>
             </ModalCustom>
@@ -622,13 +624,13 @@ function BalanceDetails({ mt0 }) {
                   <div className={style.balanceDetails__nativemodal__modalOr}>
                     <p>or</p>
                   </div>
-                  <p className={style.balanceDetails__nativemodal__addressText}>
+                  {/* <p className={style.balanceDetails__nativemodal__addressText}>
                     Your 5ire EVM Address
-                  </p>
+                  </p> */}
                   <div className={style.balanceDetails__nativemodal__wrapedText}>
                     <p>
                       {currentAccount?.evmAddress
-                        ? shortner(currentAccount?.evmAddress)
+                        ? currentAccount?.evmAddress
                         : ""}
                       <img
                         draggable={false}
@@ -639,11 +641,11 @@ function BalanceDetails({ mt0 }) {
                       />
                     </p>
                   </div>
-                  <div
+                  {/* <div
                     className={style.balanceDetails__nativemodal__footerbuttons}
-                  >
+                  > */}
                     {/* <ButtonComp text={"Share Address"} /> */}
-                  </div>
+                  {/* </div> */}
                 </div>
               </div>
             </ModalCustom>

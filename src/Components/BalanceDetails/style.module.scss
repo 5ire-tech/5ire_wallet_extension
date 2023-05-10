@@ -162,12 +162,15 @@
     }
 
     &__wrapedText {
+      margin-top: 8px;
       p {
         color: $white;
         font-size: 14px;
         display: flex;
         gap: 6px;
         word-break: break-all;
+        text-align: center;
+        align-items: center;
 
         img {
           cursor: pointer;
