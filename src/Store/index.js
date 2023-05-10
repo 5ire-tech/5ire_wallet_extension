@@ -51,7 +51,9 @@ export default function Context({ children }) {
   bindRuntimeMessageListener((message) => {
 
     if (message.type === MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND) {
-      if (message.event === MESSAGE_EVENT_LABELS.EVM_FEE || message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE) {
+      if (message.event === MESSAGE_EVENT_LABELS.EVM_FEE ||
+        message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE
+      ) {
         (!estimatedGas) && updateEstimatedGas(message.data.fee);
       } else if (message.event === MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS) {
         setExternalNativeTxDetails(message.data);
@@ -75,8 +77,7 @@ export default function Context({ children }) {
         exportPrivatekey(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE) {
         exportSeedPhrase(message.data);
-      }
-      else if (message.event === MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT) {
+      } else if (message.event === MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT) {
         removeAccount(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE) {
         setValdatorNominatorFee(message.data)

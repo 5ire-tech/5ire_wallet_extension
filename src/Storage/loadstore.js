@@ -78,8 +78,15 @@ export class ExtensionStorageHandler {
     //update the balance
     updateBalance = async (data, state) => {
         if (isEqual(data.totalBalance, state.balance.totalBalance)) return false;
-        const newState = { ...state, balance: data };
-        return await this._updateStorage(newState)
+
+        const allAccountsBalance = {
+            ...state?.allAccountsBalance,
+            [state?.currentAccount.evmAddress]: {
+                ...data
+            }
+        }
+        const newState = { ...state, balance: data, allAccountsBalance };
+        return await this._updateStorage(newState);
     }
 
     //push the transactions
@@ -222,9 +229,10 @@ export class ExtensionStorageHandler {
             accountIndex: newAccount.accountIndex,
             nativeAddress: newAccount.nativeAddress,
         }
+        const allAccountsBalance = this._setAccountBalance(state, newAccount);
         const txHistory = this._txProperty(state, newAccount.evmAddress);
         // }
-        const newState = { ...state, vault, isLogin: true, currentAccount, txHistory };
+        const newState = { ...state, vault, isLogin: true, currentAccount, txHistory, allAccountsBalance };
 
         this._updateSession(LABELS.ISLOGIN, true);
         return await this._updateStorage(newState);
@@ -234,7 +242,7 @@ export class ExtensionStorageHandler {
     forgotPassByMnemonic = async (message, state) => {
         const { vault, newAccount, type } = message;
 
-        const currentAcc = {
+        const currentAccount = {
             evmAddress: newAccount.evmAddress,
             accountName: newAccount.accountName,
             accountIndex: newAccount.accountIndex,
@@ -247,18 +255,19 @@ export class ExtensionStorageHandler {
         else
             txHistory = this._txProperty({ txHistory: {} }, newAccount.evmAddress);
 
-        const newState = { ...state, vault, txHistory, currentAccount: currentAcc, isLogin: true }
+        //todo
+        const allAccountsBalance = this._setAccountBalance(state, newAccount);
+        const newState = { ...state, vault, txHistory, currentAccount, allAccountsBalance, isLogin: true };
         this._updateSession(LABELS.ISLOGIN, true);
         return await this._updateStorage(newState);
     };
 
     //import account by mnemonic
     importAccountByMnemonics = async (message, state) => {
-        // console.log("essage in loadstore import ", message);
-
         const { newAccount, vault } = message;
         const txHistory = this._txProperty(state, newAccount.evmAddress);
-        const newState = { ...state, vault, txHistory, currentAccount: newAccount }
+        const allAccountsBalance = this._setAccountBalance(state, newAccount);
+        const newState = { ...state, vault, txHistory, currentAccount: newAccount, allAccountsBalance }
         return await this._updateStorage(newState);
     };
 
@@ -273,7 +282,8 @@ export class ExtensionStorageHandler {
             nativeAddress: newAccount.nativeAddress,
         }
         const txHistory = this._txProperty(state, newAccount.evmAddress);
-        const newState = { ...state, vault, currentAccount, txHistory };
+        const allAccountsBalance = this._setAccountBalance(state, newAccount);
+        const newState = { ...state, vault, currentAccount, txHistory, allAccountsBalance };
         return await this._updateStorage(newState);
     };
 
@@ -287,8 +297,11 @@ export class ExtensionStorageHandler {
     // remove specific account 
     removeAccount = async (message, state) => {
         const newState = { ...state, vault: message.vault };
-        if (newState?.txHistory[newState?.currentAccount.evmAddress]) {
-            delete newState.txHistory[newState?.currentAccount.evmAddress]
+        if (newState?.txHistory.hasOwnProperty(newState?.currentAccount.evmAddress)) {
+            delete newState.txHistory[newState?.currentAccount.evmAddress];
+        }
+        if (newState?.allAccountsBalance.hasOwnProperty(newState?.currentAccount.evmAddress)) {
+            delete newState.allAccountsBalance[newState?.currentAccount.evmAddress];
         }
         if (message?.isInitialAccount) {
             newState.isLogin = false;
@@ -321,6 +334,17 @@ export class ExtensionStorageHandler {
         return {
             ...state.txHistory,
             [accountName]: []
+        };
+    }
+
+    _setAccountBalance = (state, acc) => {
+        return {
+            ...state.allAccountsBalance,
+            [acc.evmAddress]: {
+                evmBalance: 0,
+                nativeBalance: 0,
+                totalBalance: 0
+            }
         };
     }
 

@@ -1,42 +1,35 @@
 import { ROUTES } from "../../Routes";
 import { Dropdown, Space } from "antd";
 import style from "./style.module.scss";
+import { toast } from "react-hot-toast";
 import { AuthContext } from "../../Store";
-import Browser from "webextension-polyfill";
 import ThreeDot from "../../Assets/dot3.svg";
-import GreenCircle from "../../Assets/greencircle.svg";
 import { useNavigate } from "react-router-dom";
 import Import from "../../Assets/PNG/import.png";
 import Logout from "../../Assets/PNG/logout.png";
 import DarkLogo from "../../Assets/DarkLogo.svg";
+import { sendEventToTab } from "../../Helper/helper";
+import GreenCircle from "../../Assets/greencircle.svg";
 import React, { useContext, useState, useEffect } from "react";
 import Createaccount from "../../Assets/PNG/createaccount.png";
-import {
-  sendMessageToTab,
-  sendRuntimeMessage,
-} from "../../Utility/message_helper";
+import { TabMessagePayload } from "../../Utility/network_calls";
+import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
-import { getCurrentTabDetails } from "../../Scripts/utils";
 import AccountSetting from "../../Components/AccountSetting/AccountSetting";
 import {
   LABELS,
   CURRENCY,
-  ERROR_MESSAGES,
-  MESSAGE_TYPE_LABELS,
-  ACCOUNT_CHANGED_EVENT,
-  MESSAGE_EVENT_LABELS,
-  RESTRICTED_URLS,
   TABS_EVENT,
   WALLET_TYPES,
+  ERROR_MESSAGES,
+  // RESTRICTED_URLS,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS,
+  // ACCOUNT_CHANGED_EVENT,
 } from "../../Constants/index";
-import { toast } from "react-hot-toast";
-import { isEqual } from "../../Utility/utility";
-import { TabMessagePayload } from "../../Utility/network_calls";
-import {
-  checkStringInclusionIntoArray,
-  sendEventToTab,
-} from "../../Helper/helper";
-import fillArow from "../../Assets/fillArow.svg";
+// import Browser from "webextension-polyfill";
+// import fillArow from "../../Assets/fillArow.svg";
+// import { getCurrentTabDetails } from "../../Scripts/utils";
 
 function MyAccount() {
   const navigate = useNavigate();
@@ -47,12 +40,12 @@ function MyAccount() {
     allAccounts,
     state,
     updateState,
-    removeHistory,
+    // removeHistory,
     externalControlsState,
     setNewWalletName,
   } = useContext(AuthContext);
   const { connectedApps } = externalControlsState;
-  const { balance, currentAccount } = state;
+  const { balance, currentAccount, allAccountsBalance } = state;
 
   useEffect(() => {
     setAccounts(allAccounts);
@@ -120,18 +113,25 @@ function MyAccount() {
 
   const onSelectAcc = (name) => {
     const acc = accounts.find((acc) => acc.accountName === name);
+
     updateCurrentAccount(acc);
   };
 
   //update the current account
   const updateCurrentAccount = (acc) => {
+
     updateState(LABELS.CURRENT_ACCOUNT, acc);
-    //fetch balance of changed account
-    sendRuntimeMessage(
-      MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
-      MESSAGE_EVENT_LABELS.BALANCE,
-      {}
-    );
+    if (allAccountsBalance.hasOwnProperty(acc?.evmAddress)) {
+      updateState(LABELS.BALANCE, allAccountsBalance[acc.evmAddress]);
+    } else {
+      //fetch balance of changed account
+      sendRuntimeMessage(
+        MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
+        MESSAGE_EVENT_LABELS.BALANCE,
+        {}
+      );
+    }
+
     //send account details whenever account is changed
     sendEventToTab(
       new TabMessagePayload(

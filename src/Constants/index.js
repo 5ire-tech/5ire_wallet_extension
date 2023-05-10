@@ -17,7 +17,7 @@ export const DECIMALS = 10 ** 18;
 export const WINDOW_HEIGHT = 620;
 export const EXISTENTIAL_DEPOSITE = 1;
 export const ONE_ETH_IN_GWEI = 1000000000;
-export const AUTO_BALANCE_UPDATE_TIMER = 8000;
+export const AUTO_BALANCE_UPDATE_TIMER = 10000;
 export const WEI_IN_ONE_ETH = 1000000000000000000;
 export const TRANSACTION_STATUS_CHECK_TIMER = 5000;
 
@@ -320,9 +320,9 @@ export const MESSAGE_TYPE_LABELS = {
     INTERNAL_TX: "internalTx",
     FEE_AND_BALANCE: "feeAndBalance",
     NETWORK_HANDLER: "networkHandler",
-    EXTENSION_BACKGROUND: "extensionBackground",
     EXTERNAL_TX_APPROVAL: "externalTxApproval",
     EXTENSION_UI_KEYRING: "extensionUiKeyring",
+    EXTENSION_BACKGROUND: "extensionBackground",
     VALIDATOR_NOMINATOR_HANDLER: "validatorNominatorHandler",
 }
 

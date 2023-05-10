@@ -1,9 +1,9 @@
 export const userState = {
     vault: null,
 
-    allAccounts: [],
-
     txHistory: {},
+
+    allAccountsBalance: {},
 
     popupChecks: {
         txApprove: false
