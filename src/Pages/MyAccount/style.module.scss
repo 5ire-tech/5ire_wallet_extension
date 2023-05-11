@@ -33,9 +33,9 @@
     display: flex;
     gap: 12px;
     align-items: center;
-    img{
-      width: 33px;
-    }
+    // img{
+    //   width: 33px;
+    // }
     &__accountConatct {
       text-align: left;
       h2 {
@@ -63,6 +63,18 @@
     gap: 18px;
     align-items: center;
     padding-right: 15px;
+    max-width: 80px;
+    align-items: center;
+    width: 100%;
+    h5{
+      border: 1px solid #fff;
+      border-radius: 12px;
+      padding: 2px 5px;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 600;
+
+    }
     h2 {
       font-size: 13px;
       color: #ffffff;
@@ -86,4 +98,9 @@
 .myAccountScrool{
   overflow: auto;
   height: 300px;
+}
+.nameGreenCircel{
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }

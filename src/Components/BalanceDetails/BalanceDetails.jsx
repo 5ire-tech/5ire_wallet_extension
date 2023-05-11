@@ -326,6 +326,7 @@ function BalanceDetails({ mt0 }) {
                       </p>
                     )}
                   </div>
+                  <div className="headerPopUpModal">
                   {url.startsWith("http") &&
                     !isNewSite &&
                     allAccounts.length > 0 &&
@@ -404,7 +405,7 @@ function BalanceDetails({ mt0 }) {
                                         }
                                       >
                                         {isConnected
-                                          ? "Disconnected"
+                                          ? "Disconnect"
                                           : "Connect"}
                                       </span>
                                     ),
@@ -421,6 +422,7 @@ function BalanceDetails({ mt0 }) {
                         </div>
                       </div>
                     ))}
+                    </div>
                 </div>
               </ModalCustom>
               <div className={style.balanceDetails__selectStyle}>

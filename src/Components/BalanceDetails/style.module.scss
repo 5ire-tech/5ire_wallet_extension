@@ -424,12 +424,12 @@
     gap: 12px;
     align-items: center;
     &__spanContact {
-      max-width: 79px;
+      max-width: 42px;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+    // text-overflow: ellipsis;
     display: inline-block;
-    width: 100%;
+    // width: 100%;
     -webkit-text-fill-color: unset !important;
     background: initial !important;
     }
@@ -471,6 +471,7 @@
     max-width: 80px;
     align-items: center;
     width: 100%;
+    padding-right: 10px;
     h5{
       border: 1px solid #fff;
       border-radius: 12px;

@@ -561,3 +561,8 @@ body {
     opacity: 0.5;
   }
 }
+.headerPopUpModal{
+  max-height: 400px;
+  overflow: auto;
+  overflow-x: hidden;
+}
