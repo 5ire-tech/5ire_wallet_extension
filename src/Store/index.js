@@ -39,7 +39,6 @@ export default function Context({ children }) {
   const [showCongratLoader, setShowCongratLoader] = useState(false);
   const [newWalletName, setNewWalletName] = useState("");
 
-
   Browser.storage.local.onChanged.addListener((changedData) => {
     //change the state whenever the local storage is updated
     !isNullorUndef(changedData?.state) && setState(changedData.state.newValue);

@@ -257,16 +257,7 @@ export default class WindowManager {
 
   //add the listner for close btn
   addOnRemovedListener(listener) {
-    let hasListener;
-    if (isManifestV3)
-      hasListener = Browser.windows.onRemoved.hasListeners((id) => { log("Here is the has listner callback: ", id) })
-    else
-      hasListener = Browser.windows.onRemoved.hasListener((id) => { log("Here is the has listner callback: ", id) })
-
-    if (!hasListener) {
       Browser.windows.onRemoved.addListener(listener);
-    }
-
   }
 
   //add the listner for create window event

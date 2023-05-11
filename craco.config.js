@@ -56,6 +56,9 @@ module.exports = {
               { from: isChrome ? "./src/manifest/chrome.json" : "./src/manifest/firefox.json", to: "manifest.json" },
             ],
           }),
+          new webpack.ProvidePlugin({
+            process: 'process/browser',
+          }),
         ],
 
       };

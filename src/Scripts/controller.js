@@ -15,6 +15,7 @@ export class ExternalWindowControl {
 
   static instance = null;
   static isApproved = null;
+  static currentPopup = null;
 
   constructor() {
     this.windowManager = WindowManager.getInstance(this._handleClose, this._handleCreate);
@@ -71,14 +72,13 @@ export class ExternalWindowControl {
    * change the active session
    */
   changeActiveSession = async () => {
-    await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.CHANGE_ACTIVE_SESSION, {}, { localStateKey: LABELS.EXTERNAL_CONTROLS })
-    // this.closeActiveSessionPopup();
+    await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.CHANGE_ACTIVE_SESSION, {}, { localStateKey: LABELS.EXTERNAL_CONTROLS });
 
-    await this._showPendingTaskBedge()
+    await this._showPendingTaskBedge();
     //show the popup after changing active session from pending queue
     const externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
     // log("change the session: ", externalControlsState);
-    externalControlsState.activeSession && this.activatePopupSession(externalControlsState.activeSession);
+    if(externalControlsState.activeSession) await this.activatePopupSession(externalControlsState.activeSession);
   }
 
   /**
@@ -86,8 +86,8 @@ export class ExternalWindowControl {
    */
   activatePopupSession = async (activeSession) => {
     const popupId = await this.windowManager.showPopup(activeSession.route);
+    ExternalWindowControl.currentPopup = popupId
     await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.UPDATE_CURRENT_SESSION, { popupId }, { localStateKey: LABELS.EXTERNAL_CONTROLS })
-    log("popupid: ", popupId)
   }
 
   /**
@@ -97,10 +97,6 @@ export class ExternalWindowControl {
     const externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
 
     if (externalControlsState.activeSession?.popupId) {
-      //set the pending task icon on chrome extension
-
-      await this._showPendingTaskBedge()
-
       //check if there is any window opened with popupid
       const window = await this.windowManager.getWindowById(externalControlsState.activeSession.popupId);
       if (!window) {
@@ -137,16 +133,9 @@ export class ExternalWindowControl {
    * callback for window close event
    */
   _handleClose = async (windowId) => {
-
     const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
-    await this.windowManager.filterAndRemoveWindows(null, true);
-
-    if (!isEqual(activeSession?.popupId, windowId)) {
-      log("not match the current task: ", activeSession?.popupId, windowId);
-      return;
-    }
-
-    this._sendRejectAndCloseResponse(activeSession);
+    this.windowManager.filterAndRemoveWindows(ExternalWindowControl.currentPopup, false);
+    isEqual(windowId, ExternalWindowControl.currentPopup) && this._sendRejectAndCloseResponse(activeSession);
   }
 
   /**
@@ -161,16 +150,15 @@ export class ExternalWindowControl {
    */
   _sendRejectAndCloseResponse = async (activeSession) => {
 
-    log("here is status: ", ExternalWindowControl.isApproved);
-
     //check if window is closed by close button
     if (isNullorUndef(ExternalWindowControl.isApproved) || isEqual(ExternalWindowControl.isApproved, false)) {
       activeSession?.tabId && sendMessageToTab(activeSession?.tabId, new TabMessagePayload(activeSession.id, { result: null }, null, null, ERROR_MESSAGES.REJECTED_BY_USER))
     }
 
-
     //set the approve to null for next session
     ExternalWindowControl.isApproved = null;
+    ExternalWindowControl.currentPopup = null;
+
     //change the current popup session
     await this.changeActiveSession();
     await this._showPendingTaskBedge();

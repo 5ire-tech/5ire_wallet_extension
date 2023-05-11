@@ -1,3 +1,5 @@
+import { NETWORK } from "../Constants"
+
 export const userState = {
     vault: null,
 
@@ -36,10 +38,6 @@ export const externalControls = {
     connectionQueue: []
 }
 
-export const transactionQueue = {
-    txQueue: [],
-    currentTransaction: null
-}
 
 export const newAccountInitialState = {
     mnemonic: "",
@@ -52,8 +50,20 @@ export const newAccountInitialState = {
 
 //initial state for external native transaction
 export const initialExternalNativeTransaction = {
-method: "",
-fee: "", 
-args: "",
-txHash: ""
+    method: "",
+    fee: "", 
+    args: "",
+    txHash: ""
 }
+
+// initial state for transaction queue
+export const transactionQueue = (() => { 
+const queues = {}; 
+Object.values(NETWORK).forEach((item) => 
+{ 
+    queues[item.toLowerCase()] = {
+    txQueue: [],
+    currentTransaction: null 
+}});
+return queues;
+})();

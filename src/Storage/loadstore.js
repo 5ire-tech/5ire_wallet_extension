@@ -2,7 +2,7 @@ import { localStorage, sessionStorage } from ".";
 import { hasLength, isEqual, isNullorUndef, isString, isEmpty, hasProperty } from "../Utility/utility";
 import { userState, externalControls, transactionQueue } from "../Store/initialState";
 import { Error, ErrorPayload } from "../Utility/error_helper";
-import { ERRCODES, ERROR_MESSAGES, LABELS } from "../Constants";
+import { ERRCODES, ERROR_MESSAGES, LABELS, STATUS } from "../Constants";
 
 
 //local storage data null safety check
@@ -108,7 +108,6 @@ export class ExtensionStorageHandler {
         //set the updated status into localstorage
         txHistory[txIndex] = data;
         newState.txHistory[options.account?.evmAddress] = txHistory;
-        // newState.txHistory[options.account.accountName] = txHistory;
 
         //update the history
         return await this._updateStorage(newState);
@@ -130,11 +129,11 @@ export class ExtensionStorageHandler {
     }
 
     //remove the history item
-    removeHistoryItem = async (data, state, options) => {
+    saveErroredFailedTransaction = async (data, state, options) => {
         const { id } = data;
         const newState = { ...state };
-        newState.txHistory[options.account?.evmAddress] = newState.txHistory[options.account?.evmAddress].filter((item) => item.id !== id);
-        // newState.txHistory[options.account.accountName] = newState.txHistory[options.account.accountName].filter((item) => item.id !== id);
+        const index = newState.txHistory[options.account?.evmAddress].findIndex((item) => item.id === id);
+        newState.txHistory[options.account?.evmAddress][index] = {...newState.txHistory[options.account?.evmAddress][index], status: STATUS.FAILED};
         return await this._updateStorage(newState);
     }
 
@@ -182,7 +181,7 @@ export class ExtensionStorageHandler {
     //process new transaction
     processQueuedTransaction = async (data, state) => {
         const queuedTransaction = state.txQueue.shift();
-        const newState = { ...state, currentTransaction: queuedTransaction || null };
+        const newState = { ...state, currentTransaction: queuedTransaction ? {...queuedTransaction, transactionHistoryTrack: {...queuedTransaction.transactionHistoryTrack, status: STATUS.PENDING}} : null };
         return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
     }
 

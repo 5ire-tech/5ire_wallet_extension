@@ -4,7 +4,7 @@ import CopyIcon from "../../Assets/CopyIcon.svg";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import { toast } from "react-hot-toast";
 import React, { useState, useContext, useEffect } from "react";
-import { sendRuntimeMessage } from "../../Utility/message_helper";
+import { sendMessageOverStream } from "../../Utility/message_helper";
 import {
   LABELS,
   COPIED,
@@ -23,7 +23,7 @@ function ApproveTx() {
 
   useEffect(() => {
     updateLoading(true);
-    sendRuntimeMessage(
+    sendMessageOverStream(
       MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
       MESSAGE_EVENT_LABELS.EVM_FEE,
       {

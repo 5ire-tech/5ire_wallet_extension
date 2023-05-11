@@ -16,7 +16,7 @@ import {
   MESSAGE_TYPE_LABELS,
   SIGNER_METHODS,
 } from "../../Constants";
-import { sendRuntimeMessage } from "../../Utility/message_helper";
+import { sendMessageOverStream } from "../../Utility/message_helper";
 import { ROUTES } from "../../Routes";
 import { shortner } from "../../Helper/helper";
 import CopyIcon from "../../Assets/CopyIcon.svg";
@@ -33,7 +33,7 @@ function NativeSigner() {
   const navigate = useNavigate();
 
   const handleClick = async (isApproved) => {
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.NATIVE_SIGNER, { ...externalNativeTxDetails, approve: isApproved, options: { account: state.currentAccount, network: state.currentNetwork, nativeSigner: true } });
+    sendMessageOverStream(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.NATIVE_SIGNER, { ...externalNativeTxDetails, approve: isApproved, options: { account: state.currentAccount, network: state.currentNetwork, nativeSigner: true } });
     navigate(ROUTES.WALLET);
   };
 
@@ -41,7 +41,7 @@ function NativeSigner() {
     const method = activeSession.method;
     if (SIGNER_METHODS.SIGN_PAYLOAD === method) {
       updateLoading(true);
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS, { options: { account: state.currentAccount, network: state.currentNetwork } });
+      sendMessageOverStream(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS, { options: { account: state.currentAccount, network: state.currentNetwork } });
     } else setFormattedMethod(SIGNER_METHODS.SIGN_RAW)
   }, [])
 

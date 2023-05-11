@@ -12,7 +12,7 @@ import { sendMessageToTab, sendRuntimeMessage } from "../../Utility/message_help
 import { TabMessagePayload } from "../../Utility/network_calls";
 import { toast } from "react-hot-toast";
 import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
-
+import { sendMessageOverStream } from "../../Utility/message_helper";
 
 //Before We begin
 function FooterStepOne() {
@@ -144,11 +144,11 @@ export const ApproveLogin = () => {
       };
 
       //send the message to tab after approve request
-      sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, res))
+      sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, res));
     }
 
     //send closure message to backend
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION, { approve: isApproved });
+    sendMessageOverStream(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION, { approve: isApproved });
     navigate(ROUTES.WALLET);
   }
 
@@ -196,9 +196,9 @@ export const ApproveTx = () => {
   function handleClick(isApproved) {
     if (isApproved) {
       const txType = activeSession.message?.data && activeSession.message?.to ? TX_TYPE.CONTRACT_EXECUTION : TX_TYPE.CONTRACT_DEPLOYMENT;
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.EVM_TX, { options: { account: state.currentAccount, network: state.currentNetwork, type: txType, isEvm: true } });
+      sendMessageOverStream(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.EVM_TX, { options: { account: state.currentAccount, network: state.currentNetwork, type: txType, isEvm: true } });
     }
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION, { approve: isApproved });
+    sendMessageOverStream(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION, { approve: isApproved });
     navigate(ROUTES.WALLET);
   }
 

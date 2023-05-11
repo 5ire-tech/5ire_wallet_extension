@@ -68,6 +68,7 @@ function App(props) {
     const route = getParameterByName("route");
     //sync the current action route with main popup
     if (externalControlsState.activeSession?.route && isLogin) {
+      console.log("here is data route: ", externalControlsState.activeSession.route);
       navigate(`/${externalControlsState.activeSession.route}`);
       return;
     }
@@ -87,7 +88,7 @@ function App(props) {
     } else if (!isLogin && !vault) {
       navigate(ROUTES.DEFAULT);
     }
-  }, [isLogin, vault, newAccount?.evmAddress]);
+  }, [isLogin, vault, newAccount?.evmAddress, externalControlsState.activeSession?.id]);
 
 
 

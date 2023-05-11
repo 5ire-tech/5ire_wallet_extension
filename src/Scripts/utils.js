@@ -3,19 +3,16 @@ import { EMTY_STR } from "../Constants";
 import { isNullorUndef } from "../Utility/utility";
 import { v4 as uuid4 } from 'uuid';
 
-export const getBaseUrl = (url) => {
-  const pathArray = url.split("/");
-  const protocol = pathArray[0];
-  const host = pathArray[2];
-  return protocol + "//" + host;
+export const getUrlOrigin = (url) => {
+  return new URL(url).origin;
 };
 
 //get the current tab details
 export const getCurrentTabDetails = async () => {
   const queryInfo = { active: true, currentWindow: true };
   const tabsDetails = await Browser.tabs.query(queryInfo);
-  const allTabs = await Browser.tabs.query({});
-  return { tabId: tabsDetails[0]?.id, tabUrl: getBaseUrl(tabsDetails[0]?.url) };
+  if(!tabsDetails[0]?.url) return null;
+  return { tabId: tabsDetails[0]?.id, tabUrl: getUrlOrigin(tabsDetails[0]?.url) };
 };
 
 

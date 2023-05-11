@@ -10,6 +10,7 @@ export const MAIN_POPUP = "MAIN_POPUP";
 export const CONNECTION_NAME = "5IRE_EXT";
 export const PORT_NAME = "WEBEXT_REDUX_TEST";
 export const UI_CONNECTION_NAME = "5IRE_EXT_UI";
+export const RESTRICTED_FOR_CONTENT_SCRIPT = "chrome-extension://";
 
 export const EXTRA_FEE = 0.001;
 export const WINDOW_WIDTH = 400;
@@ -18,6 +19,7 @@ export const WINDOW_HEIGHT = 620;
 export const EXISTENTIAL_DEPOSITE = 1;
 export const ONE_ETH_IN_GWEI = 1000000000;
 export const AUTO_BALANCE_UPDATE_TIMER = 8000;
+export const LAPSED_TRANSACTION_CHECKER_TIMER = 20*1000;
 export const WEI_IN_ONE_ETH = 1000000000000000000;
 export const TRANSACTION_STATUS_CHECK_TIMER = 5000;
 
@@ -284,6 +286,7 @@ export const INTERNAL_EVENT_LABELS = {
     BALANCE_FETCH: "balanceFetch",
     NEW_TRANSACTION_INQUEUE: "newTransactionInQueue",
     NEW_NATIVE_SIGNER_TRANSACTION_INQUEUE: "newNativeSignerTransactionInQueue",
+    LAPSED_TRANSACTION_CHECK: "lapsedTransactionCheck"
 }
 
 export const STATE_CHANGE_ACTIONS = {
@@ -292,7 +295,7 @@ export const STATE_CHANGE_ACTIONS = {
     CHANGE_NETWORK: "changeNetwork",
     CHANGE_ACCOUNT: "changeAccount",
     TX_HISTORY_UPDATE: "updateTxHistory",
-    REMOVE_HISTORY_ITEM: "removeHistoryItem",
+    SAVE_ERRORED_FAILED_TRANSACTION: "saveErroredFailedTransaction",
 
     //external controls state
     ADD_NEW_TX_TASK: "addNewTxTask",
@@ -360,6 +363,11 @@ export const RESTRICTED_URLS = ["chrome://extensions"]
 //third party url
 export const THRID_PARTY_APIS = {
     ESD: "https://www.4byte.directory/api/v1/signatures/?hex_signature="
+}
+
+export const STREAM_CHANNELS = {
+    CONTENTSCRIPT: "Content-Script",
+    EXTENSION_UI: "Extension-UI"
 }
 
 export const VALIDATOR_NOMINATOR_METHOD = {

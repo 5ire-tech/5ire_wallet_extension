@@ -7,7 +7,7 @@ import ButtonComp from "../ButtonComp/ButtonComp";
 import { ERROR_MESSAGES, MESSAGE_EVENT_LABELS, MESSAGE_TYPE_LABELS, TX_TYPE } from "../../Constants";
 import { shortLongAddress } from "../../Utility/utility";
 import { AuthContext } from "../../Store";
-import { sendRuntimeMessage } from "../../Utility/message_helper";
+import { sendMessageOverStream } from "../../Utility/message_helper";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../Routes";
@@ -45,7 +45,7 @@ function ValidatorNominatorTxns() {
     //calculate the transaction fee
     useEffect(() => {
         updateLoading(true);
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE, {});
+        sendMessageOverStream(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE, {});
         setDisableApproval(!valdatorNominatorFee?.fee);
     }, [])
 
@@ -53,7 +53,7 @@ function ValidatorNominatorTxns() {
     //process the transaction
     function handleClick(isApproved) {
         // updateLoading(true);
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_TRANSACTION, { approve: isApproved, options: { account: state.currentAccount, isEvm: false, network: state.currentNetwork, type: TX_TYPE.NATIVE_APP } });
+        sendMessageOverStream(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_TRANSACTION, { approve: isApproved, options: { account: state.currentAccount, isEvm: false, network: state.currentNetwork, type: TX_TYPE.NATIVE_APP } });
         setValdatorNominatorFee(null);
         navigate(ROUTES.WALLET);
     }

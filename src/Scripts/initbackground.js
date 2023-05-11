@@ -10,7 +10,7 @@ import { txNotificationStringTemplate } from "./utils";
 import { NotificationAndBedgeManager } from "./platform";
 import { ExternalConnection, ExternalWindowControl } from "./controller";
 import { getDataLocal, ExtensionStorageHandler } from "../Storage/loadstore";
-import { CONNECTION_NAME, INTERNAL_EVENT_LABELS, DECIMALS, MESSAGE_TYPE_LABELS, STATE_CHANGE_ACTIONS, TX_TYPE, STATUS, LABELS, MESSAGE_EVENT_LABELS, AUTO_BALANCE_UPDATE_TIMER, TRANSACTION_STATUS_CHECK_TIMER, ONE_ETH_IN_GWEI, SIGNER_METHODS, TABS_EVENT, VALIDATOR_NOMINATOR_METHOD } from "../Constants";
+import { INTERNAL_EVENT_LABELS, DECIMALS, MESSAGE_TYPE_LABELS, STATE_CHANGE_ACTIONS, TX_TYPE, STATUS, LABELS, MESSAGE_EVENT_LABELS, AUTO_BALANCE_UPDATE_TIMER, TRANSACTION_STATUS_CHECK_TIMER, ONE_ETH_IN_GWEI, SIGNER_METHODS, TABS_EVENT, VALIDATOR_NOMINATOR_METHOD, STREAM_CHANNELS, LAPSED_TRANSACTION_CHECKER_TIMER } from "../Constants";
 import { hasLength, isObject, isNullorUndef, hasProperty, log, isEqual, isString } from "../Utility/utility";
 import { HTTP_END_POINTS, API, HTTP_METHODS, EVM_JSON_RPC_METHODS, ERRCODES, ERROR_MESSAGES, ERROR_EVENTS_LABELS } from "../Constants";
 import { EVMRPCPayload, EventPayload, TransactionPayload, TransactionProcessingPayload, TabMessagePayload } from "../Utility/network_calls";
@@ -21,17 +21,21 @@ import { Error, ErrorPayload } from "../Utility/error_helper"
 import { sendMessageToTab, sendRuntimeMessage } from "../Utility/message_helper";
 import { assert, compactToU8a, isHex, u8aConcat, u8aEq, u8aWrapBytes } from "@polkadot/util"
 import ValidatorNominatorHandler from "./nativehelper";
-
+import ExtensionPortStream from './extension-port-stream-mod/index';
 
 //for initilization of background events
 export class InitBackground {
   //check if there is time interval binded
   static balanceTimer = null;
+  static isStatusCheckerRunning = false;
+  //background duplex stream for handling the communication between the content-script and background script
+  static backgroundStream = null;
+  static uiStream = null;
 
   constructor() {
-    this.bindAllEvents();
-    this.injectScriptInTab();
     ExtensionEventHandle.initEventsAndGetInstance();
+    this.injectScriptInTab();
+    this.bindAllEvents();
     this.networkHandler = NetworkHandler.getInstance();
     this.rpcRequestProcessor = RpcRequestProcessor.getInstance();
     this.internalHandler = ExternalConnection.getInstance();
@@ -40,7 +44,10 @@ export class InitBackground {
 
     if (!InitBackground.balanceTimer) {
       InitBackground.balanceTimer = this._balanceUpdate();
+      this._checkLapsedPendingTransactions();
     }
+
+    
   }
 
   //init the background events
@@ -79,16 +86,129 @@ export class InitBackground {
   /****************** Events Bindings ******************/
   //bind all events
   bindAllEvents = () => {
-    this.bindPopupEvents();
-    this.bindRuntimeMessageEvents();
+    this.bindStreamEventAndCreateStreams();
     this.bindInstallandUpdateEvents();
     this.bindExtensionUnmountEvents();
     this.bindBackgroundStartupEvents();
-    // this.bindBrowserCloseEvent();
   }
 
   //bind the runtime message events
-  bindRuntimeMessageEvents = async () => {
+  bindStreamEventAndCreateStreams = async () => {
+    /**
+     * create the duplex stream for bi-directional communication
+     * currently only added the streams for extension-ui and content-scirpt
+     * communication
+     */
+    Browser.runtime.onConnect.addListener(async  (port) => {
+      console.log("stream connection: ", port);
+      if(isEqual(port.name, STREAM_CHANNELS.CONTENTSCRIPT)) {
+        InitBackground.backgroundStream = new ExtensionPortStream(port);
+        //bind the stream data event for getting the messages from content-script
+        InitBackground.backgroundStream.on('data', externalEventStream);
+      }
+      else if(isEqual(port.name, STREAM_CHANNELS.EXTENSION_UI)) {
+        InitBackground.uiStream = new ExtensionPortStream(port);
+        //bind the stream data event for getting the message from extension-ui
+        InitBackground.uiStream.on('data', internalEventStream);
+        ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.CONNECTION);
+      }
+    })
+    
+    //callbacks for binding messages with stream data event
+    //for external streamed messages
+    const externalEventStream = async ({message, sender}) => {
+      const localData = await getDataLocal(LABELS.STATE);
+
+      console.log("external message: ", message);
+
+      try {
+        //check if message is array or onject
+        message.message = hasLength(message.message) ? message.message[0] : message.message;
+
+        //data for futher proceeding
+        const data = {
+          ...message,
+          origin: sender.origin,
+          tabId: sender.tab?.id
+        };
+
+        //check if the app has the permission to access requested method
+        if (!checkStringInclusionIntoArray(data?.method)) {
+          const { connectedApps } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+          const isHasAccess = connectedApps[data.origin];
+          if (!isHasAccess?.isConnected) {
+            data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.ACCESS_NOT_GRANTED));
+            return;
+          }
+        }
+
+        //checks for event from injected script
+        switch (data.method) {
+          case "connect":
+          case "eth_requestAccounts":
+          case "eth_accounts":
+            await this.internalHandler.handleConnect(data, localData);
+            break;
+          case "disconnect":
+            await this.internalHandler.handleDisconnect(data, localData);
+            break;
+          case "eth_sendTransaction":
+            await this.internalHandler.handleEthTransaction(data, localData);
+            break;
+          case "get_endPoint":
+            await this.internalHandler.sendEndPoint(data, localData);
+            break;
+          case SIGNER_METHODS.SIGN_PAYLOAD:
+          case SIGNER_METHODS.SIGN_RAW:
+            await this.internalHandler.handleNativeSigner(data, localData);
+            break;
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_NOMINATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_VALIDATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_BONDMORE:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_PAYOUT:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_RENOMINATE:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_RESTART_VALIDATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_STOP_NOMINATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_STOP_VALIDATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_UNBOND_NOMINATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_UNBOND_VALIDATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_BONDMORE:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_PAYOUT:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR_UNBONDED:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR_UNBONDED:
+            await this.internalHandler.handleValidatorNominatorTransactions(data, localData);
+            break
+          default: data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.message.id, null, null, null, ERROR_MESSAGES.INVALID_METHOD))
+        }
+      } catch (err) {
+        log("err is here: ", err);
+        ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.RUNTIME_MESSAGE_SECTION_ERROR, err.message))
+      }
+    }
+
+    // for internal extension streamed messages
+    /**
+     * not using currently but used when we replace the message passing
+     * with long-live stream conenction
+     */
+    const internalEventStream = async ({message}) => {
+      
+      const localData = await getDataLocal(LABELS.STATE);
+
+      //checks for event from extension ui
+      if (isEqual(message?.type, MESSAGE_TYPE_LABELS.INTERNAL_TX) || isEqual(message?.type, MESSAGE_TYPE_LABELS.FEE_AND_BALANCE)) 
+        await this.rpcRequestProcessor.rpcCallsMiddleware(message, localData);
+       else if (message?.type === MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL) 
+        await this.externalTaskHandler.processExternalTask(message, localData);
+       else if (message?.type === MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING) 
+        await this.keyringHandler.keyringHelper(message, localData);
+       else if (message?.type === MESSAGE_TYPE_LABELS.NETWORK_HANDLER) 
+        this.networkHandler.handleNetworkRelatedTasks(message, localData);
+    }
+    
+
     Browser.runtime.onMessage.addListener(async (message, sender) => {
 
       const localData = await getDataLocal(LABELS.STATE);
@@ -177,41 +297,6 @@ export class InitBackground {
     });
   }
 
-  //listen for the popup close and open events
-  bindPopupEvents = async () => {
-    Browser.runtime.onConnect.addListener(async (port) => {
-
-      
-      //perform according to the port name
-      if (port.name === CONNECTION_NAME) {
-        //todo
-        // this.services.messageToUI("accounts", this.hybridKeyring.getAccounts());
-
-        //handle the connection emit the connection event
-        ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.CONNECTION);
-
-        //auto update the balance
-        // if (!isNullorUndef(InitBackground.balanceTimer)) clearInterval(InitBackground.balanceTimer)
-        // InitBackground.balanceTimer = this._balanceUpdate();
-
-        //handle the popup close event
-        port?.onDisconnect.addListener(() => {
-          //clear the Interval on popup close
-          // if (!isNullorUndef(InitBackground.balanceTimer)) {
-          //   clearInterval(InitBackground.balanceTimer)
-          //   InitBackground.balanceTimer = null;
-          // }
-        });
-      } 
-      // else if(port.name === MAIN_POPUP) {
-      //   ExternalWindowControl.mainPopupOpen = true;
-      //   port?.onDisconnect.addListener(() => {
-      //     ExternalWindowControl.mainPopupOpen = false;
-      //   })
-      // }
-    });
-  }
-
   /** Fired when the extension is first installed,
   when the extension is updated to a new version,
   and when Chrome is updated to a new version. */
@@ -258,6 +343,15 @@ export class InitBackground {
       ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.BALANCE_FETCH);
     }, AUTO_BALANCE_UPDATE_TIMER)
   }
+
+  _checkLapsedPendingTransactions = () => {
+    return setInterval(() => {
+        if(!InitBackground.isStatusCheckerRunning && !TransactionQueue.transactionIntervalId) {
+          console.log("running the service for transaction status check");
+          ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.LAPSED_TRANSACTION_CHECK);
+        }
+    }, LAPSED_TRANSACTION_CHECKER_TIMER)
+  } 
 }
 
 
@@ -377,6 +471,8 @@ class TransactionQueue {
   processQueuedTransaction = async () => {
     //dequeue next transaction and add it as processing transaction
     await this.services.updateLocalState(STATE_CHANGE_ACTIONS.PROCESS_QUEUE_TRANSACTION, {}, { localStateKey: LABELS.TRANSACTION_QUEUE })
+    const {currentTransaction} = await getDataLocal(LABELS.TRANSACTION_QUEUE)
+    if(currentTransaction) await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, currentTransaction.transactionHistoryTrack, currentTransaction.options);
   }
 
 
@@ -423,7 +519,7 @@ class TransactionQueue {
       //check if txhash is found in payload then update transaction into queue and history
       if (txHash) this._updateQueueAndHistory(transactionResponse);
       else {
-        transactionResponse?.payload && await this.services.updateLocalState(STATE_CHANGE_ACTIONS.REMOVE_HISTORY_ITEM, {id: transactionResponse.payload.data?.id}, transactionResponse.payload?.options)
+        transactionResponse?.payload && await this.services.updateLocalState(STATE_CHANGE_ACTIONS.SAVE_ERRORED_FAILED_TRANSACTION, {id: transactionResponse.payload.data?.id}, transactionResponse.payload?.options)
         await this.services.updateLocalState(STATE_CHANGE_ACTIONS.REMOVE_FAILED_TX, {}, {localStateKey: LABELS.TRANSACTION_QUEUE});
 
         //if transaction is external send the error response back to requester tab
@@ -525,7 +621,7 @@ class TransactionQueue {
     if (isNullorUndef(TransactionQueue.transactionIntervalId)) {
       await this.processQueuedTransaction();
       await this.parseTransactionResponse();
-
+      
       TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus))
     }
   }
@@ -589,6 +685,7 @@ export class ExtensionEventHandle {
     this.bindTransactionProcessingEvents();
     // this.bindNewNativeSignerTransactionEvents();
     this.bindErrorHandlerEvent();
+    this.bindLapsedTransactionCheckingEvent();
   }
 
   //for creating the instance of native and evm api
@@ -617,6 +714,15 @@ export class ExtensionEventHandle {
       if (!state.currentAccount.accountName) return;
 
       await this.rpcRequestProcessor.rpcCallsMiddleware({ event: MESSAGE_EVENT_LABELS.BALANCE, type: MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, data: {} }, state);
+    })
+  }
+
+  // bind event for lapsed pending transaction updation
+  bindLapsedTransactionCheckingEvent = async () => {
+    ExtensionEventHandle.eventEmitter.on(INTERNAL_EVENT_LABELS.LAPSED_TRANSACTION_CHECK, async () => {
+      await this.services.checkPendingTransaction();
+      //false the lapsed transaction check
+      InitBackground.isStatusCheckerRunning = false;
     })
   }
 
@@ -802,6 +908,50 @@ export class Services {
     if (res) ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, res);
   }
 
+  /**
+   * some transaction are lapsed by the system on a particular case
+   * this service run on a certain time period and check if there
+   * is any pending transaction if found then check of treansaction status
+   * and save status if they whether failed or success
+   */
+  checkPendingTransaction = async () => {
+    try {
+      InitBackground.isStatusCheckerRunning = true;
+     const localDataState = await getDataLocal(LABELS.STATE);
+     const account = localDataState.currentAccount;
+     const pendingHistoryItem = localDataState.txHistory[account.evmAddress]?.filter((historyItem) => historyItem.status === STATUS.PENDING);
+     
+     if(!pendingHistoryItem?.length) return;  
+
+     //check the transaction status and update the status inside local storage
+     for(const hItem of pendingHistoryItem) {
+        if(hItem?.txHash) {
+          const {txHash, isEvm, chain} = hItem;
+          const transactionStatus = await  this.getTransactionStatus(txHash, isEvm, chain);
+
+        if(transactionStatus?.status) {
+        //update the transaction after getting the confirmation
+        hItem.status = transactionStatus.status;
+        
+        //set the used gas
+        hItem.gasUsed = hItem.isEvm ? (Number(transactionStatus?.gasUsed) / ONE_ETH_IN_GWEI).toString() : transactionStatus?.txFee
+
+        //check the transaction type and save the to recipent according to type
+        if(isEqual(hItem?.type, TX_TYPE.NATIVE_APP)) 
+        hItem.to = transactionStatus?.sectionmethod
+        else
+        hItem.to = !!hItem.intermidateHash ? hItem.to : hItem.isEvm ? transactionStatus.to || transactionStatus.contractAddress : hItem.to;
+        
+        await this.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, hItem, {account});
+          }
+        }
+     }
+
+    } catch(err) {
+      log("error while checking the lapsed pending transactions: ", err)
+    }
+  } 
+
   /*************************** Service Internals ******************************/
   //show browser notification from extension
   showNotification = (message) => {
@@ -836,7 +986,7 @@ export class TransactionsRPC {
 
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
-      transactionHistory.status = STATUS.PENDING
+      // transactionHistory.status = STATUS.PENDING
 
 
       const tempAmount = data?.options?.isBig ? (new BigNumber(data.value).dividedBy(DECIMALS)).toString() : data.value;
@@ -932,7 +1082,7 @@ export class TransactionsRPC {
       const { evmApi, nativeApi } = NetworkHandler.api[network];
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
-      transactionHistory.status = STATUS.PENDING;
+      // transactionHistory.status = STATUS.PENDING;
 
       if (Number(data.value) >= Number(state.balance.evmBalance) || Number(data.value) <= 0) {
         new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
@@ -1011,7 +1161,7 @@ export class TransactionsRPC {
       } else {
 
         //set the status to pending
-        transactionHistory.status = STATUS.PENDING;
+        // transactionHistory.status = STATUS.PENDING;
       
 
         let err;
@@ -1106,7 +1256,7 @@ export class TransactionsRPC {
         new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
       } else {
 
-        transactionHistory.status = STATUS.PENDING;
+        // transactionHistory.status = STATUS.PENDING;
 
 
         let err, evmDepositeHash, signedHash;

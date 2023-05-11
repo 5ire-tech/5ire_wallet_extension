@@ -3,14 +3,15 @@ import App from "./App";
 import React from "react";
 import Context from "./Store";
 import ReactDOM from "react-dom/client";
-import { localStorage } from "./Storage";
 import browser from "webextension-polyfill";
 import { MemoryRouter } from "react-router-dom";
-import { CONNECTION_NAME, EMTY_STR, LABELS, MAIN_POPUP } from "./Constants";
+import { EMTY_STR, LABELS, STREAM_CHANNELS } from "./Constants";
 import { getDataLocal } from "../src/Storage/loadstore"
 import { sessionStorage } from "../src/Storage/index";
 import { log } from "./Utility/utility";
 import { Toaster } from 'react-hot-toast';
+import ExtensionPortStream from "./Scripts/extension-port-stream-mod/index";
+import { MessageOverStream } from "./Utility/message_helper";
 
 //For Dev Enviroment Check
 // const isDev = process.env.NODE_ENV === "development";
@@ -46,7 +47,7 @@ const initApp = (data, externalControlsState) => {
   root.render(
     <MemoryRouter>
       <Context>
-        <App data={data} externalControlsState={externalControlsState} />
+        <App data={data} externalControlsState={externalControlsState}/>
 
         <Toaster />
       </Context>
@@ -56,10 +57,8 @@ const initApp = (data, externalControlsState) => {
 
 (async () => {
   try {
-    browser.runtime.connect({ name: CONNECTION_NAME });
-
-    // const window = browser.extension.getViews({type: "popup"});
-    // if(window.length) browser.runtime.connect({ name: MAIN_POPUP });
+    //connect to the background script using port longlive connection
+    MessageOverStream.setupStream();
 
     //inject the current state into main app
     const currentLocalState = await getDataLocal(LABELS.STATE);
