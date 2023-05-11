@@ -38,6 +38,7 @@ import {
   STATE_CHANGE_ACTIONS,
   TABS_EVENT,
   HTTP_END_POINTS,
+  WALLET_TYPES,
 } from "../../Constants/index";
 import { TabMessagePayload } from "../../Utility/network_calls";
 
@@ -386,7 +387,9 @@ function BalanceDetails({ mt0 }) {
                               </div>
                             </div>
                             <div className={style.activeDis_Modal__rytSec}>
-                              <h5>IMPORTED</h5>
+                              {e?.type === WALLET_TYPES.IMPORTED_NATIVE && (
+                                <h5>IMPORTED</h5>
+                              )}
                               {e.accountName === currentAccount?.accountName && (
                                 <Dropdown
                                   placement="bottomRight"

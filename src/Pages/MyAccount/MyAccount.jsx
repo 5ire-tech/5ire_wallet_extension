@@ -193,14 +193,7 @@ function MyAccount() {
                   <h2>
                     {e?.accountName}
 
-                    {e?.type === WALLET_TYPES.IMPORTED_NATIVE ? (
-                      <i>
-                        {" "}
-                        <small> (Imported)</small>
-                      </i>
-                    ) : (
-                      ""
-                    )}
+
                   </h2>
                 </div>
                 <p>
@@ -208,7 +201,7 @@ function MyAccount() {
                     balance?.totalBalance ? (
                       `${balance.totalBalance} ${CURRENCY}`
                     ) : (
-                      ""
+                      `0 ${CURRENCY}`
                     )
                   ) : (
                     <span
@@ -222,10 +215,10 @@ function MyAccount() {
               </div>
             </div>
             <div className={style.myAccountSec__rytSec}>
-              {/* <h2> */}
+              {e?.type === WALLET_TYPES.IMPORTED_NATIVE && (
+                <h5>IMPORTED</h5>
+              )}
 
-              {/* </h2> */}
-              <h5>IMPORTED</h5>
 
               {(e.accountName === currentAccount.accountName) && (
                 <Dropdown
