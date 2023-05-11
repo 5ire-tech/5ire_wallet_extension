@@ -73,10 +73,10 @@ function MyAccount() {
           { address: addressToRemove }
         );
 
-        const index = accounts.findIndex(acc => (
-          acc.evmAddress === addressToRemove ||
-          acc.nativeAddress === addressToRemove
-        )
+        const index = accounts.findIndex(
+          (acc) =>
+            acc.evmAddress === addressToRemove ||
+            acc.nativeAddress === addressToRemove
         );
 
         updateState(LABELS.CURRENT_ACCOUNT, accounts[index - 1]);
@@ -168,88 +168,94 @@ function MyAccount() {
         <h3>My Accounts</h3>
       </div>
       <div className={style.myAccountScrool}>
-      {accounts?.map((e, i) => (
-        <div
-          className={style.myAccountSec__accountActive}
-          key={i + e?.accountIndex}
-        >
-          <div className={style.myAccountSec__leftSec}>
-            <img src={DarkLogo} alt="logo" draggable={false} />
-            <div className={style.myAccountSec__leftSec__accountConatct}>
-              <h2>
-                {e?.accountName}
-                {e?.type === WALLET_TYPES.IMPORTED_NATIVE ? (
-                  <i>
-                    {" "}
-                    <small> (Imported)</small>
-                  </i>
-                ) : (
-                  ""
-                )}
-              </h2>
-              <p>
-                {e?.accountName === currentAccount?.accountName ? (
-                  balance?.totalBalance ? (
-                    `${balance.totalBalance} ${CURRENCY}`
+        {accounts?.map((e, i) => (
+          <div
+            className={style.myAccountSec__accountActive}
+            key={i + e?.accountIndex}
+          >
+            <div className={style.myAccountSec__leftSec}>
+              <img src={DarkLogo} alt="logo" draggable={false} />
+              <div className={style.myAccountSec__leftSec__accountConatct}>
+                <div className={style.nameGreenCircel}>
+                  {e?.accountName === currentAccount?.accountName && (
+                    <>
+                      <h2>
+                        {" "}
+                        <img
+                          src={GreenCircle}
+                          alt="connectionLogo"
+                          draggable={false}
+                        />
+                        {/* {LABELS.ACTIVE} */}
+                      </h2>
+                    </>
+                  )}
+                  <h2>
+                    {e?.accountName}
+
+                    {e?.type === WALLET_TYPES.IMPORTED_NATIVE ? (
+                      <i>
+                        {" "}
+                        <small> (Imported)</small>
+                      </i>
+                    ) : (
+                      ""
+                    )}
+                  </h2>
+                </div>
+                <p>
+                  {e?.accountName === currentAccount?.accountName ? (
+                    balance?.totalBalance ? (
+                      `${balance.totalBalance} ${CURRENCY}`
+                    ) : (
+                      ""
+                    )
                   ) : (
-                    ""
-                  )
-                ) : (
-                  <span
-                    onClick={() => onSelectAcc(e?.accountName)}
-                    className={style.myAccountSec__switchAcc}
-                  >
-                    Switch to this account
-                  </span>
-                )}
-              </p>
+                    <span
+                      onClick={() => onSelectAcc(e?.accountName)}
+                      className={style.myAccountSec__switchAcc}
+                    >
+                      Switch to this account
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
+            <div className={style.myAccountSec__rytSec}>
+              {/* <h2> */}
+
+              {/* </h2> */}
+              <h5>IMPORTED</h5>
+
+              {(e.accountName === currentAccount.accountName) && (
+                <Dropdown
+                  placement="bottomRight"
+                  arrow={{ pointAtCenter: true }}
+                  menu={{
+                    items: [
+                      {
+                        key: i,
+                        label: (
+                          <span onClick={() => handleModalOpen(e.evmAddress)}>
+                            Remove
+                            {/* <img src={fillArow} /> */}
+                          </span>
+                        ),
+                      },
+                    ],
+                  }}
+                  trigger={["click"]}
+                >
+                  <div style={{ cursor: "pointer" }} onClick={(e) => e.preventDefault()}>
+                    <Space>
+                      <img src={ThreeDot} alt="3dots" />
+                    </Space>
+                  </div>
+                </Dropdown>
+              )}
             </div>
           </div>
-          <div className={style.myAccountSec__rytSec}>
-            {/* <h2> */}
-            {e?.accountName === currentAccount?.accountName && (
-              <>
-                <h2>
-                  {" "}
-                  <img
-                    src={GreenCircle}
-                    alt="connectionLogo"
-                    draggable={false}
-                  />
-                  {LABELS.ACTIVE}
-                </h2>
-              </>
-            ) 
-            }
-            {/* </h2> */}
-            {Number(e.accountIndex) === 0 && e.type === "hd_wallet" ? (
-              ""
-            ) : (
-              <Dropdown
-                placement="bottomRight" arrow={{ pointAtCenter: true }}
-                menu={{
-                  items: [
-                    {
-                      key: i,
-                      label: (
-                        <span onClick={() => handleModalOpen(e.evmAddress)}>
-                          Remove
-                          {/* <img src={fillArow} /> */}
-                        </span>
-                      ),
-                    },
-                  ],
-                }}
-                trigger="click"
-              >
-                <Space style={{ cursor: "pointer" }}>
-                  <img src={ThreeDot} alt="3dots" />
-                </Space>
-              </Dropdown>
-            )}
-          </div>
-        </div>
-      ))}
+        ))}
       </div>
       <ModalCustom
         isModalOpen={isModalOpen}
