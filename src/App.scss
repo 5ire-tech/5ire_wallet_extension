@@ -7,7 +7,7 @@ body {
 .App {
   text-align: center;
   max-width: 400px;
-
+  margin: 0 auto;
   // min-height: 100vh;
 }
 .WelcomeLayout {
@@ -104,19 +104,19 @@ body {
     padding: 0 !important;
   }
 }
-.inputField{
-  .ant-input-affix-wrapper{
+.inputField {
+  .ant-input-affix-wrapper {
     padding: 0;
     border-width: 0;
     background-color: transparent;
-    &:hover{
+    &:hover {
       border-inline-end-width: 0px !important;
     }
   }
-  .ant-input-suffix{
+  .ant-input-suffix {
     margin: 0;
   }
-  .maxBtn{
+  .maxBtn {
     background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
     border: 1px solid #13d3e1;
     border-radius: 7px;
@@ -480,7 +480,7 @@ body {
 }
 
 .ant-tooltip .ant-tooltip-inner {
-  background:#06142cCc;
+  background: #06142ccc;
   border-radius: 6px;
   font-size: 12px;
 }
@@ -503,7 +503,7 @@ body {
   h3 {
     padding-right: 14px;
     font-size: 14px;
-        padding-top: 24px;
+    padding-top: 24px;
   }
   .btnYesNo {
     background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
@@ -539,13 +539,25 @@ body {
   cursor: pointer;
 }
 
-.blurContact { 
+.blurContact {
   filter: blur(2px);
 }
-.totalBal{
+.totalBal {
   display: inline-block !important;
-    max-width: 190px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  max-width: 190px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ant-tooltip .ant-tooltip-arrow::after {
+  border: 1px solid #fff;
+}
+.ant-tooltip .ant-tooltip-inner {
+  border: 1px solid #fff;
+}
+.closeModalIcon{
+  &:hover{
+    opacity: 0.5;
+  }
 }

@@ -7,7 +7,7 @@ import React, { useContext, useState } from "react";
 import { arrayReverser } from "../../Utility/utility";
 import ModalCloseIcon from "../../Assets/ModalCloseIcon.svg";
 import TransectionHistry from "../../Components/TransectionHistry/TransectionHistry";
-
+import noTransaction from "../../Assets/NoTransaction.svg";
 
 function History() {
   const [open1, setOpen1] = useState(false);
@@ -29,23 +29,36 @@ function History() {
       setSelectedTransaction(data);
       setOpen1(true);
     }
-  }
+  };
 
   return (
     <div className={style.historySec}>
       <div className={style.historySec__historyHead}>
         <h3>Transaction History</h3>
       </div>
-
-      {
-        (txHistory[currentAccount?.evmAddress] && txHistory[currentAccount?.evmAddress].length > 0) ?
-          (
-            arrayReverser(txHistory[currentAccount?.evmAddress].filter((tx => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()))).map((data, index) => (
-              <HistoryItem historyItem={data} handleHistoryOpen={handleHistoryOpen} key={CURRENCY + index} index={index} />
-            ))
-          ) : (<h4 className={style.noTxn}>No Transaction Found!</h4>)
-      }
-
+      <div className={style.histryDataScrol}>
+        {txHistory[currentAccount?.evmAddress] &&
+        txHistory[currentAccount?.evmAddress].length > 0 ? (
+          arrayReverser(
+            txHistory[currentAccount?.evmAddress].filter(
+              (tx) => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()
+            )
+          ).map((data, index) => (
+            <HistoryItem
+              historyItem={data}
+              handleHistoryOpen={handleHistoryOpen}
+              key={CURRENCY + index}
+              index={index}
+            />
+          ))
+        ) : (
+          <div className={style.noTransaction}>
+            {" "}
+            <img src={noTransaction}/>
+            <h4 className={style.noTxn}>No Transaction Found!</h4>
+          </div>
+        )}
+      </div>
       <Drawer
         title={
           <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -55,9 +68,19 @@ function History() {
         placement="bottom"
         onClose={onClose1}
         open={open1}
-        closeIcon={<img src={ModalCloseIcon} alt="close" draggable={false} />}
+        closeIcon={
+          <img
+            src={ModalCloseIcon}
+            alt="close"
+            draggable={false}
+            className="closeModalIcon"
+          />
+        }
       >
-        <TransectionHistry selectedTransaction={selectedTransaction} account={currentAccount} />
+        <TransectionHistry
+          selectedTransaction={selectedTransaction}
+          account={currentAccount}
+        />
       </Drawer>
     </div>
   );

@@ -22,11 +22,10 @@ function PrivateKey() {
   const { currentAccount } = state;
   const [isOpen, setOpen] = useState({ open1: true, open2: true });
 
-
   const handleEyeOpen = (e) => {
     const name = e.target.name;
-    setOpen(p => ({ ...p, [name]: !isOpen[name] }));
-  }
+    setOpen((p) => ({ ...p, [name]: !isOpen[name] }));
+  };
   useEffect(() => {
     // if (id === PVT_KEY) {
     sendRuntimeMessage(
@@ -61,10 +60,13 @@ function PrivateKey() {
             </div>
             <div className={style.wallet}>
               <div className={style.wallet__addressInput}>
+                <label>EVM Private Key</label>
                 <p
                   className={`${style.wallet__addressInput__copyText} ${style.wallet__addressInput__privateCopyText}`}
                 >
-                  <span className={isOpen.open1 && "blurContact"}>{privateKey ? privateKey : ""}</span>
+                  <span className={isOpen.open1 && "blurContact"}>
+                    {privateKey ? privateKey : ""}
+                  </span>
                   {isOpen?.open1 ? (
                     <img
                       width={19}
@@ -104,10 +106,13 @@ function PrivateKey() {
             </div> */}
             <div className={style.wallet}>
               <div className={style.wallet__addressInput}>
+                <label>Mnemonic Phrase:</label>
                 <p
                   className={`${style.wallet__addressInput__copyText} ${style.wallet__addressInput__privateCopyText}`}
                 >
-                  <span className={isOpen.open2 && "blurContact"}>{seedPhrase ? seedPhrase : ""}</span>
+                  <span className={isOpen.open2 && "blurContact"}>
+                    {seedPhrase ? seedPhrase : ""}
+                  </span>
                   {isOpen?.open2 ? (
                     <img
                       width={19}

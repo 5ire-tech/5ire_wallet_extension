@@ -38,7 +38,7 @@ export function StepHeaders({ active, isCreate = true }) {
           {/* <div className={active === 4 && style.active}>3</div> */}
         </div>
       ) : (
-        <div className={style.steps} style={{ color: "white" }}>
+        <div className={`${style.steps} ${style.importSteps}`} style={{ color: "white" }}>
           {/* <p>style.active</p> */}
           <div className={`${style.innerStep} ${style.innerStepLast}`}>
             <div
