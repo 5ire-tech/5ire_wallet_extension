@@ -159,6 +159,7 @@ body {
     border: 1px solid #404058 !important;
     color: $white;
     font-size: 14px;
+    resize: none;
 
     &::placeholder {
       color: $white !important;
@@ -168,6 +169,7 @@ body {
   textarea {
     min-height: 70px;
     max-height: 70px;
+    resize: none;
   }
 }
 
