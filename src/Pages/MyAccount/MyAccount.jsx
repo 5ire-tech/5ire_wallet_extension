@@ -27,9 +27,7 @@ import {
   MESSAGE_EVENT_LABELS,
   // ACCOUNT_CHANGED_EVENT,
 } from "../../Constants/index";
-// import Browser from "webextension-polyfill";
-// import fillArow from "../../Assets/fillArow.svg";
-// import { getCurrentTabDetails } from "../../Scripts/utils";
+
 
 function MyAccount() {
   const navigate = useNavigate();
@@ -51,34 +49,29 @@ function MyAccount() {
     setAccounts(allAccounts);
   }, [allAccounts]);
 
+  //remove Account
   const handleRemoveAcc = () => {
     if (!addressToRemove) {
       toast.error(ERROR_MESSAGES.UNABLE_TO_REMOVE_ACC);
     } else {
+      //Remove account
+      sendRuntimeMessage(
+        MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+        MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT,
+        { address: addressToRemove }
+      );
+
       if (
         currentAccount.evmAddress === addressToRemove ||
         currentAccount.nativeAddress === addressToRemove
       ) {
-        //Remove account
-        sendRuntimeMessage(
-          MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
-          MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT,
-          { address: addressToRemove }
-        );
-
         const index = accounts.findIndex(
           (acc) =>
             acc.evmAddress === addressToRemove ||
             acc.nativeAddress === addressToRemove
         );
 
-        updateState(LABELS.CURRENT_ACCOUNT, accounts[index - 1]);
-        // removeHistory(accounts[index].accountName);
-        sendRuntimeMessage(
-          MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
-          MESSAGE_EVENT_LABELS.BALANCE,
-          {}
-        );
+        updateCurrentAccount(accounts[index - 1])
       }
     }
     handle_OK_Cancel();
@@ -101,6 +94,7 @@ function MyAccount() {
   };
 
   const handleModalOpen = (address) => {
+    console.log("Address :::: ", address);
     if (address) {
       setAddressToRemove(address);
       setModalOpen(true);
@@ -121,6 +115,7 @@ function MyAccount() {
   const updateCurrentAccount = (acc) => {
 
     updateState(LABELS.CURRENT_ACCOUNT, acc);
+
     if (allAccountsBalance.hasOwnProperty(acc?.evmAddress)) {
       updateState(LABELS.BALANCE, allAccountsBalance[acc.evmAddress]);
     } else {
@@ -215,12 +210,14 @@ function MyAccount() {
               </div>
             </div>
             <div className={style.myAccountSec__rytSec}>
+
               {e?.type === WALLET_TYPES.IMPORTED_NATIVE && (
                 <h5>IMPORTED</h5>
               )}
 
-
-              {(e.accountName === currentAccount.accountName) && (
+              {Number(e.accountIndex) === 0 && e.type === "hd_wallet" ? (
+                ""
+              ) : (
                 <Dropdown
                   placement="bottomRight"
                   arrow={{ pointAtCenter: true }}

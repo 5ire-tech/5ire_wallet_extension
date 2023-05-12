@@ -297,16 +297,21 @@ export class ExtensionStorageHandler {
     // remove specific account 
     removeAccount = async (message, state) => {
         const newState = { ...state, vault: message.vault };
+        // console.log("state before delete tx and balance", newState);
         if (newState?.txHistory.hasOwnProperty(newState?.currentAccount.evmAddress)) {
             delete newState.txHistory[newState?.currentAccount.evmAddress];
         }
+        // console.log("newState?.allAccountsBalance.hasOwnProperty(newState?.currentAccount.evmAddress? : ", newState?.allAccountsBalance.hasOwnProperty(newState?.currentAccount.evmAddress));
         if (newState?.allAccountsBalance.hasOwnProperty(newState?.currentAccount.evmAddress)) {
+            // console.log("newState?.currentAccount.evmAddress : ", newState?.currentAccount.evmAddress);
             delete newState.allAccountsBalance[newState?.currentAccount.evmAddress];
         }
         if (message?.isInitialAccount) {
             newState.isLogin = false;
             newState.currentAccount = userState.currentAccount;
         }
+        console.log("state after delete tx and balance", newState);
+
         return await this._updateStorage(newState);
 
     }

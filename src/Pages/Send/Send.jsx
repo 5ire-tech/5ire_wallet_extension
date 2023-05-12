@@ -13,10 +13,6 @@ import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import {
-  InputField,
-  InputFieldOnly,
-} from "../../Components/InputField/InputFieldSimple";
-import {
   EVM,
   LABELS,
   NATIVE,
@@ -27,6 +23,10 @@ import {
   MESSAGE_EVENT_LABELS,
   EXISTENTIAL_DEPOSITE,
 } from "../../Constants/index";
+import {
+  InputField,
+  InputFieldOnly,
+} from "../../Components/InputField/InputFieldSimple";
 
 
 function Send() {
@@ -89,6 +89,8 @@ function Send() {
       !estimatedGas
     ) {
       setDisable(true);
+    } else {
+      setDisable(false);
     }
 
   }, [err.to, err.amount, data?.to, data?.amount, isEd, estimatedGas]);
@@ -113,22 +115,23 @@ function Send() {
 
           return;
         }
-        else if (data?.amount && estimatedGas) {
+        else if (data?.amount && estimatedGas && data?.to) {
           if (
             Number(data.amount) +
             Number(estimatedGas) +
             (isEd ? EXISTENTIAL_DEPOSITE : 0) >
             Number(balance.evmBalance)
           ) {
-            setDisable(true);
+            // setDisable(true);
+
             updateEstimatedGas(null);
             setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
+          } else {
+
+            // setDisable(false);
+            setErr((p) => ({ ...p, amount: "" }));
+
           }
-
-        } else {
-
-          setDisable(false);
-          setErr((p) => ({ ...p, amount: "" }));
 
         }
       } else if (activeTab === NATIVE) {
@@ -152,12 +155,12 @@ function Send() {
         ) {
 
           updateEstimatedGas(null);
-          setDisable(true);
+          // setDisable(true);
           setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
 
         } else {
 
-          setDisable(false);
+          // setDisable(false);
           setErr((p) => ({ ...p, amount: "" }));
 
         }
@@ -348,7 +351,7 @@ function Send() {
   };
 
   const activeSend = (e) => {
-    setDisable(true);
+    // setDisable(true);
     updateEstimatedGas(null);
     setActiveTab(e.target.name);
     setErr({ to: "", amount: "" });
@@ -357,7 +360,7 @@ function Send() {
 
   //handle Ok and cancel button of popup
   const handle_OK_Cancel = () => {
-    setDisable(true);
+    // setDisable(true);
     setIsFaildOpen(false);
     updateEstimatedGas(null);
     setData({ to: "", amount: "" });
@@ -417,13 +420,11 @@ function Send() {
               EVM
             </button>
             <div
-              className={`${
-                activeTab === NATIVE &&
+              className={`${activeTab === NATIVE &&
                 style.activeFirst
-              } ${
-                activeTab === EVM &&
+                } ${activeTab === EVM &&
                 style.activeSecond
-              } ${style.animations}`}
+                } ${style.animations}`}
             ></div>
           </div>
         </div>

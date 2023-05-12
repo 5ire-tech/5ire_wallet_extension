@@ -204,10 +204,9 @@ export default function Context({ children }) {
 
   const removeAccount = (data) => {
     setNewAccount(newAccountInitialState);
+    console.log("isInitialAccount : ", data?.isInitialAccount);
     if (data?.isInitialAccount) {
       navigate(ROUTES.DEFAULT)
-    } else {
-      navigate(ROUTES.WALLET);
     }
   }
 

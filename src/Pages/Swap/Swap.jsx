@@ -5,10 +5,10 @@ import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
 import { AuthContext } from "../../Store";
 import Info from "../../Assets/infoIcon.svg";
-import { isEmpty } from "../../Utility/utility";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import SmallLogo from "../../Assets/smallLogo.svg";
+// import { isEmpty } from "../../Utility/utility";
 import ComplSwap from "../../Assets/succeslogo.svg";
 import React, { useState, useContext } from "react";
 // import WalletCardLogo from "../../Assets/walletcardLogo.svg";
@@ -148,8 +148,6 @@ function Swap() {
 
   //validate amount
   const validateAmount = () => {
-
-    console.log("Amount : ", amount);
 
     if (amount.length === 0)
       setError(ERROR_MESSAGES.INPUT_REQUIRED);
