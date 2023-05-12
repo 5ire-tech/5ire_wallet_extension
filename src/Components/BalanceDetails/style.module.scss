@@ -276,8 +276,14 @@
       color: $white;
       font-size: 15px;
       // text-transform: capitalize;
-      display: flex;
-      gap: 6px;
+      display: inline-block;
+      max-width: 180px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      img{
+        padding-right: 5px;
+      }
     }
 
     span {
