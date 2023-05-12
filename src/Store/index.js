@@ -2,42 +2,48 @@ import { ROUTES } from "../Routes/index";
 import Browser from "webextension-polyfill";
 import { useNavigate } from "react-router-dom";
 import { isManifestV3 } from "../Scripts/utils";
-import { createContext, useEffect, useState } from "react";
+import { sendEventToTab } from "../Helper/helper";
+import { createContext, useState } from "react";
 import { isNullorUndef, log } from "../Utility/utility";
 import { sessionStorage, localStorage } from "../Storage";
+import { TabMessagePayload } from "../Utility/network_calls";
 import { bindRuntimeMessageListener } from "../Utility/message_helper";
-import { MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, LABELS, TABS_EVENT } from "../Constants";
+import {
+  LABELS,
+  TABS_EVENT,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS,
+} from "../Constants";
 import {
   userState,
   externalControls,
   newAccountInitialState,
   initialExternalNativeTransaction
 } from "./initialState";
-import { sendEventToTab } from "../Helper/helper";
-import { TabMessagePayload } from "../Utility/network_calls";
 
 export const AuthContext = createContext();
 
 export default function Context({ children }) {
+
   const navigate = useNavigate();
   const [state, setState] = useState(userState);
-  const [inputError, setInputError] = useState("");
   const [userPass, setUserPass] = useState(null);
   const [isLoading, setLoading] = useState(false);
+  const [inputError, setInputError] = useState("");
   const [privateKey, setPrivateKey] = useState("");
   const [seedPhrase, setSeedPhrase] = useState("");
   const [accountName, setAccName] = useState(null);
   const [allAccounts, setAllAccounts] = useState([]);
   const [estimatedGas, setEstimatedGas] = useState(null);
-  const [valdatorNominatorFee, setValdatorNominatorFee] = useState(null);
-
-  const [externalNativeTxDetails, setExternalNativeTxDetails] = useState(initialExternalNativeTransaction);
+  const [newWalletName, setNewWalletName] = useState("");
   const [passVerified, setPassVerified] = useState(false);
-  const [newAccount, setNewAccount] = useState(newAccountInitialState);
-  const [externalControlsState, setExternalControlState] = useState(externalControls);
   const [backgroundError, setBackgroundError] = useState(null);
   const [showCongratLoader, setShowCongratLoader] = useState(false);
-  const [newWalletName, setNewWalletName] = useState("");
+  const [newAccount, setNewAccount] = useState(newAccountInitialState);
+  const [valdatorNominatorFee, setValdatorNominatorFee] = useState(null);
+  const [tempBalance, setTempBalance] = useState({ evmBalance: 0, nativeBalance: 0 });
+  const [externalControlsState, setExternalControlState] = useState(externalControls);
+  const [externalNativeTxDetails, setExternalNativeTxDetails] = useState(initialExternalNativeTransaction);
 
 
   Browser.storage.local.onChanged.addListener((changedData) => {
@@ -210,11 +216,12 @@ export default function Context({ children }) {
     //data
     state,
     userPass,
-    inputError,
     isLoading,
+    inputError,
     newAccount,
     privateKey,
     seedPhrase,
+    tempBalance,
     allAccounts,
     accountName,
     estimatedGas,
@@ -235,6 +242,7 @@ export default function Context({ children }) {
     updateLoading,
     setNewAccount,
     setPrivateKey,
+    setTempBalance,
     // removeHistory,
     setPassVerified,
     setNewWalletName,

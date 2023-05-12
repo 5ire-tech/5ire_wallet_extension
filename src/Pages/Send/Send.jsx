@@ -32,22 +32,28 @@ import {
 function Send() {
   const [isEd, setEd] = useState(true);
   const [disableBtn, setDisable] = useState(true);
+  const [activeTab, setActiveTab] = useState(NATIVE);
   const [isMaxDisabled, setMaxDisabled] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [err, setErr] = useState({ to: "", amount: "" });
   const [data, setData] = useState({ to: "", amount: "" });
-  const [activeTab, setActiveTab] = useState(NATIVE);
-  const { state, estimatedGas, updateEstimatedGas, updateLoading } =
-    useContext(AuthContext);
+  const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
 
-  const { balance, currentAccount } = state;
+  const { balance, currentAccount, currentNetwork } = state;
 
   // Reset the amount, to and error evm and native address changed
   useEffect(() => {
-    setData({ to: "", amount: "" });
+    updateEstimatedGas(null);
     setErr({ to: "", amount: "" });
-  }, [currentAccount?.evmAddress, currentAccount?.nativeAddress]);
+    setData({ to: "", amount: "" });
+  }, [currentAccount?.evmAddress, currentAccount?.nativeAddress, currentNetwork]);
+
+  useEffect(() => {
+    if (!data.to && !data.amount && !estimatedGas) {
+      setErr({ to: "", amount: "" });
+    }
+  }, [data.to, data.amount, estimatedGas]);
 
   useEffect(() => {
     if (
@@ -89,6 +95,10 @@ function Send() {
 
   //Check for Insufficent balance
   useEffect(() => {
+    // console.log("estimatedGas : ", estimatedGas);
+    // console.log("amount : ", data.amount);
+    // console.log("to : ", data.to);
+
     if (!estimatedGas) {
       setDisable(true);
     } else {
@@ -103,16 +113,17 @@ function Send() {
 
           return;
         }
-        else if (
-          Number(data.amount) +
-          Number(estimatedGas) +
-          (isEd ? EXISTENTIAL_DEPOSITE : 0) >
-          Number(balance.evmBalance)
-        ) {
-
-          updateEstimatedGas(null);
-          setDisable(true);
-          setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
+        else if (data?.amount && estimatedGas) {
+          if (
+            Number(data.amount) +
+            Number(estimatedGas) +
+            (isEd ? EXISTENTIAL_DEPOSITE : 0) >
+            Number(balance.evmBalance)
+          ) {
+            setDisable(true);
+            updateEstimatedGas(null);
+            setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
+          }
 
         } else {
 
@@ -121,7 +132,6 @@ function Send() {
 
         }
       } else if (activeTab === NATIVE) {
-
         if (estimatedGas && !data.amount && data.to) {
 
           const amount = Number(balance.nativeBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0));
@@ -153,7 +163,7 @@ function Send() {
         }
       }
     }
-  }, [estimatedGas, activeTab, balance?.evmBalance, balance.nativeBalance, data.amount, isEd]);
+  }, [estimatedGas, activeTab, balance?.evmBalance, balance.nativeBalance, data.amount, data.to, isEd]);
 
 
   const blockInvalidChar = (e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
@@ -171,7 +181,7 @@ function Send() {
   const validateAmount = () => {
     if (!data.amount)
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INPUT_REQUIRED }));
-    if (isNaN(data.amount))
+    else if (isNaN(data.amount))
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.ENTER_AMOUNT_CORRECTLY }));
     else if (Number(data.amount) <= 0)
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.AMOUNT_CANT_BE_0 }));
@@ -279,7 +289,6 @@ function Send() {
           [e.target.name]: e.target.value.trim(),
         }));
         updateEstimatedGas(null);
-        setData(p => ({ ...p, amount: "" }));
       }
     }
   };

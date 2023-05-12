@@ -40,13 +40,20 @@ function Swap() {
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [toFrom, setToFrom] = useState({ from: NATIVE, to: EVM });
   const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
-  const { balance } = state;
+  const { balance, currentNetwork } = state;
 
   //Reset the amount and error when to and from changes
   useEffect(() => {
-    setAmount("");
     setError("");
-  }, [toFrom.to]);
+    setAmount("");
+    updateEstimatedGas(null);
+  }, [toFrom.to, currentNetwork]);
+
+  useEffect(() => {
+    if (!amount && !estimatedGas) {
+      setError("");
+    }
+  }, [amount, estimatedGas]);
 
 
   useEffect(() => {
@@ -141,6 +148,8 @@ function Swap() {
 
   //validate amount
   const validateAmount = () => {
+
+    console.log("Amount : ", amount);
 
     if (amount.length === 0)
       setError(ERROR_MESSAGES.INPUT_REQUIRED);

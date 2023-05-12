@@ -8,7 +8,8 @@ import { ERROR_MESSAGES, MESSAGE_EVENT_LABELS, MESSAGE_TYPE_LABELS, TX_TYPE } fr
 import { shortLongAddress } from "../../Utility/utility";
 import { AuthContext } from "../../Store";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
+import {toast} from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../Routes";
 

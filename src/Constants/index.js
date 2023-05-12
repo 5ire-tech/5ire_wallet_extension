@@ -100,7 +100,7 @@ export const ERROR_MESSAGES = {
     INCORRECT_PASS: "Incorrect password.",
     INCORRECT_ADDRESS: "Invalid address.",
     INPUT_REQUIRED: "This field is required.",
-    PASS_DONT_MATCH: "Passwords do not match.",
+    PASS_DONT_MATCH: "Password do not match.",
     INSUFFICENT_BALANCE: "Insufficent Balance.",
     UNDEF_PROPERTY: "Object not has given property",
     AMOUNT_CANT_BE_0: "Amount can't be 0 or less than 0",
