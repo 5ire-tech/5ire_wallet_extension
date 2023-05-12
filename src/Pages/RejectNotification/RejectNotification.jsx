@@ -103,7 +103,7 @@ function ApproveTx() {
                           ? LABELS.CONTRACT
                           : activeSession.message?.to}
                       </span>
-                      <img
+                      {/* <img
                         src={CopyIcon}
                         alt="copyIcon"
                         draggable={false}
@@ -115,7 +115,7 @@ function ApproveTx() {
                               : activeSession.message?.to
                           )
                           toast.success(COPIED);
-                        }} />
+                        }} /> */}
                     </p>
                   </div>
                 </div>

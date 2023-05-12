@@ -416,6 +416,15 @@ function Send() {
             >
               EVM
             </button>
+            <div
+              className={`${
+                activeTab === NATIVE &&
+                style.activeFirst
+              } ${
+                activeTab === EVM &&
+                style.activeSecond
+              } ${style.animations}`}
+            ></div>
           </div>
         </div>
         <div className={style.sendSec__inputInnerSec}>

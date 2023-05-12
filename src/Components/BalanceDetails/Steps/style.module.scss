@@ -15,8 +15,11 @@
   content: "";
   opacity: 0.5;
 }
+.importSteps{
+  justify-content: space-around;
+}
 .importAfter > div::after{
-  width: 268px;
+  width: 156px;
 }
 .stepsItems {
   background: #0f2046;

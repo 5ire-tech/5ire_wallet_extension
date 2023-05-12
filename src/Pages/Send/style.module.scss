@@ -32,9 +32,10 @@
     margin: auto;
     margin-right: 0;
     padding: 3px;
+    position: relative;
 
     &__buttons {
-      background: #0e1e41;
+      background: transparent;
       // border-radius: 12px 0 0px 12px;
       width: 100%;
       // max-width: 62px;
@@ -44,12 +45,36 @@
       border: 0;
       font-size: 12px;
       padding: 5px;
-
+      position: relative;
+      z-index: 1;
+      transition: width .3s,left .3s,right .3s;
       &__active {
-        background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
+        // background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
         // border: 1px solid rgba(255, 255, 255, 0.5);
-        border: 1px solid #13d3e1;
+        // border: 1px solid #13d3e1;
         // border-radius: 0px 12px 12px 0px;
+      }
+    }
+    .animations {
+      position: absolute;
+      height: 28px;
+      top: 0;
+      z-index: 0;
+      &.activeFirst {
+        left: 0;
+        width: 70px;
+        background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
+        border: 1px solid #13d3e1;
+        border-radius: 7px;
+        transition: width .3s,left .3s,right .3s;
+      }
+      &.activeSecond {
+        left: 70px;
+        width: 67px;
+        background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
+        border: 1px solid #13d3e1;
+        border-radius: 7px;
+        transition: width .3s,left .3s,right .3s;
       }
     }
   }

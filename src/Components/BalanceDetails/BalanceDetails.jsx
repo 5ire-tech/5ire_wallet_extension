@@ -32,6 +32,7 @@ import {
   CURRENCY,
   ZERO_CHAR,
   TABS_EVENT,
+  WALLET_TYPES,
   HTTP_END_POINTS,
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
@@ -266,15 +267,25 @@ function BalanceDetails({ mt0 }) {
                       ) : (
                         <>
                           <p>
-                            <img
-                              src={
+                            <Tooltip
+                              placement="bottom"
+                              title={
                                 isEqual(pathname, ROUTES.APPROVE_TXN)
-                                  ? GreenCircle
-                                  : GrayCircle
+                                  ? "Connected"
+                                  : "Not Connected"
                               }
-                              alt="connectionLogo"
-                              draggable={false}
-                            />
+                            >
+                              <img
+                                src={
+                                  isEqual(pathname, ROUTES.APPROVE_TXN)
+                                    ? GreenCircle
+                                    : GrayCircle
+                                }
+                                alt="connectionLogo"
+                                draggable={false}
+                                className="ant-tooltip-open"
+                              />
+                            </Tooltip>
                             {currentAccount?.accountName
                               ? currentAccount?.accountName
                               : ""}
@@ -314,88 +325,105 @@ function BalanceDetails({ mt0 }) {
                         </p>
                       )}
                     </div>
-                    {url.startsWith("http") &&
-                      !isNewSite &&
-                      allAccounts.length > 0 &&
-                      allAccounts.map((e, i) => (
-                        <div
-                          className={style.activeDis_Modal__accountActive}
-                          key={i + e?.accountName}
-                        >
-                          <div className={style.activeDis_Modal__leftSec}>
-                            <img src={DarkLogo} alt="logo" />
-                            <div
-                              className={
-                                style.activeDis_Modal__leftSec__accountConatct
-                              }
-                            >
-                              <h2>{e.accountName}</h2>
+                    <div className="headerPopUpModal">
+                      {url.startsWith("http") &&
+                        !isNewSite &&
+                        allAccounts.length > 0 &&
+                        allAccounts.map((e, i) => (
+                          <div
+                            className={style.activeDis_Modal__accountActive}
+                            key={i + e?.accountName}
+                          >
+                            <div className={style.activeDis_Modal__leftSec}>
+                              <img src={DarkLogo} alt="logo" />
+                              <div
+                                className={
+                                  style.activeDis_Modal__leftSec__accountConatct
+                                }
+                              >
+                                <h2>
 
-                              {e?.accountName === currentAccount?.accountName ? (
-                                <p><span className={style.activeDis_Modal__leftSec__spanContact}>{`${balance?.totalBalance} `}</span>5ire</p>
-                              ) : (
-                                <p
-                                  classname={style.activeDis_Modal__switchAcc}
-                                  onClick={() => onSelectAcc(e?.accountName)}
+                                  {e.accountName === currentAccount?.accountName &&
+                                    isConnected ? (
+                                    <Tooltip placement="bottom" title="Connected">
+                                      <img
+                                        src={GreenCircle}
+                                        alt="connectionLogo"
+                                        draggable={false}
+                                        style={{ cursor: "pointer" }}
+                                      />
+                                    </Tooltip>
+                                  ) : (
+                                    <Tooltip placement="bottom" title="Not Connected">
+                                      <img
+                                        className={style.grayCircle}
+                                        src={GrayCircle}
+                                        alt="connectionLogo"
+                                        draggable={false}
+                                        style={{ cursor: "pointer" }}
+                                      />
+                                    </Tooltip>)}
+                                  {e.accountName}
+                                </h2>
+
+                                {e?.accountName === currentAccount?.accountName ? (
+                                  <p>
+                                    <span
+                                      className={
+                                        style.activeDis_Modal__leftSec__spanContact
+                                      }
+                                    >{`${balance?.totalBalance} `}</span>
+                                    &nbsp;{CURRENCY}
+                                  </p>
+                                ) : (
+                                  <p
+                                    classname={style.activeDis_Modal__switchAcc}
+                                    onClick={() => onSelectAcc(e?.accountName)}
+                                  >
+                                    <span>Switch Account</span>
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div className={style.activeDis_Modal__rytSec}>
+                              {e?.type === WALLET_TYPES.IMPORTED_NATIVE && (
+                                <h5>IMPORTED</h5>
+                              )}
+                              {e.accountName === currentAccount?.accountName && (
+                                <Dropdown
+                                  placement="bottomRight"
+                                  arrow={{ pointAtCenter: true }}
+                                  menu={{
+                                    items: [
+                                      {
+                                        key: i,
+                                        label: (
+                                          <span
+                                            onClick={
+                                              isConnected
+                                                ? handleDisconnect
+                                                : handleConnect
+                                            }
+                                          >
+                                            {isConnected
+                                              ? "Disconnect"
+                                              : "Connect"}
+                                          </span>
+                                        ),
+                                      },
+                                    ],
+                                  }}
+                                  trigger="click"
                                 >
-                                  Switch Account
-                                </p>
+                                  <Space style={{ cursor: "pointer" }}>
+                                    <img src={ThreeDot} alt="3dots" />
+                                  </Space>
+                                </Dropdown>
                               )}
                             </div>
                           </div>
-                          <div className={style.activeDis_Modal__rytSec}>
-                            <h2>
-                              {e.accountName === currentAccount?.accountName &&
-                                isConnected ? (
-                                <img
-                                  src={GreenCircle}
-                                  alt="connectionLogo"
-                                  draggable={false}
-                                />
-                              ) : (
-                                <img
-                                  src={GrayCircle}
-                                  alt="connectionLogo"
-                                  draggable={false}
-                                />
-                              )}{" "}
-                              {e.accountName === currentAccount?.accountName &&
-                                isConnected
-                                ? LABELS.CONNECTED
-                                : LABELS.NOT_CONNECTED}
-                            </h2>
-                            {e.accountName === currentAccount?.accountName && (
-                              <Dropdown
-                                menu={{
-                                  items: [
-                                    {
-                                      key: i,
-                                      label: (
-                                        <span
-                                          onClick={
-                                            isConnected
-                                              ? handleDisconnect
-                                              : handleConnect
-                                          }
-                                        >
-                                          {isConnected
-                                            ? "Disconnected"
-                                            : "Connect"}
-                                        </span>
-                                      ),
-                                    },
-                                  ],
-                                }}
-                                trigger="click"
-                              >
-                                <Space style={{ cursor: "pointer" }}>
-                                  <img src={ThreeDot} alt="3dots" />
-                                </Space>
-                              </Dropdown>
-                            )}
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                    </div>
                   </div>
                 </ModalCustom>
                 <div className={style.balanceDetails__selectStyle}>
@@ -425,11 +453,17 @@ function BalanceDetails({ mt0 }) {
                     options={[
                       {
                         value: NETWORK.TEST_NETWORK,
-                        label: <span className="flexedItemSelect">{NETWORK.TEST_NETWORK}</span>,
+                        label: (
+                          <span className="flexedItemSelect">
+                            {NETWORK.TEST_NETWORK}
+                          </span>
+                        ),
                       },
                       {
                         value: NETWORK.UAT,
-                        label: <span className="flexedItemSelect">{NETWORK.UAT}</span>,
+                        label: (
+                          <span className="flexedItemSelect">{NETWORK.UAT}</span>
+                        ),
                       },
                       {
                         value: NETWORK.QA_NETWORK,
@@ -454,7 +488,10 @@ function BalanceDetails({ mt0 }) {
                       {balance?.totalBalance ? (
                         <>
                           {" "}
-                          <Tooltip placement="bottom" title={balance.totalBalance}>
+                          <Tooltip
+                            placement="bottom"
+                            title={balance.totalBalance}
+                          >
                             <span className="totalBal">
                               {balance.totalBalance}
                             </span>
@@ -550,7 +587,7 @@ function BalanceDetails({ mt0 }) {
                   </div>
                   <div className={style.balanceDetails__nativemodal__scanner}>
                     <QRCode
-                      size={200}
+                      size={180}
                       style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                       viewBox={`0 0 256 256`}
                       value={
@@ -563,13 +600,13 @@ function BalanceDetails({ mt0 }) {
                   <div className={style.balanceDetails__nativemodal__modalOr}>
                     <p>or</p>
                   </div>
-                  <p className={style.balanceDetails__nativemodal__addressText}>
+                  {/* <p className={style.balanceDetails__nativemodal__addressText}>
                     Your 5ire Native Address
-                  </p>
+                  </p> */}
                   <div className={style.balanceDetails__nativemodal__wrapedText}>
                     <p>
                       {currentAccount?.nativeAddress
-                        ? shortner(currentAccount?.nativeAddress)
+                        ? currentAccount?.nativeAddress
                         : ""}
                       <img
                         draggable={false}
@@ -580,9 +617,6 @@ function BalanceDetails({ mt0 }) {
                       />
                     </p>
                   </div>
-                  <div
-                    className={style.balanceDetails__nativemodal__footerbuttons}
-                  ></div>
                 </div>
               </div>
             </ModalCustom>
@@ -621,13 +655,13 @@ function BalanceDetails({ mt0 }) {
                   <div className={style.balanceDetails__nativemodal__modalOr}>
                     <p>or</p>
                   </div>
-                  <p className={style.balanceDetails__nativemodal__addressText}>
+                  {/* <p className={style.balanceDetails__nativemodal__addressText}>
                     Your 5ire EVM Address
-                  </p>
+                  </p> */}
                   <div className={style.balanceDetails__nativemodal__wrapedText}>
                     <p>
                       {currentAccount?.evmAddress
-                        ? shortner(currentAccount?.evmAddress)
+                        ? currentAccount?.evmAddress
                         : ""}
                       <img
                         draggable={false}
@@ -638,11 +672,11 @@ function BalanceDetails({ mt0 }) {
                       />
                     </p>
                   </div>
-                  <div
+                  {/* <div
                     className={style.balanceDetails__nativemodal__footerbuttons}
-                  >
-                    {/* <ButtonComp text={"Share Address"} /> */}
-                  </div>
+                  > */}
+                  {/* <ButtonComp text={"Share Address"} /> */}
+                  {/* </div> */}
                 </div>
               </div>
             </ModalCustom>

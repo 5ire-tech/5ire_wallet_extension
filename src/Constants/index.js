@@ -25,8 +25,8 @@ export const TRANSACTION_STATUS_CHECK_TIMER = 5000;
 
 //tabs event
 export const TABS_EVENT = {
-    ACCOUNT_CHANGE_EVENT: "accountChange",
-    NETWORK_CHANGE_EVENT: "networkChange",
+    ACCOUNT_CHANGE_EVENT: "accountsChanged",
+    NETWORK_CHANGE_EVENT: "networkChanged",
     WALLET_CONNECTED_EVENT: "connect",
     WALLET_DISCONNECTED_EVEN: "disconnect"
 }
@@ -54,7 +54,7 @@ export const TX_TYPE = {
     NATIVE_APP: "Native App",
     NATIVE_SIGNER: "Native Signer",
     CONTRACT_EXECUTION: "Contract Execution",
-    CONTRACT_DEPLOYMENT: "Contract Deployement",
+    CONTRACT_DEPLOYMENT: "Contract Deployment",
 };
 
 export const NETWORK = {
@@ -102,6 +102,7 @@ export const ERROR_MESSAGES = {
     INPUT_REQUIRED: "This field is required.",
     PASS_DONT_MATCH: "Password do not match.",
     INSUFFICENT_BALANCE: "Insufficent Balance.",
+    INSUFFICENT_BALANCE_VD_NM: "Insufficient Funds: Fee + Amount is more than available balance.",
     UNDEF_PROPERTY: "Object not has given property",
     AMOUNT_CANT_BE_0: "Amount can't be 0 or less than 0",
     SINGER_ERROR: "Error while signing the the raw/payload",
@@ -119,7 +120,7 @@ export const ERROR_MESSAGES = {
     ACCOUNT_ACCESS_NOT_GRANTED: "The requested account has not been authorized by the user",
     ERROR_WHILE_TRANSACTION: "Transaction failed, error occured during transaction processing",
     ERROR_WHILE_GAS_ESTIMATION: "Gas Estimation Failed, something wrong happend while gas estimation",
-    CREATE_PASS_MSG: "Password must have at leas t 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
+    CREATE_PASS_MSG: "Password must have at least 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
 
 
     INVALID_PROPERTY: "Invalid property.",
@@ -380,3 +381,5 @@ export const VALIDATOR_NOMINATOR_METHOD = {
     NATIVE_WITHDRAW_NOMINATOR_UNBONDED: "native_withdraw_nominator_unbonded",
     NATIVE_WITHDRAW_VALIDATOR_UNBONDED: "native_withdraw_validator_unbonded"
 }
+
+export const VALIDATION_METHODS_VD_NM = [VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_BONDMORE, VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_BONDMORE, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR]

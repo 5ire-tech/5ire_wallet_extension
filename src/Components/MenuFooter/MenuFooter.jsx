@@ -180,7 +180,7 @@ function MenuFooter() {
         onClose={onClose2}
         open={open2}
         closeIcon={
-          <img src={ModalCloseIcon} alt="ModalCloseIcon" draggable={false} />
+          <img src={ModalCloseIcon} alt="ModalCloseIcon" draggable={false} className="closeModalIcon" />
         }
       >
         <Link to={ROUTES.MANAGE_WALLET} draggable={false}>

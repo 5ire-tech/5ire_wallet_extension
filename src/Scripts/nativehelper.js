@@ -216,10 +216,10 @@ export default class ValidatorNominatorHandler {
 
   native_nominator_payout = async (state, payload, isFee = false) => {
 
-    if (!payload.validatorIdList || !payload.firstEra) {
+    if (!payload.validatorIdList) {
       return {
         error: true,
-        data: "Invalid Params: Validator Accounts and First Era index are required"
+        data: "Invalid Params: Validator Accounts are required"
       }
     }
     return this.native_validator_payout(state, payload, isFee)
