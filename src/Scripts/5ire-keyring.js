@@ -434,6 +434,7 @@ export class HybridKeyring extends EventEmitter {
     */
     async removeAccount(message) {
         const { address } = message?.data;
+        // console.log("Address to remove in 5ire Key  ",address);
         const password = message?.data?.password ? message?.data?.password : HybridKeyring.password;
 
         await this._verifyPassword(password);
@@ -464,7 +465,8 @@ export class HybridKeyring extends EventEmitter {
         let payload = {
             vault: null,
             accounts: [],
-            isInitialAccount: true
+            isInitialAccount: true,
+            removedAccountAddress: address,
         }
 
         //Persist state
@@ -472,7 +474,8 @@ export class HybridKeyring extends EventEmitter {
             const prsistRes = await this._persistData(HybridKeyring.password)
             payload = {
                 vault: prsistRes.vault,
-                accounts: HybridKeyring.accounts
+                accounts: HybridKeyring.accounts,
+                removedAccountAddress: address
             }
             payload.isInitialAccount = false;
 

@@ -31,7 +31,7 @@ import {
 
 function MyAccount() {
   const navigate = useNavigate();
-  const [accounts, setAccounts] = useState([]);
+  // const [accounts, setAccounts] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [addressToRemove, setAddressToRemove] = useState(null);
   const {
@@ -45,12 +45,10 @@ function MyAccount() {
   const { connectedApps } = externalControlsState;
   const { balance, currentAccount, allAccountsBalance } = state;
 
-  useEffect(() => {
-    setAccounts(allAccounts);
-  }, [allAccounts]);
 
   //remove Account
   const handleRemoveAcc = () => {
+    // console.log("addressToRemove : ", addressToRemove);
     if (!addressToRemove) {
       toast.error(ERROR_MESSAGES.UNABLE_TO_REMOVE_ACC);
     } else {
@@ -61,18 +59,13 @@ function MyAccount() {
         { address: addressToRemove }
       );
 
-      if (
-        currentAccount.evmAddress === addressToRemove ||
-        currentAccount.nativeAddress === addressToRemove
-      ) {
-        const index = accounts.findIndex(
-          (acc) =>
-            acc.evmAddress === addressToRemove ||
-            acc.nativeAddress === addressToRemove
-        );
-
-        updateCurrentAccount(accounts[index - 1])
+      if (currentAccount.evmAddress === addressToRemove) {
+        const index = allAccounts.findIndex(acc => acc.evmAddress === addressToRemove);
+        console.log("allAccounts[index - 1] : ", allAccounts[index - 1]);
+        updateCurrentAccount(allAccounts[index - 1])
       }
+
+      setAddressToRemove(null)
     }
     handle_OK_Cancel();
   };
@@ -94,7 +87,6 @@ function MyAccount() {
   };
 
   const handleModalOpen = (address) => {
-    console.log("Address :::: ", address);
     if (address) {
       setAddressToRemove(address);
       setModalOpen(true);
@@ -106,7 +98,7 @@ function MyAccount() {
   };
 
   const onSelectAcc = (name) => {
-    const acc = accounts.find((acc) => acc.accountName === name);
+    const acc = allAccounts.find((acc) => acc.accountName === name);
 
     updateCurrentAccount(acc);
   };
@@ -163,7 +155,7 @@ function MyAccount() {
         <h3>My Accounts</h3>
       </div>
       <div className={style.myAccountScrool}>
-        {accounts?.map((e, i) => (
+        {allAccounts?.map((e, i) => (
           <div
             className={style.myAccountSec__accountActive}
             key={i + e?.accountIndex}
