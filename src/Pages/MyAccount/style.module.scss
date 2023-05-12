@@ -51,6 +51,11 @@
         // text-transform: capitalize;
         font-size: 15px;
         color: #ffffff;
+        display: inline-block !important;
+    max-width: 177px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
       }
 
       p {
@@ -72,11 +77,10 @@
 
   &__rytSec {
     display: flex;
-    gap: 18px;
+    gap: 10px;
     align-items: center;
     padding-right: 15px;
-    max-width: 80px;
-    align-items: center;
+    max-width: 77px;
     // width: 100%;
 
     h5 {
