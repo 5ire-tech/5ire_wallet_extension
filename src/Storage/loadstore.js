@@ -172,28 +172,28 @@ export class ExtensionStorageHandler {
 
     /************************************ For Transaction Queue *********************/
     //add a new transaction task
-    addNewTransaction = async (data, state) => {
+    addNewTransaction = async (data, state, options) => {
         const newState = { ...state };
-        newState.txQueue.push(data)
+        newState[options.network].txQueue.push(data)
         return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE);
     }
 
     //process new transaction
-    processQueuedTransaction = async (data, state) => {
-        const queuedTransaction = state.txQueue.shift();
-        const newState = { ...state, currentTransaction: queuedTransaction ? {...queuedTransaction, transactionHistoryTrack: {...queuedTransaction.transactionHistoryTrack, status: STATUS.PENDING}} : null };
+    processQueuedTransaction = async (data, state, options) => {
+        const queuedTransaction = state[options.network].txQueue.shift();
+        const newState = { ...state, [options.network]: {...state[options.network], currentTransaction: queuedTransaction ? {...queuedTransaction, transactionHistoryTrack: {...queuedTransaction.transactionHistoryTrack, status: STATUS.PENDING}} : null} };
         return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
     }
 
     //update the transaction track into current processing transaction
-    updateHistoryTrack = async (data, state) => {
-        const newState = { ...state, currentTransaction: { ...state?.currentTransaction, transactionHistoryTrack: data } };
+    updateHistoryTrack = async (data, state, options) => {
+        const newState = { ...state, [options.network]: {...state[options.network], currentTransaction: { ...state[options.network]?.currentTransaction, transactionHistoryTrack: data }} };
         return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
     }
 
     //remove the current failed transaction
-    removeFailedTx = async (data, state) => {
-        const newState = { ...state, currentTransaction: null };
+    removeFailedTx = async (data, state, options) => {
+        const newState = { ...state, [options.network]: {...state[options.network], currentTransaction: null} };
         return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
     }
 

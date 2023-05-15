@@ -143,7 +143,7 @@ export class HybridKeyring extends EventEmitter {
         const { password } = message?.data;
         const verifiedResponse = await this._verifyPassword(password);
         const verified = verifiedResponse.vault ? true : false;
-        return new EventPayload(message.event, message.event, { verified }, [], false);
+        return new EventPayload(message.event, message.event, { verified });
     }
 
     /**
@@ -158,7 +158,7 @@ export class HybridKeyring extends EventEmitter {
         HybridKeyring.polkaKeyring = null;
         HybridKeyring.simpleEthKeyring = null;
 
-        return new EventPayload(message.event, message.event, { isLogin: false }, [], false);
+        return new EventPayload(message.event, message.event, { isLogin: false });
     }
 
     /**
@@ -175,7 +175,7 @@ export class HybridKeyring extends EventEmitter {
         await this.loadPersistData(HybridKeyring.password, vault);
         // const payload = { accounts: HybridKeyring.accounts, isLogin: true };
 
-        return new EventPayload(message.event, message.event, { isLogin: true }, [], false);
+        return new EventPayload(message.event, message.event, { isLogin: true });
 
     }
 
@@ -233,7 +233,7 @@ export class HybridKeyring extends EventEmitter {
         const payload = { vault: key.vault, newAccount: newAcc, type };
 
 
-        return new EventPayload(message.event, message.event, payload, [], false);
+        return new EventPayload(message.event, message.event, payload);
 
     }
 
@@ -284,7 +284,7 @@ export class HybridKeyring extends EventEmitter {
             vault: response.vault
         }
         // return newAcc;
-        return new EventPayload(message.event, message.event, payload, [], false);
+        return new EventPayload(message.event, message.event, payload);
     }
 
     /**
@@ -411,10 +411,9 @@ export class HybridKeyring extends EventEmitter {
             vault: response.vault
         };
 
-        // console.log("Event payloadd :: ", new EventPayload(message.event, message.event, payload, [], false));
 
         // return newAcc
-        return new EventPayload(message.event, message.event, payload, [], false);
+        return new EventPayload(message.event, message.event, payload);
 
         // } catch (error) {
         //     console.log("error in import account by mnemonic : ", error);
@@ -482,7 +481,7 @@ export class HybridKeyring extends EventEmitter {
 
 
         // return accounts
-        return new EventPayload(message.event, message.event, payload, [], false);
+        return new EventPayload(message.event, message.event, payload);
     }
     /**
       * Forgot Password by Mnemonic
@@ -581,7 +580,7 @@ export class HybridKeyring extends EventEmitter {
         // console.log("HYBRIDKEYRING keyrings::: ",HybridKeyring.keyrings);
         // console.log("HYBRIDKEYRING vault::: ",HybridKeyring.vault);
         // console.log("HYBRIDKEYRING password::: ",HybridKeyring.password);
-        return new EventPayload(null, message.event, HybridKeyring.accounts, [], false);
+        return new EventPayload(null, message.event, HybridKeyring.accounts);
     }
 
     /**
@@ -631,14 +630,14 @@ export class HybridKeyring extends EventEmitter {
         const { address } = message.data;
         const result = await this._exportEthAccountByAddress(address, HybridKeyring.password);
         const payload = { privateKey: result ? result : "" }
-        return new EventPayload(message.event, message.event, payload, [], false);
+        return new EventPayload(message.event, message.event, payload);
     }
 
     async exportSeedPhrase(message) {
         const { address } = message.data;
         const result = await this._exportNativeAccountByAddress(address, HybridKeyring.password);
         const payload = { seedPhrase: result };
-        return new EventPayload(message.event, message.event, payload, [], false);
+        return new EventPayload(message.event, message.event, payload);
     }
 
     async resetVaultAndPass() {

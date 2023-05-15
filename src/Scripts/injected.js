@@ -14,7 +14,6 @@ import { log } from "../Utility/utility";
     target: CONTENT_SCRIPT,
   });
   
-  
   /**
    * inject the fire provider into current active webpage
    */
@@ -44,12 +43,12 @@ import { log } from "../Utility/utility";
       } else {
   
         if (fireProvider.conntectMethods.find(item => item === handler?.method)) {
-          fireProvider.injectSelectedAccount(data?.response?.evmAddress || (data?.response?.result?.length && data?.response?.result[0]));
+          fireProvider._injectSelectedAccount(data?.response?.evmAddress || (data?.response?.result?.length && data?.response?.result[0]));
           handler?.resolve(data?.response?.result)
           delete fireProvider.handlers[data.id];
           return;
         } else if (handler?.method === "disconnect") {
-          fireProvider.injectSelectedAccount(null);
+          fireProvider._injectSelectedAccount(null);
         }
   
   

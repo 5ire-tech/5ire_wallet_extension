@@ -5,13 +5,13 @@ import Context from "./Store";
 import ReactDOM from "react-dom/client";
 import browser from "webextension-polyfill";
 import { MemoryRouter } from "react-router-dom";
-import { EMTY_STR, LABELS, STREAM_CHANNELS } from "./Constants";
+import { EMTY_STR, LABELS, MESSAGE_EVENT_LABELS, MESSAGE_TYPE_LABELS, STREAM_CHANNELS } from "./Constants";
 import { getDataLocal } from "../src/Storage/loadstore"
 import { sessionStorage } from "../src/Storage/index";
 import { log } from "./Utility/utility";
 import { Toaster } from 'react-hot-toast';
 import ExtensionPortStream from "./Scripts/extension-port-stream-mod/index";
-import { MessageOverStream } from "./Utility/message_helper";
+import { MessageOverStream, sendRuntimeMessage } from "./Utility/message_helper";
 
 //For Dev Enviroment Check
 // const isDev = process.env.NODE_ENV === "development";
@@ -48,7 +48,6 @@ const initApp = (data, externalControlsState) => {
     <MemoryRouter>
       <Context>
         <App data={data} externalControlsState={externalControlsState}/>
-
         <Toaster />
       </Context>
     </MemoryRouter>
@@ -63,10 +62,12 @@ const initApp = (data, externalControlsState) => {
     //inject the current state into main app
     const currentLocalState = await getDataLocal(LABELS.STATE);
     const externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+
+    //created the transaction queue
+    await getDataLocal(LABELS.TRANSACTION_QUEUE);
+    
     const loginState = await sessionStorage.get(LABELS.ISLOGIN);
-
     currentLocalState.isLogin = !loginState?.isLogin ? false : currentLocalState?.isLogin;
-
     initApp(currentLocalState, externalControlsState);
 
   } catch (err) {

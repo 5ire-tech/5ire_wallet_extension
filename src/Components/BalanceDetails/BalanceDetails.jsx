@@ -49,7 +49,7 @@ function BalanceDetails({ mt0 }) {
   const [isHeaderActive, setHeaderActive] = useState(false);
   const [isNewSite, setNewSite] = useState(false);
   const [url, setUrl] = useState("");
-  const { state, updateState, externalControlsState, allAccounts } =
+  const { state, updateState, externalControlsState, allAccounts, updateLoading } =
     useContext(AuthContext);
 
   const { connectedApps } = externalControlsState;
@@ -77,19 +77,21 @@ function BalanceDetails({ mt0 }) {
 
   //network change handler
   const handleNetworkChange = async (network) => {
-    //change the network
-    sendRuntimeMessage(
-      MESSAGE_TYPE_LABELS.NETWORK_HANDLER,
-      MESSAGE_EVENT_LABELS.NETWORK_CHANGE,
-      {}
-    );
-    updateState(LABELS.CURRENT_NETWORK, network);
+    updateLoading(true);
 
+    updateState(LABELS.CURRENT_NETWORK, network);
     updateState(LABELS.BALANCE, {
       evmBalance: ZERO_CHAR,
       nativeBalance: ZERO_CHAR,
       totalBalance: ZERO_CHAR,
     });
+
+    //change the network
+    sendRuntimeMessage(
+    MESSAGE_TYPE_LABELS.NETWORK_HANDLER,
+    MESSAGE_EVENT_LABELS.NETWORK_CHANGE,
+    {}
+    );
 
     //send the network change event to current opned tab if its connected
     sendEventToTab(

@@ -21,7 +21,6 @@ export class FireProvider extends SafeEventEmitter {
     this.chainId = "0x3e5";
     this.networkVersion = 997;
     this.version = "1.4.0";
-    this.is5ire = true
     this.connected = true;
 
     //for handling the different Promise handlers
@@ -47,7 +46,7 @@ export class FireProvider extends SafeEventEmitter {
 
 
     //inject the endpoint
-    this.injectHttpProvider()
+    this._injectHttpProvider()
   }
 
   connect() {
@@ -108,19 +107,6 @@ export class FireProvider extends SafeEventEmitter {
 
     const res = await this.sendJsonRpc(isObject ? method.method : method, !payload && isObject ? method.params : payload);
     return res;
-  }
-
-
-  //inject the http endpoint for specfic network
-  async injectHttpProvider() {
-    const result = await this.passReq("get_endPoint", null)
-    if (result) this.httpHost = result;
-  }
-
-
-  //inject accounts into provider
-  injectSelectedAccount(address) {
-    this.selectedAddress = address
   }
 
 
@@ -195,4 +181,17 @@ export class FireProvider extends SafeEventEmitter {
       }
     });
   }
+
+  /*************************** Internal Methods *****************************/
+    //inject the http endpoint for specfic network
+    async _injectHttpProvider() {
+      const result = await this.passReq("get_endPoint", null)
+      if (result) this.httpHost = result;
+    }
+  
+  
+    //inject accounts into provider
+    _injectSelectedAccount(address) {
+      this.selectedAddress = address
+    }
 }

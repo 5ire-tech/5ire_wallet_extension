@@ -19,7 +19,7 @@ export const WINDOW_HEIGHT = 620;
 export const EXISTENTIAL_DEPOSITE = 1;
 export const ONE_ETH_IN_GWEI = 1000000000;
 export const AUTO_BALANCE_UPDATE_TIMER = 8000;
-export const LAPSED_TRANSACTION_CHECKER_TIMER = 20*1000;
+export const LAPSED_TRANSACTION_CHECKER_TIMER = 25*1000;
 export const WEI_IN_ONE_ETH = 1000000000000000000;
 export const TRANSACTION_STATUS_CHECK_TIMER = 5000;
 
@@ -120,8 +120,10 @@ export const ERROR_MESSAGES = {
     ACCESS_NOT_GRANTED: "The requested method has not been authorized by the user",
     ACCOUNT_ACCESS_NOT_GRANTED: "The requested account has not been authorized by the user",
     ERROR_WHILE_TRANSACTION: "Transaction failed, error occured during transaction processing",
+    ERROR_WHILE_TRANSACTION_STATUS_CHECK: "Error while fething the transaction recipt.",
     ERROR_WHILE_GAS_ESTIMATION: "Gas Estimation Failed, something wrong happend while gas estimation",
     CREATE_PASS_MSG: "Password must have at leas t 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
+    ERROR_WHILE_NETWORK_CONNECTION: "Network Connection Error, please change network or try again later",
 
 
     INVALID_PROPERTY: "Invalid property.",
@@ -162,7 +164,8 @@ export const ERRCODES = {
     ERROR_WHILE_BALANCE_FETCH: 12,
     ERROR_WHILE_GETTING_ESTIMATED_FEE: 13,
     KEYRING_SECTION_ERROR: 14,
-    RUNTIME_MESSAGE_SECTION_ERROR: 15
+    RUNTIME_MESSAGE_SECTION_ERROR: 15,
+    ERROR_WHILE_TRANSACTION_STATUS_CHECK: 16
 }
 
 
@@ -262,7 +265,7 @@ export const MESSAGE_EVENT_LABELS = {
     EVM_TO_NATIVE_SWAP: "evmToNativeSwap",
     NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
     CLOSE_POPUP_SESSION: "closePopupSession",
-
+    
     LOCK: "lock",
     UNLOCK: "unlock",
     ADD_ACCOUNT: "addAccount",
@@ -275,14 +278,17 @@ export const MESSAGE_EVENT_LABELS = {
     // RESET_VAULT_AND_PASS: "resetVaultAndPass",
     VERIFY_USER_PASSWORD: "verifyUserPassword",
     IMPORT_BY_MNEMONIC: "importAccountByMnemonics",
-
+    
     //network related events
-    NETWORK_CHANGE: "networkChange"
+    NETWORK_CONNECTION_ERROR: "networkConnectionError",
+    NETWORK_CHANGE: "networkChange",
+    NETWORK_CHECK: "networkCheck",
 }
 
 export const INTERNAL_EVENT_LABELS = {
     ERROR: "error",
     CONNECTION: "connection",
+    CHECK_NETWORK_CONNECTION: "checkNetworkConnection",
     BALANCE_FETCH: "balanceFetch",
     NEW_TRANSACTION_INQUEUE: "newTransactionInQueue",
     NEW_NATIVE_SIGNER_TRANSACTION_INQUEUE: "newNativeSignerTransactionInQueue",

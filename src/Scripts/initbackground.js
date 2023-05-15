@@ -100,7 +100,7 @@ export class InitBackground {
      * communication
      */
     Browser.runtime.onConnect.addListener(async  (port) => {
-      console.log("stream connection: ", port);
+      // console.log("stream connection: ", port);
       if(isEqual(port.name, STREAM_CHANNELS.CONTENTSCRIPT)) {
         InitBackground.backgroundStream = new ExtensionPortStream(port);
         //bind the stream data event for getting the messages from content-script
@@ -112,6 +112,12 @@ export class InitBackground {
         InitBackground.uiStream.on('data', internalEventStream);
         ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.CONNECTION);
       }
+
+      //port disconnect event
+      port.onDisconnect.addListener((port) => {
+        if(isEqual(port.name, STREAM_CHANNELS.CONTENTSCRIPT)) InitBackground.backgroundStream = null;
+        else if(isEqual(port.name, STREAM_CHANNELS.EXTENSION_UI)) InitBackground.uiStream = null;
+      });
     })
     
     //callbacks for binding messages with stream data event
@@ -432,6 +438,7 @@ class RpcRequestProcessor {
 class TransactionQueue {
   static instance = null;
   static transactionIntervalId = null;
+  static networkTransactionHandler = [];
 
   constructor() {
     this.services = new Services();
@@ -452,6 +459,7 @@ class TransactionQueue {
   
   //add new transaction
   addNewTransaction = async (transactionProcessingPayload) => {
+
     //add the transaction history track
     const { data, options } = transactionProcessingPayload;
     transactionProcessingPayload.transactionHistoryTrack = new TransactionPayload(data?.to || options?.to, data?.value ? parseFloat(Number(data?.value)).toString() : "", options?.isEvm, options?.network, options?.type);
@@ -460,26 +468,30 @@ class TransactionQueue {
     await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY, transactionProcessingPayload.transactionHistoryTrack, transactionProcessingPayload.options);
 
     //add the new transaction into queue
-    await this.services.updateLocalState(STATE_CHANGE_ACTIONS.ADD_NEW_TRANSACTION, transactionProcessingPayload, { localStateKey: LABELS.TRANSACTION_QUEUE });
+    await this.services.updateLocalState(STATE_CHANGE_ACTIONS.ADD_NEW_TRANSACTION, transactionProcessingPayload, { localStateKey: LABELS.TRANSACTION_QUEUE, network: transactionProcessingPayload.options?.network.toLowerCase() });
 
     //emit the event that new transaction is added into queue
-    ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.NEW_TRANSACTION_INQUEUE);
+    ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.NEW_TRANSACTION_INQUEUE, options.network.toLowerCase());
   }
 
 
   //process next queued transaction
-  processQueuedTransaction = async () => {
+  processQueuedTransaction = async (network) => {
     //dequeue next transaction and add it as processing transaction
-    await this.services.updateLocalState(STATE_CHANGE_ACTIONS.PROCESS_QUEUE_TRANSACTION, {}, { localStateKey: LABELS.TRANSACTION_QUEUE })
-    const {currentTransaction} = await getDataLocal(LABELS.TRANSACTION_QUEUE)
+    await this.services.updateLocalState(STATE_CHANGE_ACTIONS.PROCESS_QUEUE_TRANSACTION, {}, { localStateKey: LABELS.TRANSACTION_QUEUE,network});
+
+    //set the current transaction status to pending
+    const allQueues = await getDataLocal(LABELS.TRANSACTION_QUEUE);
+    const {currentTransaction} = allQueues[network];
     if(currentTransaction) await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, currentTransaction.transactionHistoryTrack, currentTransaction.options);
   }
 
 
   //perform transaction rpc request
-  processTransaction = async () => {
+  processTransaction = async (network) => {
     const state = await getDataLocal(LABELS.STATE);
-    const { currentTransaction } = await getDataLocal(LABELS.TRANSACTION_QUEUE);
+    const allQueues = await getDataLocal(LABELS.TRANSACTION_QUEUE);
+    const {currentTransaction} = allQueues[network];
     try {
 
       if (hasProperty(this.transactionRpc, currentTransaction.type)) {
@@ -491,16 +503,16 @@ class TransactionQueue {
     } catch (err) {
       log("error while saving the transaction", err)
       const error = new ErrorPayload(ERRCODES.INTERNAL, err.message);
-      return new EventPayload(null, null, {data: currentTransaction?.transactionHistoryTrack}, [], error);
+      return new EventPayload(null, null, {data: currentTransaction?.transactionHistoryTrack}, error);
     }
   }
 
 
   //parse the response after processing the transaction
-  parseTransactionResponse = async () => {
+  parseTransactionResponse = async (network) => {
 
     //perform the current active transactions 
-    const transactionResponse = await this.processTransaction();
+    const transactionResponse = await this.processTransaction(network);
 
     const { txHash } = transactionResponse.payload?.data;
 
@@ -514,13 +526,15 @@ class TransactionQueue {
         sendMessageToTab(externalTransaction?.tabId, new TabMessagePayload(externalTransaction.id, externalResponse));
       }
 
-      await this._updateQueueAndHistory(transactionResponse);
+      await this._updateQueueAndHistory(transactionResponse, network);
     } else {
       //check if txhash is found in payload then update transaction into queue and history
-      if (txHash) this._updateQueueAndHistory(transactionResponse);
+      if (txHash) this._updateQueueAndHistory(transactionResponse, network);
       else {
         transactionResponse?.payload && await this.services.updateLocalState(STATE_CHANGE_ACTIONS.SAVE_ERRORED_FAILED_TRANSACTION, {id: transactionResponse.payload.data?.id}, transactionResponse.payload?.options)
-        await this.services.updateLocalState(STATE_CHANGE_ACTIONS.REMOVE_FAILED_TX, {}, {localStateKey: LABELS.TRANSACTION_QUEUE});
+
+        //set the current errored transaction in queue as null
+        await this.services.updateLocalState(STATE_CHANGE_ACTIONS.REMOVE_FAILED_TX, {}, {localStateKey: LABELS.TRANSACTION_QUEUE, network});
 
         //if transaction is external send the error response back to requester tab
         if(transactionResponse.payload.options?.externalTransaction) {
@@ -535,20 +549,23 @@ class TransactionQueue {
 
 
   //set timer for updating the transaction status
-  checkTransactionStatus = async () => {
+  checkTransactionStatus = async (network) => {
     try {
       //check if current transaction is there or not
-    const transactionQueue = await getDataLocal(LABELS.TRANSACTION_QUEUE);
+      const allQueues = await getDataLocal(LABELS.TRANSACTION_QUEUE);
+      const transactionQueue = allQueues[network];
+
     const hasPendingTx = transactionQueue.txQueue.length;
 
     //if the current transaction is null then it is failed and removed
     if(!transactionQueue.currentTransaction) {
       //check if there any pending transaction into queue
       if (!isEqual(hasPendingTx, 0)) {
-        await this.processQueuedTransaction();
-        await this.parseTransactionResponse();
-        TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus))
+        await this.processQueuedTransaction(network);
+        await this.parseTransactionResponse(network);
+        TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus.bind(null, network)))
       } else {
+        TransactionQueue.networkTransactionHandler = TransactionQueue.networkTransactionHandler.filter(item => item !== network);
         //reset the timeout id as null so whenever new transaction made the timeout start again
         TransactionQueue.setIntervalId(null);
       }
@@ -591,38 +608,43 @@ class TransactionQueue {
         ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.BALANCE_FETCH);
 
         //dequeue the new transaction and set as active for processing
-        await this.processQueuedTransaction();
+        await this.processQueuedTransaction(network);
 
         //show notification of transaction status
         this.services.showNotification(txNotificationStringTemplate(transactionStatus.status, txHash));
 
         //check if there any pending transaction into queue
         if (!isEqual(hasPendingTx, 0)) {
-          await this.parseTransactionResponse();
-          TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus))
+          await this.parseTransactionResponse(network);
+          TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus.bind(null, network)))
         } else {
+          TransactionQueue.networkTransactionHandler = TransactionQueue.networkTransactionHandler.filter(item => item !== network);
           //reset the timeout id as null so whenever new transaction made the timeout start again
           TransactionQueue.setIntervalId(null);
         }
       }
       //if transaction is still in pending state
       else {
-        TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus))
+        TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus.bind(null, network)))
       }
     }
     } catch (err) {
       log("error while transaction processing: ", err)
+      ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.ERROR_WHILE_TRANSACTION_STATUS_CHECK, ERROR_MESSAGES.ERROR_WHILE_TRANSACTION_STATUS_CHECK));
     }
   }
 
   /******************************* Event Callbacks *************************/
   //callback for new transaction inserted into queue event
-  newTransactionAddedEventCallback = async () => {
-    if (isNullorUndef(TransactionQueue.transactionIntervalId)) {
-      await this.processQueuedTransaction();
-      await this.parseTransactionResponse();
+  newTransactionAddedEventCallback = async (network) => {
+    log("network here: ", network, !TransactionQueue.networkTransactionHandler.includes(network), TransactionQueue.networkTransactionHandler);
+    // isNullorUndef(TransactionQueue.transactionIntervalId) 
+    if (!TransactionQueue.networkTransactionHandler.includes(network)) {
+      TransactionQueue.networkTransactionHandler.push(network);
+      await this.processQueuedTransaction(network);
+      await this.parseTransactionResponse(network);
       
-      TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus))
+      TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus.bind(null, network)))
     }
   }
 
@@ -643,11 +665,11 @@ class TransactionQueue {
   }
 
   //update the transaction queue and history
-  _updateQueueAndHistory = async (transactionResponse) => {
+  _updateQueueAndHistory = async (transactionResponse, network) => {
     await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, transactionResponse.payload.data, transactionResponse.payload?.options);
 
     //update the transaction into active transaction session
-    await this.services.updateLocalState(STATE_CHANGE_ACTIONS.UPDATE_HISTORY_TRACK, transactionResponse.payload.data, { localStateKey: LABELS.TRANSACTION_QUEUE });
+    await this.services.updateLocalState(STATE_CHANGE_ACTIONS.UPDATE_HISTORY_TRACK, transactionResponse.payload.data, { localStateKey: LABELS.TRANSACTION_QUEUE, network });
   }
 }
 
@@ -736,8 +758,12 @@ export class ExtensionEventHandle {
         log("error catched inside error event handler: ", err);
         //transaction failed and error message handler
         if(isEqual(err?.errCode, ERRCODES.ERROR_WHILE_TRANSACTION))  this.services.messageToUI(MESSAGE_EVENT_LABELS.BACKGROUND_ERROR, ERROR_MESSAGES.ERROR_WHILE_TRANSACTION);
+
         if(isEqual(err?.errCode, ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE))  this.services.messageToUI(MESSAGE_EVENT_LABELS.BACKGROUND_ERROR, ERROR_MESSAGES.ERROR_WHILE_GAS_ESTIMATION);
-        if(isEqual(err?.errCode, ERRCODES.INTERNAL))  this.services.messageToUI(MESSAGE_EVENT_LABELS.BACKGROUND_ERROR, ERROR_MESSAGES.ERROR_WHILE_GAS_ESTIMATION, ERROR_MESSAGES.INTERNAL_ERROR);
+
+        if(isEqual(err?.errCode, ERRCODES.FAILED_TO_CONNECT_NETWORK))  this.services.messageToUI(MESSAGE_EVENT_LABELS.NETWORK_CONNECTION_ERROR, ERROR_MESSAGES.ERROR_WHILE_NETWORK_CONNECTION);
+
+        if(isEqual(err?.errCode, ERRCODES.INTERNAL))  this.services.messageToUI(MESSAGE_EVENT_LABELS.BACKGROUND_ERROR, ERROR_MESSAGES.INTERNAL_ERROR);
       } catch (err) {
         log("Error in error event handler: ", err)
       }
@@ -1039,7 +1065,7 @@ export class TransactionsRPC {
             }
           }
 
-          return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, null, payload, [], null);
+          return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, null, payload);
 
         }
         else new Error(new ErrorPayload(ERRCODES.NETWORK_REQUEST, ERROR_MESSAGES.TX_FAILED)).throw();
@@ -1059,11 +1085,11 @@ export class TransactionsRPC {
         transactionHistory.txHash = evmRevertedTx.receipt.transactionHash;
         transactionHistory.status = STATUS.PENDING;
         payload.data = transactionHistory;
-        return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, null, payload, [], null);
+        return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, null, payload);
       } else {
         transactionHistory.status = STATUS.FAILED;
         payload.data = transactionHistory;
-        return new EventPayload(null, ERROR_EVENTS_LABELS.NETWORK_ERROR, payload, [], new ErrorPayload(ERRCODES.ERROR_WHILE_TRANSACTION, err.message));
+        return new EventPayload(null, ERROR_EVENTS_LABELS.NETWORK_ERROR, payload, new ErrorPayload(ERRCODES.ERROR_WHILE_TRANSACTION, err.message));
       }
     }
 
@@ -1127,7 +1153,7 @@ export class TransactionsRPC {
             options: { ...data.options }
           }
 
-          return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, null, payload, [], null);
+          return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, null, payload);
 
         } else new Error(new ErrorPayload(ERRCODES.NETWORK_REQUEST, ERROR_MESSAGES.TX_FAILED)).throw();
       }
@@ -1139,7 +1165,7 @@ export class TransactionsRPC {
         data: transactionHistory,
         options: { ...message.data.options }
       }
-      return new EventPayload(null, ERROR_EVENTS_LABELS.NETWORK_ERROR, payload, [], new ErrorPayload(ERRCODES.ERROR_WHILE_TRANSACTION, err.message));
+      return new EventPayload(null, ERROR_EVENTS_LABELS.NETWORK_ERROR, payload, new ErrorPayload(ERRCODES.ERROR_WHILE_TRANSACTION, err.message));
     }
   };
 
@@ -1188,7 +1214,7 @@ export class TransactionsRPC {
                 }
               }
 
-              return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, message.event, payload, [], null);
+              return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, message.event, payload);
 
             } else new Error(new ErrorPayload(ERRCODES.NETWORK_REQUEST, ERROR_MESSAGES.TX_FAILED)).throw();
 
@@ -1220,7 +1246,7 @@ export class TransactionsRPC {
 
               if (err) new Error(new ErrorPayload(ERRCODES.NETWORK_REQUEST, ERROR_MESSAGES.TX_FAILED)).throw();
               else {
-                return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, null, payload, [], null);
+                return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, null, payload);
               }
             }
           }
@@ -1236,7 +1262,7 @@ export class TransactionsRPC {
         }
       }
 
-      return new EventPayload(null, ERROR_EVENTS_LABELS.NETWORK_ERROR, payload, [], new ErrorPayload(ERRCODES.ERROR_WHILE_TRANSACTION, err.message));
+      return new EventPayload(null, ERROR_EVENTS_LABELS.NETWORK_ERROR, payload, new ErrorPayload(ERRCODES.ERROR_WHILE_TRANSACTION, err.message));
     }
   }
 
@@ -1285,7 +1311,7 @@ export class TransactionsRPC {
               options: { ...data.options }
             }
 
-            return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, null, payload, [], null);
+            return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, null, payload);
 
           } else {
             new Error(new ErrorPayload(ERRCODES.NETWORK_REQUEST, ERROR_MESSAGES.TX_FAILED)).throw();
@@ -1321,7 +1347,7 @@ export class TransactionsRPC {
                 if (err) {
                   new Error(new ErrorPayload(ERRCODES.NETWORK_REQUEST, ERROR_MESSAGES.TX_FAILED)).throw();
                 } else {
-                  return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, message.event, payload, [], null);
+                  return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, message.event, payload);
                 }
               }
             }
@@ -1336,7 +1362,7 @@ export class TransactionsRPC {
         data: transactionHistory,
         options: { ...message.data.options }
       }
-      return new EventPayload(null, ERROR_EVENTS_LABELS.NETWORK_ERROR, payload, [], new ErrorPayload(ERRCODES.ERROR_WHILE_TRANSACTION, err.message));
+      return new EventPayload(null, ERROR_EVENTS_LABELS.NETWORK_ERROR, payload, new ErrorPayload(ERRCODES.ERROR_WHILE_TRANSACTION, err.message));
     }
   };
 
@@ -1348,7 +1374,7 @@ export class TransactionsRPC {
     } catch (err) {
       const payload = {options: message?.options, data: message?.transactionHistoryTrack};
 
-      return new EventPayload(null, null, payload, [], new ErrorPayload(ERRCODES.ERROR_WHILE_TRANSACTION, err.message));
+      return new EventPayload(null, null, payload, new ErrorPayload(ERRCODES.ERROR_WHILE_TRANSACTION, err.message));
     }
   }
 
@@ -1387,6 +1413,9 @@ export class GeneralWalletRPC {
   //for fething the balance of both (evm and native)
   getBalance = async (message, state) => {
     try {
+      console.log("network and api: ", NetworkHandler.api, state.currentNetwork);
+
+      if(!NetworkHandler.api[state.currentNetwork.toLowerCase()]?.evmApi) return new EventPayload(STATE_CHANGE_ACTIONS.BALANCE, null, {data: state.balance});
 
       let nbalance = 0;
       const { evmApi, nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
@@ -1442,11 +1471,11 @@ export class GeneralWalletRPC {
         }
       }
 
-      return new EventPayload(STATE_CHANGE_ACTIONS.BALANCE, null, payload, [], null);
+      return new EventPayload(STATE_CHANGE_ACTIONS.BALANCE, null, payload);
 
 
     } catch (err) {
-      return new EventPayload(null, null, null, [], new ErrorPayload(ERRCODES.ERROR_WHILE_BALANCE_FETCH, err.message));
+      return new EventPayload(null, null, null, new ErrorPayload(ERRCODES.ERROR_WHILE_BALANCE_FETCH, err.message));
     }
   };
 
@@ -1489,9 +1518,9 @@ export class GeneralWalletRPC {
         data: { fee }
       }
 
-      return new EventPayload(null, message.event, payload, [], null);
+      return new EventPayload(null, message.event, payload);
     } catch (err) {
-      return new EventPayload(null, null, null, [], new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, err.message));
+      return new EventPayload(null, null, null, new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, err.message));
     }
 
   };
@@ -1525,9 +1554,9 @@ export class GeneralWalletRPC {
 
       //construct payload
       const payload = { data: { fee } }
-      return new EventPayload(null, message.event, payload, [], null);
+      return new EventPayload(null, message.event, payload);
     } catch (err) {
-      return new EventPayload(null, null, null, [], new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, err.message));
+      return new EventPayload(null, null, null, new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, err.message));
     }
   };
 
@@ -1616,11 +1645,11 @@ export class GeneralWalletRPC {
       }
 
 
-      return new EventPayload(null, message.event, { data: payload }, [], null)
+      return new EventPayload(null, message.event, { data: payload })
 
     } catch (err) {
       log("error formatting and getting the native external ", err)
-      return new EventPayload(null, message.event, null, [], new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, err.message))
+      return new EventPayload(null, message.event, null, new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, err.message))
     }
   }
 
@@ -1630,7 +1659,7 @@ export class GeneralWalletRPC {
         const eventPayload = await this.nominatorValidatorHandler.handleNativeAppsTask(state, message, true);
         return eventPayload;
     } catch (err) {
-      return new EventPayload(null, null, null, [], new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, err.message));
+      return new EventPayload(null, null, null, new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, err.message));
     }
   }
 
@@ -1674,7 +1703,7 @@ export class KeyringHandler {
       const keyResponse = await this.hybridKeyring[message.event](message);
       return keyResponse;
     } catch (err) {
-      return new EventPayload(null, message.event, null, [], new ErrorPayload(err.message.errCode || ERRCODES.KEYRING_SECTION_ERROR, err.message.errMessage || err.message));
+      return new EventPayload(null, message.event, null, new ErrorPayload(err.message.errCode || ERRCODES.KEYRING_SECTION_ERROR, err.message.errMessage || err.message));
     }
   }
 
@@ -1734,21 +1763,41 @@ export class NetworkHandler {
 
   //change network handler
   networkChange = async (message, state) => {
-    ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.CONNECTION);
-    return false;
+    try {
+      ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.CONNECTION);
+      return false;
+    } catch (err) {
+      return true;
+    }
   }
 
-  /******************************** create connection *********************************/
+  /******************************** connection handlers *********************************/
   initRpcApi = async () => {
     const { currentNetwork } = await getDataLocal(LABELS.STATE);
     const api = await this.services.createConnection(currentNetwork);
-    if (api?.value) return;
+    if (api?.error) return;
 
     //insert connection into its network slot
     NetworkHandler.api[currentNetwork.toLowerCase()] = api;
-    ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.BALANCE_FETCH)
     log("all api is here: ", NetworkHandler.api);
+    await this.checkNetwork();
   }
+
+    //check the network connection
+  checkNetwork = async () => {
+      try {
+        const state = await getDataLocal(LABELS.STATE);
+        const connectionApi = NetworkHandler.api[state.currentNetwork.toLowerCase()];
+        const chainId = await connectionApi.evmApi.eth.getChainId();
+        //send only if the extension opened
+        ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.BALANCE_FETCH)
+        InitBackground.uiStream && this.services.messageToUI(MESSAGE_EVENT_LABELS.NETWORK_CHECK, {chainId})
+      } catch (err) {
+        ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.FAILED_TO_CONNECT_NETWORK, err.message))
+        console.log("Exception in network check handler: ", err);
+      }
+    }
+  
 }
 
 //for the nominator and validator and other native transactions
@@ -1779,11 +1828,11 @@ export class NativeSigner {
       }
 
       const result = registry.createType('ExtrinsicPayload', payload, { version: payload.version }).sign(pair);
-      return new EventPayload(null, null, { data: result }, [], null);
+      return new EventPayload(null, null, { data: result });
 
     } catch (err) {
       log("error while signing the payload: ", err)
-      return new EventPayload(null, null, null, [], ErrorPayload(ERRCODES.SIGNER_ERROR, ERROR_MESSAGES.SINGER_ERROR));
+      return new EventPayload(null, null, null, ErrorPayload(ERRCODES.SIGNER_ERROR, ERROR_MESSAGES.SINGER_ERROR));
     }
   }
 
@@ -1792,11 +1841,11 @@ export class NativeSigner {
       const account = state.currentAccount;
       const pair = this.hybridKeyring.getNativeSignerByAddress(account.nativeAddress);
       const result = { signature: u8aToHex(pair.sign(u8aWrapBytes(payload))) };
-      return new EventPayload(null, null, { data: result }, [], null);
+      return new EventPayload(null, null, { data: result });
 
     } catch (err) {
       log("error while signing the raw: ", err)
-      return new EventPayload(null, null, null, [], new ErrorPayload(ERRCODES.SIGNER_ERROR, ERROR_MESSAGES.SINGER_ERROR));
+      return new EventPayload(null, null, null, new ErrorPayload(ERRCODES.SIGNER_ERROR, ERROR_MESSAGES.SINGER_ERROR));
     }
   }
 

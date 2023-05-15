@@ -144,3 +144,8 @@ export const fixNumber = (num, decimalPlaces = 6, roundingMode = 8) => {
         return "";
     }
 }
+
+//set default timeout for 1sec
+export const setTimer = (callback, timer=1000) => {
+    return setTimeout(callback, timer);
+}

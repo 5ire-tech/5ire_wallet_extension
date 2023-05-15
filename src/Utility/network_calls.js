@@ -38,11 +38,10 @@ export class EVMRPCPayload {
 //paylod for rpc response from rpc operations
 export class EventPayload {
 
-  constructor(stateChangeKey, eventForEmitting, payload, moreEvent = [], error = null) {
+  constructor(stateChangeKey=null, eventForEmitting=null, payload=null, error = null) {
       this.stateChangeKey = stateChangeKey
       this.eventEmit = eventForEmitting
       this.payload = payload
-      this.moreEvent = moreEvent
       this.error = error
   }
 

@@ -2,7 +2,7 @@ import { ROUTES } from "../Routes/index";
 import Browser from "webextension-polyfill";
 import { useNavigate } from "react-router-dom";
 import { isManifestV3 } from "../Scripts/utils";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 import { isNullorUndef, log } from "../Utility/utility";
 import { sessionStorage, localStorage } from "../Storage";
 import { bindRuntimeMessageListener } from "../Utility/message_helper";
@@ -13,11 +13,13 @@ import {
   newAccountInitialState,
   initialExternalNativeTransaction
 } from "./initialState";
-import { sendEventToTab } from "../Helper/helper";
+import { sendEventToTab, setTimer } from "../Helper/helper";
 import { TabMessagePayload } from "../Utility/network_calls";
 
+//context created
 export const AuthContext = createContext();
 
+//main context wraper
 export default function Context({ children }) {
   const navigate = useNavigate();
   const [state, setState] = useState(userState);
@@ -35,9 +37,12 @@ export default function Context({ children }) {
   const [passVerified, setPassVerified] = useState(false);
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
   const [externalControlsState, setExternalControlState] = useState(externalControls);
-  const [backgroundError, setBackgroundError] = useState(null);
   const [showCongratLoader, setShowCongratLoader] = useState(false);
   const [newWalletName, setNewWalletName] = useState("");
+
+  //background error's
+  const [backgroundError, setBackgroundError] = useState(null);
+  const [networkError, setNetworkError] = useState(null);
 
   Browser.storage.local.onChanged.addListener((changedData) => {
     //change the state whenever the local storage is updated
@@ -52,8 +57,10 @@ export default function Context({ children }) {
     if (message.type === MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND) {
       if (message.event === MESSAGE_EVENT_LABELS.EVM_FEE || message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE) {
         (!estimatedGas) && updateEstimatedGas(message.data.fee);
+        setTimer(updateLoading.bind(null, false));
       } else if (message.event === MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS) {
         setExternalNativeTxDetails(message.data);
+        setTimer(updateLoading.bind(null, false));
       } else if (message.event === MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE) {
         createOrRestore(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.UNLOCK) {
@@ -79,11 +86,16 @@ export default function Context({ children }) {
         removeAccount(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE) {
         setValdatorNominatorFee(message.data)
+        setTimer(updateLoading.bind(null, false));
       } else if (message.event === MESSAGE_EVENT_LABELS.BACKGROUND_ERROR) {
         setBackgroundError(message.data);
+        setTimer(updateLoading.bind(null, false));
+      } else if(message.event === MESSAGE_EVENT_LABELS.NETWORK_CONNECTION_ERROR) {
+        setNetworkError(message.data);
+        setTimer(updateLoading.bind(null, false));
+      } else if(message.event === MESSAGE_EVENT_LABELS.NETWORK_CHECK) {
+        setTimer(updateLoading.bind(null, false));
       }
-
-      updateLoading(false);
     }
   });
 
@@ -215,6 +227,7 @@ export default function Context({ children }) {
     seedPhrase,
     allAccounts,
     accountName,
+    networkError,
     estimatedGas,
     passVerified,
     newWalletName,
@@ -234,6 +247,7 @@ export default function Context({ children }) {
     setNewAccount,
     setPrivateKey,
     // removeHistory,
+    setNetworkError,
     setPassVerified,
     setNewWalletName,
     setBackgroundError,

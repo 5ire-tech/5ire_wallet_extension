@@ -15,6 +15,7 @@ import MyAccount from "./Pages/MyAccount/MyAccount";
 import FixWidthLayout from "./Layout/FixWidthLayout";
 import PrivateKey from "./Components/Setting/PrivateKey";
 import ErrorModal from "./Components/ErrorModal/ErrorModal";
+import RetryModal from "./Components/ErrorModal/RetryModal";
 import Beforebegin from "./Pages/WelcomeScreens/Beforebegin";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import EnterPassword from "./Components/Setting/EnterPassword";
@@ -31,7 +32,7 @@ import CreateWalletChain from "./Pages/WelcomeScreens/CreateWalletChain";
 import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
 import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
 import ValidatorNominatorTxns from "./Components/ValidatorNominatorTxns";
-import CongratulationsScreen from "./Pages/WelcomeScreens/CongratulationsScreen";
+import CongratulationsScreen from "./Pages/WelcomeScreens/CongratulationsScreen"
 
 
 function getParameterByName(name, url = window.location.href) {
@@ -224,8 +225,12 @@ function App(props) {
           element={<WelcomeLayout children={<MainPrivacyPolicy />} />}
         />
       </Routes>
-      {isLoading && <Loader />}
+      
+      {/* for network, validation and internal error modals */}
       <ErrorModal />
+      <RetryModal />
+
+      {isLoading && <Loader />}
       {showCongratLoader && <div className="loader">
         <CongratulationsScreen text={"Your wallet has been imported"} /></div>}
 

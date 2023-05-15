@@ -41,7 +41,7 @@ export default class ValidatorNominatorHandler {
         payload.data = transactionHistory;
       }
 
-      return new EventPayload(null, message.event, payload, [], null);
+      return new EventPayload(null, message.event, payload);
     } else new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.INVALID_PROPERTY)).throw();
   }
 

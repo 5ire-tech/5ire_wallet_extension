@@ -33,7 +33,7 @@ export class Connection {
 
         } catch (err) {
             ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.FAILED_TO_CONNECT_NETWORK, err.message));
-            return { error: err, value: true }
+            return { error: err }
         }
     }
 
