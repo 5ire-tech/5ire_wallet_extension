@@ -216,7 +216,7 @@ export class ExternalConnection {
         };
 
       //send the message to requester tab
-      sendMessageToTab(data.tabId, new TabMessagePayload(data.id, res));
+      sendMessageToTab(data.tabId, new TabMessagePayload(data.id, res, data?.method));
 
     } else {
       await this.externalWindowController.newConnectionRequest({ route: ROUTE_FOR_APPROVAL_WINDOWS.CONNECTION_ROUTE, ...data }, externalControls);
@@ -265,7 +265,7 @@ export class ExternalConnection {
 
       if (data?.tabId) {
         //pass the current network http endpoint
-        sendMessageToTab(data.tabId, new TabMessagePayload(data.id, { result: HTTP_END_POINTS[state.currentNetwork.toUpperCase()] }))
+        sendMessageToTab(data.tabId, new TabMessagePayload(data.id, { result: HTTP_END_POINTS[state.currentNetwork.toUpperCase()]}, data.method))
       }
     } catch (err) {
       console.log("Error while sending the endpoint: ", err);
@@ -277,6 +277,6 @@ export class ExternalConnection {
   async handleDisconnect(data) {
     //disconnect the app
     await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.APP_CONNECTION_UPDATE, { connected: false, origin: data.origin }, { localStateKey: LABELS.EXTERNAL_CONTROLS });
-    sendMessageToTab(data.tabId, new TabMessagePayload(data.id, { result: [] }));
+    sendMessageToTab(data.tabId, new TabMessagePayload(data.id, { result: null }), data.method);
   }
 }

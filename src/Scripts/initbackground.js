@@ -125,19 +125,19 @@ export class InitBackground {
     const externalEventStream = async ({message, sender}) => {
       const localData = await getDataLocal(LABELS.STATE);
 
-      console.log("external message: ", message);
-
+      
       try {
         //check if message is array or onject
         message.message = hasLength(message.message) ? message.message[0] : message.message;
-
+        
         //data for futher proceeding
         const data = {
           ...message,
           origin: sender.origin,
           tabId: sender.tab?.id
         };
-
+        
+        console.log("external message: ", message, data);
         //check if the app has the permission to access requested method
         if (!checkStringInclusionIntoArray(data?.method)) {
           const { connectedApps } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
@@ -236,70 +236,71 @@ export class InitBackground {
       }
 
 
-      try {
-        //check if message is array or onject
-        message.message = hasLength(message.message) ? message.message[0] : message.message;
+      // try {
+      //   //check if message is array or onject
+      //   message.message = hasLength(message.message) ? message.message[0] : message.message;
 
-        //data for futher proceeding
-        const data = {
-          ...message,
-          origin: sender.origin,
-          tabId: sender?.tab?.id
-        };
+      //   //data for futher proceeding
+      //   const data = {
+      //     ...message,
+      //     origin: sender.origin,
+      //     tabId: sender?.tab?.id
+      //   };
 
-        //check if the app has the permission to access requested method
-        if (!checkStringInclusionIntoArray(data?.method)) {
-          const { connectedApps } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
-          const isHasAccess = connectedApps[data.origin];
-          if (!isHasAccess?.isConnected) {
-            data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.ACCESS_NOT_GRANTED));
-            return;
-          }
-        }
+      //   console.log("data is here: ", data);
+      //   //check if the app has the permission to access requested method
+      //   if (!checkStringInclusionIntoArray(data?.method)) {
+      //     const { connectedApps } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+      //     const isHasAccess = connectedApps[data.origin];
+      //     if (!isHasAccess?.isConnected) {
+      //       data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.ACCESS_NOT_GRANTED));
+      //       return;
+      //     }
+      //   }
 
-        //checks for event from injected script
-        switch (data.method) {
-          case "connect":
-          case "eth_requestAccounts":
-          case "eth_accounts":
-            await this.internalHandler.handleConnect(data, localData);
-            break;
-          case "disconnect":
-            await this.internalHandler.handleDisconnect(data, localData);
-            break;
-          case "eth_sendTransaction":
-            await this.internalHandler.handleEthTransaction(data, localData);
-            break;
-          case "get_endPoint":
-            await this.internalHandler.sendEndPoint(data, localData);
-            break;
-          case SIGNER_METHODS.SIGN_PAYLOAD:
-          case SIGNER_METHODS.SIGN_RAW:
-            await this.internalHandler.handleNativeSigner(data, localData);
-            break;
-          case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_NOMINATOR:
-          case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_VALIDATOR:
-          case VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_BONDMORE:
-          case VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_PAYOUT:
-          case VALIDATOR_NOMINATOR_METHOD.NATIVE_RENOMINATE:
-          case VALIDATOR_NOMINATOR_METHOD.NATIVE_RESTART_VALIDATOR:
-          case VALIDATOR_NOMINATOR_METHOD.NATIVE_STOP_NOMINATOR:
-          case VALIDATOR_NOMINATOR_METHOD.NATIVE_STOP_VALIDATOR:
-          case VALIDATOR_NOMINATOR_METHOD.NATIVE_UNBOND_NOMINATOR:
-          case VALIDATOR_NOMINATOR_METHOD.NATIVE_UNBOND_VALIDATOR:
-          case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_BONDMORE:
-          case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_PAYOUT:
-          case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR:
-          case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR_UNBONDED:
-          case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR:
-          case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR_UNBONDED:
-            await this.internalHandler.handleValidatorNominatorTransactions(data, localData);
-            break
-          default: data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.message.id, null, null, null, ERROR_MESSAGES.INVALID_METHOD))
-        }
-      } catch (err) {
-        ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.RUNTIME_MESSAGE_SECTION_ERROR, err.message))
-      }
+      //   //checks for event from injected script
+      //   switch (data.method) {
+      //     case "connect":
+      //     case "eth_requestAccounts":
+      //     case "eth_accounts":
+      //       await this.internalHandler.handleConnect(data, localData);
+      //       break;
+      //     case "disconnect":
+      //       await this.internalHandler.handleDisconnect(data, localData);
+      //       break;
+      //     case "eth_sendTransaction":
+      //       await this.internalHandler.handleEthTransaction(data, localData);
+      //       break;
+      //     case "get_endPoint":
+      //       await this.internalHandler.sendEndPoint(data, localData);
+      //       break;
+      //     case SIGNER_METHODS.SIGN_PAYLOAD:
+      //     case SIGNER_METHODS.SIGN_RAW:
+      //       await this.internalHandler.handleNativeSigner(data, localData);
+      //       break;
+      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_NOMINATOR:
+      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_VALIDATOR:
+      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_BONDMORE:
+      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_PAYOUT:
+      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_RENOMINATE:
+      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_RESTART_VALIDATOR:
+      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_STOP_NOMINATOR:
+      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_STOP_VALIDATOR:
+      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_UNBOND_NOMINATOR:
+      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_UNBOND_VALIDATOR:
+      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_BONDMORE:
+      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_PAYOUT:
+      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR:
+      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR_UNBONDED:
+      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR:
+      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR_UNBONDED:
+      //       await this.internalHandler.handleValidatorNominatorTransactions(data, localData);
+      //       break
+      //     default: data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.message.id, null, null, null, ERROR_MESSAGES.INVALID_METHOD))
+      //   }
+      // } catch (err) {
+      //   ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.RUNTIME_MESSAGE_SECTION_ERROR, err.message))
+      // }
     });
   }
 
@@ -1413,7 +1414,7 @@ export class GeneralWalletRPC {
   //for fething the balance of both (evm and native)
   getBalance = async (message, state) => {
     try {
-      console.log("network and api: ", NetworkHandler.api, state.currentNetwork);
+      // console.log("network and api: ", NetworkHandler.api, state.currentNetwork);
 
       if(!NetworkHandler.api[state.currentNetwork.toLowerCase()]?.evmApi) return new EventPayload(STATE_CHANGE_ACTIONS.BALANCE, null, {data: state.balance});
 

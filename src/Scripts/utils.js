@@ -1,6 +1,6 @@
 import Browser from "webextension-polyfill";
 import { EMTY_STR } from "../Constants";
-import { isNullorUndef } from "../Utility/utility";
+import { isNullorUndef, log } from "../Utility/utility";
 import { v4 as uuid4 } from 'uuid';
 
 export const getUrlOrigin = (url) => {
@@ -9,7 +9,7 @@ export const getUrlOrigin = (url) => {
 
 //get the current tab details
 export const getCurrentTabDetails = async () => {
-  const queryInfo = { active: true, currentWindow: true };
+  const queryInfo = { active: true };
   const tabsDetails = await Browser.tabs.query(queryInfo);
   if(!tabsDetails[0]?.url) return null;
   return { tabId: tabsDetails[0]?.id, tabUrl: getUrlOrigin(tabsDetails[0]?.url) };

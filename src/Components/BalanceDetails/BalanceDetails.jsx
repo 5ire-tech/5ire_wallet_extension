@@ -181,10 +181,10 @@ function BalanceDetails({ mt0 }) {
     !isAnyError &&
       sendEventToTab(
         new TabMessagePayload(
-          TABS_EVENT.WALLET_DISCONNECTED_EVEN,
+          TABS_EVENT.WALLET_DISCONNECTED_EVENT,
           { result: null },
           null,
-          TABS_EVENT.WALLET_DISCONNECTED_EVEN
+          TABS_EVENT.WALLET_DISCONNECTED_EVENT
         ),
         connectedApps
       );

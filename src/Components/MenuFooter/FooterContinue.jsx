@@ -3,16 +3,17 @@ import { ROUTES } from "../../Routes";
 import { AuthContext } from "../../Store";
 import { useNavigate } from "react-router-dom";
 import ButtonComp from "../ButtonComp/ButtonComp";
-import { EVM_JSON_RPC_METHODS, LABELS, STATE_CHANGE_ACTIONS, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, ERROR_MESSAGES, TX_TYPE, DECIMALS } from "../../Constants/index";
+import { EVM_JSON_RPC_METHODS, LABELS, STATE_CHANGE_ACTIONS, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, ERROR_MESSAGES, TX_TYPE, DECIMALS, HTTP_END_POINTS, TABS_EVENT } from "../../Constants/index";
 import React, { useContext, useEffect, useState } from "react";
 import { newAccountInitialState } from "../../Store/initialState";
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
-import { isEqual } from "../../Utility/utility";
+import { isEqual, log } from "../../Utility/utility";
 import { sendMessageToTab, sendRuntimeMessage } from "../../Utility/message_helper";
 import { TabMessagePayload } from "../../Utility/network_calls";
 import { toast } from "react-hot-toast";
 import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
 import { sendMessageOverStream } from "../../Utility/message_helper";
+import { sendEventToTab, sendEventUsingTabId } from "../../Helper/helper";
 
 //Before We begin
 function FooterStepOne() {
@@ -144,7 +145,7 @@ export const ApproveLogin = () => {
       };
 
       //send the message to tab after approve request
-      sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, res));
+      sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, res, activeSession.method))
     }
 
     //send closure message to backend

@@ -1,13 +1,7 @@
-import { CONTENT_SCRIPT, INPAGE, getId } from "./constants";
-import { WindowPostMessageStream } from "./stream";
+import {INPAGE, getId } from "./constants";
 import SafeEventEmitter from "@metamask/safe-event-emitter"
-import { HTTP_END_POINTS, SIGNER_METHODS, VALIDATOR_NOMINATOR_METHOD } from "../Constants";
-//stream for in-window communication
-const injectedStream = new WindowPostMessageStream({
-  name: INPAGE,
-  target: CONTENT_SCRIPT,
-});
-
+import { SIGNER_METHODS, RESTRICTED_METHODS, TABS_EVENT, WALLET_METHODS, EVM_JSON_RPC_METHODS, VERSION } from "../Constants";
+import { InjectedScript } from "./injected-helper";
 /*
 Custom Web3 provider for interacting with the 5ire browser extension and pass to
 5ire extension to handle the json-rpc request and send the response back
@@ -16,37 +10,11 @@ export class FireProvider extends SafeEventEmitter {
 
   constructor() {
     super();
-    this.httpHost = HTTP_END_POINTS.QA;
+    this.httpHost = "";
     this.selectedAddress = null;
-    this.chainId = "0x3e5";
-    this.networkVersion = 997;
-    this.version = "1.4.0";
-    this.connected = true;
-
-    //for handling the different Promise handlers
-    this.handlers = {};
-
-    this.conntectMethods = [
-      "eth_requestAccounts",
-      "eth_accounts",
-      "connect"];
-
-    this.stakingMethods = Object.values(VALIDATOR_NOMINATOR_METHOD);
-
-
-
-    this.restricted = [
-      "get_endPoint",
-      "eth_sendTransaction",
-      "disconnect",
-      ...this.conntectMethods,
-      ...this.stakingMethods,
-      ...Object.values(SIGNER_METHODS)
-    ];
-
-
-    //inject the endpoint
-    this._injectHttpProvider()
+    this.chainId = "";
+    this.version = VERSION;
+    this.connected = false;
   }
 
   connect() {
@@ -56,9 +24,6 @@ export class FireProvider extends SafeEventEmitter {
   disconnect() {
     return this.passReq("disconnect", null);
   }
-
-
-
 
   //for sending some payload with json rpc request
   async send(method, payload) {
@@ -99,13 +64,13 @@ export class FireProvider extends SafeEventEmitter {
 
 
   //for checking JSON-RPC headers
-  async passReq(method, payload) {
+  async passReq(method, payload, id=null) {
     if (method === undefined && method.trim() === "") return Error("invalid method");
 
     //pass the request to extension
     const isObject = typeof (method) === "object" && method !== undefined;
 
-    const res = await this.sendJsonRpc(isObject ? method.method : method, !payload && isObject ? method.params : payload);
+    const res = await this.sendJsonRpc(isObject ? method.method : method, !payload && isObject ? method.params : payload, id);
     return res;
   }
 
@@ -115,18 +80,14 @@ export class FireProvider extends SafeEventEmitter {
   //then it is processed in inject content script in current webpage
   sendJsonRpc(
     method,
-    message = [],
-    isCb = false,
-    cb = null,
-    isFull = false
-  ) {
+    message = [], id) {
 
     return new Promise(async (resolve, reject) => {
       try {
 
 
-        if (this.restricted.indexOf(method) < 0) {
-          const rawResponse = await fetch(((this.httpHost?.includes("http://") || this.httpHost?.includes("https://"))) ? this.httpHost : "https://rpc-testnet.5ire.network", {
+        if (RESTRICTED_METHODS.indexOf(method) < 0 && this.httpHost) {
+          const rawResponse = await fetch(this.httpHost, {
             method: "POST",
             headers: {
               Accept: "application/json",
@@ -137,61 +98,38 @@ export class FireProvider extends SafeEventEmitter {
 
           const content = await rawResponse.json();
           if (content.error) {
-            isCb && cb(content);
             return reject(content);
           } else {
-            isCb && cb(isFull ? content : content.result);
-
-            return resolve(isFull ? content : content.result);
+            return resolve(content.result);
           }
         }
-
 
         if (method === "eth_requestAccounts" || method === "eth_accounts" || method === 'connect' || method === "disconnect") message = { method }
 
         //get a unique if for specfic handler
-        const id = getId();
+        const requestId = id || getId();
 
-        this.handlers[id] = {
+        // save checking the request response
+        const request = {
           reject,
           resolve,
-          id,
-          isCb: isCb,
-          cb: cb,
-          isFull,
+          id: requestId,
           method
         };
 
-        // if (method === "eth_requestAccounts" || method === "eth_accounts" || method === "disconnect") {
-        //   message = { origin, method };
-        // }
-
-        const transportRequestMessage = {
-          id,
+        // for sending over the stream to extension background
+        const requestForStream = {
+          id: requestId,
           message,
           origin: INPAGE,
           method,
         };
 
-        injectedStream.write(transportRequestMessage);
+        //add the request to response helper
+        InjectedScript.handleStreamToContent(request, requestForStream);
       } catch (err) {
-        // console.log("error in calling this method: ", method, message);
-        // console.log("Error in handle json-rpc request handler in injected section: ", err);
         reject(err);
       }
     });
   }
-
-  /*************************** Internal Methods *****************************/
-    //inject the http endpoint for specfic network
-    async _injectHttpProvider() {
-      const result = await this.passReq("get_endPoint", null)
-      if (result) this.httpHost = result;
-    }
-  
-  
-    //inject accounts into provider
-    _injectSelectedAccount(address) {
-      this.selectedAddress = address
-    }
 }

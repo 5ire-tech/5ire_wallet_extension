@@ -115,7 +115,7 @@ export const openBrowserTab = (url) => {
 }
 
 //check if string is included into array
-export const checkStringInclusionIntoArray = (str, strArr = CONNECTION_METHODS) => {
+export const checkStringInclusionIntoArray = (str, strArr = Object.values(CONNECTION_METHODS)) => {
     if (isNullorUndef(str) && isNullorUndef(strArr)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
     return strArr.includes(str);
 }
@@ -128,10 +128,32 @@ export const generateErrorMessage = (method, origin) => {
 //send event to the connected tab
 export const sendEventToTab = async (tabMessagePayload, connectedApps, emitWithoutConnectionCheck = false) => {
     getCurrentTabDetails().then((tabDetails) => {
-        if (!checkStringInclusionIntoArray(tabDetails.tabUrl, RESTRICTED_URLS) && (connectedApps[tabDetails.tabUrl]?.isConnected || emitWithoutConnectionCheck)) {
+        if (!checkStringInclusionIntoArray(tabDetails.tabUrl, RESTRICTED_URLS) && ((connectedApps &&connectedApps[tabDetails?.tabUrl]?.isConnected) || emitWithoutConnectionCheck)) {
             sendMessageToTab(tabDetails.tabId, tabMessagePayload)
         }
     });
+}
+
+//send event to specfic tab
+export const sendEventUsingTabId = async (tabId, tabEventPayload, connectedApps=null) => {
+    if(connectedApps) {
+    const tabDetails = getTabDetailsUsingTabId(tabId);
+        if(tabDetails) {
+            const isConnected = connectedApps[new URL(tabDetails.url).hostname]?.isConnected;
+            isConnected && sendMessageToTab(tabId, tabEventPayload);
+        }
+    } else sendMessageToTab(tabId, tabEventPayload);
+    
+}
+
+//get tab using tab id
+export const getTabDetailsUsingTabId = async (tabId) => {
+    try {
+        const tabDetails = await Browser.tabs.get(tabId);
+        return tabDetails;
+    } catch (err) {
+        return null;
+    }
 }
 
 //fix number upto certain decimals

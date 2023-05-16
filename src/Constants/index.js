@@ -22,6 +22,8 @@ export const AUTO_BALANCE_UPDATE_TIMER = 8000;
 export const LAPSED_TRANSACTION_CHECKER_TIMER = 25*1000;
 export const WEI_IN_ONE_ETH = 1000000000000000000;
 export const TRANSACTION_STATUS_CHECK_TIMER = 5000;
+export const VERSION = "0.1.4";
+export const RELOAD_ID = "RELOAD_PAGE"
 
 
 
@@ -30,7 +32,8 @@ export const TABS_EVENT = {
     ACCOUNT_CHANGE_EVENT: "accountChange",
     NETWORK_CHANGE_EVENT: "networkChange",
     WALLET_CONNECTED_EVENT: "connect",
-    WALLET_DISCONNECTED_EVEN: "disconnect"
+    WALLET_DISCONNECTED_EVENT: "disconnect",
+    PROVIDER_CONFIG: "providerConfig"
 }
 
 
@@ -88,11 +91,7 @@ export const EVM_JSON_RPC_METHODS = {
     ETH_ACCOUNTS: "eth_accounts",
     GET_TX_RECIPT: "eth_getTransactionReceipt",
     ETH_REQUEST_ACCOUNT: "eth_requestAccounts",
-};
-
-export const SIGNER_METHODS = {
-    SIGN_RAW: "signRaw",
-    SIGN_PAYLOAD: "signPayload",
+    ETH_CHAINID: "eth_chainId"
 };
 
 export const ERROR_MESSAGES = {
@@ -350,13 +349,6 @@ export const WALLET_TYPES = {
     IMPORTED_NATIVE: "imported_native"
 }
 
-export const CONNECTION_METHODS = [
-    "connect",
-    "eth_requestAccounts",
-    "eth_accounts",
-    "get_endPoint"
-];
-
 export const KEYRING_EVENTS = {
     STATE_CHANGED: "valut_state",
     ACCOUNT_ADDED: "account_added"
@@ -376,6 +368,9 @@ export const STREAM_CHANNELS = {
     EXTENSION_UI: "Extension-UI"
 }
 
+/*
+ * wallet restricted methods */
+
 export const VALIDATOR_NOMINATOR_METHOD = {
     NATIVE_RENOMINATE: "native_renominate",
     NATIVE_ADD_NOMINATOR: "native_add_nominator",
@@ -394,3 +389,31 @@ export const VALIDATOR_NOMINATOR_METHOD = {
     NATIVE_WITHDRAW_NOMINATOR_UNBONDED: "native_withdraw_nominator_unbonded",
     NATIVE_WITHDRAW_VALIDATOR_UNBONDED: "native_withdraw_validator_unbonded"
 }
+
+export const CONNECTION_METHODS = {
+    CONNECT: "connect",
+    ETH_REQUEST_ACCOUNTS: "eth_requestAccounts",
+    ETH_ACCOUNTS: "eth_accounts"
+};
+
+export const WALLET_METHODS = {
+    DISCONNECT: "disconnect",
+    GET_END_POINT: "get_endPoint"
+}
+
+export const SIGNER_METHODS = {
+    SIGN_RAW: "signRaw",
+    SIGN_PAYLOAD: "signPayload",
+};
+
+export const RESTRICTED_ETHEREUM_METHODS = {
+    ETH_SEND_TRANSACTION: "eth_sendTransaction"
+}
+
+//array of all wallet handled method
+export const RESTRICTED_METHODS = [...Object.values(VALIDATOR_NOMINATOR_METHOD),
+    ...Object.values(CONNECTION_METHODS),
+    ...Object.values(WALLET_METHODS),
+    ...Object.values(SIGNER_METHODS),
+    ...Object.values(RESTRICTED_ETHEREUM_METHODS)
+]
