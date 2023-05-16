@@ -13,9 +13,9 @@ function WelcomeScreen() {
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__centerLogo}>
           <div className={style.cardWhite__cardInner__innerLogocontact}>
-            <img src={PlaceLogo} alt="placeLogo" draggable={false}/>
+            <img src={PlaceLogo} alt="placeLogo" draggable={false} />
             <div className={style.cardWhite__cardInner__innercontact}>
-              <h1>5irechain Wallet</h1>
+              <h1>5ireChain Wallet</h1>
               <p>The Decentralized Wallet</p>
             </div>
           </div>
@@ -25,7 +25,7 @@ function WelcomeScreen() {
             Create a New Wallet
           </Link>
           {/* <Link className="grayBtn" to={ROUTES.IMPORT_WALLET}> */}
-          <Link className="grayBtn" to={ROUTES.SET_PASS+"/import"}>
+          <Link className="grayBtn" to={ROUTES.SET_PASS + "/import"}>
             Import Wallet
           </Link>
         </div>

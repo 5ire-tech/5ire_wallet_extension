@@ -142,7 +142,7 @@ function ForgotPassword() {
   return (
     //onKeyDown={handleClick}//
     <div className={style.cardWhite}>
-      <MenuRestofHeaders logosilver={true} title="5irechain Wallet" backTo={ROUTES.UNLOACK_WALLET} />
+      <MenuRestofHeaders logosilver={true} title="5ireChain Wallet" backTo={ROUTES.UNLOACK_WALLET} />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Forgot password</h1>

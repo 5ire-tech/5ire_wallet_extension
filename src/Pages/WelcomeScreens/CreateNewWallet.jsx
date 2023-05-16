@@ -99,7 +99,7 @@ function CreateNewWallet() {
           <StepHeaders active={2} />
 
         }
-        <MenuRestofHeaders logosilver={true} title="5irechain Wallet" />
+        <MenuRestofHeaders logosilver={true} title="5ireChain Wallet" />
         <div className={style.cardWhite__cardInner}>
           <div className={style.cardWhite__cardInner__innercontact}>
             <h1>Create a New Wallet</h1>

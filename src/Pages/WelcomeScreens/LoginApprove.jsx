@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 import style from "./style.module.scss";
@@ -7,11 +7,11 @@ import { AuthContext } from "../../Store";
 function LoginApprove() {
 
   //get the origin for approval connection
-  const { externalControlsState: {activeSession} } = useContext(AuthContext);
+  const { externalControlsState: { activeSession } } = useContext(AuthContext);
 
   return (
     <div className={style.cardWhite}>
-      <MenuRestofHeaders logosilver={true} title="5irechain Wallet" />
+      <MenuRestofHeaders logosilver={true} title="5ireChain Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Access Request</h1>
@@ -22,7 +22,7 @@ function LoginApprove() {
         </div>
         <div className={style.cardWhite__cardInner__accessConatct}>
           <h1>Allow Access</h1>
-          <span>Allow this site to login with your 5irechain wallet?</span>
+          <span>Allow this site to login with your 5ireChain Wallet?</span>
         </div>
       </div>
     </div>
