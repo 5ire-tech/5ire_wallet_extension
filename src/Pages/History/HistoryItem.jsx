@@ -2,10 +2,10 @@ import React from 'react';
 import style from "./style.module.scss";
 import Swap from "../../Assets/swap.svg";
 import Sent from "../../Assets/sent.svg";
-import { EVM, LABELS, NATIVE, STATUS, TX_TYPE } from '../../Constants';
-import { fixNumber, numFormatter } from "../../Helper/helper";
-import { formatDate, shortner } from "../../Helper/helper"
 import { isEqual } from '../../Utility/utility';
+import { formatDate } from "../../Helper/helper"
+import { fixNumber, numFormatter } from "../../Helper/helper";
+import { EVM, NATIVE, STATUS, TX_TYPE } from '../../Constants';
 
 export default function HistoryItem({ historyItem, handleHistoryOpen }) {
   return (
@@ -26,7 +26,7 @@ export default function HistoryItem({ historyItem, handleHistoryOpen }) {
         </div>
 
         <div className={style.historySec__historyMarketSwap__rytSide}>
-          <h3>{historyItem?.amount ? numFormatter(fixNumber(historyItem.amount)) : ""} 5ire</h3>
+          <h3>{historyItem?.amount ? numFormatter(fixNumber(historyItem.amount)) : "0"} 5ire</h3>
           <p>
             Status : <span className={(historyItem.status.toLowerCase() === STATUS.PENDING.toLowerCase() || historyItem.status.toLowerCase() === STATUS.QUEUED.toLowerCase()) ? style.historySec__pending : (historyItem.status.toLowerCase() === STATUS.SUCCESS.toLowerCase() ? style.historySec__success : style.historySec__failed)}>{historyItem.status}</span>
           </p>
