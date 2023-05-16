@@ -66,6 +66,7 @@ function MenuFooter() {
         pathname === ROUTES.MY_ACCOUNT) && (
           <>
             <Link
+              draggable={false}
               to={ROUTES.WALLET} // onClick={handleHistoryOpen}
               className={`${style.menuItems__items} ${pathname === ROUTES.WALLET ? style.menuItems__items__active : ""
                 }`}
@@ -76,10 +77,11 @@ function MenuFooter() {
               <span className={style.menuItems__items__title}>Wallet</span>
             </Link>
             <Link
+              draggable={false}
               to={ROUTES.HISTORY_P} // onClick={handleHistoryOpen}
               className={`${style.menuItems__items} ${pathname === ROUTES.HISTORY_P
-                  ? style.menuItems__items__active
-                  : ""
+                ? style.menuItems__items__active
+                : ""
                 }`}
             >
               <div className={style.menuItems__items__img}>
@@ -89,11 +91,12 @@ function MenuFooter() {
             </Link>
 
             <Link
+              draggable={false}
               to={ROUTES.MY_ACCOUNT}
               onClick={handleMyAccOpen}
               className={`${style.menuItems__items} ${pathname === ROUTES.MY_ACCOUNT
-                  ? style.menuItems__items__active
-                  : ""
+                ? style.menuItems__items__active
+                : ""
                 }`}
             >
               <div className={style.menuItems__items__img}>
@@ -103,10 +106,11 @@ function MenuFooter() {
             </Link>
 
             <Link
+              draggable={false}
               onClick={() => setOpen2(true)}
               className={`${style.menuItems__items} ${pathname === ROUTES.MANAGE_WALLET
-                  ? style.menuItems__items__active
-                  : ""
+                ? style.menuItems__items__active
+                : ""
                 }`}
             >
               <div className={style.menuItems__items__img}>
@@ -165,7 +169,7 @@ function MenuFooter() {
         )}
       </Drawer> */}
 
-      {/* <Drawer
+      <Drawer
         height={404}
         title={
           <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -176,10 +180,10 @@ function MenuFooter() {
         onClose={onClose2}
         open={open2}
         closeIcon={
-          <img src={ModalCloseIcon} alt="ModalCloseIcon" draggable={false} />
+          <img src={ModalCloseIcon} alt="ModalCloseIcon" draggable={false} className="closeModalIcon" />
         }
       >
-        <Link to={ROUTES.MANAGE_WALLET}>
+        <Link to={ROUTES.MANAGE_WALLET} draggable={false}>
           <div className={style.sttings}>
             <div className={style.sttings__left}>
               <div className={style.walletIconBorder}>
@@ -209,7 +213,7 @@ function MenuFooter() {
             </div>
           </div>
         </Link>
-        // {<Link to={ROUTES.PRIVACY_POLICY}> 
+        {/* <Link to={ROUTES.PRIVACY_POLICY}> */}
         <div
           className={style.sttings}
           style={{ marginTop: "14px" }}
@@ -242,10 +246,10 @@ function MenuFooter() {
             />
           </div>
         </div>
-    
+        {/* </Link> */}
 
         <SocialAccount />
-      </Drawer> */}
+      </Drawer>
 
       {pathname === ROUTES.BEFORE_BEGIN && <FooterStepOne />}
       {(pathname === ROUTES.NEW_WALLET_DETAILS) && <FooterStepTwo />}

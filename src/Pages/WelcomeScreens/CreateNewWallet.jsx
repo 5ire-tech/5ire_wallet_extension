@@ -95,13 +95,14 @@ function CreateNewWallet() {
           <div className={style.cardWhite__importWalletlinkOuter}>
             <div>
               <InputFieldOnly
-                value={newWalletName}
                 coloredBg={true}
+                value={newWalletName}
                 name={LABELS.ACCOUNT_NAME}
                 placeholderBaseColor={true}
                 onChange={handleChange}
                 keyUp={validateAccName}
                 placeholder={"Enter wallet name"}
+                onDrop={e => { e.preventDefault() }}
               />
               <p className="errorText">{warrning}</p>
             </div>

@@ -289,7 +289,7 @@ export class HybridKeyring extends EventEmitter {
         const eth = await HybridKeyring.ethKeyring.addAccounts(1);
         //Check existing accounts in HD category
         const oldAccounts = HybridKeyring.accounts.filter(acc => acc.type === WALLET_TYPES.HD)
-        const existingHdAccounts = oldAccounts.length
+        const existingHdAccounts = keyring.numberOfAccounts;
         const mainPair = HybridKeyring.polkaKeyring.getPair(oldAccounts[0]?.nativeAddress);
         const newKr = mainPair.derive("//" + existingHdAccounts);
         HybridKeyring.polkaKeyring.addPair(newKr)
@@ -467,19 +467,20 @@ export class HybridKeyring extends EventEmitter {
         const keyring = this._getKeyringData(info.type)
 
         if (info.type === WALLET_TYPES.HD) {
-            HybridKeyring.ethKeyring.removeAccount(info.evmAddress)
+            // HybridKeyring.ethKeyring.removeAccount(info.evmAddress)
 
         } else if (info.type === WALLET_TYPES.ETH_SIMPLE) {
             HybridKeyring.simpleEthKeyring.removeAccount(info.evmAddress)
             keyring.private_keys.splice(info.accountIndex, 1)
+            keyring.numberOfAccounts--;
         } else if (info.type === WALLET_TYPES.IMPORTED_NATIVE) {
             HybridKeyring.simpleEthKeyring.removeAccount(info.evmAddress)
             keyring.mnemonics.splice(info.accountIndex, 1)
+            keyring.numberOfAccounts--;
         }
         HybridKeyring.polkaKeyring.removePair(info.nativeAddress)
 
 
-        keyring.numberOfAccounts--;
         keyring.accounts = keyring.accounts.filter(acc => acc.evmAddress !== info.evmAddress)
         HybridKeyring.accounts = HybridKeyring.accounts.filter(acc => acc.evmAddress !== info.evmAddress)
 

@@ -2,13 +2,18 @@ import { ROUTES } from "../Routes/index";
 import Browser from "webextension-polyfill";
 import { useNavigate } from "react-router-dom";
 import { isManifestV3 } from "../Scripts/utils";
-import { createContext, useState } from "react";
 import { sendEventToTab } from "../Helper/helper";
+import { createContext, useState } from "react";
 import { isNullorUndef, log } from "../Utility/utility";
 import { sessionStorage, localStorage } from "../Storage";
 import { TabMessagePayload } from "../Utility/network_calls";
 import { bindRuntimeMessageListener } from "../Utility/message_helper";
-import { MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, LABELS, TABS_EVENT } from "../Constants";
+import {
+  LABELS,
+  TABS_EVENT,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS,
+} from "../Constants";
 import {
   userState,
   externalControls,
@@ -19,12 +24,13 @@ import {
 export const AuthContext = createContext();
 
 export default function Context({ children }) {
+
   const navigate = useNavigate();
   const [state, setState] = useState(userState);
   const [userPass, setUserPass] = useState(null);
   const [isLoading, setLoading] = useState(false);
-  const [privateKey, setPrivateKey] = useState("");
   const [inputError, setInputError] = useState("");
+  const [privateKey, setPrivateKey] = useState("");
   const [seedPhrase, setSeedPhrase] = useState("");
   const [accountName, setAccName] = useState(null);
   const [allAccounts, setAllAccounts] = useState([]);
@@ -35,9 +41,9 @@ export default function Context({ children }) {
   const [showCongratLoader, setShowCongratLoader] = useState(false);
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
   const [valdatorNominatorFee, setValdatorNominatorFee] = useState(null);
+  const [tempBalance, setTempBalance] = useState({ evmBalance: 0, nativeBalance: 0 });
   const [externalControlsState, setExternalControlState] = useState(externalControls);
   const [externalNativeTxDetails, setExternalNativeTxDetails] = useState(initialExternalNativeTransaction);
-
 
 
   Browser.storage.local.onChanged.addListener((changedData) => {
@@ -51,7 +57,9 @@ export default function Context({ children }) {
   bindRuntimeMessageListener((message) => {
 
     if (message.type === MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND) {
-      if (message.event === MESSAGE_EVENT_LABELS.EVM_FEE || message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE) {
+      if (message.event === MESSAGE_EVENT_LABELS.EVM_FEE ||
+        message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE
+      ) {
         (!estimatedGas) && updateEstimatedGas(message.data.fee);
       } else if (message.event === MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS) {
         setExternalNativeTxDetails(message.data);
@@ -75,8 +83,7 @@ export default function Context({ children }) {
         exportPrivatekey(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE) {
         exportSeedPhrase(message.data);
-      }
-      else if (message.event === MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT) {
+      } else if (message.event === MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT) {
         removeAccount(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE) {
         setValdatorNominatorFee(message.data)
@@ -197,10 +204,9 @@ export default function Context({ children }) {
 
   const removeAccount = (data) => {
     setNewAccount(newAccountInitialState);
+    console.log("isInitialAccount : ", data?.isInitialAccount);
     if (data?.isInitialAccount) {
       navigate(ROUTES.DEFAULT)
-    } else {
-      navigate(ROUTES.WALLET);
     }
   }
 
@@ -209,11 +215,12 @@ export default function Context({ children }) {
     //data
     state,
     userPass,
-    inputError,
     isLoading,
+    inputError,
     newAccount,
     privateKey,
     seedPhrase,
+    tempBalance,
     allAccounts,
     accountName,
     estimatedGas,
@@ -234,6 +241,7 @@ export default function Context({ children }) {
     updateLoading,
     setNewAccount,
     setPrivateKey,
+    setTempBalance,
     // removeHistory,
     setPassVerified,
     setNewWalletName,

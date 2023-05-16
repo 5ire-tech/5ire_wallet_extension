@@ -124,13 +124,14 @@ export default function SetPasswordScreen() {
             style={{ marginTop: "20px" }}
           >
             <InputFieldSimple
+              coloredBg={true}
               value={pass?.pass}
               name={LABELS.PASS}
-              onChange={handleChange}
-              placeholder={"Enter Password"}
-              placeholderBaseColor={true}
-              coloredBg={true}
               keyUp={validatePass}
+              onChange={handleChange}
+              placeholderBaseColor={true}
+              placeholder={"Enter Password"}
+              onDrop={e => { e.preventDefault() }}
             />
           </div>
           <p className={style.errorText}>{error.pass ? error.pass : ""}</p>
@@ -139,13 +140,14 @@ export default function SetPasswordScreen() {
             style={{ marginTop: "34px" }}
           >
             <InputFieldSimple
-              value={pass?.confirmPass}
+              coloredBg={true}
               name="confirmPass"
               onChange={handleChange}
-              placeholder={"Confirm Password"}
+              value={pass?.confirmPass}
               placeholderBaseColor={true}
-              coloredBg={true}
               keyUp={validateConfirmPass}
+              placeholder={"Confirm Password"}
+              onDrop={e => { e.preventDefault() }}
             />
             <p className={style.errorText}>
               {error.confirmPass ? error.confirmPass : ""}

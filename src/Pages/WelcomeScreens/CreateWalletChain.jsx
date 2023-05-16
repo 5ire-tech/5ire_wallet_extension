@@ -33,7 +33,7 @@ function CreateWalletChain() {
     if (e.target.name === PVT_KEY) navigator.clipboard.writeText(newAccount?.evmPrivateKey);
 
     if (e.target.name === "all") {
-      let string = `Mnemonic: ${newAccount?.mnemonic}\nEVM Private key: ${newAccount?.evmPrivateKey}\nEVM Address: ${newAccount?.evmAddress}\nNative Address: ${newAccount?.nativeAddress}`;
+      let string = `Mnemonic: ${newAccount?.mnemonic ? newAccount?.mnemonic : newAccount?.drivedMnemonic}\nEVM Private key: ${newAccount?.evmPrivateKey}\nEVM Address: ${newAccount?.evmAddress}\nNative Address: ${newAccount?.nativeAddress}`;
       navigator.clipboard.writeText(string);
     }
 

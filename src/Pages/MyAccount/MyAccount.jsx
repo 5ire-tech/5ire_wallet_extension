@@ -1,42 +1,33 @@
 import { ROUTES } from "../../Routes";
 import { Dropdown, Space } from "antd";
 import style from "./style.module.scss";
+import { toast } from "react-hot-toast";
 import { AuthContext } from "../../Store";
-import Browser from "webextension-polyfill";
 import ThreeDot from "../../Assets/dot3.svg";
-import GreenCircle from "../../Assets/greencircle.svg";
 import { useNavigate } from "react-router-dom";
 import Import from "../../Assets/PNG/import.png";
 import Logout from "../../Assets/PNG/logout.png";
 import DarkLogo from "../../Assets/DarkLogo.svg";
+import { sendEventToTab } from "../../Helper/helper";
+import GreenCircle from "../../Assets/greencircle.svg";
 import React, { useContext, useState, useEffect } from "react";
 import Createaccount from "../../Assets/PNG/createaccount.png";
-import {
-  sendMessageToTab,
-  sendRuntimeMessage,
-} from "../../Utility/message_helper";
+import { TabMessagePayload } from "../../Utility/network_calls";
+import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
-import { getCurrentTabDetails } from "../../Scripts/utils";
 import AccountSetting from "../../Components/AccountSetting/AccountSetting";
 import {
   LABELS,
   CURRENCY,
-  ERROR_MESSAGES,
-  MESSAGE_TYPE_LABELS,
-  ACCOUNT_CHANGED_EVENT,
-  MESSAGE_EVENT_LABELS,
-  RESTRICTED_URLS,
   TABS_EVENT,
   WALLET_TYPES,
+  ERROR_MESSAGES,
+  // RESTRICTED_URLS,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS,
+  // ACCOUNT_CHANGED_EVENT,
 } from "../../Constants/index";
-import { toast } from "react-hot-toast";
-import { isEqual } from "../../Utility/utility";
-import { TabMessagePayload } from "../../Utility/network_calls";
-import {
-  checkStringInclusionIntoArray,
-  sendEventToTab,
-} from "../../Helper/helper";
-import fillArow from "../../Assets/fillArow.svg";
+
 
 function MyAccount() {
   const navigate = useNavigate();
@@ -47,45 +38,40 @@ function MyAccount() {
     allAccounts,
     state,
     updateState,
-    removeHistory,
+    // removeHistory,
     externalControlsState,
     setNewWalletName,
   } = useContext(AuthContext);
   const { connectedApps } = externalControlsState;
-  const { balance, currentAccount } = state;
+  const { balance, currentAccount, allAccountsBalance } = state;
 
   useEffect(() => {
     setAccounts(allAccounts);
   }, [allAccounts]);
 
+  //remove Account
   const handleRemoveAcc = () => {
     if (!addressToRemove) {
       toast.error(ERROR_MESSAGES.UNABLE_TO_REMOVE_ACC);
     } else {
+      //Remove account
+      sendRuntimeMessage(
+        MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+        MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT,
+        { address: addressToRemove }
+      );
+
       if (
         currentAccount.evmAddress === addressToRemove ||
         currentAccount.nativeAddress === addressToRemove
       ) {
-        //Remove account
-        sendRuntimeMessage(
-          MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
-          MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT,
-          { address: addressToRemove }
+        const index = accounts.findIndex(
+          (acc) =>
+            acc.evmAddress === addressToRemove ||
+            acc.nativeAddress === addressToRemove
         );
 
-        const index = accounts.findIndex(acc => (
-          acc.evmAddress === addressToRemove ||
-          acc.nativeAddress === addressToRemove
-        )
-        );
-
-        updateState(LABELS.CURRENT_ACCOUNT, accounts[index - 1]);
-        // removeHistory(accounts[index].accountName);
-        sendRuntimeMessage(
-          MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
-          MESSAGE_EVENT_LABELS.BALANCE,
-          {}
-        );
+        updateCurrentAccount(accounts[index - 1])
       }
     }
     handle_OK_Cancel();
@@ -108,6 +94,7 @@ function MyAccount() {
   };
 
   const handleModalOpen = (address) => {
+    console.log("Address :::: ", address);
     if (address) {
       setAddressToRemove(address);
       setModalOpen(true);
@@ -120,18 +107,26 @@ function MyAccount() {
 
   const onSelectAcc = (name) => {
     const acc = accounts.find((acc) => acc.accountName === name);
+
     updateCurrentAccount(acc);
   };
 
   //update the current account
   const updateCurrentAccount = (acc) => {
+
     updateState(LABELS.CURRENT_ACCOUNT, acc);
-    //fetch balance of changed account
-    sendRuntimeMessage(
-      MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
-      MESSAGE_EVENT_LABELS.BALANCE,
-      {}
-    );
+
+    if (allAccountsBalance.hasOwnProperty(acc?.evmAddress)) {
+      updateState(LABELS.BALANCE, allAccountsBalance[acc.evmAddress]);
+    } else {
+      //fetch balance of changed account
+      sendRuntimeMessage(
+        MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
+        MESSAGE_EVENT_LABELS.BALANCE,
+        {}
+      );
+    }
+
     //send account details whenever account is changed
     sendEventToTab(
       new TabMessagePayload(
@@ -167,89 +162,91 @@ function MyAccount() {
       <div className={style.myAccountSec__accountHeading}>
         <h3>My Accounts</h3>
       </div>
-      {accounts?.map((e, i) => (
-        <div
-          className={style.myAccountSec__accountActive}
-          key={i + e?.accountIndex}
-        >
-          <div className={style.myAccountSec__leftSec}>
-            <img src={DarkLogo} alt="logo" draggable={false} />
-            <div className={style.myAccountSec__leftSec__accountConatct}>
-              <h2>
-                {e?.accountName}
-                {e?.type === WALLET_TYPES.IMPORTED_NATIVE ? (
-                  <i>
-                    {" "}
-                    <small> (Imported)</small>
-                  </i>
-                ) : (
-                  ""
-                )}
-              </h2>
-              <p>
-                {e?.accountName === currentAccount?.accountName ? (
-                  balance?.totalBalance ? (
-                    `${balance.totalBalance} ${CURRENCY}`
+      <div className={style.myAccountScrool}>
+        {accounts?.map((e, i) => (
+          <div
+            className={style.myAccountSec__accountActive}
+            key={i + e?.accountIndex}
+          >
+            <div className={style.myAccountSec__leftSec}>
+              <img src={DarkLogo} alt="logo" draggable={false} />
+              <div className={style.myAccountSec__leftSec__accountConatct}>
+                <div className={style.nameGreenCircel}>
+                  {e?.accountName === currentAccount?.accountName && (
+                    <>
+                      <h2>
+                        {" "}
+                        <img
+                          src={GreenCircle}
+                          alt="connectionLogo"
+                          draggable={false}
+                        />
+                        {/* {LABELS.ACTIVE} */}
+                      </h2>
+                    </>
+                  )}
+                  <h2>
+                    {e?.accountName}
+
+
+                  </h2>
+                </div>
+                <p>
+                  {e?.accountName === currentAccount?.accountName ? (
+                    balance?.totalBalance ? (
+                      `${balance.totalBalance} ${CURRENCY}`
+                    ) : (
+                      `0 ${CURRENCY}`
+                    )
                   ) : (
-                    ""
-                  )
-                ) : (
-                  <span
-                    onClick={() => onSelectAcc(e?.accountName)}
-                    className={style.myAccountSec__switchAcc}
-                  >
-                    Switch to this account
-                  </span>
-                )}
-              </p>
+                    <span
+                      onClick={() => onSelectAcc(e?.accountName)}
+                      className={style.myAccountSec__switchAcc}
+                    >
+                      Switch to this account
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
+            <div className={style.myAccountSec__rytSec}>
+
+              {e?.type === WALLET_TYPES.IMPORTED_NATIVE && (
+                <h5>IMPORTED</h5>
+              )}
+
+              {Number(e.accountIndex) === 0 && e.type === "hd_wallet" ? (
+                ""
+              ) : (
+                <Dropdown
+                  placement="bottomRight"
+                  arrow={{ pointAtCenter: true }}
+                  menu={{
+                    items: [
+                      {
+                        key: i,
+                        label: (
+                          <span onClick={() => handleModalOpen(e.evmAddress)}>
+                            Remove
+                            {/* <img src={fillArow} /> */}
+                          </span>
+                        ),
+                      },
+                    ],
+                  }}
+                  trigger={["click"]}
+                >
+                  <div style={{ cursor: "pointer" }} onClick={(e) => e.preventDefault()}>
+                    <Space>
+                      <img src={ThreeDot} alt="3dots" />
+                    </Space>
+                  </div>
+                </Dropdown>
+              )}
             </div>
           </div>
-          <div className={style.myAccountSec__rytSec}>
-            {/* <h2> */}
-            {e?.accountName === currentAccount?.accountName ? (
-              <>
-                <h2>
-                  {" "}
-                  <img
-                    src={GreenCircle}
-                    alt="connectionLogo"
-                    draggable={false}
-                  />
-                  {LABELS.ACTIVE}
-                </h2>
-              </>
-            ) : (
-              <h2>{LABELS.NOT_ACTIVE}</h2>
-            )}
-            {/* </h2> */}
-            {Number(e.accountIndex) === 0 && e.type === "hd_wallet" ? (
-              ""
-            ) : (
-              <Dropdown
-                placement="bottomRight" arrow={{ pointAtCenter: true }}
-                menu={{
-                  items: [
-                    {
-                      key: i,
-                      label: (
-                        <span onClick={() => handleModalOpen(e.evmAddress)}>
-                          Remove
-                          {/* <img src={fillArow} /> */}
-                        </span>
-                      ),
-                    },
-                  ],
-                }}
-                trigger="click"
-              >
-                <Space style={{ cursor: "pointer" }}>
-                  <img src={ThreeDot} alt="3dots" />
-                </Space>
-              </Dropdown>
-            )}
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
       <ModalCustom
         isModalOpen={isModalOpen}
         handleOk={handle_OK_Cancel}

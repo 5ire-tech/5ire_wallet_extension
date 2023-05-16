@@ -9,6 +9,7 @@ export const userState = {
     eth_accounts: '',
 
     currentNetwork: "QA",
+    allAccountsBalance: {},
 
     popupChecks: {
         txApprove: false

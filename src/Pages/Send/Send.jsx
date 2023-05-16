@@ -13,10 +13,6 @@ import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import {
-  InputField,
-  InputFieldOnly,
-} from "../../Components/InputField/InputFieldSimple";
-import {
   EVM,
   LABELS,
   NATIVE,
@@ -27,27 +23,37 @@ import {
   MESSAGE_EVENT_LABELS,
   EXISTENTIAL_DEPOSITE,
 } from "../../Constants/index";
+import {
+  InputField,
+  InputFieldOnly,
+} from "../../Components/InputField/InputFieldSimple";
 
 
 function Send() {
   const [isEd, setEd] = useState(true);
   const [disableBtn, setDisable] = useState(true);
+  const [activeTab, setActiveTab] = useState(NATIVE);
   const [isMaxDisabled, setMaxDisabled] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [err, setErr] = useState({ to: "", amount: "" });
   const [data, setData] = useState({ to: "", amount: "" });
-  const [activeTab, setActiveTab] = useState(NATIVE);
-  const { state, estimatedGas, updateEstimatedGas, updateLoading } =
-    useContext(AuthContext);
+  const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
 
-  const { balance, currentAccount } = state;
+  const { balance, currentAccount, currentNetwork } = state;
 
   // Reset the amount, to and error evm and native address changed
   useEffect(() => {
-    setData({ to: "", amount: "" });
+    updateEstimatedGas(null);
     setErr({ to: "", amount: "" });
-  }, [currentAccount?.evmAddress, currentAccount?.nativeAddress]);
+    setData({ to: "", amount: "" });
+  }, [currentAccount?.evmAddress, currentAccount?.nativeAddress, currentNetwork]);
+
+  useEffect(() => {
+    if (!data.to && !data.amount && !estimatedGas) {
+      setErr({ to: "", amount: "" });
+    }
+  }, [data.to, data.amount, estimatedGas]);
 
   useEffect(() => {
     if (
@@ -83,12 +89,18 @@ function Send() {
       !estimatedGas
     ) {
       setDisable(true);
+    } else {
+      setDisable(false);
     }
 
   }, [err.to, err.amount, data?.to, data?.amount, isEd, estimatedGas]);
 
   //Check for Insufficent balance
   useEffect(() => {
+    // console.log("estimatedGas : ", estimatedGas);
+    // console.log("amount : ", data.amount);
+    // console.log("to : ", data.to);
+
     if (!estimatedGas) {
       setDisable(true);
     } else {
@@ -103,25 +115,26 @@ function Send() {
 
           return;
         }
-        else if (
-          Number(data.amount) +
-          Number(estimatedGas) +
-          (isEd ? EXISTENTIAL_DEPOSITE : 0) >
-          Number(balance.evmBalance)
-        ) {
+        else if (data?.amount && estimatedGas && data?.to) {
+          if (
+            Number(data.amount) +
+            Number(estimatedGas) +
+            (isEd ? EXISTENTIAL_DEPOSITE : 0) >
+            Number(balance.evmBalance)
+          ) {
+            // setDisable(true);
 
-          updateEstimatedGas(null);
-          setDisable(true);
-          setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
+            updateEstimatedGas(null);
+            setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
+          } else {
 
-        } else {
+            // setDisable(false);
+            setErr((p) => ({ ...p, amount: "" }));
 
-          setDisable(false);
-          setErr((p) => ({ ...p, amount: "" }));
+          }
 
         }
       } else if (activeTab === NATIVE) {
-
         if (estimatedGas && !data.amount && data.to) {
 
           const amount = Number(balance.nativeBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0));
@@ -142,18 +155,18 @@ function Send() {
         ) {
 
           updateEstimatedGas(null);
-          setDisable(true);
+          // setDisable(true);
           setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
 
         } else {
 
-          setDisable(false);
+          // setDisable(false);
           setErr((p) => ({ ...p, amount: "" }));
 
         }
       }
     }
-  }, [estimatedGas, activeTab, balance?.evmBalance, balance.nativeBalance, data.amount, isEd]);
+  }, [estimatedGas, activeTab, balance?.evmBalance, balance.nativeBalance, data.amount, data.to, isEd]);
 
 
   const blockInvalidChar = (e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
@@ -171,7 +184,7 @@ function Send() {
   const validateAmount = () => {
     if (!data.amount)
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INPUT_REQUIRED }));
-    if (isNaN(data.amount))
+    else if (isNaN(data.amount))
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.ENTER_AMOUNT_CORRECTLY }));
     else if (Number(data.amount) <= 0)
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.AMOUNT_CANT_BE_0 }));
@@ -257,6 +270,7 @@ function Send() {
 
   //handle the changed value of inputs
   const handleChange = (e) => {
+
     if (e.target.name === LABELS.AMOUNT) {
       const arr = e.target.value.split(".");
       if (arr.length > 1) {
@@ -278,7 +292,6 @@ function Send() {
           [e.target.name]: e.target.value.trim(),
         }));
         updateEstimatedGas(null);
-        setData(p => ({ ...p, amount: "" }))
       }
     }
   };
@@ -338,7 +351,7 @@ function Send() {
   };
 
   const activeSend = (e) => {
-    setDisable(true);
+    // setDisable(true);
     updateEstimatedGas(null);
     setActiveTab(e.target.name);
     setErr({ to: "", amount: "" });
@@ -347,7 +360,7 @@ function Send() {
 
   //handle Ok and cancel button of popup
   const handle_OK_Cancel = () => {
-    setDisable(true);
+    // setDisable(true);
     setIsFaildOpen(false);
     updateEstimatedGas(null);
     setData({ to: "", amount: "" });
@@ -361,10 +374,6 @@ function Send() {
       setData(p => ({ ...p, amount: "" }));
       setErr(p => ({ ...p, amount: "" }));
     }
-    // if (maxAmount > 0) {
-    //   setData(p => ({ ...p, amount: maxAmount }));
-    //   setErr(p => ({ ...p, amount: "" }));
-    // }
   }
 
   const suffix = (
@@ -410,6 +419,13 @@ function Send() {
             >
               EVM
             </button>
+            <div
+              className={`${activeTab === NATIVE &&
+                style.activeFirst
+                } ${activeTab === EVM &&
+                style.activeSecond
+                } ${style.animations}`}
+            ></div>
           </div>
         </div>
         <div className={style.sendSec__inputInnerSec}>
@@ -421,6 +437,7 @@ function Send() {
               onChange={handleChange}
               keyUp={validateToAddress}
               placeholderBaseColor={true}
+              onDrop={e => { e.preventDefault() }}
               placeholder={"Please enter recipient address"}
             />
             <span className={style.errorText}>{err.to}</span>
@@ -432,6 +449,7 @@ function Send() {
               type={"number"}
               coloredBg={true}
               key="sendInput"
+              onDrop={e => { e.preventDefault() }}
               value={data.amount}
               keyUp={validateAmount}
               onChange={handleChange}

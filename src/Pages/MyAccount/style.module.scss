@@ -1,12 +1,15 @@
 .myAccountSec {
   padding: 25px;
+
   &__tabAccount {
     display: flex;
     gap: 15px;
   }
+
   &__accountHeading {
-    padding-top: 35px ;
+    padding-top: 35px;
     text-align: left;
+
     h3 {
       background: -webkit-linear-gradient(#0071ff, #54f0d1);
       -webkit-background-clip: text;
@@ -16,52 +19,80 @@
       font-size: 16px;
     }
   }
+
   &__accountActive {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 13px 0;
     border-bottom: 1px solid #202a41;
-    &:last-child{
-        border-bottom: 0;
+
+    &:last-child {
+      border-bottom: 0;
     }
   }
+
   &__switchAcc {
     cursor: pointer;
   }
+
   &__leftSec {
     display: flex;
     gap: 12px;
     align-items: center;
-    img{
-      width: 33px;
-    }
+
+    // img{
+    //   width: 33px;
+    // }
     &__accountConatct {
       text-align: left;
+
       h2 {
         // text-transform: capitalize;
         font-size: 15px;
         color: #ffffff;
+        display: inline-block !important;
+    max-width: 177px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
       }
+
       p {
         color: #ffffff;
         font-size: 14px;
         opacity: 0.6;
       }
+
       span {
         background: -webkit-linear-gradient(#0071ff, #54f0d1);
         -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-fill-color: transparent;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-fill-color: transparent;
         font-size: 14px;
       }
     }
   }
+
   &__rytSec {
     display: flex;
-    gap: 18px;
+    gap: 10px;
     align-items: center;
+    padding-right: 15px;
+    max-width: 77px;
+    // width: 100%;
+
+    h5 {
+      border: 1px solid #fff;
+      border-radius: 12px;
+      padding: 2px 5px;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 600;
+
+    }
+
     h2 {
       font-size: 13px;
       color: #ffffff;
@@ -69,9 +100,11 @@
       gap: 4px;
     }
   }
-  &__dropDownSec{
+
+  &__dropDownSec {
     position: relative;
-    &::before{
+
+    &::before {
       background-image: url("../../Assets/fillArow.svg");
       position: absolute;
       content: "";
@@ -81,4 +114,15 @@
       right: 0;
     }
   }
+}
+
+.myAccountScrool {
+  overflow: auto;
+  height: 300px;
+}
+
+.nameGreenCircel {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }

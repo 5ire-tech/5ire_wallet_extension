@@ -150,12 +150,13 @@ function ForgotPassword() {
         <div className={`${style.cardWhite__importWalletlinkOuter} ${style.cardWhite__forgotPassword}`}>
           <div>
             <InputFieldOnly
-              placeholder={"Enter wallet name"}
-              placeholderBaseColor={true}
-              coloredBg={true}
               name="accName"
+              coloredBg={true}
               onChange={handleChange}
               keyUp={validateAccName}
+              placeholderBaseColor={true}
+              placeholder={"Enter wallet name"}
+              onDrop={e => { e.preventDefault() }}
             />
             <p className={style.errorText}>
               {error?.accName ? error.accName : ""}
@@ -180,17 +181,19 @@ function ForgotPassword() {
               onChange={handleChange}
               placeholderBaseColor={true}
               placeholder={"Enter New Password"}
+              onDrop={e => { e.preventDefault() }}
             />
             <p className={style.errorText}>{error?.pass ? error.pass : ""}</p>
           </div>
           <div>
             <InputFieldSimple
+              coloredBg={true}
               name={"confirmPass"}
               onChange={handleChange}
-              placeholder={"Confirm Password"}
               placeholderBaseColor={true}
               keyUp={validateConfirmPass}
-              coloredBg={true}
+              placeholder={"Confirm Password"}
+              onDrop={e => { e.preventDefault() }}
             />
             <p className={style.errorText}>
               {error?.confirmPass ? error.confirmPass : ""}

@@ -17,7 +17,7 @@ export const DECIMALS = 10 ** 18;
 export const WINDOW_HEIGHT = 620;
 export const EXISTENTIAL_DEPOSITE = 1;
 export const ONE_ETH_IN_GWEI = 1000000000;
-export const AUTO_BALANCE_UPDATE_TIMER = 8000;
+export const AUTO_BALANCE_UPDATE_TIMER = 10000;
 export const WEI_IN_ONE_ETH = 1000000000000000000;
 export const TRANSACTION_STATUS_CHECK_TIMER = 5000;
 
@@ -25,10 +25,10 @@ export const TRANSACTION_STATUS_CHECK_TIMER = 5000;
 
 //tabs event
 export const TABS_EVENT = {
-    ACCOUNT_CHANGE_EVENT: "accountChange",
-    NETWORK_CHANGE_EVENT: "networkChange",
-    WALLET_CONNECTED_EVENT: "walletConnected",
-    WALLET_DISCONNECTED_EVEN: "walletDisconnected"
+    ACCOUNT_CHANGE_EVENT: "accountsChanged",
+    NETWORK_CHANGE_EVENT: "networkChanged",
+    WALLET_CONNECTED_EVENT: "connect",
+    WALLET_DISCONNECTED_EVEN: "disconnect"
 }
 
 
@@ -54,7 +54,7 @@ export const TX_TYPE = {
     NATIVE_APP: "Native App",
     NATIVE_SIGNER: "Native Signer",
     CONTRACT_EXECUTION: "Contract Execution",
-    CONTRACT_DEPLOYMENT: "Contract Deployement",
+    CONTRACT_DEPLOYMENT: "Contract Deployment",
 };
 
 export const NETWORK = {
@@ -100,8 +100,9 @@ export const ERROR_MESSAGES = {
     INCORRECT_PASS: "Incorrect password.",
     INCORRECT_ADDRESS: "Invalid address.",
     INPUT_REQUIRED: "This field is required.",
-    PASS_DONT_MATCH: "Passwords do not match.",
+    PASS_DONT_MATCH: "Password do not match.",
     INSUFFICENT_BALANCE: "Insufficent Balance.",
+    INSUFFICENT_BALANCE_VD_NM: "Insufficient Funds: Fee + Amount is more than available balance.",
     UNDEF_PROPERTY: "Object not has given property",
     AMOUNT_CANT_BE_0: "Amount can't be 0 or less than 0",
     SINGER_ERROR: "Error while signing the the raw/payload",
@@ -119,8 +120,8 @@ export const ERROR_MESSAGES = {
     ACCOUNT_ACCESS_NOT_GRANTED: "The requested account has not been authorized by the user",
     ERROR_WHILE_TRANSACTION: "Transaction failed, error occured during transaction processing",
     ERROR_WHILE_GAS_ESTIMATION: "Gas Estimation Failed, something wrong happend while gas estimation",
-    CREATE_PASS_MSG: "Password must have at leas t 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
-    
+    CREATE_PASS_MSG: "Password must have at least 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
+
 
     INVALID_PROPERTY: "Invalid property.",
     UNDEF_DATA: "Value is null or undefined.",
@@ -320,9 +321,9 @@ export const MESSAGE_TYPE_LABELS = {
     INTERNAL_TX: "internalTx",
     FEE_AND_BALANCE: "feeAndBalance",
     NETWORK_HANDLER: "networkHandler",
-    EXTENSION_BACKGROUND: "extensionBackground",
     EXTERNAL_TX_APPROVAL: "externalTxApproval",
     EXTENSION_UI_KEYRING: "extensionUiKeyring",
+    EXTENSION_BACKGROUND: "extensionBackground",
     VALIDATOR_NOMINATOR_HANDLER: "validatorNominatorHandler",
 }
 
@@ -380,3 +381,5 @@ export const VALIDATOR_NOMINATOR_METHOD = {
     NATIVE_WITHDRAW_NOMINATOR_UNBONDED: "native_withdraw_nominator_unbonded",
     NATIVE_WITHDRAW_VALIDATOR_UNBONDED: "native_withdraw_validator_unbonded"
 }
+
+export const VALIDATION_METHODS_VD_NM = [VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_BONDMORE, VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_BONDMORE, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR]

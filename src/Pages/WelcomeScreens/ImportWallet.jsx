@@ -155,12 +155,13 @@ function ImportWallet() {
         <div className={style.cardWhite__importWalletlinkOuter}>
           <div>
             <InputFieldOnly
-              placeholder={"Enter wallet name"}
-              placeholderBaseColor={true}
-              coloredBg={true}
               name="accName"
+              coloredBg={true}
               onChange={handleChange}
               keyUp={validateAccName}
+              placeholderBaseColor={true}
+              placeholder={"Enter wallet name"}
+              onDrop={e => { e.preventDefault() }}
             />
             <p className="errorText">{warrning.acc}</p>
           </div>
@@ -179,6 +180,7 @@ function ImportWallet() {
               name={LABELS.KEY}
               onKeyUp={validateKey}
               onChange={handleChange}
+              onDrop={e => { e.preventDefault() }}
               placeholder={"Enter mnemonic here"}
             />
             <p className="errorText">{warrning.key}</p>

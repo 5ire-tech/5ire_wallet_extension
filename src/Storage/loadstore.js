@@ -1,8 +1,8 @@
 import { localStorage, sessionStorage } from ".";
-import { hasLength, isEqual, isNullorUndef, isString, isEmpty, hasProperty } from "../Utility/utility";
-import { userState, externalControls, transactionQueue } from "../Store/initialState";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import { ERRCODES, ERROR_MESSAGES, LABELS } from "../Constants";
+import { userState, externalControls, transactionQueue } from "../Store/initialState";
+import { hasLength, isEqual, isNullorUndef, isString, isEmpty, hasProperty } from "../Utility/utility";
 
 
 //local storage data null safety check
@@ -89,8 +89,15 @@ export class ExtensionStorageHandler {
     //update the state
     updateBalance = async (data, state) => {
         if (isEqual(data.totalBalance, state.balance.totalBalance)) return false;
-        const newState = { ...state, balance: data };
-        return await this._updateStorage(newState)
+
+        const allAccountsBalance = {
+            ...state?.allAccountsBalance,
+            [state?.currentAccount.evmAddress]: {
+                ...data
+            }
+        }
+        const newState = { ...state, balance: data, allAccountsBalance };
+        return await this._updateStorage(newState);
     }
 
     // //update the main State
@@ -235,8 +242,10 @@ export class ExtensionStorageHandler {
             nativeAddress: newAccount.nativeAddress,
             type: newAccount.type,
         }
+        const allAccountsBalance = this._setAccountBalance(state, newAccount);
         const txHistory = this._txProperty(state, newAccount.evmAddress);
-        const newState = { ...state, vault, isLogin: true, currentAccount, txHistory };
+        // }
+        const newState = { ...state, vault, isLogin: true, currentAccount, txHistory, allAccountsBalance };
 
 
         // if (state?.oldAccounts) {
@@ -291,7 +300,9 @@ export class ExtensionStorageHandler {
         else
             txHistory = this._txProperty({ txHistory: {} }, newAccount.evmAddress);
 
-        const newState = { ...state, vault, txHistory, currentAccount, isLogin: true }
+        //todo
+        const allAccountsBalance = this._setAccountBalance(state, newAccount);
+        const newState = { ...state, vault, txHistory, currentAccount, allAccountsBalance, isLogin: true };
         this._updateSession(LABELS.ISLOGIN, true);
         return await this._updateStorage(newState);
     };
@@ -300,7 +311,8 @@ export class ExtensionStorageHandler {
     importAccountByMnemonics = async (message, state) => {
         const { newAccount, vault } = message;
         const txHistory = this._txProperty(state, newAccount.evmAddress);
-        const newState = { ...state, vault, currentAccount: newAccount, txHistory }
+        const allAccountsBalance = this._setAccountBalance(state, newAccount);
+        const newState = { ...state, vault, txHistory, currentAccount: newAccount, allAccountsBalance }
         return await this._updateStorage(newState);
     };
 
@@ -316,7 +328,8 @@ export class ExtensionStorageHandler {
             type: newAccount.type,
         }
         const txHistory = this._txProperty(state, newAccount.evmAddress);
-        const newState = { ...state, vault, currentAccount, txHistory };
+        const allAccountsBalance = this._setAccountBalance(state, newAccount);
+        const newState = { ...state, vault, currentAccount, txHistory, allAccountsBalance };
         return await this._updateStorage(newState);
     };
 
@@ -330,13 +343,21 @@ export class ExtensionStorageHandler {
     // remove specific account 
     removeAccount = async (message, state) => {
         const newState = { ...state, vault: message.vault };
-        if (newState?.txHistory[newState?.currentAccount.evmAddress]) {
-            delete newState.txHistory[newState?.currentAccount.evmAddress]
+        // console.log("state before delete tx and balance", newState);
+        if (newState?.txHistory.hasOwnProperty(newState?.currentAccount.evmAddress)) {
+            delete newState.txHistory[newState?.currentAccount.evmAddress];
+        }
+        // console.log("newState?.allAccountsBalance.hasOwnProperty(newState?.currentAccount.evmAddress? : ", newState?.allAccountsBalance.hasOwnProperty(newState?.currentAccount.evmAddress));
+        if (newState?.allAccountsBalance.hasOwnProperty(newState?.currentAccount.evmAddress)) {
+            // console.log("newState?.currentAccount.evmAddress : ", newState?.currentAccount.evmAddress);
+            delete newState.allAccountsBalance[newState?.currentAccount.evmAddress];
         }
         if (message?.isInitialAccount) {
             newState.isLogin = false;
             newState.currentAccount = userState.currentAccount;
         }
+        console.log("state after delete tx and balance", newState);
+
         return await this._updateStorage(newState);
     }
 
@@ -400,6 +421,17 @@ export class ExtensionStorageHandler {
         return {
             ...state.txHistory,
             [accountName]: oldHistory ? oldHistory : []
+        };
+    }
+
+    _setAccountBalance = (state, acc) => {
+        return {
+            ...state.allAccountsBalance,
+            [acc.evmAddress]: {
+                evmBalance: 0,
+                nativeBalance: 0,
+                totalBalance: 0
+            }
         };
     }
 
