@@ -11,9 +11,9 @@
 ## Steps to run service on local system
 1. Clone the GitHub repo.
 ```bash
-https://github.com/5ire-tech/5ire_wallet_extension.git
+git clone https://github.com/5ire-tech/5ire_wallet_extension.git
 ```
-2. Use the package manager npm or yarn to install foobar.
+2. Use the package manager npm or yarn to install packages.
 
 ```bash
 npm install
