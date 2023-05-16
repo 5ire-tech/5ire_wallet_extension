@@ -5,7 +5,7 @@ import { HybridKeyring } from "./5ire-keyring";
 import { NetworkHandler } from "./initbackground";
 import { hasProperty, log } from "../Utility/utility";
 import { EventPayload } from "../Utility/network_calls";
-import { ErrorPayload } from "../Utility/error_helper";
+import { ErrorPayload, Error } from "../Utility/error_helper";
 import { getDataLocal } from "../Storage/loadstore";
 
 export default class ValidatorNominatorHandler {
@@ -32,7 +32,7 @@ export default class ValidatorNominatorHandler {
       const res = await ValidatorNominatorHandler.instance[activeSession.method](state, activeSession.message, isFee);
 
       //if error occured then throw it
-      if (res?.error) throw new Error(res.data);
+      if (res?.error) new Error(new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, res)).throw();
 
       const methodDetails = this.getFormattedMethod(activeSession.method, activeSession.message)
       if (isFee) payload.data = { fee: res.data, ...methodDetails };

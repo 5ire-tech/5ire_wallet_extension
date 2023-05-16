@@ -757,14 +757,18 @@ export class ExtensionEventHandle {
     ExtensionEventHandle.eventEmitter.on(INTERNAL_EVENT_LABELS.ERROR, async (err) => {
       try {
         log("error catched inside error event handler: ", err);
+
+        //check if there is custom error message in error payload
+        const customMessage = err?.errMessage?.data;
+
         //transaction failed and error message handler
-        if(isEqual(err?.errCode, ERRCODES.ERROR_WHILE_TRANSACTION))  this.services.messageToUI(MESSAGE_EVENT_LABELS.BACKGROUND_ERROR, ERROR_MESSAGES.ERROR_WHILE_TRANSACTION);
+        if(isEqual(err?.errCode, ERRCODES.ERROR_WHILE_TRANSACTION))  this.services.messageToUI(MESSAGE_EVENT_LABELS.BACKGROUND_ERROR, customMessage || ERROR_MESSAGES.ERROR_WHILE_TRANSACTION);
 
-        if(isEqual(err?.errCode, ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE))  this.services.messageToUI(MESSAGE_EVENT_LABELS.BACKGROUND_ERROR, ERROR_MESSAGES.ERROR_WHILE_GAS_ESTIMATION);
+        if(isEqual(err?.errCode, ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE))  this.services.messageToUI(MESSAGE_EVENT_LABELS.BACKGROUND_ERROR, customMessage || ERROR_MESSAGES.ERROR_WHILE_GAS_ESTIMATION);
 
-        if(isEqual(err?.errCode, ERRCODES.FAILED_TO_CONNECT_NETWORK))  this.services.messageToUI(MESSAGE_EVENT_LABELS.NETWORK_CONNECTION_ERROR, ERROR_MESSAGES.ERROR_WHILE_NETWORK_CONNECTION);
+        if(isEqual(err?.errCode, ERRCODES.FAILED_TO_CONNECT_NETWORK))  this.services.messageToUI(MESSAGE_EVENT_LABELS.NETWORK_CONNECTION_ERROR, customMessage || ERROR_MESSAGES.ERROR_WHILE_NETWORK_CONNECTION);
 
-        if(isEqual(err?.errCode, ERRCODES.INTERNAL))  this.services.messageToUI(MESSAGE_EVENT_LABELS.BACKGROUND_ERROR, ERROR_MESSAGES.INTERNAL_ERROR);
+        if(isEqual(err?.errCode, ERRCODES.INTERNAL))  this.services.messageToUI(MESSAGE_EVENT_LABELS.BACKGROUND_ERROR, customMessage || ERROR_MESSAGES.INTERNAL_ERROR);
       } catch (err) {
         log("Error in error event handler: ", err)
       }
@@ -1660,7 +1664,7 @@ export class GeneralWalletRPC {
         const eventPayload = await this.nominatorValidatorHandler.handleNativeAppsTask(state, message, true);
         return eventPayload;
     } catch (err) {
-      return new EventPayload(null, null, null, new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, err.message));
+      return new EventPayload(null, null, null, new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, err.message?.errMessage ? err.message.errMessage : err.message ));
     }
   }
 
@@ -1797,7 +1801,7 @@ export class NetworkHandler {
         ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.FAILED_TO_CONNECT_NETWORK, err.message))
         console.log("Exception in network check handler: ", err);
       }
-    }
+  }
   
 }
 
