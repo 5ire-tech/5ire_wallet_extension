@@ -53,49 +53,24 @@ function FooterStepOne() {
 
 //Footer of New wallet Detail Page
 export const FooterStepTwo = () => {
+
   const navigate = useNavigate();
-  const [show, setShow] = useState(false)
-
-
-  const { state, setNewAccount, newAccount, updateState } = useContext(AuthContext);
-
-  const { txHistory, isLogin } = state;
-
+  const [show, setShow] = useState(false);
+  const { setNewAccount, newAccount, setDetailsPage } = useContext(AuthContext);
 
   const handleCancle = async () => {
-
-    // if (isLogin) {
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT, { address: newAccount.evmAddress });
-    // }
-
-
-
+    setDetailsPage(false);
   };
 
   const handleClick = () => {
-
-    // const currentAcc = {
-    //   evmAddress: newAccount?.evmAddress,
-    //   nativeAddress: newAccount?.nativeAddress,
-    //   accountName: newAccount?.accountName,
-    //   accountIndex: newAccount?.accountIndex,
-    // };
-
-    // const txHis = {
-    //   ...txHistory,
-    //   [newAccount?.accountName]: []
-    // };
-    setShow(true)
+    setShow(true);
     setTimeout(() => {
-      setShow(false)
-      // updateState(LABELS.CURRENT_ACCOUNT, currentAcc);
-      // updateState(LABELS.TX_HISTORY, txHis);
-
+      setShow(false);
       setNewAccount(newAccountInitialState);
       navigate(ROUTES.WALLET);
-    }, 2000)
-
-
+      setDetailsPage(false);
+    }, 2000);
   };
 
   return (

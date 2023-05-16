@@ -483,7 +483,6 @@ export class HybridKeyring extends EventEmitter {
             await this.resetVaultAndPass();
         }
 
-
         // return accounts
         return new EventPayload(message.event, message.event, payload, [], false);
     }

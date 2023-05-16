@@ -25,7 +25,7 @@ export default function SetPasswordScreen() {
   const params = useParams();
 
   const navigate = useNavigate();
-  const { setUserPass, accountName } = useContext(AuthContext);
+  const { setUserPass, accountName, setDetailsPage } = useContext(AuthContext);
   const { updateState } = useContext(AuthContext);
   const [error, setError] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
   const [pass, setPass] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
@@ -77,7 +77,8 @@ export default function SetPasswordScreen() {
             MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE,
             { password: pass.pass, opts: { name: accountName }, type: "create" }
           );
-          navigate(ROUTES.NEW_WALLET_DETAILS);
+          setDetailsPage(true);
+
         } else {
           setUserPass(pass.pass);
           navigate(ROUTES.IMPORT_WALLET);

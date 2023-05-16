@@ -44,9 +44,20 @@ function getParameterByName(name, url = window.location.href) {
 }
 
 function App(props) {
+  const {
+    state,
+    setState,
+    isLoading,
+    newAccount,
+    detailsPage,
+    showCongratLoader,
+    externalControlsState,
+    setExternalControlState,
+  } = useContext(AuthContext);
+
   const navigate = useNavigate();
-  const { state, setState, isLoading, setExternalControlState, externalControlsState, newAccount, showCongratLoader } = useContext(AuthContext);
   const { isLogin, vault } = state;
+
 
   useEffect(() => {
 
@@ -75,24 +86,20 @@ function App(props) {
       return;
     }
 
-
-
     if (!isLogin && vault) {
       navigate(ROUTES.UNLOACK_WALLET, {
         state: {
           redirectRoute: route ? ROUTES.DEFAULT + route : EMTY_STR,
         },
       });
-    } else if (isLogin && newAccount?.evmAddress && vault) {
+    } else if (detailsPage) {
       navigate(ROUTES.NEW_WALLET_DETAILS);
-    }
-    else if (isLogin && vault) {
+    } else if (isLogin && vault && !detailsPage) {
       navigate(ROUTES.WALLET);
-
     } else if (!isLogin && !vault) {
       navigate(ROUTES.DEFAULT);
     }
-  }, [isLogin, vault, newAccount?.evmAddress]);
+  }, [isLogin, vault, newAccount?.evmAddress, detailsPage]);
 
 
 

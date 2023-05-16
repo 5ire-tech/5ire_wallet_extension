@@ -14,7 +14,15 @@ function CreateNewWallet() {
   const navigate = useNavigate();
   const [warrning, setWarrning] = useState("");
   const [isDisable, setDisable] = useState(true);
-  const { state, updateState, setAccName, allAccounts, setNewWalletName, newWalletName } = useContext(AuthContext);
+  const {
+    state,
+    setAccName,
+    allAccounts,
+    updateState,
+    newWalletName,
+    setDetailsPage,
+    setNewWalletName,
+  } = useContext(AuthContext);
   const { isLogin } = state;
 
   useEffect(() => {
@@ -60,7 +68,8 @@ function CreateNewWallet() {
           setWarrning(ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS);
         } else {
           sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.ADD_ACCOUNT, { name: newWalletName.trim() });
-          navigate(ROUTES.NEW_WALLET_DETAILS);
+          // navigate(ROUTES.NEW_WALLET_DETAILS);
+          setDetailsPage(true);
         }
       }
       else {
@@ -74,7 +83,10 @@ function CreateNewWallet() {
 
   const handleCancle = () => {
     updateState(LABELS.ACCOUNT_NAME, null, false);
-    if (isLogin) navigate(ROUTES.WALLET);
+    if (isLogin) {
+      setDetailsPage(false);
+      navigate(ROUTES.WALLET);
+    }
     else navigate(ROUTES.DEFAULT);
   };
 

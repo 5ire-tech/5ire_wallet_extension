@@ -34,6 +34,7 @@ export default function Context({ children }) {
   const [seedPhrase, setSeedPhrase] = useState("");
   const [accountName, setAccName] = useState(null);
   const [allAccounts, setAllAccounts] = useState([]);
+  const [detailsPage, setDetailsPage] = useState(false);
   const [estimatedGas, setEstimatedGas] = useState(null);
   const [newWalletName, setNewWalletName] = useState("");
   const [passVerified, setPassVerified] = useState(false);
@@ -133,7 +134,6 @@ export default function Context({ children }) {
 
   // set the new Account
   const createOrRestore = (data) => {
-
     if (data?.type === "create") {
       setNewAccount(data.newAccount);
       navigate(ROUTES.NEW_WALLET_DETAILS);
@@ -142,8 +142,6 @@ export default function Context({ children }) {
 
   // set the new Account
   const importAccountByMnemonics = (data) => {
-    // console.log("Data in import Context :::: ",data);
-
     if (data?.vault && data?.newAccount) {
       setShowCongratLoader(true)
       setTimeout(() => {
@@ -172,6 +170,7 @@ export default function Context({ children }) {
 
   const addAccount = (data) => {
     setNewAccount(data?.newAccount);
+    // navigate(ROUTES.NEW_WALLET_DETAILS);
   };
 
   const getAccounts = (data) => {
@@ -206,7 +205,6 @@ export default function Context({ children }) {
     const { accounts, isInitialAccount } = data;
     setNewAccount(newAccountInitialState);
     setAllAccounts(accounts);
-    // console.log("isInitialAccount : ", isInitialAccount);
     if (isInitialAccount) {
       navigate(ROUTES.DEFAULT)
     }
@@ -223,6 +221,7 @@ export default function Context({ children }) {
     newAccount,
     privateKey,
     seedPhrase,
+    detailsPage,
     tempBalance,
     allAccounts,
     accountName,
@@ -241,6 +240,7 @@ export default function Context({ children }) {
     setUserPass,
     updateState,
     setInputError,
+    setDetailsPage,
     updateLoading,
     setNewAccount,
     setPrivateKey,

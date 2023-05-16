@@ -293,10 +293,10 @@ export class ExtensionStorageHandler {
         return await this._updateStorage(newState);
     }
 
-    //todo
+    
     // remove specific account 
     removeAccount = async (message, state) => {
-        const { removedAccountAddress, vault } = message;
+        const { removedAccountAddress, vault, accounts } = message;
 
         const newState = { ...state, vault };
         if (newState?.txHistory.hasOwnProperty(removedAccountAddress)) {
@@ -309,6 +309,10 @@ export class ExtensionStorageHandler {
             newState.isLogin = false;
             newState.currentAccount = userState.currentAccount;
         }
+        console.log("accs : ", accounts);
+        console.log("Current acc : ", accounts.length - 1);
+
+        newState.currentAccount = accounts[accounts.length - 1];
 
         return await this._updateStorage(newState);
 
