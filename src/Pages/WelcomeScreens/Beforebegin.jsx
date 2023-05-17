@@ -42,7 +42,7 @@ function Beforebegin() {
             a key that allows you to access your wallet.
           </p>
           <p>
-            You will also get 5irechain Native and EVM chain addresses, which
+            You will also get 5ireChain Native and EVM chain addresses, which
             share a common mnemonic phrase to access the wallet.
           </p>
         </div>

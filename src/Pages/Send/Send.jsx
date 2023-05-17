@@ -472,7 +472,7 @@ function Send() {
 
         </div>
         <div className={style.sendSec__inFoAccount}>
-          <Tooltip title="5irechain requires a minimum of 1 5ire to keep your wallet active">
+          <Tooltip title="5ireChain requires a minimum of 1 5ire to keep your wallet active">
             <img src={Info} style={{ cursor: "pointer" }} alt="infoIcon" />
           </Tooltip>
           <h3>Transfer with account keep alive checks </h3>
