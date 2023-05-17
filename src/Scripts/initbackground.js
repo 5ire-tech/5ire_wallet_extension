@@ -181,7 +181,7 @@ export class InitBackground {
   bindPopupEvents = async () => {
     Browser.runtime.onConnect.addListener(async (port) => {
 
-      
+
       //perform according to the port name
       if (port.name === CONNECTION_NAME) {
         //todo
@@ -202,7 +202,7 @@ export class InitBackground {
           //   InitBackground.balanceTimer = null;
           // }
         });
-      } 
+      }
       // else if(port.name === MAIN_POPUP) {
       //   ExternalWindowControl.mainPopupOpen = true;
       //   port?.onDisconnect.addListener(() => {
@@ -355,7 +355,7 @@ class TransactionQueue {
     TransactionQueue.transactionIntervalId = transactionIntervalId;
   }
 
-  
+
   //add new transaction
   addNewTransaction = async (transactionProcessingPayload) => {
     //add the transaction history track
@@ -395,7 +395,7 @@ class TransactionQueue {
     } catch (err) {
       log("error while saving the transaction", err)
       const error = new ErrorPayload(ERRCODES.INTERNAL, err.message);
-      return new EventPayload(null, null, {data: currentTransaction?.transactionHistoryTrack}, [], error);
+      return new EventPayload(null, null, { data: currentTransaction?.transactionHistoryTrack }, [], error);
     }
   }
 
@@ -412,9 +412,9 @@ class TransactionQueue {
     if (!transactionResponse.error) {
       //if transaction is external then send the response to spefic tab
       if (transactionResponse.payload.options?.externalTransaction && txHash) {
-        const {payload:{options:{type}}} = transactionResponse;
+        const { payload: { options: { type } } } = transactionResponse;
         const { externalTransaction } = transactionResponse.payload.options;
-        const externalResponse = { method: externalTransaction.method, result: isEqual(type, TX_TYPE.NATIVE_APP) ? {txHash} : txHash }
+        const externalResponse = { method: externalTransaction.method, result: isEqual(type, TX_TYPE.NATIVE_APP) ? { txHash } : txHash }
         sendMessageToTab(externalTransaction?.tabId, new TabMessagePayload(externalTransaction.id, externalResponse));
       }
 
@@ -423,13 +423,13 @@ class TransactionQueue {
       //check if txhash is found in payload then update transaction into queue and history
       if (txHash) this._updateQueueAndHistory(transactionResponse);
       else {
-        transactionResponse?.payload && await this.services.updateLocalState(STATE_CHANGE_ACTIONS.REMOVE_HISTORY_ITEM, {id: transactionResponse.payload.data?.id}, transactionResponse.payload?.options)
-        await this.services.updateLocalState(STATE_CHANGE_ACTIONS.REMOVE_FAILED_TX, {}, {localStateKey: LABELS.TRANSACTION_QUEUE});
+        transactionResponse?.payload && await this.services.updateLocalState(STATE_CHANGE_ACTIONS.REMOVE_HISTORY_ITEM, { id: transactionResponse.payload.data?.id }, transactionResponse.payload?.options)
+        await this.services.updateLocalState(STATE_CHANGE_ACTIONS.REMOVE_FAILED_TX, {}, { localStateKey: LABELS.TRANSACTION_QUEUE });
 
         //if transaction is external send the error response back to requester tab
-        if(transactionResponse.payload.options?.externalTransaction) {
+        if (transactionResponse.payload.options?.externalTransaction) {
           const { externalTransaction } = transactionResponse.payload.options;
-          sendMessageToTab(externalTransaction?.tabId, new TabMessagePayload(externalTransaction.id, {result: null}, externalTransaction.method, null, isString(transactionResponse.error) ? transactionResponse.error : ERROR_MESSAGES.ERROR_WHILE_TRANSACTION));
+          sendMessageToTab(externalTransaction?.tabId, new TabMessagePayload(externalTransaction.id, { result: null }, externalTransaction.method, null, isString(transactionResponse.error) ? transactionResponse.error : ERROR_MESSAGES.ERROR_WHILE_TRANSACTION));
         }
 
         ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, transactionResponse.error);
@@ -442,78 +442,78 @@ class TransactionQueue {
   checkTransactionStatus = async () => {
     try {
       //check if current transaction is there or not
-    const transactionQueue = await getDataLocal(LABELS.TRANSACTION_QUEUE);
-    const hasPendingTx = transactionQueue.txQueue.length;
+      const transactionQueue = await getDataLocal(LABELS.TRANSACTION_QUEUE);
+      const hasPendingTx = transactionQueue.txQueue.length;
 
-    //if the current transaction is null then it is failed and removed
-    if(!transactionQueue.currentTransaction) {
-      //check if there any pending transaction into queue
-      if (!isEqual(hasPendingTx, 0)) {
-        await this.processQueuedTransaction();
-        await this.parseTransactionResponse();
-        TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus))
-      } else {
-        //reset the timeout id as null so whenever new transaction made the timeout start again
-        TransactionQueue.setIntervalId(null);
-      }
-      return;
-    }
-
-    const { currentTransaction } = transactionQueue;
-    const transactionHistoryTrack = { ...currentTransaction.transactionHistoryTrack }
-
-
-    //check if transaction status is pending then only check the status
-    if (currentTransaction && isEqual(currentTransaction.transactionHistoryTrack.status, STATUS.PENDING)) {
-      const { transactionHistoryTrack: { txHash, isEvm, chain } } = currentTransaction;
-      const transactionStatus = await this.services.getTransactionStatus(txHash, isEvm, chain);
-
-      //if transaction status is found ether Failed or Success
-      if (transactionStatus?.status) {
-
-        //update the transaction after getting the confirmation
-        transactionHistoryTrack.status = transactionStatus.status;
-
-        //check the transaction type and save the to recipent according to type
-        if(isEqual(transactionHistoryTrack?.type, TX_TYPE.NATIVE_APP)) 
-          transactionHistoryTrack.to = transactionStatus?.sectionmethod
-        else
-          transactionHistoryTrack.to = !!transactionHistoryTrack.intermidateHash ? transactionHistoryTrack.to : transactionHistoryTrack.isEvm ? transactionStatus.to || transactionStatus.contractAddress : transactionHistoryTrack.to;
-        
-        //set the used gas
-        transactionHistoryTrack.gasUsed = transactionHistoryTrack.isEvm ? (Number(transactionStatus?.gasUsed) / ONE_ETH_IN_GWEI).toString() : transactionStatus?.txFee
-
-        //set the amount when the method is reward
-        if (isEqual(transactionStatus?.sectionmethod, LABELS.STACKING_REWARD)) {
-          transactionHistoryTrack.amount = formatNum(Number(Number(transactionStatus?.value).noExponents()) / 10 ** 18, 6);
-        }
-
-        //update the transaction status and other details after confirmation
-        await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, transactionHistoryTrack, currentTransaction?.options);
-
-        //update the balance after transaction confirmation
-        ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.BALANCE_FETCH);
-
-        //dequeue the new transaction and set as active for processing
-        await this.processQueuedTransaction();
-
-        //show notification of transaction status
-        this.services.showNotification(txNotificationStringTemplate(transactionStatus.status, txHash));
-
+      //if the current transaction is null then it is failed and removed
+      if (!transactionQueue.currentTransaction) {
         //check if there any pending transaction into queue
         if (!isEqual(hasPendingTx, 0)) {
+          await this.processQueuedTransaction();
           await this.parseTransactionResponse();
           TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus))
         } else {
           //reset the timeout id as null so whenever new transaction made the timeout start again
           TransactionQueue.setIntervalId(null);
         }
+        return;
       }
-      //if transaction is still in pending state
-      else {
-        TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus))
+
+      const { currentTransaction } = transactionQueue;
+      const transactionHistoryTrack = { ...currentTransaction.transactionHistoryTrack }
+
+
+      //check if transaction status is pending then only check the status
+      if (currentTransaction && isEqual(currentTransaction.transactionHistoryTrack.status, STATUS.PENDING)) {
+        const { transactionHistoryTrack: { txHash, isEvm, chain } } = currentTransaction;
+        const transactionStatus = await this.services.getTransactionStatus(txHash, isEvm, chain);
+
+        //if transaction status is found ether Failed or Success
+        if (transactionStatus?.status) {
+
+          //update the transaction after getting the confirmation
+          transactionHistoryTrack.status = transactionStatus.status;
+
+          //check the transaction type and save the to recipent according to type
+          if (isEqual(transactionHistoryTrack?.type, TX_TYPE.NATIVE_APP))
+            transactionHistoryTrack.to = transactionStatus?.sectionmethod
+          else
+            transactionHistoryTrack.to = !!transactionHistoryTrack.intermidateHash ? transactionHistoryTrack.to : transactionHistoryTrack.isEvm ? transactionStatus.to || transactionStatus.contractAddress : transactionHistoryTrack.to;
+
+          //set the used gas
+          transactionHistoryTrack.gasUsed = transactionHistoryTrack.isEvm ? (Number(transactionStatus?.gasUsed) / ONE_ETH_IN_GWEI).toString() : transactionStatus?.txFee
+
+          //set the amount when the method is reward
+          if (isEqual(transactionStatus?.sectionmethod, LABELS.STACKING_REWARD)) {
+            transactionHistoryTrack.amount = formatNum(Number(Number(transactionStatus?.value).noExponents()) / 10 ** 18, 6);
+          }
+
+          //update the transaction status and other details after confirmation
+          await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, transactionHistoryTrack, currentTransaction?.options);
+
+          //update the balance after transaction confirmation
+          ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.BALANCE_FETCH);
+
+          //dequeue the new transaction and set as active for processing
+          await this.processQueuedTransaction();
+
+          //show notification of transaction status
+          this.services.showNotification(txNotificationStringTemplate(transactionStatus.status, txHash));
+
+          //check if there any pending transaction into queue
+          if (!isEqual(hasPendingTx, 0)) {
+            await this.parseTransactionResponse();
+            TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus))
+          } else {
+            //reset the timeout id as null so whenever new transaction made the timeout start again
+            TransactionQueue.setIntervalId(null);
+          }
+        }
+        //if transaction is still in pending state
+        else {
+          TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus))
+        }
       }
-    }
     } catch (err) {
       log("error while transaction processing: ", err)
     }
@@ -629,9 +629,9 @@ export class ExtensionEventHandle {
       try {
         log("error catched inside error event handler: ", err);
         //transaction failed and error message handler
-        if(isEqual(err?.errCode, ERRCODES.ERROR_WHILE_TRANSACTION))  this.services.messageToUI(MESSAGE_EVENT_LABELS.BACKGROUND_ERROR, ERROR_MESSAGES.ERROR_WHILE_TRANSACTION);
-        if(isEqual(err?.errCode, ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE))  this.services.messageToUI(MESSAGE_EVENT_LABELS.BACKGROUND_ERROR, ERROR_MESSAGES.ERROR_WHILE_GAS_ESTIMATION);
-        if(isEqual(err?.errCode, ERRCODES.INTERNAL))  this.services.messageToUI(MESSAGE_EVENT_LABELS.BACKGROUND_ERROR, ERROR_MESSAGES.ERROR_WHILE_GAS_ESTIMATION, ERROR_MESSAGES.INTERNAL_ERROR);
+        if (isEqual(err?.errCode, ERRCODES.ERROR_WHILE_TRANSACTION)) this.services.messageToUI(MESSAGE_EVENT_LABELS.BACKGROUND_ERROR, ERROR_MESSAGES.ERROR_WHILE_TRANSACTION);
+        if (isEqual(err?.errCode, ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE)) this.services.messageToUI(MESSAGE_EVENT_LABELS.BACKGROUND_ERROR, ERROR_MESSAGES.ERROR_WHILE_GAS_ESTIMATION);
+        if (isEqual(err?.errCode, ERRCODES.INTERNAL)) this.services.messageToUI(MESSAGE_EVENT_LABELS.BACKGROUND_ERROR, ERROR_MESSAGES.ERROR_WHILE_GAS_ESTIMATION, ERROR_MESSAGES.INTERNAL_ERROR);
       } catch (err) {
         log("Error in error event handler: ", err)
       }
@@ -663,7 +663,7 @@ class ExternalTxTasks {
     const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
 
     //process the external evm transactions
-    const externalTransactionProcessingPayload = new TransactionProcessingPayload({ ...activeSession.message, options: { ...message?.data.options, externalTransaction: { ...activeSession }}}, message.event, null, activeSession.message?.data, { ...message?.data.options, externalTransaction: { ...activeSession } });
+    const externalTransactionProcessingPayload = new TransactionProcessingPayload({ ...activeSession.message, options: { ...message?.data.options, externalTransaction: { ...activeSession } } }, message.event, null, activeSession.message?.data, { ...message?.data.options, externalTransaction: { ...activeSession } });
 
     await this.transactionQueueHandler.addNewTransaction(externalTransactionProcessingPayload);
   }
@@ -714,17 +714,17 @@ class ExternalTxTasks {
   //handle the nominator and validator transaction
   validatorNominatorTransaction = async (message, state) => {
 
-      if (message.data?.approve) {
-        const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+    if (message.data?.approve) {
+      const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
 
-        //process the external evm transactions
-        const externalTransactionProcessingPayload = new TransactionProcessingPayload({ ...activeSession.message, options: { ...message?.data.options, externalTransaction: { ...activeSession }}}, message.event, null, activeSession.message?.data, { ...message?.data.options, externalTransaction: { ...activeSession } });
-    
-        await this.transactionQueueHandler.addNewTransaction(externalTransactionProcessingPayload);
-      }
+      //process the external evm transactions
+      const externalTransactionProcessingPayload = new TransactionProcessingPayload({ ...activeSession.message, options: { ...message?.data.options, externalTransaction: { ...activeSession } } }, message.event, null, activeSession.message?.data, { ...message?.data.options, externalTransaction: { ...activeSession } });
 
-      //close the popup
-      await this.closePopupSession(message);
+      await this.transactionQueueHandler.addNewTransaction(externalTransactionProcessingPayload);
+    }
+
+    //close the popup
+    await this.closePopupSession(message);
   }
 
   //close the current popup session
@@ -825,7 +825,7 @@ export class TransactionsRPC {
   evmTransfer = async (message, state) => {
 
     //history reference object
-    let transactionHistory = {...message?.transactionHistoryTrack}, payload = null;
+    let transactionHistory = { ...message?.transactionHistoryTrack }, payload = null;
 
     try {
 
@@ -923,7 +923,7 @@ export class TransactionsRPC {
   evmToNativeSwap = async (message, state) => {
 
     //history reference object
-    let transactionHistory = {...message?.transactionHistoryTrack}, payload = null;
+    let transactionHistory = { ...message?.transactionHistoryTrack }, payload = null;
 
     try {
       const { data, transactionHistoryTrack } = message;
@@ -996,7 +996,7 @@ export class TransactionsRPC {
   //********************************** Native ***************************************/
   //native transfer
   nativeTransfer = async (message, state) => {
-    let transactionHistory = {...message?.transactionHistoryTrack}, payload = null;
+    let transactionHistory = { ...message?.transactionHistoryTrack }, payload = null;
 
     try {
       const { data, transactionHistoryTrack } = message;
@@ -1012,7 +1012,7 @@ export class TransactionsRPC {
 
         //set the status to pending
         transactionHistory.status = STATUS.PENDING;
-      
+
 
         let err;
 
@@ -1092,7 +1092,7 @@ export class TransactionsRPC {
 
   //native to evm swap
   nativeToEvmSwap = async (message, state) => {
-    let transactionHistory = {...message?.transactionHistoryTrack}, payload = null;
+    let transactionHistory = { ...message?.transactionHistoryTrack }, payload = null;
 
     try {
       const { data, transactionHistoryTrack } = message;
@@ -1196,7 +1196,7 @@ export class TransactionsRPC {
       const eventPayload = await this.nominatorValidatorHandler.handleNativeAppsTask(state, message, false);
       return eventPayload;
     } catch (err) {
-      const payload = {options: message?.options, data: message?.transactionHistoryTrack};
+      const payload = { options: message?.options, data: message?.transactionHistoryTrack };
 
       return new EventPayload(null, null, payload, [], new ErrorPayload(ERRCODES.ERROR_WHILE_TRANSACTION, err.message));
     }
@@ -1477,8 +1477,8 @@ export class GeneralWalletRPC {
   //calculate the fee for nominator and validator
   validatorNominatorFee = async (message, state) => {
     try {
-        const eventPayload = await this.nominatorValidatorHandler.handleNativeAppsTask(state, message, true);
-        return eventPayload;
+      const eventPayload = await this.nominatorValidatorHandler.handleNativeAppsTask(state, message, true);
+      return eventPayload;
     } catch (err) {
       return new EventPayload(null, null, null, [], new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, err.message));
     }
@@ -1597,7 +1597,6 @@ export class NetworkHandler {
     //insert connection into its network slot
     NetworkHandler.api[currentNetwork.toLowerCase()] = api;
     ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.BALANCE_FETCH)
-    log("all api is here: ", NetworkHandler.api);
   }
 }
 
