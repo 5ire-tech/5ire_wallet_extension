@@ -8,24 +8,23 @@ import { useNavigate } from "react-router-dom";
 import Import from "../../Assets/PNG/import.png";
 import Logout from "../../Assets/PNG/logout.png";
 import DarkLogo from "../../Assets/DarkLogo.svg";
-import { sendEventToTab } from "../../Helper/helper";
+import React, { useContext, useState } from "react";
 import GreenCircle from "../../Assets/greencircle.svg";
-import React, { useContext, useState, useEffect } from "react";
 import Createaccount from "../../Assets/PNG/createaccount.png";
 import { TabMessagePayload } from "../../Utility/network_calls";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import AccountSetting from "../../Components/AccountSetting/AccountSetting";
+import { sendEventToTab, formatNumUptoSpecificDecimal } from "../../Helper/helper";
+
 import {
   LABELS,
   CURRENCY,
   TABS_EVENT,
   WALLET_TYPES,
   ERROR_MESSAGES,
-  // RESTRICTED_URLS,
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
-  // ACCOUNT_CHANGED_EVENT,
 } from "../../Constants/index";
 
 
@@ -186,7 +185,7 @@ function MyAccount() {
                 <p>
                   {e?.accountName === currentAccount?.accountName ? (
                     balance?.totalBalance ? (
-                      `${balance.totalBalance} ${CURRENCY}`
+                      `${formatNumUptoSpecificDecimal(balance.totalBalance, 2)} ${CURRENCY}`
                     ) : (
                       `0 ${CURRENCY}`
                     )

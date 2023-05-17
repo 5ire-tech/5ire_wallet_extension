@@ -106,7 +106,7 @@ function TransectionHistry({ selectedTransaction, account }) {
         </div>
       </div>
       <div className={style.transectionHistry__viewExplorer}>
-        <p className={selectedTransaction.txHash ? "" : ""} disabled={selectedTransaction.txHash ? false : true} onClick={openExplorerTab}>View on Explorer <img src={DarkRyt} alt="view on explorer" /></p>
+        <p className={ selectedTransaction?.status.toLowerCase() === STATUS.QUEUED.toLowerCase() ? "viewDisable" : ""} disabled={selectedTransaction.txHash ? false : true} onClick={openExplorerTab}>View on Explorer <img src={DarkRyt} alt="view on explorer" /></p>
       </div>
     </div>
   );

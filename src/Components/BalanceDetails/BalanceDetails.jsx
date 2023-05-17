@@ -15,12 +15,13 @@ import ModalCustom from "../ModalCustom/ModalCustom";
 import GreenCircle from "../../Assets/greencircle.svg";
 import { Dropdown, Select, Space, Tooltip } from "antd";
 import { getCurrentTabDetails } from "../../Scripts/utils";
-import { sendEventToTab, shortner } from "../../Helper/helper";
+import { sendEventToTab, formatNumUptoSpecificDecimal } from "../../Helper/helper";
 import React, { useEffect, useState, useContext } from "react";
 import DownArrowSuffix from "../../Assets/DownArrowSuffix.svg";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
 import { isEqual, isNullorUndef, } from "../../Utility/utility";
+import { TabMessagePayload } from "../../Utility/network_calls";
 
 import {
   EVM,
@@ -37,9 +38,7 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
   STATE_CHANGE_ACTIONS,
-  // ACCOUNT_CHANGED_EVENT,
 } from "../../Constants/index";
-import { TabMessagePayload } from "../../Utility/network_calls";
 
 function BalanceDetails({ mt0 }) {
   const getLocation = useLocation();
@@ -372,7 +371,7 @@ function BalanceDetails({ mt0 }) {
                                       className={
                                         style.activeDis_Modal__leftSec__spanContact
                                       }
-                                    >{`${balance?.totalBalance} `}</span>
+                                    >{`${formatNumUptoSpecificDecimal(balance?.totalBalance, 2)} `}</span>
                                     &nbsp;{CURRENCY}
                                   </p>
                                 ) : (
