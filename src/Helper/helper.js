@@ -49,7 +49,7 @@ export const formatDate = (_date) => {
 };
 
 
-export const formatNum = (num, numOfDecimals = 4) => {
+export const formatNumUptoSpecificDecimal = (num, numOfDecimals = 4) => {
     try {
         if (!num) {
             return 0;
