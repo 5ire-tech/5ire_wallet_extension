@@ -200,7 +200,7 @@ export const LABELS = {
     ERRCODE: "errCode",
     ERRMESSAGE: "errMessage",
 
-    CONTRACT: "Contract",
+    CONTRACT: "Contract Creation",
     EVM_TO_NATIVE: "EVM to Native",
     NATIVE_TO_EVM: "Native to EVM",
 

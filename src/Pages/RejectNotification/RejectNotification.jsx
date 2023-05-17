@@ -100,7 +100,7 @@ function ApproveTx() {
                       <span>
                         {" "}
                         {activeSession.message?.data
-                          ? LABELS.CONTRACT
+                          ? activeSession.message?.to || LABELS.CONTRACT
                           : activeSession.message?.to}
                       </span>
                       {/* <img
