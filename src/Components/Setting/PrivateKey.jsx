@@ -60,7 +60,7 @@ function PrivateKey() {
             </div>
             <div className={style.wallet}>
               <div className={style.wallet__addressInput}>
-                <label>EVM Private Key</label>
+                <label>EVM Private Key:</label>
                 <p
                   className={`${style.wallet__addressInput__copyText} ${style.wallet__addressInput__privateCopyText}`}
                 >
