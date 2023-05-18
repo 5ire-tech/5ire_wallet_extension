@@ -4,6 +4,7 @@ body {
   max-width: 400px;
   display: flex;
   justify-content: center;
+  margin: 0 auto;
 }
 
 .App {
@@ -30,6 +31,7 @@ body {
     .welcomeFooter {
       background-color: $blue-08132C;
       padding: 0;
+      max-width: 400px;
     }
   }
 
@@ -546,7 +548,7 @@ body {
 }
 
 .ant-tooltip .ant-tooltip-inner {
-  background: #06142ccc;
+  background: #06142c;
   border-radius: 6px;
   font-size: 12px;
 }
@@ -639,4 +641,8 @@ body {
   max-height: 400px;
   overflow: auto;
   overflow-x: hidden;
+}
+.viewDisable{
+  cursor: not-allowed !important;
+  opacity: 0.4;
 }

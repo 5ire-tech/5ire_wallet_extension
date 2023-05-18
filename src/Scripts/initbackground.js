@@ -15,7 +15,7 @@ import { hasLength, isObject, isNullorUndef, hasProperty, log, isEqual, isString
 import { HTTP_END_POINTS, API, HTTP_METHODS, EVM_JSON_RPC_METHODS, ERRCODES, ERROR_MESSAGES, ERROR_EVENTS_LABELS } from "../Constants";
 import { EVMRPCPayload, EventPayload, TransactionPayload, TransactionProcessingPayload, TabMessagePayload } from "../Utility/network_calls";
 import { httpRequest } from "../Utility/network_calls";
-import { checkStringInclusionIntoArray, formatNum, numFormatter } from "../Helper/helper";
+import { checkStringInclusionIntoArray, formatNumUptoSpecificDecimal, numFormatter } from "../Helper/helper";
 import { Connection } from "../Helper/connection.helper";
 import { Error, ErrorPayload } from "../Utility/error_helper"
 import { sendMessageToTab, sendRuntimeMessage } from "../Utility/message_helper";
@@ -485,7 +485,7 @@ class TransactionQueue {
 
           //set the amount when the method is reward
           if (isEqual(transactionStatus?.sectionmethod, LABELS.STACKING_REWARD)) {
-            transactionHistoryTrack.amount = formatNum(Number(Number(transactionStatus?.value).noExponents()) / 10 ** 18, 6);
+            transactionHistoryTrack.amount = formatNumUptoSpecificDecimal(Number(Number(transactionStatus?.value).noExponents()) / 10 ** 18, 6);
           }
 
           //update the transaction status and other details after confirmation

@@ -101,7 +101,7 @@ export const ERROR_MESSAGES = {
     INCORRECT_ADDRESS: "Invalid address.",
     INPUT_REQUIRED: "This field is required.",
     PASS_DONT_MATCH: "Password do not match.",
-    INSUFFICENT_BALANCE: "Insufficent Balance.",
+    INSUFFICENT_BALANCE: "Insufficient Balance.",
     INSUFFICENT_BALANCE_VD_NM: "Insufficient Funds: Fee + Amount is more than available balance.",
     UNDEF_PROPERTY: "Object not has given property",
     AMOUNT_CANT_BE_0: "Amount can't be 0 or less than 0",
@@ -200,7 +200,7 @@ export const LABELS = {
     ERRCODE: "errCode",
     ERRMESSAGE: "errMessage",
 
-    CONTRACT: "Contract",
+    CONTRACT: "Contract Creation",
     EVM_TO_NATIVE: "EVM to Native",
     NATIVE_TO_EVM: "Native to EVM",
 
