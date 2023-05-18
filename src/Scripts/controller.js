@@ -238,8 +238,22 @@ export class ExternalConnection {
     //We are divding this value from 18 units to simple integer its handled internally in evmTransfer method
     if (data?.message?.value) {
       const amt = BigNumber(Number(data.message.value)).dividedBy(DECIMALS).toString();
+
+      //invalid amount check
+      if(Number(amt) < 0 || isNaN(amt)) {
+        sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.INVALID_AMOUNT));
+        return;
+      }
+
+      //check the data or to field
+      if(isNullorUndef(data.message?.data) && isNullorUndef(data.message?.to)) {
+        sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.AMOUNT_DATA_CHECK));
+        return;
+      }
+      
       data.message.value = Number(amt).noExponents()
-    }
+    } else data.message["value"] = "0";
+
     await this.externalWindowController.newConnectionRequest({ route: ROUTE_FOR_APPROVAL_WINDOWS.APPROVE_TX, ...data }, externalControls);
 
   }

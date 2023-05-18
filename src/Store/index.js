@@ -11,7 +11,8 @@ import {
   userState,
   externalControls,
   newAccountInitialState,
-  initialExternalNativeTransaction
+  initialExternalNativeTransaction,
+  transactionQueue
 } from "./initialState";
 import { sendEventToTab, setTimer } from "../Helper/helper";
 import { TabMessagePayload } from "../Utility/network_calls";
@@ -39,7 +40,12 @@ export default function Context({ children }) {
   const [externalControlsState, setExternalControlState] = useState(externalControls);
   const [showCongratLoader, setShowCongratLoader] = useState(false);
   const [newWalletName, setNewWalletName] = useState("");
-
+  
+  //transaction queue
+  // const [transactionQueues, setTransactionQueues] = useState(transactionQueue);
+  const [pendingBalance, setPendingBalance] = useState(0);
+  
+  
   //background error's
   const [backgroundError, setBackgroundError] = useState(null);
   const [networkError, setNetworkError] = useState(null);
@@ -101,6 +107,11 @@ export default function Context({ children }) {
 
 
   /********************************state update handler**************************************/
+  //handle the transaction queue and blocked pending balance
+  // const handleTheTransacionQueueChange = (transactionQueue) => {
+  //   log("here is transaction queue: ", transactionQueue);
+  // }
+
   //set the evm fee
   const updateEstimatedGas = (latestEstimatedGas) => {
     (latestEstimatedGas !== estimatedGas) && setEstimatedGas(latestEstimatedGas)
@@ -231,7 +242,9 @@ export default function Context({ children }) {
     estimatedGas,
     passVerified,
     newWalletName,
+    pendingBalance,
     backgroundError,
+    // transactionQueues,
     showCongratLoader,
     valdatorNominatorFee,
     externalControlsState,
@@ -250,8 +263,10 @@ export default function Context({ children }) {
     setNetworkError,
     setPassVerified,
     setNewWalletName,
+    setPendingBalance,
     setBackgroundError,
     updateEstimatedGas,
+    // setTransactionQueues,
     setShowCongratLoader,
     setValdatorNominatorFee,
     setExternalControlState,

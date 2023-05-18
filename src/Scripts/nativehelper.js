@@ -29,12 +29,22 @@ export default class ValidatorNominatorHandler {
     const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
 
     if (hasProperty(ValidatorNominatorHandler.instance, activeSession.method)) {
-      const res = await ValidatorNominatorHandler.instance[activeSession.method](state, activeSession.message, isFee);
+      const methodDetails = this.getFormattedMethod(activeSession.method, activeSession.message);
 
+      //check for sufficent balance to perfrom operation
+      const network = message?.transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
+      if (Number(methodDetails.amount) >= (Number(state.balance.native) - state.pendingTransactionBalance[network].native))
+      new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, {error: true, data: ERROR_MESSAGES.INSUFFICENT_BALANCE})).throw();
+
+      //check if the amount is valid
+      if (Number(methodDetails.amount) < 0 || isNaN(Number(methodDetails.amount)))
+      new Error(new ErrorPayload(ERRCODES.INVALID_INPUT, {error: true, data: ERROR_MESSAGES.INVALID_AMOUNT})).throw();
+
+
+      const res = await ValidatorNominatorHandler.instance[activeSession.method](state, activeSession.message, isFee);
       //if error occured then throw it
       if (res?.error) new Error(new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, res)).throw();
 
-      const methodDetails = this.getFormattedMethod(activeSession.method, activeSession.message)
       if (isFee) payload.data = { fee: res.data, ...methodDetails };
       else {
         const transactionHistory = { ...message?.transactionHistoryTrack, status: STATUS.PENDING, txHash: res.data?.txHash, method: methodDetails.methodName, amount: methodDetails.amount };
@@ -98,7 +108,6 @@ export default class ValidatorNominatorHandler {
       case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR_UNBONDED:
         methodName = "Withdraw Validator Unbonded";
         amount = message?.value;
-
         break;
 
       case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_VALIDATOR:

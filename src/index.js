@@ -47,7 +47,7 @@ const initApp = (data, externalControlsState) => {
   root.render(
     <MemoryRouter>
       <Context>
-        <App data={data} externalControlsState={externalControlsState}/>
+        <App data={data} externalControlsState={externalControlsState} />
         <Toaster />
       </Context>
     </MemoryRouter>

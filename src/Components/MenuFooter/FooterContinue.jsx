@@ -179,25 +179,26 @@ export const ApproveLogin = () => {
 export const ApproveTx = () => {
   const { state, externalControlsState, estimatedGas } = useContext(AuthContext);
   const { activeSession } = externalControlsState;
-  const [disableApproval, setDisableApproval] = useState(false);
+  const {pendingTransactionBalance, balance, currentAccount, currentNetwork} = state;
+  const [disableApproval, setDisableApproval] = useState(true);
 
   const navigate = useNavigate();
 
   //check if user has sufficent balance to make transaction
   useEffect(() => {
-
-    if ((Number(activeSession.message?.value) + Number(estimatedGas)) >= Number(state.balance.evmBalance)) {
+    if (estimatedGas && (Number(activeSession.message?.value) + Number(estimatedGas)) >= (Number(balance.evmBalance) - pendingTransactionBalance[currentNetwork.toLowerCase()].evm)) {
       toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       setDisableApproval(true);
       return;
-    }
+    } else setDisableApproval(!estimatedGas);
   }, [estimatedGas]);
 
 
   function handleClick(isApproved) {
     if (isApproved) {
-      const txType = activeSession.message?.data && activeSession.message?.to ? TX_TYPE.CONTRACT_EXECUTION : TX_TYPE.CONTRACT_DEPLOYMENT;
-      sendMessageOverStream(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.EVM_TX, { options: { account: state.currentAccount, network: state.currentNetwork, type: txType, isEvm: true } });
+      const txType = activeSession.message?.data ? activeSession.message?.to ? TX_TYPE.CONTRACT_EXECUTION : TX_TYPE.CONTRACT_DEPLOYMENT : TX_TYPE.SEND;
+
+      sendMessageOverStream(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.EVM_TX, { options: { account: currentAccount, network: currentNetwork, type: txType, isEvm: true } });
     }
     sendMessageOverStream(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION, { approve: isApproved });
     navigate(ROUTES.WALLET);

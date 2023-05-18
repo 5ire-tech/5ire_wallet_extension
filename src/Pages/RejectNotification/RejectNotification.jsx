@@ -99,23 +99,18 @@ function ApproveTx() {
                     <p>
                       <span>
                         {" "}
-                        {activeSession.message?.data
-                          ? LABELS.CONTRACT
-                          : activeSession.message?.to}
+                        {activeSession.message?.to
+                          ? activeSession.message?.to : LABELS.CONTRACT }
                       </span>
-                      <img
+                      { activeSession.message?.to && <img
                         src={CopyIcon}
                         alt="copyIcon"
                         draggable={false}
                         style={{ cursor: "pointer" }}
                         onClick={() => {
-                          navigator.clipboard.writeText(
-                            activeSession.message?.data
-                              ? LABELS.CONTRACT
-                              : activeSession.message?.to
-                          )
+                          navigator.clipboard.writeText(activeSession.message?.to)
                           toast.success(COPIED);
-                        }} />
+                        }} />}
                     </p>
                   </div>
                 </div>

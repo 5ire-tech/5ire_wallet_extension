@@ -1,7 +1,7 @@
-export const EVM = "EVM";
 export const EMTY_STR = "";
 export const ZERO_CHAR = '0';
 export const CURRENCY = "5ire";
+export const EVM = "EVM";
 export const NATIVE = "Native";
 export const COPIED = "Copied!";
 export const MNEMONIC = "mnemonic";
@@ -123,6 +123,8 @@ export const ERROR_MESSAGES = {
     ERROR_WHILE_GAS_ESTIMATION: "Gas Estimation Failed, something wrong happend while gas estimation",
     CREATE_PASS_MSG: "Password must have at leas t 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
     ERROR_WHILE_NETWORK_CONNECTION: "Network Connection Error, please change network or try again later",
+    INVALID_AMOUNT: "Amount is invalid.",
+    AMOUNT_DATA_CHECK: "To or Data is fields is missing from request",
 
 
     INVALID_PROPERTY: "Invalid property.",
@@ -203,7 +205,7 @@ export const LABELS = {
     ERRCODE: "errCode",
     ERRMESSAGE: "errMessage",
 
-    CONTRACT: "Contract",
+    CONTRACT: "Contract Deployment",
     EVM_TO_NATIVE: "EVM to Native",
     NATIVE_TO_EVM: "Native to EVM",
 
@@ -296,6 +298,7 @@ export const INTERNAL_EVENT_LABELS = {
 
 export const STATE_CHANGE_ACTIONS = {
     BALANCE: "updateBalance",
+    UPDATE_PENDING_TRANSACTION_BALANCE: "updatePendingTransactionBalance",
     TX_HISTORY: "addNewTxHistory",
     CHANGE_NETWORK: "changeNetwork",
     CHANGE_ACCOUNT: "changeAccount",

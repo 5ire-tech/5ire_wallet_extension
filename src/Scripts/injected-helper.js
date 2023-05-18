@@ -55,7 +55,7 @@ export class InjectedScript {
             //handle the event from exetension
             if (data?.event) {
               if (isEqual(data.event, TABS_EVENT.WALLET_CONNECTED_EVENT)) {
-                log("here is data response: ", data.response);
+                // log("here is data response: ", data.response);
                 this._afterConnecting(data.response?.result?.evmAddress);
               }
               else if(isEqual(data.event, TABS_EVENT.NETWORK_CHANGE_EVENT)) this._afterNetworkChange(data.response?.result?.url)
@@ -63,7 +63,7 @@ export class InjectedScript {
               else if(isEqual(data.event, TABS_EVENT.ACCOUNT_CHANGE_EVENT)) this._injectSelectedAddress(data.response.result?.evmAddress)
 
               //emit the event
-              InjectedScript.fireProvider.emit(data.event, data.response);
+              InjectedScript.fireProvider.emit(data.event, data.response?.result);
               return;
             }
           
@@ -99,7 +99,7 @@ export class InjectedScript {
     /*************************** Internal Methods *****************************/
     // after called dapps connection or connection event
     async _afterConnecting(address) {
-      console.log("called the after connection");
+      // console.log("called the after connection");
       this._injectSelectedAddress(address);
       this._setConnectFlag(true);
       await this._getHttpProvider();
@@ -108,7 +108,7 @@ export class InjectedScript {
 
     // called when network changed
     async _afterNetworkChange(httpHost) {
-      log("called the network change")
+      // log("called the network change")
       this._setHttpHost(httpHost);
       await this._getChainid();
     }
@@ -116,7 +116,7 @@ export class InjectedScript {
     // check if app is connected after reload
     async _afterReloadPage() {
       if(!InjectedScript.fireProvider.httpHost) {
-        log("called the reload")
+        // log("called the reload")
         const isError = await this._getHttpProvider();
         if(!isError) {
           await this._getChainid();

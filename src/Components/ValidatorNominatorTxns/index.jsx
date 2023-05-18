@@ -22,23 +22,20 @@ function ValidatorNominatorTxns() {
         externalControlsState: { activeSession },
         valdatorNominatorFee,
         updateLoading,
-        setValdatorNominatorFee,
-        backgroundError
+        setValdatorNominatorFee
     } = useContext(AuthContext);
+    const {pendingTransactionBalance, balance, currentAccount, currentNetwork} = state;
     const { Content } = Layout;
 
 
-    //check if user has sufficent balance to make transaction
+    //check if user has sufficent balance to make trnsaction
     useEffect(() => {
-
-        if ((Number(activeSession.message?.value) + Number(valdatorNominatorFee?.fee)) >= Number(state.balance.evmBalance)) {
+        if (valdatorNominatorFee?.fee && (Number(activeSession.message?.value) + Number(valdatorNominatorFee?.fee)) >= (Number(balance.evmBalance) - pendingTransactionBalance[currentNetwork.toLowerCase()].native)) {
             toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
             setDisableApproval(true);
             setValdatorNominatorFee(null);
             return;
-        } else {
-            setDisableApproval(false)
-        }
+        } else setDisableApproval(false)
     }, [valdatorNominatorFee?.fee]);
 
 
@@ -53,7 +50,7 @@ function ValidatorNominatorTxns() {
     //process the transaction
     function handleClick(isApproved) {
         // updateLoading(true);
-        sendMessageOverStream(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_TRANSACTION, { approve: isApproved, options: { account: state.currentAccount, isEvm: false, network: state.currentNetwork, type: TX_TYPE.NATIVE_APP } });
+        sendMessageOverStream(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_TRANSACTION, { approve: isApproved, options: { account: currentAccount, isEvm: false, network: currentNetwork, type: TX_TYPE.NATIVE_APP } });
         setValdatorNominatorFee(null);
         navigate(ROUTES.WALLET);
     }
@@ -100,7 +97,7 @@ function ValidatorNominatorTxns() {
 
                                     <div className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact1}`}>
                                         <h4>From: </h4>
-                                        <p>{shortLongAddress(String(state?.currentAccount?.nativeAddress), 8, 6)}</p>
+                                        <p>{shortLongAddress(String(currentAccount?.nativeAddress), 8, 6)}</p>
                                     </div>
                                     <div className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact}`}>
                                         <h4>Method: </h4>

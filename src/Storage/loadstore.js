@@ -82,6 +82,13 @@ export class ExtensionStorageHandler {
         return await this._updateStorage(newState)
     }
 
+    //update the pending transaction balance
+    updatePendingTransactionBalance = async (data, state, options) => {
+    const newState = {...state, pendingTransactionBalance: {...state.pendingTransactionBalance, [options.network]: data}};
+    const status = await this._updateStorage(newState);
+    return status;
+    }
+
     //push the transactions
     addNewTxHistory = async (data, state, options) => {
 

@@ -41,7 +41,7 @@ function Send() {
   const { state, estimatedGas, updateEstimatedGas, updateLoading } =
     useContext(AuthContext);
 
-  const { balance, currentAccount } = state;
+  const { balance, currentAccount, pendingTransactionBalance, currentNetwork } = state;
 
   // Reset the amount, to and error evm and native address changed
   useEffect(() => {
@@ -95,7 +95,7 @@ function Send() {
       if (activeTab === EVM) {
         if (estimatedGas && !data.amount && data.to) {
 
-          const amount = Number(balance.evmBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0));
+          const amount = Number(balance.evmBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0) + pendingTransactionBalance[currentNetwork.toLowerCase()].evm);
           !(Number(amount) > 0) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
           setData(p => ({ ...p, amount: amount > 0 ? amount : "" }));
@@ -107,7 +107,7 @@ function Send() {
           Number(data.amount) +
           Number(estimatedGas) +
           (isEd ? EXISTENTIAL_DEPOSITE : 0) >
-          Number(balance.evmBalance)
+          (Number(balance.evmBalance) - pendingTransactionBalance[currentNetwork.toLowerCase()].evm)
         ) {
 
           updateEstimatedGas(null);
@@ -124,7 +124,7 @@ function Send() {
 
         if (estimatedGas && !data.amount && data.to) {
 
-          const amount = Number(balance.nativeBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0));
+          const amount = Number(balance.nativeBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0) + pendingTransactionBalance[currentNetwork.toLowerCase()].native);
 
           !(Number(amount) > 0) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
@@ -138,7 +138,7 @@ function Send() {
           Number(data.amount) +
           Number(estimatedGas) +
           (isEd ? EXISTENTIAL_DEPOSITE : 0) >
-          Number(balance.nativeBalance)
+          (Number(balance.nativeBalance) - pendingTransactionBalance[currentNetwork.toLowerCase()].native)
         ) {
 
           updateEstimatedGas(null);
@@ -176,11 +176,11 @@ function Send() {
     else if (Number(data.amount) <= 0)
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.AMOUNT_CANT_BE_0 }));
     else if (activeTab === EVM) {
-      if (Number(data.amount) >= Number(balance.evmBalance))
+      if (Number(data.amount) >= (Number(balance.evmBalance) - pendingTransactionBalance[currentNetwork.toLowerCase()].evm))
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
       else setErr((p) => ({ ...p, amount: "" }));
     } else if (activeTab === NATIVE) {
-      if (Number(data.amount) >= Number(balance.nativeBalance))
+      if (Number(data.amount) >= (Number(balance.nativeBalance) - pendingTransactionBalance[currentNetwork.toLowerCase()].native))
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
       else setErr((p) => ({ ...p, amount: "" }));
     }
