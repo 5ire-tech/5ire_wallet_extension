@@ -33,6 +33,7 @@ import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
 import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
 import ValidatorNominatorTxns from "./Components/ValidatorNominatorTxns";
 import CongratulationsScreen from "./Pages/WelcomeScreens/CongratulationsScreen"
+import { log } from "./Utility/utility";
 
 
 function getParameterByName(name, url = window.location.href) {
@@ -44,6 +45,7 @@ function getParameterByName(name, url = window.location.href) {
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
+
 function App(props) {
   const {
     state,
@@ -51,38 +53,38 @@ function App(props) {
     isLoading,
     newAccount,
     detailsPage,
+    isStateLoaded,
+    setStateLoaded,
     showCongratLoader,
     externalControlsState,
     setExternalControlState,
   } = useContext(AuthContext);
 
   const navigate = useNavigate();
-  const { isLogin, vault } = state;
 
+  
+  const { isLogin, vault } = isStateLoaded ? state : props.data;
+  const {activeSession} = isStateLoaded ? externalControlsState : props.externalControlsState;
+  
   
   useEffect(() => {
     if (props.data && props.externalControlsState) {
       setState(props.data);
       setExternalControlState(props.externalControlsState);
+      setStateLoaded(true);
     }
-
-    const route = getParameterByName("route");
-    if (route) {
-      navigate(ROUTES.DEFAULT + route);
-    } else {
-      navigate(ROUTES.DEFAULT);
-    }
-  }, []);
+   }, []);
 
 
   useEffect(() => {
     const route = getParameterByName("route");
+
+    log("here is some data: ", isStateLoaded, route, window.location.href, isLogin, vault, state?.pass);
     //sync the current action route with main popup
-    if (externalControlsState.activeSession?.route && isLogin) {
-      navigate(`/${externalControlsState.activeSession.route}`);
+    if (activeSession && isLogin) {
+      navigate(`/${activeSession.route}`);
       return;
     }
-
 
     if ((!isLogin && vault) || (state?.pass && !isLogin && !vault)) {
       navigate(ROUTES.UNLOACK_WALLET, {
@@ -95,12 +97,13 @@ function App(props) {
     } else if (isLogin && vault && !detailsPage) {
       navigate(ROUTES.WALLET);
     } else if (!isLogin && !vault) {
-      navigate(ROUTES.DEFAULT);
+      if (route) {
+        navigate(ROUTES.DEFAULT + route);
+      } else {
+        navigate(ROUTES.DEFAULT);
+      }
     }
   }, [isLogin, vault, newAccount?.evmAddress, state?.pass, detailsPage, externalControlsState?.activeSession?.id]);
-
-
-
 
 
   return (
@@ -128,10 +131,10 @@ function App(props) {
               element={<WelcomeLayout children={<ForgotPassword />} />}
             />
 
-            <Route
+            {/* <Route
               path="*"
               element={<WelcomeLayout children={<WelcomeScreen />} />}
-            />
+            /> */}
 
           </>
         ) : (
@@ -203,10 +206,10 @@ function App(props) {
               path={ROUTES.LOGIN_APPROVE}
               element={<WelcomeLayout children={<LoginApprove />} />}
             />
-            <Route
+            {/* <Route
               path="*"
               element={<WelcomeLayout children={<Wallet />} />}
-            />
+            /> */}
           </>
         )}
 

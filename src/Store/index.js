@@ -2,7 +2,7 @@ import { ROUTES } from "../Routes/index";
 import Browser from "webextension-polyfill";
 import { useNavigate } from "react-router-dom";
 import { isManifestV3 } from "../Scripts/utils";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { isNullorUndef, log } from "../Utility/utility";
 import { sessionStorage, localStorage } from "../Storage";
 import { bindRuntimeMessageListener } from "../Utility/message_helper";
@@ -48,6 +48,8 @@ export default function Context({ children }) {
   //transaction queue
   // const [transactionQueues, setTransactionQueues] = useState(transactionQueue);
   const [pendingBalance, setPendingBalance] = useState(0);
+
+  const [isStateLoaded, setStateLoaded] = useState(false);
   
   
   //background error's
@@ -251,6 +253,7 @@ export default function Context({ children }) {
     networkError,
     estimatedGas,
     passVerified,
+    isStateLoaded,
     newWalletName,
     pendingBalance,
     backgroundError,
@@ -270,6 +273,7 @@ export default function Context({ children }) {
     updateLoading,
     setNewAccount,
     setPrivateKey,
+    setStateLoaded,
     setTempBalance,
     // removeHistory,
     setNetworkError,

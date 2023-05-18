@@ -2,9 +2,9 @@
 
 5ireChain Wallet in your browser, compatible with both Native and EVM chains.
 
-## Prerequisites 
+## Prerequisites
 1. [**Node js  >v14.0**](https://nodejs.org/en/download/)
-2. **2GB Ram** recommended **>8GB**
+2. **2GB RAM** recommended **>8GB**
 3. **Minimum 10GB of storage**
 4. **React js 17.0.2**
 

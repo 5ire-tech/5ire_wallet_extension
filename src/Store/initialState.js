@@ -26,10 +26,6 @@ export const userState = {
     currentNetwork: "QA",
     allAccountsBalance: {},
 
-    popupChecks: {
-        txApprove: false
-    },
-
     currentAccount: {
         evmAddress: "",
         accountName: "",
@@ -43,14 +39,7 @@ export const userState = {
         totalBalance: ""
     },
 
-    pendingTransactionBalance: initialPendingBalance,
-
-    currentNetwork: "QA",
-
-    eth_accounts: '',
-
-    isLogin: false
-
+    pendingTransactionBalance: initialPendingBalance
 }
 
 export const externalControls = {

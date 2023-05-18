@@ -46,8 +46,6 @@ export class InitBackground {
       InitBackground.balanceTimer = this._balanceUpdate();
       this._checkLapsedPendingTransactions();
     }
-
-
   }
 
   //init the background events
