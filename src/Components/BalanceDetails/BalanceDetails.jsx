@@ -42,19 +42,20 @@ import {
 
 function BalanceDetails({ mt0 }) {
   const getLocation = useLocation();
+  const [url, setUrl] = useState("");
+  const [isNewSite, setNewSite] = useState(false);
   const [isEvmModal, setIsEvmModal] = useState(false);
+  // const [balan, setBalance] = useState();
   const [isConnected, setIsConnected] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHeaderActive, setHeaderActive] = useState(false);
-  const [isNewSite, setNewSite] = useState(false);
-  const [url, setUrl] = useState("");
   const { state, updateState, externalControlsState, allAccounts, updateLoading } =
     useContext(AuthContext);
 
   const { connectedApps } = externalControlsState;
   const { pathname } = getLocation;
 
-  const { balance, currentAccount, currentNetwork } = state;
+  const { currentAccount, currentNetwork, allAccountsBalance } = state;
 
   useEffect(() => {
     //check if current app is connected with extension
@@ -79,17 +80,16 @@ function BalanceDetails({ mt0 }) {
     updateLoading(true);
 
     updateState(LABELS.CURRENT_NETWORK, network);
-    updateState(LABELS.BALANCE, {
-      evmBalance: ZERO_CHAR,
-      nativeBalance: ZERO_CHAR,
-      totalBalance: ZERO_CHAR,
-    });
+
+
+    // todo on networkchange dont change balance to 0
+    updateState(LABELS.BALANCE, allAccountsBalance[currentAccount?.evmAddress][network?.toLowerCase()]);
 
     //change the network
     sendRuntimeMessage(
-    MESSAGE_TYPE_LABELS.NETWORK_HANDLER,
-    MESSAGE_EVENT_LABELS.NETWORK_CHANGE,
-    {}
+      MESSAGE_TYPE_LABELS.NETWORK_HANDLER,
+      MESSAGE_EVENT_LABELS.NETWORK_CHANGE,
+      {}
     );
 
     //send the network change event to current opned tab if its connected
@@ -373,7 +373,10 @@ function BalanceDetails({ mt0 }) {
                                       className={
                                         style.activeDis_Modal__leftSec__spanContact
                                       }
-                                    >{`${formatNumUptoSpecificDecimal(balance?.totalBalance, 2)} `}</span>
+                                    >
+                                      {`${formatNumUptoSpecificDecimal(allAccountsBalance[currentAccount?.evmAddress][currentNetwork?.toLowerCase()]?.totalBalance ? allAccountsBalance[currentAccount?.evmAddress][currentNetwork?.toLowerCase()]?.totalBalance : 0, 2)} `}
+                                    </span>
+
                                     &nbsp;{CURRENCY}
                                   </p>
                                 ) : (
@@ -486,15 +489,15 @@ function BalanceDetails({ mt0 }) {
                   <p>
                     Total Balance :{" "}
                     <span>
-                      {balance?.totalBalance ? (
+                      {allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].totalBalance ? (
                         <>
                           {" "}
                           <Tooltip
                             placement="bottom"
-                            title={balance.totalBalance}
+                            title={allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].totalBalance}
                           >
                             <span className="totalBal">
-                              {balance.totalBalance}
+                              {allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].totalBalance}
                             </span>
                           </Tooltip>{" "}
                           &nbsp;{CURRENCY}
@@ -515,12 +518,12 @@ function BalanceDetails({ mt0 }) {
                       <p>Native Chain Balance</p>
                       <Tooltip
                         title={
-                          balance?.nativeBalance ? balance?.nativeBalance : ""
+                          allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.nativeBalance ? allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.nativeBalance : ""
                         }
                       >
                         <h3>
                           {/* <img src={WalletCardLogo} draggable={false} alt="walletLogo" /> */}
-                          {balance?.nativeBalance ? balance?.nativeBalance : ""}
+                          {allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.nativeBalance ? allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.nativeBalance : ""}
                         </h3>
                       </Tooltip>
                     </div>
@@ -543,11 +546,11 @@ function BalanceDetails({ mt0 }) {
                     >
                       <p>EVM Chain Balance</p>
                       <Tooltip
-                        title={balance?.evmBalance ? balance?.evmBalance : ""}
+                        title={allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance ? allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance : ""}
                       >
                         <h3>
                           {/* <img src={WalletCardLogo} draggable={false} alt="balanceLogo" /> */}
-                          {balance?.evmBalance ? balance?.evmBalance : ""}
+                          {allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance ? allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance : ""}
                         </h3>
                       </Tooltip>
                     </div>

@@ -38,7 +38,7 @@ function History() {
       </div>
       <div className={style.histryDataScrol}>
         {txHistory[currentAccount?.evmAddress] &&
-        txHistory[currentAccount?.evmAddress].length > 0 ? (
+          txHistory[currentAccount?.evmAddress].length > 0 ? (
           arrayReverser(
             txHistory[currentAccount?.evmAddress].filter(
               (tx) => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()
@@ -54,7 +54,7 @@ function History() {
         ) : (
           <div className={style.noTransaction}>
             {" "}
-            <img src={noTransaction}/>
+            <img src={noTransaction} draggable={false} alt="No transaction" />
             <h4 className={style.noTxn}>No Transaction Found!</h4>
           </div>
         )}

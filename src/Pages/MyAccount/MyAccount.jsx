@@ -42,7 +42,7 @@ function MyAccount() {
     setNewWalletName,
   } = useContext(AuthContext);
   const { connectedApps } = externalControlsState;
-  const { balance, currentAccount, allAccountsBalance } = state;
+  const { currentAccount, allAccountsBalance, currentNetwork } = state;
 
 
   //remove Account
@@ -104,11 +104,13 @@ function MyAccount() {
 
   //update the current account
   const updateCurrentAccount = (acc) => {
+    // console.log("Acc : ", acc);
 
     updateState(LABELS.CURRENT_ACCOUNT, acc);
 
+    //TODO
     if (allAccountsBalance.hasOwnProperty(acc?.evmAddress)) {
-      updateState(LABELS.BALANCE, allAccountsBalance[acc.evmAddress]);
+      updateState(LABELS.BALANCE, allAccountsBalance[acc?.evmAddress][currentNetwork.toLowerCase()]);
     } else {
       //fetch balance of changed account
       sendRuntimeMessage(
@@ -184,8 +186,8 @@ function MyAccount() {
                 </div>
                 <p>
                   {e?.accountName === currentAccount?.accountName ? (
-                    balance?.totalBalance ? (
-                      `${formatNumUptoSpecificDecimal(balance.totalBalance, 2)} ${CURRENCY}`
+                    allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.totalBalance ? (
+                      `${formatNumUptoSpecificDecimal(allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.totalBalance, 2)} ${CURRENCY}`
                     ) : (
                       `0 ${CURRENCY}`
                     )

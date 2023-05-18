@@ -1,8 +1,8 @@
-import React, { useContext } from 'react'
-import { AuthContext } from '../../Store'
-import ModalCustom from '../ModalCustom/ModalCustom';
+import React, { useContext } from 'react';
+import { AuthContext } from '../../Store';
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import ButtonComp from '../ButtonComp/ButtonComp';
+import ModalCustom from '../ModalCustom/ModalCustom';
 
 export default function ErrorModal() {
   const { backgroundError, setBackgroundError } = useContext(AuthContext);
