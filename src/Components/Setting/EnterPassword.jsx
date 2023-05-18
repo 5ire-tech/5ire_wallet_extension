@@ -80,19 +80,19 @@ function EnterPassword() {
           <div className={style.enterPassword}>
             <div className={style.commonHeadeing}>
               <p>
-                Your password is used to unlock your wallet and will allow
-                wallet to export your Private Key
+              Enter your wallet password to reveal secret keys
               </p>
             </div>
             <InputFieldSimple
-              type="password"
               value={data}
+              type="password"
               coloredBg={true}
               name={LABELS.PASS}
               keyUp={validateInput}
               onChange={handleChange}
               placeholderBaseColor={true}
               placeholder={"Enter Password"}
+              onDrop={e => { e.preventDefault() }}
             />
             <p className={style.errorText}>{inputError ? inputError : ""}</p>
             <div>

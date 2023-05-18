@@ -147,7 +147,7 @@ function ImportWallet() {
       {
         !isLogin && <StepHeaders active={2} isCreate={false} />
       }
-      <MenuRestofHeaders logosilver={true} title="5irechain Wallet" />
+      <MenuRestofHeaders logosilver={true} title="5ireChain Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Import Wallet </h1>
@@ -155,12 +155,13 @@ function ImportWallet() {
         <div className={style.cardWhite__importWalletlinkOuter}>
           <div>
             <InputFieldOnly
-              placeholder={"Enter wallet name"}
-              placeholderBaseColor={true}
-              coloredBg={true}
               name="accName"
+              coloredBg={true}
               onChange={handleChange}
               keyUp={validateAccName}
+              placeholderBaseColor={true}
+              placeholder={"Enter wallet name"}
+              onDrop={e => { e.preventDefault() }}
             />
             <p className="errorText">{warrning.acc}</p>
           </div>
@@ -179,6 +180,7 @@ function ImportWallet() {
               name={LABELS.KEY}
               onKeyUp={validateKey}
               onChange={handleChange}
+              onDrop={e => { e.preventDefault() }}
               placeholder={"Enter mnemonic here"}
             />
             <p className="errorText">{warrning.key}</p>

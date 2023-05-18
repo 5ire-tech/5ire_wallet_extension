@@ -180,6 +180,41 @@ export class HybridKeyring extends EventEmitter {
     }
 
     /**
+     * Restore old state accounts
+     * @param {object} message 
+     * @returns 
+     */
+
+    async recoverOldStateAccounts(message) {
+
+        let { password, oldAccDetails } = message.data;
+        let keyResponse = {};
+
+        if (!password) {
+            if (HybridKeyring?.password)
+                password = HybridKeyring.password;
+            else throw new Error("Password required");
+        }
+
+        for (let i = 0; i < oldAccDetails.length; i++) {
+            const acc = oldAccDetails[i];
+
+            if (i === 0) {
+                keyResponse = await this.createOrRestore({ data: { password, opts: { mnemonic: acc.mnemonic, name: acc.accountName } } })
+            } else {
+                keyResponse = await this.importAccountByMnemonics({ data: { mnemonic: acc.mnemonic, name: acc.accountName } });
+            }
+
+        }
+
+        const payload = {
+            vault: HybridKeyring.vault,
+            currentAccount: keyResponse.payload.newAccount
+        }
+        return new EventPayload(message.event, message.event, payload, [], false);
+
+    }
+    /**
      * Create or restore mnemonics in HD wallet for first time in entire keyring lifecycle.
      * User load persistent data method if this is already done and you have vault info.
      * @param {object} message 
@@ -254,7 +289,7 @@ export class HybridKeyring extends EventEmitter {
         const eth = await HybridKeyring.ethKeyring.addAccounts(1);
         //Check existing accounts in HD category
         const oldAccounts = HybridKeyring.accounts.filter(acc => acc.type === WALLET_TYPES.HD)
-        const existingHdAccounts = oldAccounts.length
+        const existingHdAccounts = keyring.numberOfAccounts;
         const mainPair = HybridKeyring.polkaKeyring.getPair(oldAccounts[0]?.nativeAddress);
         const newKr = mainPair.derive("//" + existingHdAccounts);
         HybridKeyring.polkaKeyring.addPair(newKr)
@@ -433,6 +468,7 @@ export class HybridKeyring extends EventEmitter {
     */
     async removeAccount(message) {
         const { address } = message?.data;
+        // console.log("Address to remove in 5ire Key  ",address);
         const password = message?.data?.password ? message?.data?.password : HybridKeyring.password;
 
         await this._verifyPassword(password);
@@ -444,26 +480,28 @@ export class HybridKeyring extends EventEmitter {
         const keyring = this._getKeyringData(info.type)
 
         if (info.type === WALLET_TYPES.HD) {
-            HybridKeyring.ethKeyring.removeAccount(info.evmAddress)
+            // HybridKeyring.ethKeyring.removeAccount(info.evmAddress)
 
         } else if (info.type === WALLET_TYPES.ETH_SIMPLE) {
             HybridKeyring.simpleEthKeyring.removeAccount(info.evmAddress)
             keyring.private_keys.splice(info.accountIndex, 1)
+            keyring.numberOfAccounts--;
         } else if (info.type === WALLET_TYPES.IMPORTED_NATIVE) {
             HybridKeyring.simpleEthKeyring.removeAccount(info.evmAddress)
             keyring.mnemonics.splice(info.accountIndex, 1)
+            keyring.numberOfAccounts--;
         }
         HybridKeyring.polkaKeyring.removePair(info.nativeAddress)
 
 
-        keyring.numberOfAccounts--;
         keyring.accounts = keyring.accounts.filter(acc => acc.evmAddress !== info.evmAddress)
         HybridKeyring.accounts = HybridKeyring.accounts.filter(acc => acc.evmAddress !== info.evmAddress)
 
         let payload = {
             vault: null,
             accounts: [],
-            isInitialAccount: true
+            isInitialAccount: true,
+            removedAccountAddress: address,
         }
 
         //Persist state
@@ -471,14 +509,14 @@ export class HybridKeyring extends EventEmitter {
             const prsistRes = await this._persistData(HybridKeyring.password)
             payload = {
                 vault: prsistRes.vault,
-                accounts: HybridKeyring.accounts
+                accounts: HybridKeyring.accounts,
+                removedAccountAddress: address
             }
             payload.isInitialAccount = false;
 
         } else {
             await this.resetVaultAndPass();
         }
-
 
         // return accounts
         return new EventPayload(message.event, message.event, payload);

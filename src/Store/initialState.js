@@ -14,11 +14,17 @@ const initialPendingBalance = (() => {
 
 
 export const userState = {
+
     vault: null,
 
-    allAccounts: [],
-
     txHistory: {},
+
+    isLogin: false,
+
+    eth_accounts: '',
+
+    currentNetwork: "QA",
+    allAccountsBalance: {},
 
     popupChecks: {
         txApprove: false
@@ -48,19 +54,19 @@ export const userState = {
 }
 
 export const externalControls = {
-    activeSession: null,
     connectedApps: {},
+    activeSession: null,
     connectionQueue: []
 }
 
 
 export const newAccountInitialState = {
     mnemonic: "",
-    evmPrivateKey: "",
     evmAddress: "",
+    accountName: "",
+    accountIndex: "",
     nativeAddress: "",
-    accountName:"",
-    accountIndex:""
+    evmPrivateKey: "",
 }
 
 //initial state for external native transaction

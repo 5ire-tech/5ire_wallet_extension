@@ -1,26 +1,33 @@
 import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
-import { useContext, useState } from "react";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
+import { useContext, useState, useEffect } from "react";
 import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
 import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
 import { PVT_KEY, NATIVE, EVM, COPIED, MNEMONIC } from "../../Constants/index.js";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx";
-import { ROUTES } from "../../Routes";
 
 function CreateWalletChain() {
 
-  const { newAccount } = useContext(AuthContext);
+  const { newAccount, updateLoading } = useContext(AuthContext);
   const [isOpen, setOpen] = useState({ open1: true, open2: true });
 
+  useEffect(() => {
+    updateLoading(true);
+
+    if (newAccount.mnemonic || newAccount.drivedMnemonic)
+      setTimeout(() => {
+        updateLoading(false);
+      }, 400);
+
+  }, [newAccount.mnemonic, newAccount.drivedMnemonic]);
 
   const handleEyeOpen = (e) => {
     const name = e.target.name;
     setOpen(p => ({ ...p, [name]: !isOpen[name] }));
   }
-
 
   const handleCopy = (e) => {
 

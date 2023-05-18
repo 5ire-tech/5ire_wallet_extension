@@ -9,6 +9,10 @@
   align-items: center;
   justify-content: space-around;
   gap: 20px;
+  position: fixed;
+  bottom: 0;
+  max-width: 347px;
+  width: 100%;
 
   &__items {
     display: flex;

@@ -1,7 +1,7 @@
 @import "../../styles/__vars.scss";
 
 .transectionHistry {
-  cursor: pointer;
+  // cursor: pointer;
 
   &__dateTime {
     color: #ffffff;
@@ -132,6 +132,12 @@
       padding-top: 38px;
       text-decoration-line: underline;
       text-transform: capitalize;
+      cursor: pointer;
+
+    }
+    .disabled{
+      cursor: not-allowed;
+      opacity: 0.2;
     }
   }
 

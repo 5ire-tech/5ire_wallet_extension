@@ -23,9 +23,9 @@ import {
 
 export default function SetPasswordScreen() {
   const params = useParams();
-
   const navigate = useNavigate();
-  const { setUserPass, accountName } = useContext(AuthContext);
+  const [isDisable, setDisable] = useState(true);
+  const { setUserPass, accountName, setDetailsPage } = useContext(AuthContext);
   const { updateState } = useContext(AuthContext);
   const [error, setError] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
   const [pass, setPass] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
@@ -36,6 +36,19 @@ export default function SetPasswordScreen() {
     else if (pass.confirmPass !== EMTY_STR)
       setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }));
   }, [pass.pass, pass.confirmPass]);
+
+  useEffect(() => {
+    if (
+      pass.confirmPass === pass.pass &&
+      !error.pass &&
+      !error.confirmPass &&
+      pass.pass &&
+      pass.confirmPass
+    )
+      setDisable(false);
+    else setDisable(true);
+  }, [pass.confirmPass, pass.pass, error.pass, error.confirmPass]);
+
 
   const validatePass = () => {
     let errMsg = EMTY_STR;
@@ -77,7 +90,8 @@ export default function SetPasswordScreen() {
             MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE,
             { password: pass.pass, opts: { name: accountName }, type: "create" }
           );
-          navigate(ROUTES.NEW_WALLET_DETAILS);
+          setDetailsPage(true);
+
         } else {
           setUserPass(pass.pass);
           navigate(ROUTES.IMPORT_WALLET);
@@ -124,13 +138,14 @@ export default function SetPasswordScreen() {
             style={{ marginTop: "20px" }}
           >
             <InputFieldSimple
+              coloredBg={true}
               value={pass?.pass}
               name={LABELS.PASS}
-              onChange={handleChange}
-              placeholder={"Enter Password"}
-              placeholderBaseColor={true}
-              coloredBg={true}
               keyUp={validatePass}
+              onChange={handleChange}
+              placeholderBaseColor={true}
+              placeholder={"Enter Password"}
+              onDrop={e => { e.preventDefault() }}
             />
           </div>
           <p className={style.errorText}>{error.pass ? error.pass : ""}</p>
@@ -139,13 +154,14 @@ export default function SetPasswordScreen() {
             style={{ marginTop: "34px" }}
           >
             <InputFieldSimple
-              value={pass?.confirmPass}
+              coloredBg={true}
               name="confirmPass"
               onChange={handleChange}
-              placeholder={"Confirm Password"}
+              value={pass?.confirmPass}
               placeholderBaseColor={true}
-              coloredBg={true}
               keyUp={validateConfirmPass}
+              placeholder={"Confirm Password"}
+              onDrop={e => { e.preventDefault() }}
             />
             <p className={style.errorText}>
               {error.confirmPass ? error.confirmPass : ""}
@@ -154,6 +170,7 @@ export default function SetPasswordScreen() {
 
           <div style={{ marginTop: "50px" }} className={style.contBtn}>
             <ButtonComp
+              isDisable={isDisable}
               onClick={handleSubmit}
               text={"Continue"}
               maxWidth={"100%"}

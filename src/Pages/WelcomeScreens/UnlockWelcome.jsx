@@ -3,19 +3,25 @@ import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
 import { AuthContext } from "../../Store";
 import PlaceLogo from "../../Assets/PlaceLog.svg";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import React, { useEffect, useState, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
-import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
-import { LABELS, ERROR_MESSAGES, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
 import { isEmpty } from "../../Utility/utility";
+import { decryptor } from "../../Helper/CryptoHelper";
+import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+import {
+  LABELS,
+  ERROR_MESSAGES,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS
+} from "../../Constants/index";
+
+import * as StorageUpdator from "../../Storage/loadstore";
 
 function UnlockWelcome() {
-  // const navigate = useNavigate();
-  // const location = useLocation();
-
+  const { verifyPass } = useAuth()
   const [pass, setPass] = useState("");
   const [isDisable, setDisable] = useState(true);
   const { state, inputError, setInputError } = useContext(AuthContext);
@@ -43,13 +49,42 @@ function UnlockWelcome() {
 
   const handleClick = async (e) => {
     if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.UNLOCK, { password: pass, vault: vault });
+
+      if (state?.pass && state?.oldAccounts && pass && !inputError) {
+
+        const passRes = await verifyPass(pass, state.pass);
+
+        if (!passRes.error) {
+
+          if (state?.oldAccounts.length > 0) {
+
+            const oldAccDetails = [];
+
+            for (let i = 0; i < state.oldAccounts.length; i++) {
+
+              oldAccDetails.push({
+                mnemonic: decryptor(state?.oldAccounts[i].temp1m, state?.pass),
+                accountName: state?.oldAccounts[i]?.accountName
+              });
+
+            }
+            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.RECOVER_OLD_ACCOUNTS, { password: pass, oldAccDetails, opts: {} });
+          }
+
+        }
+        else {
+          setInputError(passRes.data);
+        }
+
+      } else if (pass && !inputError) {
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.UNLOCK, { password: pass, vault: vault });
+      }
     }
   };
 
   return (
     <div className={style.cardWhite} onKeyDown={handleClick}>
-      <MenuRestofHeaders logosilver={false} title="5irechain Wallet" />
+      <MenuRestofHeaders logosilver={false} title="5ireChain Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__centerLogo}>
           <div className={style.cardWhite__cardInner__innerLogocontact}>
@@ -65,11 +100,12 @@ function UnlockWelcome() {
             <InputFieldSimple
               // type="password"
               name={"key"}
-              onChange={handleChange}
-              placeholder={"Enter Password"}
-              placeholderBaseColor={true}
-              keyUp={validateInput}
               coloredBg={true}
+              keyUp={validateInput}
+              onChange={handleChange}
+              placeholderBaseColor={true}
+              placeholder={"Enter Password"}
+              onDrop={e => { e.preventDefault() }}
             />
             <p className={style.errorText}>{inputError ? inputError : ""}</p>
           </div>

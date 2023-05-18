@@ -6,7 +6,12 @@ import { createContext, useState } from "react";
 import { isNullorUndef, log } from "../Utility/utility";
 import { sessionStorage, localStorage } from "../Storage";
 import { bindRuntimeMessageListener } from "../Utility/message_helper";
-import { MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, LABELS, TABS_EVENT } from "../Constants";
+import {
+  LABELS,
+  TABS_EVENT,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS,
+} from "../Constants";
 import {
   userState,
   externalControls,
@@ -22,24 +27,23 @@ export const AuthContext = createContext();
 
 //main context wraper
 export default function Context({ children }) {
+
   const navigate = useNavigate();
   const [state, setState] = useState(userState);
-  const [inputError, setInputError] = useState("");
   const [userPass, setUserPass] = useState(null);
   const [isLoading, setLoading] = useState(false);
+  const [inputError, setInputError] = useState("");
   const [privateKey, setPrivateKey] = useState("");
   const [seedPhrase, setSeedPhrase] = useState("");
   const [accountName, setAccName] = useState(null);
   const [allAccounts, setAllAccounts] = useState([]);
+  const [detailsPage, setDetailsPage] = useState(false);
   const [estimatedGas, setEstimatedGas] = useState(null);
-  const [valdatorNominatorFee, setValdatorNominatorFee] = useState(null);
-
-  const [externalNativeTxDetails, setExternalNativeTxDetails] = useState(initialExternalNativeTransaction);
+  const [newWalletName, setNewWalletName] = useState("");
   const [passVerified, setPassVerified] = useState(false);
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
   const [externalControlsState, setExternalControlState] = useState(externalControls);
   const [showCongratLoader, setShowCongratLoader] = useState(false);
-  const [newWalletName, setNewWalletName] = useState("");
   
   //transaction queue
   // const [transactionQueues, setTransactionQueues] = useState(transactionQueue);
@@ -49,6 +53,10 @@ export default function Context({ children }) {
   //background error's
   const [backgroundError, setBackgroundError] = useState(null);
   const [networkError, setNetworkError] = useState(null);
+  const [valdatorNominatorFee, setValdatorNominatorFee] = useState(null);
+  const [tempBalance, setTempBalance] = useState({ evmBalance: 0, nativeBalance: 0 });
+  const [externalNativeTxDetails, setExternalNativeTxDetails] = useState(initialExternalNativeTransaction);
+
 
   Browser.storage.local.onChanged.addListener((changedData) => {
     //change the state whenever the local storage is updated
@@ -61,7 +69,9 @@ export default function Context({ children }) {
   bindRuntimeMessageListener((message) => {
 
     if (message.type === MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND) {
-      if (message.event === MESSAGE_EVENT_LABELS.EVM_FEE || message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE) {
+      if (message.event === MESSAGE_EVENT_LABELS.EVM_FEE ||
+        message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE
+      ) {
         (!estimatedGas) && updateEstimatedGas(message.data.fee);
         setTimer(updateLoading.bind(null, false));
       } else if (message.event === MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS) {
@@ -87,8 +97,7 @@ export default function Context({ children }) {
         exportPrivatekey(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE) {
         exportSeedPhrase(message.data);
-      }
-      else if (message.event === MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT) {
+      } else if (message.event === MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT) {
         removeAccount(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE) {
         setValdatorNominatorFee(message.data)
@@ -148,7 +157,6 @@ export default function Context({ children }) {
 
   // set the new Account
   const createOrRestore = (data) => {
-
     if (data?.type === "create") {
       setNewAccount(data.newAccount);
       navigate(ROUTES.NEW_WALLET_DETAILS);
@@ -157,8 +165,6 @@ export default function Context({ children }) {
 
   // set the new Account
   const importAccountByMnemonics = (data) => {
-    // console.log("Data in import Context :::: ",data);
-
     if (data?.vault && data?.newAccount) {
       setShowCongratLoader(true)
       setTimeout(() => {
@@ -187,6 +193,7 @@ export default function Context({ children }) {
 
   const addAccount = (data) => {
     setNewAccount(data?.newAccount);
+    // navigate(ROUTES.NEW_WALLET_DETAILS);
   };
 
   const getAccounts = (data) => {
@@ -218,12 +225,13 @@ export default function Context({ children }) {
 
 
   const removeAccount = (data) => {
+    const { accounts, isInitialAccount } = data;
     setNewAccount(newAccountInitialState);
-    if (data?.isInitialAccount) {
+    setAllAccounts(accounts);
+    if (isInitialAccount) {
       navigate(ROUTES.DEFAULT)
-    } else {
-      navigate(ROUTES.WALLET);
     }
+
   }
 
 
@@ -231,11 +239,13 @@ export default function Context({ children }) {
     //data
     state,
     userPass,
-    inputError,
     isLoading,
+    inputError,
     newAccount,
     privateKey,
     seedPhrase,
+    detailsPage,
+    tempBalance,
     allAccounts,
     accountName,
     networkError,
@@ -256,9 +266,11 @@ export default function Context({ children }) {
     setUserPass,
     updateState,
     setInputError,
+    setDetailsPage,
     updateLoading,
     setNewAccount,
     setPrivateKey,
+    setTempBalance,
     // removeHistory,
     setNetworkError,
     setPassVerified,

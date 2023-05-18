@@ -29,8 +29,8 @@ export const RELOAD_ID = "RELOAD_PAGE"
 
 //tabs event
 export const TABS_EVENT = {
-    ACCOUNT_CHANGE_EVENT: "accountChange",
-    NETWORK_CHANGE_EVENT: "networkChange",
+    ACCOUNT_CHANGE_EVENT: "accountsChanged",
+    NETWORK_CHANGE_EVENT: "networkChanged",
     WALLET_CONNECTED_EVENT: "connect",
     WALLET_DISCONNECTED_EVENT: "disconnect",
     PROVIDER_CONFIG: "providerConfig"
@@ -59,7 +59,7 @@ export const TX_TYPE = {
     NATIVE_APP: "Native App",
     NATIVE_SIGNER: "Native Signer",
     CONTRACT_EXECUTION: "Contract Execution",
-    CONTRACT_DEPLOYMENT: "Contract Deployement",
+    CONTRACT_DEPLOYMENT: "Contract Deployment",
 };
 
 export const NETWORK = {
@@ -101,8 +101,9 @@ export const ERROR_MESSAGES = {
     INCORRECT_PASS: "Incorrect password.",
     INCORRECT_ADDRESS: "Invalid address.",
     INPUT_REQUIRED: "This field is required.",
-    PASS_DONT_MATCH: "Passwords do not match.",
-    INSUFFICENT_BALANCE: "Insufficent Balance.",
+    PASS_DONT_MATCH: "Password do not match.",
+    INSUFFICENT_BALANCE: "Insufficient Balance.",
+    INSUFFICENT_BALANCE_VD_NM: "Insufficient Funds: Fee + Amount is more than available balance.",
     UNDEF_PROPERTY: "Object not has given property",
     AMOUNT_CANT_BE_0: "Amount can't be 0 or less than 0",
     SINGER_ERROR: "Error while signing the the raw/payload",
@@ -121,7 +122,7 @@ export const ERROR_MESSAGES = {
     ERROR_WHILE_TRANSACTION: "Transaction failed, error occured during transaction processing",
     ERROR_WHILE_TRANSACTION_STATUS_CHECK: "Error while fething the transaction recipt.",
     ERROR_WHILE_GAS_ESTIMATION: "Gas Estimation Failed, something wrong happend while gas estimation",
-    CREATE_PASS_MSG: "Password must have at leas t 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
+    CREATE_PASS_MSG: "Password must have at least 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
     ERROR_WHILE_NETWORK_CONNECTION: "Network Connection Error, please change network or try again later",
     INVALID_AMOUNT: "Amount is invalid.",
     AMOUNT_DATA_CHECK: "To or Data is fields is missing from request",
@@ -276,7 +277,7 @@ export const MESSAGE_EVENT_LABELS = {
     CREATE_OR_RESTORE: "createOrRestore",
     EXPORT_PRIVATE_KEY: "exportPrivatekey",
     EXPORT_SEED_PHRASE: "exportSeedPhrase",
-    // RESET_VAULT_AND_PASS: "resetVaultAndPass",
+    RECOVER_OLD_ACCOUNTS: "recoverOldStateAccounts",
     VERIFY_USER_PASSWORD: "verifyUserPassword",
     IMPORT_BY_MNEMONIC: "importAccountByMnemonics",
     
@@ -331,9 +332,9 @@ export const MESSAGE_TYPE_LABELS = {
     INTERNAL_TX: "internalTx",
     FEE_AND_BALANCE: "feeAndBalance",
     NETWORK_HANDLER: "networkHandler",
-    EXTENSION_BACKGROUND: "extensionBackground",
     EXTERNAL_TX_APPROVAL: "externalTxApproval",
     EXTENSION_UI_KEYRING: "extensionUiKeyring",
+    EXTENSION_BACKGROUND: "extensionBackground",
     VALIDATOR_NOMINATOR_HANDLER: "validatorNominatorHandler",
 }
 
@@ -420,3 +421,4 @@ export const RESTRICTED_METHODS = [...Object.values(VALIDATOR_NOMINATOR_METHOD),
     ...Object.values(SIGNER_METHODS),
     ...Object.values(RESTRICTED_ETHEREUM_METHODS)
 ]
+export const VALIDATION_METHODS_VD_NM = [VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_BONDMORE, VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_BONDMORE, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR]
