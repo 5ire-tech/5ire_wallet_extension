@@ -1,34 +1,10 @@
-import { Button, message, Steps } from "antd";
 import React from "react";
 import style from "./style.module.scss";
-import { useState } from 'react';
 import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
+
+
 function Beforebegin() {
-  // const steps = [
-  //   {
-  //     title: 'First',
-  //     content: 'First-content',
-  //   },
-  //   {
-  //     title: 'Second',
-  //     content: 'Second-content',
-  //   },
-  //   {
-  //     title: 'Last',
-  //     content: 'Last-content',
-  //   },
-  // ];
-  // const [current, setCurrent] = useState(0);
-  // const next = () => {
-  //   setCurrent(current + 1);
-  // };
-  // const prev = () => {
-  //   setCurrent(current - 1);
-  // };
-  // const items = steps.map((item) => ({
-  //   key: item.title,
-  //   title: item.title,
-  // }));
+
   return (
     <div>
       <div className={style.cardWhite}>

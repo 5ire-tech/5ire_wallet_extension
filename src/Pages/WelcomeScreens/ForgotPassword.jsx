@@ -1,17 +1,15 @@
 import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
 import TextArea from "antd/es/input/TextArea";
-import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { isEmpty, validateMnemonic } from "../../Utility/utility";
-import InputFieldSimple, {
-  InputFieldOnly,
-} from "../../Components/InputField/InputFieldSimple";
+import InputFieldSimple, { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 import {
   REGEX,
+  LABELS,
   EMTY_STR,
   ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
@@ -19,7 +17,8 @@ import {
 } from "../../Constants/index";
 
 function ForgotPassword() {
-  const navigate = useNavigate();
+
+  const [isDisable, setDisable] = useState(true);
 
   const [data, setData] = useState({
     pass: EMTY_STR,
@@ -33,7 +32,22 @@ function ForgotPassword() {
     key: EMTY_STR,
     accName: EMTY_STR,
   });
-  // const [isDisable, setDisable] = useState(true);
+
+  useEffect(() => {
+    if (
+      !error.key &&
+      !error.pass &&
+      !error.confirmPass &&
+      !error.accName &&
+      data.key.trim() &&
+      data.pass.trim() &&
+      data.confirmPass.trim() &&
+      data.accName.trim()
+    )
+      setDisable(false);
+    else setDisable(true);
+
+  }, [error.key, error.pass, error.confirmPass, error.accName, data.key, data.pass, data.confirmPass, data.accName]);
 
   useEffect(() => {
     if (data.confirmPass === data.pass || data.pass === EMTY_STR)
@@ -83,7 +97,7 @@ function ForgotPassword() {
     if (isEmpty(data.key)) {
       setError((p) => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
       // setDisable(true);
-    } else if (!validateMnemonic(data.key)) {
+    } else if (!validateMnemonic(data.key.trim())) {
       setError((p) => ({ ...p, key: ERROR_MESSAGES.INVALID_MNEMONIC }));
       // setDisable(true);
     } else {
@@ -110,39 +124,37 @@ function ForgotPassword() {
     }
   };
 
-  const handleSubmit = () => {
-    if (
-      !error.key &&
-      !error.pass &&
-      !error.confirmPass &&
-      !error.accName &&
-      data.key &&
-      data.pass &&
-      data.confirmPass &&
-      data.accName
-    ) {
-      sendRuntimeMessage(
-        MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
-        MESSAGE_EVENT_LABELS.FORGOT_PASS,
-        {
-          password: data.pass,
-          opts: { mnemonic: data.key, name: data.accName.trim() },
-          type: "forgot",
-        }
-      );
+  const handleSubmit = (e) => {
+    if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
+      if (
+        !error.key &&
+        !error.pass &&
+        !error.confirmPass &&
+        !error.accName &&
+        data.key &&
+        data.pass &&
+        data.confirmPass &&
+        data.accName
+      ) {
+        sendRuntimeMessage(
+          MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+          MESSAGE_EVENT_LABELS.FORGOT_PASS,
+          {
+            password: data.pass,
+            opts: { mnemonic: data.key.trim(), name: data.accName.trim() },
+            type: "forgot",
+          }
+        );
 
-      // navigate(ROUTES.WALLET);
+        // navigate(ROUTES.WALLET);
+      }
     }
   };
 
-  const handleCancel = () => {
-    navigate(ROUTES.DEFAULT);
-  };
-
   return (
-    //onKeyDown={handleClick}//
-    <div className={style.cardWhite}>
-      <MenuRestofHeaders logosilver={true} title="5ireChain Wallet" backTo={ROUTES.UNLOACK_WALLET} />
+
+    <div className={style.cardWhite} onKeyDown={handleSubmit}>
+      <MenuRestofHeaders logosilver={true} title="5irechain Wallet" backTo={ROUTES.UNLOACK_WALLET} />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Forgot password</h1>
@@ -200,7 +212,7 @@ function ForgotPassword() {
             </p>
           </div>
           <div className={`${style.setPassword__footerbuttons}${style.setPassword__forGotBtn}`}>
-            <ButtonComp text={"Change"} onClick={handleSubmit} />
+            <ButtonComp text={"Change"} onClick={handleSubmit} isDisable={isDisable} />
             {/* <ButtonComp text={"Cancel"} onClick={handleCancel} /> */}
           </div>
         </div>

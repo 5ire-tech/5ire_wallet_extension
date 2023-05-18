@@ -23,8 +23,8 @@ import {
 
 export default function SetPasswordScreen() {
   const params = useParams();
-
   const navigate = useNavigate();
+  const [isDisable, setDisable] = useState(true);
   const { setUserPass, accountName, setDetailsPage } = useContext(AuthContext);
   const { updateState } = useContext(AuthContext);
   const [error, setError] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
@@ -36,6 +36,19 @@ export default function SetPasswordScreen() {
     else if (pass.confirmPass !== EMTY_STR)
       setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }));
   }, [pass.pass, pass.confirmPass]);
+
+  useEffect(() => {
+    if (
+      pass.confirmPass === pass.pass &&
+      !error.pass &&
+      !error.confirmPass &&
+      pass.pass &&
+      pass.confirmPass
+    )
+      setDisable(false);
+    else setDisable(true);
+  }, [pass.confirmPass, pass.pass, error.pass, error.confirmPass]);
+
 
   const validatePass = () => {
     let errMsg = EMTY_STR;
@@ -157,6 +170,7 @@ export default function SetPasswordScreen() {
 
           <div style={{ marginTop: "50px" }} className={style.contBtn}>
             <ButtonComp
+              isDisable={isDisable}
               onClick={handleSubmit}
               text={"Continue"}
               maxWidth={"100%"}

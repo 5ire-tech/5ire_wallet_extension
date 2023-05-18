@@ -26,8 +26,7 @@ function FooterStepOne() {
   }
 
   const handleClick = () => {
-    // navigate(ROUTES.NEW_WALLET_DETAILS);
-    setNewWalletName('')
+    setNewWalletName("");
     navigate(ROUTES.CREATE_WALLET);
   }
 
