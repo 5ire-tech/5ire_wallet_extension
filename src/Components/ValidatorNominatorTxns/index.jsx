@@ -31,7 +31,7 @@ function ValidatorNominatorTxns() {
 
     //check if user has sufficent balance to make trnsaction
     useEffect(() => {
-        if (valdatorNominatorFee?.fee && (Number(activeSession.message?.value) + Number(valdatorNominatorFee?.fee)) >= (Number(balance?.evmBalance) - pendingTransactionBalance[currentNetwork.toLowerCase()].native)) {
+        if (valdatorNominatorFee?.fee && (Number(activeSession.message?.value) + Number(valdatorNominatorFee?.fee)) >= (Number(balance?.evmBalance) - pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native)) {
             toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
             setDisableApproval(true);
             // setValdatorNominatorFee(null);

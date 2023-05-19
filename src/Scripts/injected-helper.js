@@ -59,7 +59,7 @@ export class InjectedScript {
                 this._afterConnecting(data.response?.result?.evmAddress);
               }
               else if(isEqual(data.event, TABS_EVENT.NETWORK_CHANGE_EVENT)) this._afterNetworkChange(data.response?.result?.url)
-              else if(isEqual(data.event, TABS_EVENT.WALLET_DISCONNECTED_EVENT)) this.__clearAllConfig();
+              else if(isEqual(data.event, TABS_EVENT.WALLET_DISCONNECTED_EVENT)) this._clearAllConfig();
               else if(isEqual(data.event, TABS_EVENT.ACCOUNT_CHANGE_EVENT)) this._injectSelectedAddress(data.response.result?.evmAddress)
 
               //emit the event

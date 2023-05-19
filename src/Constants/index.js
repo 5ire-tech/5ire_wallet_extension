@@ -312,12 +312,14 @@ export const STATE_CHANGE_ACTIONS = {
     APP_CONNECTION_UPDATE: "appConnectionUpdate",
     UPDATE_CURRENT_SESSION: "updateCurrentSession",
     ADD_NEW_CONNECTION_TASK: "addNewConnectionTask",
+    CLEAR_ALL_EXTERNAL_REQUESTS:"clearAllExternalRequests",
 
     //transaction queue state
     REMOVE_FAILED_TX: "removeFailedTx",
     ADD_NEW_TRANSACTION: "addNewTransaction",
     UPDATE_HISTORY_TRACK: "updateHistoryTrack",
     PROCESS_QUEUE_TRANSACTION: "processQueuedTransaction",
+    CLEAR_TRANSACTION_QUEUE: "clearTransactionQueue"
 }
 
 export const ERROR_EVENTS_LABELS = {

@@ -67,7 +67,7 @@ export default class WindowManager {
         left = Math.max(screenX + (outerWidth - WINDOW_WIDTH), 0);
       }
 
-      const extensionURL = Browser.runtime.getURL("index.html") + `?route=${route}`;
+      const extensionURL = Browser.runtime.getURL("index.html");
 
       // create new approval window
       const popupWindow = await this.openWindow({

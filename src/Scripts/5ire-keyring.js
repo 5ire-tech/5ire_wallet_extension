@@ -612,12 +612,6 @@ export class HybridKeyring extends EventEmitter {
      * @returns 
      */
     getAccounts(message) {
-        // console.log("HYBRIDKEYRING accounts::: ",HybridKeyring.accounts);
-        // console.log("HYBRIDKEYRING ethKeyring::: ",HybridKeyring.ethKeyring);
-        // console.log("HYBRIDKEYRING polkaKeyring::: ",HybridKeyring.polkaKeyring);
-        // console.log("HYBRIDKEYRING keyrings::: ",HybridKeyring.keyrings);
-        // console.log("HYBRIDKEYRING vault::: ",HybridKeyring.vault);
-        // console.log("HYBRIDKEYRING password::: ",HybridKeyring.password);
         return new EventPayload(null, message.event, HybridKeyring.accounts);
     }
 

@@ -1,18 +1,5 @@
 import { NETWORK } from "../Constants"
 
-
-const initialPendingBalance = (() => {
-    const pBalance = {};
-    Object.values(NETWORK).forEach((item) => {
-        pBalance[item.toLowerCase()] = {
-            evm: 0,
-            native: 0
-        }
-    });
-    return pBalance;
-})();
-
-
 export const userState = {
 
     vault: null,
@@ -27,10 +14,6 @@ export const userState = {
 
     allAccountsBalance: {},
 
-    popupChecks: {
-        txApprove: false
-    },
-
     currentAccount: {
         evmAddress: "",
         accountName: "",
@@ -38,8 +21,7 @@ export const userState = {
         nativeAddress: "",
     },
 
-    pendingTransactionBalance: initialPendingBalance,
-
+    pendingTransactionBalance: {}
 }
 
 export const externalControls = {
