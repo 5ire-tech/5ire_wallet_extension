@@ -360,7 +360,7 @@ export class ExtensionStorageHandler {
         return await this._updateStorage(newState);
     }
 
-
+    //Todo 
     recoverOldStateAccounts = async (message, state) => {
 
         const { vault, currentAccount } = message;

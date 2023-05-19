@@ -73,7 +73,7 @@ function BalanceDetails({ mt0 }) {
       MESSAGE_EVENT_LABELS.GET_ACCOUNTS,
       {}
     );
-  }, [currentNetwork, currentAccount.evmAddress]);
+  }, [currentNetwork, currentAccount?.evmAddress]);
 
   //network change handler
   const handleNetworkChange = async (network) => {
@@ -81,8 +81,6 @@ function BalanceDetails({ mt0 }) {
 
     updateState(LABELS.CURRENT_NETWORK, network);
 
-
-    // todo on networkchange dont change balance to 0
     updateState(LABELS.BALANCE, allAccountsBalance[currentAccount?.evmAddress][network?.toLowerCase()]);
 
     //change the network
@@ -104,18 +102,24 @@ function BalanceDetails({ mt0 }) {
     );
   };
 
+  //todo
   //account change handler
   const onSelectAcc = (name) => {
     //update the current account
     const acc = allAccounts.find((acc) => acc.accountName === name);
     updateState(LABELS.CURRENT_ACCOUNT, acc);
 
-    //fetch balance of changed account
-    sendRuntimeMessage(
-      MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
-      MESSAGE_EVENT_LABELS.BALANCE,
-      {}
-    );
+
+    if (allAccountsBalance.hasOwnProperty(acc?.evmAddress)) {
+      updateState(LABELS.BALANCE, allAccountsBalance[acc?.evmAddress][currentNetwork.toLowerCase()]);
+    } else {
+      //fetch balance of changed account
+      sendRuntimeMessage(
+        MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
+        MESSAGE_EVENT_LABELS.BALANCE,
+        {}
+      );
+    }
 
     //send account details whenever account is changed
     sendEventToTab(
@@ -123,8 +127,8 @@ function BalanceDetails({ mt0 }) {
         TABS_EVENT.ACCOUNT_CHANGE_EVENT,
         {
           result: {
-            evmAddress: acc.evmAddress,
-            nativeAddress: acc.nativeAddress,
+            evmAddress: acc?.evmAddress,
+            nativeAddress: acc?.nativeAddress,
           },
         },
         null,
@@ -136,9 +140,9 @@ function BalanceDetails({ mt0 }) {
 
   const handleCopy = (e) => {
     if (e.target.name === NATIVE)
-      navigator.clipboard.writeText(currentAccount.nativeAddress);
+      navigator.clipboard.writeText(currentAccount?.nativeAddress);
     else if (e.target.name === EVM)
-      navigator.clipboard.writeText(currentAccount.evmAddress);
+      navigator.clipboard.writeText(currentAccount?.evmAddress);
     toast.success(COPIED);
   };
 
@@ -205,8 +209,8 @@ function BalanceDetails({ mt0 }) {
           TABS_EVENT.WALLET_CONNECTED_EVENT,
           {
             result: {
-              evmAddress: currentAccount.evmAddress,
-              nativeAddress: currentAccount.nativeAddress,
+              evmAddress: currentAccount?.evmAddress,
+              nativeAddress: currentAccount?.nativeAddress,
             },
           },
           null,
@@ -651,7 +655,7 @@ function BalanceDetails({ mt0 }) {
                       viewBox={`0 0 256 256`}
                       value={
                         currentAccount?.evmAddress
-                          ? currentAccount.evmAddress
+                          ? currentAccount?.evmAddress
                           : ""
                       }
                     />

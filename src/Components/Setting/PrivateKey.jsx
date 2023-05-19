@@ -31,7 +31,7 @@ function PrivateKey() {
     sendRuntimeMessage(
       MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
       MESSAGE_EVENT_LABELS.EXPORT_PRIVATE_KEY,
-      { address: currentAccount.evmAddress }
+      { address: currentAccount?.evmAddress }
     );
     // } else {
     sendRuntimeMessage(

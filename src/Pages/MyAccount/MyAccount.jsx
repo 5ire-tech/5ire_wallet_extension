@@ -60,7 +60,6 @@ function MyAccount() {
 
       if (currentAccount.evmAddress === addressToRemove) {
         const index = allAccounts.findIndex(acc => acc.evmAddress === addressToRemove);
-        console.log("allAccounts[index - 1] : ", allAccounts[index - 1]);
         updateCurrentAccount(allAccounts[index - 1])
       }
 
@@ -104,11 +103,9 @@ function MyAccount() {
 
   //update the current account
   const updateCurrentAccount = (acc) => {
-    // console.log("Acc : ", acc);
 
     updateState(LABELS.CURRENT_ACCOUNT, acc);
 
-    //TODO
     if (allAccountsBalance.hasOwnProperty(acc?.evmAddress)) {
       updateState(LABELS.BALANCE, allAccountsBalance[acc?.evmAddress][currentNetwork.toLowerCase()]);
     } else {

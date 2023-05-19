@@ -38,12 +38,6 @@ export const userState = {
         nativeAddress: "",
     },
 
-    balance: {
-        evmBalance: "",
-        nativeBalance: "",
-        totalBalance: ""
-    },
-
     pendingTransactionBalance: initialPendingBalance,
 
 }

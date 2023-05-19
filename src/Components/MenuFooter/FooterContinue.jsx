@@ -59,7 +59,7 @@ export const FooterStepTwo = () => {
   const { setNewAccount, newAccount, setDetailsPage } = useContext(AuthContext);
 
   const handleCancle = async () => {
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT, { address: newAccount.evmAddress });
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT, { address: newAccount?.evmAddress });
     setDetailsPage(false);
   };
 
@@ -111,10 +111,10 @@ export const ApproveLogin = () => {
       //check if current connection request is for evm
       const isEthReq = isEqual(activeSession.method, EVM_JSON_RPC_METHODS.ETH_REQUEST_ACCOUNT) || isEqual(activeSession.method, EVM_JSON_RPC_METHODS.ETH_ACCOUNTS)
 
-      const res = isEthReq ? { method: activeSession.method, result: [account.evmAddress] } : {
+      const res = isEthReq ? { method: activeSession.method, result: [account?.evmAddress] } : {
         result: {
-          evmAddress: account.evmAddress,
-          nativeAddress: account.nativeAddress,
+          evmAddress: account?.evmAddress,
+          nativeAddress: account?.nativeAddress,
         }
       };
 

@@ -186,7 +186,7 @@ export class HybridKeyring extends EventEmitter {
      */
 
     async recoverOldStateAccounts(message) {
-
+        
         let { password, oldAccDetails } = message.data;
         let keyResponse = {};
 
@@ -211,7 +211,7 @@ export class HybridKeyring extends EventEmitter {
             vault: HybridKeyring.vault,
             currentAccount: keyResponse.payload.newAccount
         }
-        return new EventPayload(message.event, message.event, payload, [], false);
+        return new EventPayload(message.event, message.event, payload, false);
 
     }
     /**
