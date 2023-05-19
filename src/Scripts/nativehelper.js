@@ -35,7 +35,7 @@ export default class ValidatorNominatorHandler {
 
       //check for sufficent balance to perfrom operation
       const network = message?.transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
-      if (Number(methodDetails.amount) >= (Number(balance?.nativeBalance) - state.pendingTransactionBalance[message.options?.account.evmAddress][network].native))
+      if (Number(methodDetails.amount) >= (Number(balance?.nativeBalance) - (state.pendingTransactionBalance[message.options?.account.evmAddress][network].native - Number(methodDetails.amount))))
         new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, { error: true, data: ERROR_MESSAGES.INSUFFICENT_BALANCE })).throw();
 
       //check if the amount is valid
