@@ -27,9 +27,9 @@ function ApproveTx() {
       MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
       MESSAGE_EVENT_LABELS.EVM_FEE,
       {
-        value: activeSession.message?.value,
-        toAddress: activeSession.message?.to,
-        data: activeSession.message?.data,
+        value: activeSession?.message?.value,
+        toAddress: activeSession?.message?.to,
+        data: activeSession?.message?.data,
         options: { account: state.currentAccount },
       }
     );
@@ -99,16 +99,16 @@ function ApproveTx() {
                     <p>
                       <span>
                         {" "}
-                        {activeSession.message?.to
-                          ? activeSession.message?.to : LABELS.CONTRACT }
+                        {activeSession?.message?.to
+                          ? activeSession?.message?.to : LABELS.CONTRACT }
                       </span>
-                      { activeSession.message?.to && <img
+                      { activeSession?.message?.to && <img
                         src={CopyIcon}
                         alt="copyIcon"
                         draggable={false}
                         style={{ cursor: "pointer" }}
                         onClick={() => {
-                          navigator.clipboard.writeText(activeSession.message?.to)
+                          navigator.clipboard.writeText(activeSession?.message?.to)
                           toast.success(COPIED);
                         }} />}
                     </p>
@@ -117,7 +117,7 @@ function ApproveTx() {
                 <div className={style.rejectedSec__flexList}>
                   <div className={style.rejectedSec__listReject__innerList}>
                     <h4>Value: </h4>
-                    <p><span>{activeSession.message?.value || "0"}</span></p>
+                    <p><span>{activeSession?.message?.value || "0"}</span></p>
                   </div>
 
                   <div className={style.rejectedSec__listReject__innerList}>
@@ -129,7 +129,7 @@ function ApproveTx() {
             ) : (
               <div className={style.rejectedSec__listReject__innerDataList}>
                 <h4 style={{ wordBreak: "break-all" }}>
-                  {activeSession.message?.data || ""}
+                  {activeSession?.message?.data || ""}
                 </h4>
               </div>
             )}
