@@ -27,18 +27,20 @@ export default class ValidatorNominatorHandler {
   handleNativeAppsTask = async (state, message, isFee) => {
     const payload = { data: {}, options: { ...message?.options } };
     const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+    const balance = state.allAccountsBalance[state.currentAccount?.evmAddress][state.currentNetwork.toLowerCase()];
+
 
     if (hasProperty(ValidatorNominatorHandler.instance, activeSession.method)) {
       const methodDetails = this.getFormattedMethod(activeSession.method, activeSession.message);
 
       //check for sufficent balance to perfrom operation
       const network = message?.transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
-      if (Number(methodDetails.amount) >= (Number(state.balance.native) - state.pendingTransactionBalance[network].native))
-      new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, {error: true, data: ERROR_MESSAGES.INSUFFICENT_BALANCE})).throw();
+      if (Number(methodDetails.amount) >= (Number(balance?.nativeBalance) - state.pendingTransactionBalance[network].native))
+        new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, { error: true, data: ERROR_MESSAGES.INSUFFICENT_BALANCE })).throw();
 
       //check if the amount is valid
       if (Number(methodDetails.amount) < 0 || isNaN(Number(methodDetails.amount)))
-      new Error(new ErrorPayload(ERRCODES.INVALID_INPUT, {error: true, data: ERROR_MESSAGES.INVALID_AMOUNT})).throw();
+        new Error(new ErrorPayload(ERRCODES.INVALID_INPUT, { error: true, data: ERROR_MESSAGES.INVALID_AMOUNT })).throw();
 
 
       const res = await ValidatorNominatorHandler.instance[activeSession.method](state, activeSession.message, isFee);

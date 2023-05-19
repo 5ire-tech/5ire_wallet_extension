@@ -9,7 +9,7 @@ import { shortLongAddress } from "../../Utility/utility";
 import { AuthContext } from "../../Store";
 import { sendMessageOverStream } from "../../Utility/message_helper";
 // import { toast } from "react-toastify";
-import {toast} from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../Routes";
 
@@ -25,13 +25,13 @@ function ValidatorNominatorTxns() {
         updateLoading,
         setValdatorNominatorFee
     } = useContext(AuthContext);
-    const {pendingTransactionBalance, balance, currentAccount, currentNetwork} = state;
+    const { pendingTransactionBalance, balance, currentAccount, currentNetwork } = state;
     const { Content } = Layout;
 
 
     //check if user has sufficent balance to make trnsaction
     useEffect(() => {
-        if (valdatorNominatorFee?.fee && (Number(activeSession.message?.value) + Number(valdatorNominatorFee?.fee)) >= (Number(balance.evmBalance) - pendingTransactionBalance[currentNetwork.toLowerCase()].native)) {
+        if (valdatorNominatorFee?.fee && (Number(activeSession.message?.value) + Number(valdatorNominatorFee?.fee)) >= (Number(balance?.evmBalance) - pendingTransactionBalance[currentNetwork.toLowerCase()].native)) {
             toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
             setDisableApproval(true);
             // setValdatorNominatorFee(null);
@@ -50,10 +50,12 @@ function ValidatorNominatorTxns() {
 
     //process the transaction
     function handleClick(isApproved) {
+        const balance = state.allAccountsBalance[state.currentAccount?.evmAddress][state.currentNetwork.toLowerCase()];
+
 
         if (VALIDATION_METHODS_VD_NM.includes(activeSession?.method)) {
             const totalAmount = +valdatorNominatorFee?.fee + +activeSession.message?.amount;
-            if (+state.balance.nativeBalance < totalAmount) {
+            if (+balance?.nativeBalance < totalAmount) {
                 return toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE_VD_NM)
             }
         }

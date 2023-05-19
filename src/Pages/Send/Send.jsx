@@ -40,7 +40,8 @@ function Send() {
   const [data, setData] = useState({ to: "", amount: "" });
   const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
 
-  const { balance, currentAccount, pendingTransactionBalance, currentNetwork } = state;
+  const { currentAccount, pendingTransactionBalance, currentNetwork, allAccountsBalance } = state;
+  const [balance, setBalance] = useState(allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]);
 
   // Reset the amount, to and error evm and native address changed
   useEffect(() => {
@@ -48,6 +49,16 @@ function Send() {
     setErr({ to: "", amount: "" });
     setData({ to: "", amount: "" });
   }, [currentAccount?.evmAddress, currentAccount?.nativeAddress, currentNetwork]);
+
+
+  useEffect(() => {
+    setBalance(allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]);
+  }, [
+    allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance,
+    allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.nativeBalance,
+    currentAccount?.evmAddress, currentNetwork
+  ]);
+
 
   useEffect(() => {
     if (!data.to && !data.amount && !estimatedGas) {
@@ -57,8 +68,8 @@ function Send() {
 
   useEffect(() => {
     if (
-      (activeTab === EVM && Number(balance.evmBalance) < 1) ||
-      (activeTab === NATIVE && Number(balance.nativeBalance) < 1) ||
+      (activeTab === EVM && Number(balance?.evmBalance) < 1) ||
+      (activeTab === NATIVE && Number(balance?.nativeBalance) < 1) ||
       !data.to ||
       err.to
     ) {
@@ -67,7 +78,7 @@ function Send() {
       setMaxDisabled(false);
     }
 
-  }, [balance.evmBalance, balance.nativeBalance, activeTab, data?.to, err.to]);
+  }, [balance?.evmBalance, balance?.nativeBalance, activeTab, data?.to, err.to]);
 
 
   //Get fee if to and amount is present
@@ -97,17 +108,13 @@ function Send() {
 
   //Check for Insufficent balance
   useEffect(() => {
-    // console.log("estimatedGas : ", estimatedGas);
-    // console.log("amount : ", data.amount);
-    // console.log("to : ", data.to);
-
     if (!estimatedGas) {
       setDisable(true);
     } else {
       if (activeTab === EVM) {
         if (estimatedGas && !data.amount && data.to) {
 
-          const amount = Number(balance.evmBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0) + pendingTransactionBalance[currentNetwork.toLowerCase()].evm);
+          const amount = Number(balance?.evmBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0) + pendingTransactionBalance[currentNetwork.toLowerCase()].evm);
           !(Number(amount) > 0) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
           setData(p => ({ ...p, amount: amount > 0 ? amount : "" }));
@@ -120,7 +127,7 @@ function Send() {
             Number(data.amount) +
             Number(estimatedGas) +
             (isEd ? EXISTENTIAL_DEPOSITE : 0) >
-            (Number(balance.evmBalance) - pendingTransactionBalance[currentNetwork.toLowerCase()].evm)
+            (Number(balance?.evmBalance) - pendingTransactionBalance[currentNetwork.toLowerCase()].evm)
           ) {
             // setDisable(true);
 
@@ -137,7 +144,7 @@ function Send() {
       } else if (activeTab === NATIVE) {
         if (estimatedGas && !data.amount && data.to) {
 
-          const amount = Number(balance.nativeBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0) + pendingTransactionBalance[currentNetwork.toLowerCase()].native);
+          const amount = Number(balance?.nativeBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0) + pendingTransactionBalance[currentNetwork.toLowerCase()].native);
 
           !(Number(amount) > 0) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
@@ -151,7 +158,7 @@ function Send() {
           Number(data.amount) +
           Number(estimatedGas) +
           (isEd ? EXISTENTIAL_DEPOSITE : 0) >
-          (Number(balance.nativeBalance) - pendingTransactionBalance[currentNetwork.toLowerCase()].native)
+          (Number(balance?.nativeBalance) - pendingTransactionBalance[currentNetwork.toLowerCase()].native)
         ) {
 
           updateEstimatedGas(null);
@@ -166,7 +173,7 @@ function Send() {
         }
       }
     }
-  }, [estimatedGas, activeTab, balance?.evmBalance, balance.nativeBalance, data.amount, data.to, isEd]);
+  }, [estimatedGas, activeTab, balance?.evmBalance, balance?.nativeBalance, data.amount, data.to, isEd]);
 
 
   const blockInvalidChar = (e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
@@ -189,11 +196,11 @@ function Send() {
     else if (Number(data.amount) <= 0)
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.AMOUNT_CANT_BE_0 }));
     else if (activeTab === EVM) {
-      if (Number(data.amount) >= (Number(balance.evmBalance) - pendingTransactionBalance[currentNetwork.toLowerCase()].evm))
+      if (Number(data.amount) >= (Number(balance?.evmBalance) - pendingTransactionBalance[currentNetwork.toLowerCase()].evm))
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
       else setErr((p) => ({ ...p, amount: "" }));
     } else if (activeTab === NATIVE) {
-      if (Number(data.amount) >= (Number(balance.nativeBalance) - pendingTransactionBalance[currentNetwork.toLowerCase()].native))
+      if (Number(data.amount) >= (Number(balance?.nativeBalance) - pendingTransactionBalance[currentNetwork.toLowerCase()].native))
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
       else setErr((p) => ({ ...p, amount: "" }));
     }
@@ -239,7 +246,7 @@ function Send() {
 
   //for getting the fee details
   const getFee = async (loader = true) => {
-    if (activeTab === NATIVE && Number(balance.nativeBalance) > 0) {
+    if (activeTab === NATIVE && Number(balance?.nativeBalance) > 0) {
       loader && updateLoading(true);
 
       //calculate the native fee
@@ -247,12 +254,12 @@ function Send() {
         MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
         MESSAGE_EVENT_LABELS.NATIVE_FEE,
         {
-          value: data?.amount ? data.amount : balance.nativeBalance,
+          value: data?.amount ? data.amount : balance?.nativeBalance,
           toAddress: data.to,
           options: { account: state.currentAccount },
         }
       );
-    } else if (activeTab === EVM && Number(balance.evmBalance) > 0) {
+    } else if (activeTab === EVM && Number(balance?.evmBalance) > 0) {
       loader && updateLoading(true);
 
       //calculate the evm fee
@@ -260,7 +267,7 @@ function Send() {
         MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
         MESSAGE_EVENT_LABELS.EVM_FEE,
         {
-          value: data?.amount ? data.amount : balance.evmBalance,
+          value: data?.amount ? data.amount : balance?.evmBalance,
           toAddress: data.to,
           options: { account: state.currentAccount },
         }

@@ -577,64 +577,64 @@ class TransactionQueue {
         return;
       }
 
-        const { currentTransaction } = transactionQueue;
-        const transactionHistoryTrack = { ...currentTransaction.transactionHistoryTrack }
+      const { currentTransaction } = transactionQueue;
+      const transactionHistoryTrack = { ...currentTransaction.transactionHistoryTrack }
 
-        //check if transaction status is pending then only check the status
-        if (currentTransaction && isEqual(currentTransaction.transactionHistoryTrack.status, STATUS.PENDING)) {
-          const { transactionHistoryTrack: { txHash, isEvm, chain } } = currentTransaction;
-          const transactionStatus = await this.services.getTransactionStatus(txHash, isEvm, chain);
+      //check if transaction status is pending then only check the status
+      if (currentTransaction && isEqual(currentTransaction.transactionHistoryTrack.status, STATUS.PENDING)) {
+        const { transactionHistoryTrack: { txHash, isEvm, chain } } = currentTransaction;
+        const transactionStatus = await this.services.getTransactionStatus(txHash, isEvm, chain);
 
-          //if transaction status is found ether Failed or Success
-          if (transactionStatus?.status) {
+        //if transaction status is found ether Failed or Success
+        if (transactionStatus?.status) {
 
-            //update the transaction after getting the confirmation
-            transactionHistoryTrack.status = transactionStatus.status;
+          //update the transaction after getting the confirmation
+          transactionHistoryTrack.status = transactionStatus.status;
 
-            //check the transaction type and save the to recipent according to type
-            if (isEqual(transactionHistoryTrack?.type, TX_TYPE.NATIVE_APP))
-              transactionHistoryTrack.to = transactionStatus?.sectionmethod
-            else
-              transactionHistoryTrack.to = !!transactionHistoryTrack.intermidateHash ? transactionHistoryTrack.to : transactionHistoryTrack.isEvm ? transactionStatus.to || transactionStatus.contractAddress : transactionHistoryTrack.to;
+          //check the transaction type and save the to recipent according to type
+          if (isEqual(transactionHistoryTrack?.type, TX_TYPE.NATIVE_APP))
+            transactionHistoryTrack.to = transactionStatus?.sectionmethod
+          else
+            transactionHistoryTrack.to = !!transactionHistoryTrack.intermidateHash ? transactionHistoryTrack.to : transactionHistoryTrack.isEvm ? transactionStatus.to || transactionStatus.contractAddress : transactionHistoryTrack.to;
 
-            //set the used gas
-            transactionHistoryTrack.gasUsed = transactionHistoryTrack.isEvm ? (Number(transactionStatus?.gasUsed) / ONE_ETH_IN_GWEI).toString() : transactionStatus?.txFee
+          //set the used gas
+          transactionHistoryTrack.gasUsed = transactionHistoryTrack.isEvm ? (Number(transactionStatus?.gasUsed) / ONE_ETH_IN_GWEI).toString() : transactionStatus?.txFee
 
-            //set the amount when the method is reward
-            if (isEqual(transactionStatus?.sectionmethod, LABELS.STACKING_REWARD)) {
-              transactionHistoryTrack.amount = formatNumUptoSpecificDecimal(Number(Number(transactionStatus?.value).noExponents()) / 10 ** 18, 6);
-            }
-
-            //dequeue the new transaction and set as active for processing
-            await this.processQueuedTransaction(network);
-            //update the transaction status and other details after confirmation
-            await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, transactionHistoryTrack, currentTransaction?.options);
-
-            //update the balance after transaction confirmation
-            ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.BALANCE_FETCH);
-
-            //show notification of transaction status
-            this.services.showNotification(txNotificationStringTemplate(transactionStatus.status, txHash));
-
-            //update the pending transaction balance
-            await this.services.updatePendingTransactionBalance(network);
-
-            //check if there any pending transaction into queue
-            if (!isEqual(hasPendingTx, 0)) {
-              await this.parseTransactionResponse(network);
-              TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus.bind(null, network)))
-            } else {
-              TransactionQueue.networkTransactionHandler = TransactionQueue.networkTransactionHandler.filter(item => item !== network);
-              //reset the timeout id as null so whenever new transaction made the timeout start again
-              TransactionQueue.setIntervalId(null);
-            }
+          //set the amount when the method is reward
+          if (isEqual(transactionStatus?.sectionmethod, LABELS.STACKING_REWARD)) {
+            transactionHistoryTrack.amount = formatNumUptoSpecificDecimal(Number(Number(transactionStatus?.value).noExponents()) / 10 ** 18, 6);
           }
-          //if transaction is still in pending state
-          else {
+
+          //dequeue the new transaction and set as active for processing
+          await this.processQueuedTransaction(network);
+          //update the transaction status and other details after confirmation
+          await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, transactionHistoryTrack, currentTransaction?.options);
+
+          //update the balance after transaction confirmation
+          ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.BALANCE_FETCH);
+
+          //show notification of transaction status
+          this.services.showNotification(txNotificationStringTemplate(transactionStatus.status, txHash));
+
+          //update the pending transaction balance
+          await this.services.updatePendingTransactionBalance(network);
+
+          //check if there any pending transaction into queue
+          if (!isEqual(hasPendingTx, 0)) {
+            await this.parseTransactionResponse(network);
             TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus.bind(null, network)))
+          } else {
+            TransactionQueue.networkTransactionHandler = TransactionQueue.networkTransactionHandler.filter(item => item !== network);
+            //reset the timeout id as null so whenever new transaction made the timeout start again
+            TransactionQueue.setIntervalId(null);
           }
         }
-      } catch (err) {
+        //if transaction is still in pending state
+        else {
+          TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus.bind(null, network)))
+        }
+      }
+    } catch (err) {
       log("error while transaction processing: ", err)
       ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.ERROR_WHILE_TRANSACTION_STATUS_CHECK, ERROR_MESSAGES.ERROR_WHILE_TRANSACTION_STATUS_CHECK));
     }
@@ -1043,6 +1043,7 @@ export class TransactionsRPC {
       const { options: { account } } = data;
       const network = transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase()
       const { evmApi } = NetworkHandler.api[network];
+      const balance = state.allAccountsBalance[account?.evmAddress][network];
 
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
@@ -1050,7 +1051,7 @@ export class TransactionsRPC {
 
       const tempAmount = data?.options?.isBig ? (new BigNumber(data.value).dividedBy(DECIMALS)).toString() : data.value;
 
-      if (Number(tempAmount) > (Number(state.balance.evmBalance) - state.pendingTransactionBalance[network].evm)) new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
+      if (Number(tempAmount) > (Number(balance?.evmBalance) - state.pendingTransactionBalance[network].evm)) new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
 
 
       else {
@@ -1135,11 +1136,13 @@ export class TransactionsRPC {
       const { options: { account } } = data;
       const network = transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
       const { evmApi, nativeApi } = NetworkHandler.api[network];
+      const balance = state.allAccountsBalance[account?.evmAddress][network];
+
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
       // transactionHistory.status = STATUS.PENDING;
 
-      if (Number(data.value) >= (Number(state.balance.evmBalance) - state.pendingTransactionBalance[network].evm))
+      if (Number(data.value) >= (Number(balance?.evmBalance) - state.pendingTransactionBalance[network].evm))
         new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
 
       else {
@@ -1208,10 +1211,12 @@ export class TransactionsRPC {
       const { options: { account } } = data;
       const network = transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
       const { nativeApi } = NetworkHandler.api[network];
+      const balance = state.allAccountsBalance[account?.evmAddress][network];
+
 
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
-      if (Number(data.value) >= (Number(state.balance.nativeBalance) - state.pendingTransactionBalance[network].native))
+      if (Number(data.value) >= (Number(balance?.nativeBalance) - state.pendingTransactionBalance[network].native))
         new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
       else {
 
@@ -1302,10 +1307,11 @@ export class TransactionsRPC {
       const { options: { account } } = data;
       const network = transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
       const { nativeApi } = NetworkHandler.api[network];
+      const balance = state.allAccountsBalance[account.evmAddress][network];
 
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
-      if (Number(data.value) >= (Number(state.balance.nativeBalance) - state.pendingTransactionBalance[network].native))
+      if (Number(data?.value) >= (Number(balance?.nativeBalance) - state.pendingTransactionBalance[network].native))
         new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
       else {
         // transactionHistory.status = STATUS.PENDING;
@@ -1438,8 +1444,9 @@ export class GeneralWalletRPC {
   getBalance = async (message, state) => {
     try {
       // console.log("network and api: ", NetworkHandler.api, state.currentNetwork);
+      const balance = state.allAccountsBalance[state.currentAccount?.evmAddress][state.currentNetwork.toLowerCase()];
 
-      if (!NetworkHandler.api[state.currentNetwork.toLowerCase()]?.evmApi) return new EventPayload(STATE_CHANGE_ACTIONS.BALANCE, null, { data: state.balance });
+      if (!NetworkHandler.api[state.currentNetwork.toLowerCase()]?.evmApi) return new EventPayload(STATE_CHANGE_ACTIONS.BALANCE, null, { data: balance });
 
       let nbalance = 0;
       const { evmApi, nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];

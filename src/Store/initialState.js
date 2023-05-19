@@ -1,14 +1,14 @@
 import { NETWORK } from "../Constants"
 
 
-const initialPendingBalance = (() => { 
-    const pBalance = {}; 
-    Object.values(NETWORK).forEach((item) => 
-    { 
+const initialPendingBalance = (() => {
+    const pBalance = {};
+    Object.values(NETWORK).forEach((item) => {
         pBalance[item.toLowerCase()] = {
-        evm: 0,
-        native: 0 
-    }});
+            evm: 0,
+            native: 0
+        }
+    });
     return pBalance;
 })();
 
@@ -23,7 +23,8 @@ export const userState = {
 
     eth_accounts: '',
 
-    currentNetwork: "QA",
+    currentNetwork: "Testnet",
+
     allAccountsBalance: {},
 
     currentAccount: {
@@ -61,19 +62,19 @@ export const newAccountInitialState = {
 //initial state for external native transaction
 export const initialExternalNativeTransaction = {
     method: "",
-    fee: "", 
+    fee: "",
     args: "",
     txHash: ""
 }
 
 // initial state for transaction queue
-export const transactionQueue = (() => { 
-const queues = {}; 
-Object.values(NETWORK).forEach((item) => 
-{ 
-    queues[item.toLowerCase()] = {
-    txQueue: [],
-    currentTransaction: null 
-}});
-return queues;
+export const transactionQueue = (() => {
+    const queues = {};
+    Object.values(NETWORK).forEach((item) => {
+        queues[item.toLowerCase()] = {
+            txQueue: [],
+            currentTransaction: null
+        }
+    });
+    return queues;
 })();
