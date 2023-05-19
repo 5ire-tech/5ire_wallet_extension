@@ -90,18 +90,18 @@ export class ExtensionStorageHandler {
     updateBalance = async (data, state) => {
         if (isEqual(data.totalBalance, state.allAccountsBalance[state?.currentAccount?.evmAddress][state.currentNetwork.toLowerCase()]?.totalBalance)) return false;
 
+        const newState = { ...state };
 
-        state.allAccountsBalance[state?.currentAccount?.evmAddress][state.currentNetwork.toLowerCase()] = {
+        newState.allAccountsBalance[state?.currentAccount?.evmAddress][state.currentNetwork.toLowerCase()] = {
             ...data
         }
 
-        const newState = { ...state };
         return await this._updateStorage(newState);
     }
 
     //update the pending transaction balance
     updatePendingTransactionBalance = async (data, state, options) => {
-        const newState = { ...state, pendingTransactionBalance: { ...state.pendingTransactionBalance, [options.network]: data } };
+        const newState = { ...state, pendingTransactionBalance: { ...state.pendingTransactionBalance, [options.address]: {...state.pendingTransactionBalance[options.address], [options.network]: data} } };
         const status = await this._updateStorage(newState);
         return status;
     }
@@ -193,6 +193,11 @@ export class ExtensionStorageHandler {
         return await this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
     }
 
+    //clear the external requests data
+    clearAllExternalRequests = async (data, state) => {
+        const newState = externalControls;
+        return await this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS)
+    }
 
     /************************************ For Transaction Queue *********************/
     //add a new transaction task
@@ -217,7 +222,13 @@ export class ExtensionStorageHandler {
 
     //remove the current failed transaction
     removeFailedTx = async (data, state, options) => {
-        const newState = { ...state, [options.network]: { ...state[options.network], currentTransaction: null } };
+        const newState = { ...state, [options.network]: { ...state[options.network], currentTransaction: {...state[options.network].currentTransaction, transactionHistoryTrack: null} } };
+        return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
+    }
+
+    //clear transaction queue
+    clearTransactionQueue = async (data, state) => {
+        const newState = transactionQueue;
         return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
     }
 
@@ -243,9 +254,10 @@ export class ExtensionStorageHandler {
             type: newAccount.type,
         }
         const allAccountsBalance = this._setAccountBalance(state, newAccount);
+        const pendingTransactionBalance = this._setAllAccountPendingBalance(state, newAccount);
         const txHistory = this._txProperty(state, newAccount.evmAddress);
         // }
-        const newState = { ...state, vault, isLogin: true, currentAccount, txHistory, allAccountsBalance };
+        const newState = { ...state, vault, isLogin: true, currentAccount, txHistory, allAccountsBalance, pendingTransactionBalance };
 
 
         // if (state?.oldAccounts) {
@@ -301,7 +313,9 @@ export class ExtensionStorageHandler {
             txHistory = this._txProperty({ txHistory: {} }, newAccount.evmAddress);
 
         const allAccountsBalance = this._setAccountBalance(state, newAccount);
-        const newState = { ...state, vault, txHistory, currentAccount, allAccountsBalance, isLogin: true };
+        const pendingTransactionBalance = this._setAllAccountPendingBalance(state, newAccount);
+
+        const newState = { ...state, vault, txHistory, currentAccount, allAccountsBalance, pendingTransactionBalance, isLogin: true };
         this._updateSession(LABELS.ISLOGIN, true);
         return await this._updateStorage(newState);
     };
@@ -311,7 +325,8 @@ export class ExtensionStorageHandler {
         const { newAccount, vault } = message;
         const txHistory = this._txProperty(state, newAccount.evmAddress);
         const allAccountsBalance = this._setAccountBalance(state, newAccount);
-        const newState = { ...state, vault, txHistory, currentAccount: newAccount, allAccountsBalance }
+        const pendingTransactionBalance = this._setAllAccountPendingBalance(state, newAccount);
+        const newState = { ...state, vault, txHistory, currentAccount: newAccount, allAccountsBalance, pendingTransactionBalance }
         return await this._updateStorage(newState);
     };
 
@@ -328,7 +343,8 @@ export class ExtensionStorageHandler {
         }
         const txHistory = this._txProperty(state, newAccount.evmAddress);
         const allAccountsBalance = this._setAccountBalance(state, newAccount);
-        const newState = { ...state, vault, currentAccount, txHistory, allAccountsBalance };
+        const pendingTransactionBalance = this._setAllAccountPendingBalance(state, newAccount);
+        const newState = { ...state, vault, currentAccount, txHistory, allAccountsBalance, pendingTransactionBalance };
         return await this._updateStorage(newState);
     };
 
@@ -349,6 +365,11 @@ export class ExtensionStorageHandler {
         }
         if (newState?.allAccountsBalance.hasOwnProperty(removedAccountAddress)) {
             delete newState.allAccountsBalance[removedAccountAddress];
+        }
+        console.log("newState?.pendingTransactionBalance.hasOwnProperty(removedAccountAddress)", newState?.pendingTransactionBalance.hasOwnProperty(removedAccountAddress));
+
+        if (newState?.pendingTransactionBalance.hasOwnProperty(removedAccountAddress)) {
+            delete newState.pendingTransactionBalance[removedAccountAddress];
         }
         if (message?.isInitialAccount) {
             newState.isLogin = false;
@@ -430,7 +451,7 @@ export class ExtensionStorageHandler {
             obj[e.toLowerCase()] = {
                 evmBalance: 0,
                 nativeBalance: 0,
-                // totalBalance: 0
+                totalBalance: 0
             }
         });
 
@@ -439,18 +460,23 @@ export class ExtensionStorageHandler {
             [acc.evmAddress]: { ...obj }
         };
 
-    }
+    };
 
-    // _setAccountBalance = (state, acc) => {
-    //     return {
-    //         ...state.allAccountsBalance,
-    //         [acc.evmAddress]: {
-    //             evmBalance: 0,
-    //             nativeBalance: 0,
-    //             totalBalance: 0
-    //         }
-    //     };
-    // }
+    _setAllAccountPendingBalance = (state, acc) => {
+        const obj = {};
+
+        Object.values(NETWORK).forEach((e) => {
+            obj[e.toLowerCase()] = {
+                evm: 0,
+                native: 0,
+            }
+        });
+
+        return {
+            ...state.pendingTransactionBalance,
+            [acc.evmAddress]: { ...obj }
+        };
+    }
 
 
 

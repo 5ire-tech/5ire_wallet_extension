@@ -25,9 +25,9 @@ export default class ValidatorNominatorHandler {
 
   //pass the request to handler methods
   handleNativeAppsTask = async (state, message, isFee) => {
-    const payload = { data: {}, options: { ...message?.options } };
+    const payload = { data: {}, options: { ...message?.options }};
     const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
-    const balance = state.allAccountsBalance[state.currentAccount?.evmAddress][state.currentNetwork.toLowerCase()];
+    const balance = state.allAccountsBalance[message.options?.account.evmAddress][message.options?.network];
 
 
     if (hasProperty(ValidatorNominatorHandler.instance, activeSession.method)) {
@@ -35,7 +35,7 @@ export default class ValidatorNominatorHandler {
 
       //check for sufficent balance to perfrom operation
       const network = message?.transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
-      if (Number(methodDetails.amount) >= (Number(balance?.nativeBalance) - state.pendingTransactionBalance[network].native))
+      if (Number(methodDetails.amount) >= (Number(balance?.nativeBalance) - state.pendingTransactionBalance[message.options?.account.evmAddress][network].native))
         new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, { error: true, data: ERROR_MESSAGES.INSUFFICENT_BALANCE })).throw();
 
       //check if the amount is valid

@@ -10,7 +10,7 @@ import { txNotificationStringTemplate } from "./utils";
 import { NotificationAndBedgeManager } from "./platform";
 import { ExternalConnection, ExternalWindowControl } from "./controller";
 import { getDataLocal, ExtensionStorageHandler } from "../Storage/loadstore";
-import { INTERNAL_EVENT_LABELS, DECIMALS, MESSAGE_TYPE_LABELS, STATE_CHANGE_ACTIONS, TX_TYPE, STATUS, LABELS, MESSAGE_EVENT_LABELS, AUTO_BALANCE_UPDATE_TIMER, TRANSACTION_STATUS_CHECK_TIMER, ONE_ETH_IN_GWEI, SIGNER_METHODS, TABS_EVENT, VALIDATOR_NOMINATOR_METHOD, STREAM_CHANNELS, LAPSED_TRANSACTION_CHECKER_TIMER, EVM, NATIVE } from "../Constants";
+import { INTERNAL_EVENT_LABELS, DECIMALS, MESSAGE_TYPE_LABELS, STATE_CHANGE_ACTIONS, TX_TYPE, STATUS, LABELS, MESSAGE_EVENT_LABELS, AUTO_BALANCE_UPDATE_TIMER, TRANSACTION_STATUS_CHECK_TIMER, ONE_ETH_IN_GWEI, SIGNER_METHODS, TABS_EVENT, VALIDATOR_NOMINATOR_METHOD, STREAM_CHANNELS, LAPSED_TRANSACTION_CHECKER_TIMER, EVM, NATIVE, NETWORK } from "../Constants";
 import { hasLength, isNullorUndef, hasProperty, log, isEqual, isString } from "../Utility/utility";
 import { HTTP_END_POINTS, API, HTTP_METHODS, EVM_JSON_RPC_METHODS, ERRCODES, ERROR_MESSAGES, ERROR_EVENTS_LABELS } from "../Constants";
 import { EVMRPCPayload, EventPayload, TransactionPayload, TransactionProcessingPayload, TabMessagePayload } from "../Utility/network_calls";
@@ -305,8 +305,28 @@ export class InitBackground {
   /** Fired when the extension is first installed,
   when the extension is updated to a new version,
   and when Chrome is updated to a new version. */
-  bindInstallandUpdateEvents = async () => {
+  bindInstallandUpdateEvents = async () => {   
     Browser.runtime.onInstalled.addListener(async (details) => {
+
+      log("refreshed")
+
+      const services = new Services();
+  
+      //clear the all pending request from local store when extension updated or refreshed
+      await services.updateLocalState(STATE_CHANGE_ACTIONS.CLEAR_ALL_EXTERNAL_REQUESTS, {});
+      
+      //clear the pending transaction balance
+      const transactionBalance = {evm:0, native: 0};
+      for(const account of HybridKeyring.accounts) {
+        for(const network of  Object.values(NETWORK)) {
+          await services.updateLocalState(STATE_CHANGE_ACTIONS.UPDATE_PENDING_TRANSACTION_BALANCE, transactionBalance, { network, address: account.evmAddress});
+          
+        }
+      }
+      
+      //clear the transaction queue when refreshed
+      await services.updateLocalState(STATE_CHANGE_ACTIONS.CLEAR_TRANSACTION_QUEUE, {});
+
       if (isManifestV3) {
         for (const cs of Browser.runtime.getManifest().content_scripts) {
           for (const tab of await Browser.tabs.query({ url: cs.matches })) {
@@ -317,6 +337,20 @@ export class InitBackground {
           }
         }
       }
+
+      // //clear the already injected script
+      // await Browser.scripting.unregisterContentScripts({ ids: ["inpage"] });
+
+      // //inject the script on refresh
+      // await Browser.scripting.registerContentScripts([
+      //   {
+      //     id: "inpage",
+      //     matches: ["http://*/*", "https://*/*"],
+      //     js: ["./static/js/injected.js"],
+      //     runAt: "document_start",
+      //     world: "MAIN",
+      //   },
+      // ]);
     });
   }
 
@@ -425,7 +459,7 @@ class RpcRequestProcessor {
 
       //send the transaction into tx queue
       await this.transactionQueue.addNewTransaction(transactionProcessingPayload);
-
+ 
     } catch (err) {
       ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.INTERNAL, err.message))
     }
@@ -470,7 +504,7 @@ class TransactionQueue {
     await this.services.updateLocalState(STATE_CHANGE_ACTIONS.ADD_NEW_TRANSACTION, transactionProcessingPayload, { localStateKey: LABELS.TRANSACTION_QUEUE, network: transactionProcessingPayload.options?.network.toLowerCase() });
 
     //update the current transaction pending balance state
-    await this.services.updatePendingTransactionBalance(options.network.toLowerCase());
+    await this.services.updatePendingTransactionBalance(options.network.toLowerCase(), options.account.evmAddress, isNaN(Number(data?.value)) ? 0 : Number(data?.value), options?.isEvm, true);
     //emit the event that new transaction is added into queue
     ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.NEW_TRANSACTION_INQUEUE, options.network.toLowerCase());
   }
@@ -559,9 +593,10 @@ class TransactionQueue {
       const hasPendingTx = transactionQueue.txQueue.length;
 
       //if the current transaction is null then it is failed and removed
-      if (!transactionQueue.currentTransaction) {
+      if (!transactionQueue.currentTransaction?.transactionHistoryTrack) {
+        const {options, data} = transactionQueue.currentTransaction;
         //update the current transaction pending balance state
-        await this.services.updatePendingTransactionBalance(network);
+        await this.services.updatePendingTransactionBalance(network, options.address.evmAddress, isNaN(Number(data?.value)) ? 0 : Number(data?.value), options.isEvm);
 
         //check if there any pending transaction into queue
         if (!isEqual(hasPendingTx, 0)) {
@@ -617,7 +652,7 @@ class TransactionQueue {
           this.services.showNotification(txNotificationStringTemplate(transactionStatus.status, txHash));
 
           //update the pending transaction balance
-          await this.services.updatePendingTransactionBalance(network);
+          await this.services.updatePendingTransactionBalance(network, currentTransaction.options.account.evmAddress, isNaN(Number( currentTransaction.data?.value)) ? 0 : Number(currentTransaction.data?.value), currentTransaction.options.isEvm);
 
           //check if there any pending transaction into queue
           if (!isEqual(hasPendingTx, 0)) {
@@ -946,26 +981,22 @@ export class Services {
   }
 
   //update the pending transaction balance
-  updatePendingTransactionBalance = async (network) => {
-    const transactionQueues = await getDataLocal(LABELS.TRANSACTION_QUEUE);
-    const { currentTransaction, txQueue } = transactionQueues[network];
-
+  updatePendingTransactionBalance = async (network, address, value, isEvm, isInc=false) => {
     const transactionBalance = { evm: 0, native: 0 };
-
-    //check if there is current transaction under processing
-    if (currentTransaction) {
-      transactionBalance[currentTransaction?.options?.isEvm ? EVM.toLowerCase() : NATIVE.toLowerCase()] = currentTransaction?.data?.value ? Number(currentTransaction?.data?.value) : 0;
+    const state = await getDataLocal(LABELS.STATE);
+    const accountBalance = state.pendingTransactionBalance[address][network];
+    
+    if(isInc) {
+      if(isEvm) transactionBalance.evm = accountBalance.evm + value;
+      else transactionBalance.native = accountBalance.native + value;
+    } else {
+      if(isEvm) transactionBalance.evm = accountBalance.evm - value;
+      else transactionBalance.native = accountBalance.native - value;
     }
+ 
+    log(`Here is the Balance: evm: ${transactionBalance.evm} native: ${transactionBalance.native} for acc ${address} and network ${network} or chain is evm (true/false): ${isEvm}`);
 
-    //check if transaction queue is not empty
-    if (txQueue.length) {
-      for (const txItem of txQueue)
-        transactionBalance[txItem.options?.isEvm ? EVM.toLowerCase() : NATIVE.toLowerCase()] += Number(txItem.data?.value);
-    }
-    log("here is balance pending from main handler: ", transactionBalance);
-
-    await this.updateLocalState(STATE_CHANGE_ACTIONS.UPDATE_PENDING_TRANSACTION_BALANCE, transactionBalance, { network: network });
-
+    await this.updateLocalState(STATE_CHANGE_ACTIONS.UPDATE_PENDING_TRANSACTION_BALANCE, transactionBalance, { network, address });
   }
 
   /**
@@ -1051,7 +1082,7 @@ export class TransactionsRPC {
 
       const tempAmount = data?.options?.isBig ? (new BigNumber(data.value).dividedBy(DECIMALS)).toString() : data.value;
 
-      if (Number(tempAmount) > (Number(balance?.evmBalance) - state.pendingTransactionBalance[network].evm)) new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
+      if (Number(tempAmount) > (Number(balance?.evmBalance) - state.pendingTransactionBalance[account.evmAddress][network].evm)) new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
 
 
       else {
@@ -1142,7 +1173,7 @@ export class TransactionsRPC {
 
       // transactionHistory.status = STATUS.PENDING;
 
-      if (Number(data.value) >= (Number(balance?.evmBalance) - state.pendingTransactionBalance[network].evm))
+      if (Number(data.value) >= (Number(balance?.evmBalance) - state.pendingTransactionBalance[account.evmAddress][network].evm))
         new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
 
       else {
@@ -1216,7 +1247,7 @@ export class TransactionsRPC {
 
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
-      if (Number(data.value) >= (Number(balance?.nativeBalance) - state.pendingTransactionBalance[network].native))
+      if (Number(data.value) >= (Number(balance?.nativeBalance) - state.pendingTransactionBalance[account.evmAddress][network].native))
         new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
       else {
 
@@ -1311,7 +1342,7 @@ export class TransactionsRPC {
 
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
-      if (Number(data?.value) >= (Number(balance?.nativeBalance) - state.pendingTransactionBalance[network].native))
+      if (Number(data?.value) >= (Number(balance?.nativeBalance) - state.pendingTransactionBalance[account.evmAddress][network].native))
         new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
       else {
         // transactionHistory.status = STATUS.PENDING;

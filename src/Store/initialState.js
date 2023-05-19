@@ -1,16 +1,16 @@
 import { NETWORK } from "../Constants"
 
 
-const initialPendingBalance = (() => {
-    const pBalance = {};
-    Object.values(NETWORK).forEach((item) => {
-        pBalance[item.toLowerCase()] = {
-            evm: 0,
-            native: 0
-        }
-    });
-    return pBalance;
-})();
+// const initialPendingBalance = (() => {
+//     const pBalance = {};
+//     Object.values(NETWORK).forEach((item) => {
+//         pBalance[item.toLowerCase()] = {
+//             evm: 0,
+//             native: 0
+//         }
+//     });
+//     return pBalance;
+// })();
 
 
 export const userState = {
@@ -40,7 +40,7 @@ export const userState = {
         totalBalance: ""
     },
 
-    pendingTransactionBalance: initialPendingBalance
+    pendingTransactionBalance: {}
 }
 
 export const externalControls = {
