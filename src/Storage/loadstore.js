@@ -101,7 +101,7 @@ export class ExtensionStorageHandler {
 
     //update the pending transaction balance
     updatePendingTransactionBalance = async (data, state, options) => {
-        const newState = { ...state, pendingTransactionBalance: { ...state.pendingTransactionBalance, [options.address]: {...state.pendingTransactionBalance[options.address], [options.network]: data} } };
+        const newState = { ...state, pendingTransactionBalance: { ...state.pendingTransactionBalance, [options.address]: { ...state.pendingTransactionBalance[options.address], [options.network]: data } } };
         const status = await this._updateStorage(newState);
         return status;
     }
@@ -222,7 +222,7 @@ export class ExtensionStorageHandler {
 
     //remove the current failed transaction
     removeFailedTx = async (data, state, options) => {
-        const newState = { ...state, [options.network]: { ...state[options.network], currentTransaction: {...state[options.network].currentTransaction, transactionHistoryTrack: null} } };
+        const newState = { ...state, [options.network]: { ...state[options.network], currentTransaction: { ...state[options.network].currentTransaction, transactionHistoryTrack: null } } };
         return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
     }
 
@@ -381,11 +381,13 @@ export class ExtensionStorageHandler {
         return await this._updateStorage(newState);
     }
 
-    //Todo 
+    
     recoverOldStateAccounts = async (message, state) => {
 
         const { vault, currentAccount } = message;
-        const newState = { ...state, vault, isLogin: true };
+        const allAccountsBalance = this._setAccountBalance(state, currentAccount);
+        const pendingTransactionBalance = this._setAllAccountPendingBalance(state, currentAccount);
+        const newState = { ...state, vault, isLogin: true, allAccountsBalance, pendingTransactionBalance };
 
         if (state?.oldAccounts) {
             const txHistory = {};
