@@ -30,7 +30,7 @@ export default function ErrorModal() {
           <h3 className="rongText">Something went wrong!</h3>
           <p className="transId">{backgroundError}</p>
           <div className="footerbuttons" style={{ marginTop: "25px" }}>
-            <ButtonComp text={"Ok"} onClick={handleErrorModal} />
+            <ButtonComp text={"Okay"} onClick={handleErrorModal} />
           </div>
         </div>
       </div>
