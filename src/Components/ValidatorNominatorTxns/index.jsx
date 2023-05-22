@@ -93,16 +93,13 @@ function ValidatorNominatorTxns() {
                 <Content className={style.fixedLayout__content}>
                     <div>
                         <div className={pageStyle.rejectedSec}>
-                            <div className={pageStyle.rejectedSec__detailDataSec}>
-                                <div className={pageStyle.rejectedSec__sendSwapbtn}>
+                            <div className={`${pageStyle.rejectedSec__detailDataSec} ${pageStyle.rejectedSec__transactionDetailMain}`}>
 
-                                    <button
-                                        className={`${pageStyle.rejectedSec__sendSwapbtn__buttons}  ${pageStyle.rejectedSec__sendSwapbtn__buttons__active
-                                            }`}
+                                    <h3
+                                        className={`${pageStyle.rejectedSec__sendSwapbtn__txnDetailHeading} }`}
                                     >
-                                        Txn Detail
-                                    </button>
-                                </div>
+                                        Transaction Details
+                                    </h3>
                                 <div className={`${pageStyle.rejectedSec__listReject} ${pageStyle.rejectedSec__txnDetail}`}>
 
                                     <div className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact1}`}>
@@ -133,18 +130,19 @@ function ValidatorNominatorTxns() {
 
                 </Content>
                 <div className={footerstyle.menuItems__cancleContinue1}>
+                <ButtonComp
+                        onClick={() => handleClick(true)}
+                        text={"Approve"}
+                        maxWidth={"100%"}
+                        isDisable={disableApproval}
+                    />
                     <ButtonComp
                         bordered={true}
                         text={"Reject"}
                         maxWidth={"100%"}
                         onClick={() => handleClick(false)}
                     />
-                    <ButtonComp
-                        onClick={() => handleClick(true)}
-                        text={"Approve"}
-                        maxWidth={"100%"}
-                        isDisable={disableApproval}
-                    />
+                  
                 </div>
             </div>
 

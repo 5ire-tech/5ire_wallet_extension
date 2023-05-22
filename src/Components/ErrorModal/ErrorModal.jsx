@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { AuthContext } from '../../Store'
 import ModalCustom from '../ModalCustom/ModalCustom';
-import FaildSwap from "../../Assets/DarkLogo.svg";
+import FaildSwap from "../../Assets/FaildSwap.svg";
 import ButtonComp from '../ButtonComp/ButtonComp';
 
 export default function ErrorModal() {
@@ -27,9 +27,10 @@ export default function ErrorModal() {
             height={80}
             draggable={false}
           />
-          <h3 className="title">Something went wrong!</h3>
-          <p className="transId">{backgroundError}</p>
-          <div className="footerbuttons">
+          <h3 className="rongText">Something went wrong!</h3>
+          {/* <p className="transId">{backgroundError}</p> */}
+          <p className="transId">In publishing and graphic design, Lorem ipsum is a placeholder text </p>
+          <div className="footerbuttons" style={{marginTop:"25px"}}>
             <ButtonComp text={"Ok"} onClick={handleErrorModal} />
           </div>
         </div>
