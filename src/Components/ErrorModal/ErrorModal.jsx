@@ -28,9 +28,8 @@ export default function ErrorModal() {
             draggable={false}
           />
           <h3 className="rongText">Something went wrong!</h3>
-          {/* <p className="transId">{backgroundError}</p> */}
-          <p className="transId">In publishing and graphic design, Lorem ipsum is a placeholder text </p>
-          <div className="footerbuttons" style={{marginTop:"25px"}}>
+          <p className="transId">{backgroundError}</p>
+          <div className="footerbuttons" style={{ marginTop: "25px" }}>
             <ButtonComp text={"Ok"} onClick={handleErrorModal} />
           </div>
         </div>
