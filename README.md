@@ -1,6 +1,6 @@
-# 5ireChain Wallet Extension
+# 5ire Wallet Extension
 
-5ireChain Wallet in your browser, compatible with both Native and EVM chains.
+5ire Wallet in your browser, compatible with both Native and EVM chains.
 
 ## Prerequisites 
 1. [**Node js  >v14.0**](https://nodejs.org/en/download/)

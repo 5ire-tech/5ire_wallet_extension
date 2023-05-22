@@ -11,7 +11,7 @@ function LoginApprove() {
 
   return (
     <div className={style.cardWhite}>
-      <MenuRestofHeaders logosilver={true} title="5ireChain Wallet" />
+      <MenuRestofHeaders logosilver={true} title="5ire Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Access Request</h1>
@@ -22,7 +22,7 @@ function LoginApprove() {
         </div>
         <div className={style.cardWhite__cardInner__accessConatct}>
           <h1>Allow Access</h1>
-          <span>Allow this site to login with your 5ireChain Wallet?</span>
+          <span>Allow this site to login with your 5ire Wallet?</span>
         </div>
       </div>
     </div>
