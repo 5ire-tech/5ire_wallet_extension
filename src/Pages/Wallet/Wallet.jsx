@@ -1,8 +1,8 @@
 import Send from "../Send/Send";
 import Swap from "../Swap/Swap.jsx";
 import style from "./style.module.scss";
-import SwapLogo from "../../Assets/swaptab.svg";
-import TransferLogo from "../../Assets/transfertab.svg";
+import SwapLogo from "../../Assets/swap_arrow.svg";
+import TransferLogo from "../../Assets/send_arrow.svg";
 import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../../Store";
 
@@ -27,13 +27,11 @@ function Wallet() {
           <div className={style.wallet__sendSwapbtn}>
             <button
               onClick={activeSend}
-              className={`${style.firstButton} ${
-                style.wallet__sendSwapbtn__buttons
-              } 
-              ${
-                activeTab === "send" &&
+              className={`${style.firstButton} ${style.wallet__sendSwapbtn__buttons
+                } 
+              ${activeTab === "send" &&
                 style.wallet__sendSwapbtn__buttons__active
-              }
+                }
             `}
             >
               <img src={TransferLogo} alt="transferLogo" />
@@ -41,23 +39,19 @@ function Wallet() {
             </button>
             <button
               onClick={activeSwap}
-              className={`${style.secondtButton} ${
-                style.wallet__sendSwapbtn__buttons
-              }  ${
-                activeTab === "swap" &&
+              className={`${style.secondtButton} ${style.wallet__sendSwapbtn__buttons
+                }  ${activeTab === "swap" &&
                 style.wallet__sendSwapbtn__buttons__active
-              }`}
+                }`}
             >
               <img src={SwapLogo} alt="swapLogo" /> Swap
             </button>
             <div
-              className={`${
-                activeTab === "send" &&
+              className={`${activeTab === "send" &&
                 style.activeFirst
-              } ${
-                activeTab === "swap" &&
+                } ${activeTab === "swap" &&
                 style.activeSecond
-              } ${style.animations}`}
+                } ${style.animations}`}
             ></div>
           </div>
         </div>
