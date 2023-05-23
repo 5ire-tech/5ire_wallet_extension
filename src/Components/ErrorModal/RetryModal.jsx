@@ -15,14 +15,14 @@ export default function ErrorModal() {
 
     //try to reconnect the network
     sendRuntimeMessage(
-    MESSAGE_TYPE_LABELS.NETWORK_HANDLER,
-    MESSAGE_EVENT_LABELS.NETWORK_CHANGE,
-    {});
+      MESSAGE_TYPE_LABELS.NETWORK_HANDLER,
+      MESSAGE_EVENT_LABELS.NETWORK_CHANGE,
+      {});
   }
 
   return (
     <ModalCustom
-      isModalOpen={true}
+      isModalOpen={!!networkError}
       handleOk={handleRetry}
       handleCancel={handleRetry}
       centered
@@ -35,8 +35,7 @@ export default function ErrorModal() {
             draggable={false}
           />
           <h3 className="rongText">Connection Error</h3>
-          {/* <p className="transId">{networkError}</p> */}
-          <p className="transId">Network Connection Error, please change network or try again later</p>
+          <p className="transId">{networkError || "Network Connection Error, please change network or try again later"}</p>
           <div className="footerbuttons">
             <ButtonComp text={"Retry"} onClick={handleRetry} />
           </div>
