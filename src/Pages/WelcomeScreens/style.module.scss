@@ -2,6 +2,7 @@
 
 .cardWhite {
   background-color: $blue-08132C;
+
   // padding: 36px 24px 26px;
   &.cardWhiteCenterd {
     min-height: 100vh;
@@ -75,11 +76,13 @@
       position: relative;
     }
   }
+
   &__createPassText {
     p {
       padding-top: 0;
     }
   }
+
   &__noteSec {
     padding: 0 40px;
 
@@ -135,12 +138,10 @@
     }
 
     &__copyAll {
-      background: linear-gradient(
-        114.15deg,
-        #0da6c2 20.67%,
-        #0e39c6 89.64%,
-        #0e39c6 89.64%
-      );
+      background: linear-gradient(114.15deg,
+          #0da6c2 20.67%,
+          #0e39c6 89.64%,
+          #0e39c6 89.64%);
       border: 1px solid rgba(255, 255, 255, 0.5);
       border-radius: 12px;
       color: $white;
@@ -198,8 +199,10 @@
         display: flex;
       }
     }
+
     &__accessConatct {
       padding-top: 60px;
+
       h1 {
         font-size: 18px;
         color: $white;
@@ -207,6 +210,7 @@
         transform: rotate(0.01deg);
         font-weight: 500;
       }
+
       span {
         color: #8fa2b7;
         font-size: 18px;
@@ -244,6 +248,7 @@
     gap: 25px;
     display: flex;
   }
+
   &__importWalletlinkOuter {
     padding-top: 33px;
     display: flex;
@@ -251,10 +256,12 @@
     display: flex;
     gap: 20px;
   }
+
   &__forgotPassword {
     padding-top: 12px;
     gap: 30px;
   }
+
   // Welcome Screen Css ends here //
 
   // Set Password Css Starts here //
@@ -322,9 +329,11 @@
       margin: 36px 0 10px;
       flex-direction: column;
     }
+
     &__forGotBtn {
       margin-top: 0;
     }
+
     &__secretPharse {
       &__grayText {
         font-size: 16px;
@@ -370,9 +379,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: transparent
-          linear-gradient(180deg, #00aeef1a 0%, #367cc71a 100%) 0% 0% no-repeat
-          padding-box;
+        background: transparent linear-gradient(180deg, #00aeef1a 0%, #367cc71a 100%) 0% 0% no-repeat padding-box;
         border: 1px solid #00aeef;
         margin: 0 auto;
         cursor: pointer;
@@ -447,12 +454,14 @@
     font-size: 14px;
   }
 }
+
 .privacyPolicyText {
   color: $white;
   transform: rotate(0.21deg);
   font-size: 16px;
   line-height: 24px;
 }
+
 .congratScreen {
   background: #08132c;
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -465,6 +474,7 @@
 }
 
 .token {
+
   // &__symbol_dec{
   //     display: flex;
   //     gap: 20px;
@@ -511,11 +521,14 @@
   font-weight: bold;
   line-height: 16px;
 }
+
 .copyButton {
   padding: 0 18px 0;
   position: absolute;
   right: 0;
   top: 11%;
+  z-index: 99999;
+
   button {
     border-radius: 4px;
     min-width: 60px;
@@ -529,6 +542,7 @@
   position: absolute;
   font-size: 12px !important;
 }
+
 .textElips {
   span {
     width: 240px;
@@ -537,6 +551,7 @@
     text-overflow: ellipsis;
   }
 }
+
 .contBtn {
   display: flex;
   flex-direction: column;
