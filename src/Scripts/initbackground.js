@@ -308,6 +308,7 @@ export class InitBackground {
   bindInstallandUpdateEvents = async () => {   
     Browser.runtime.onInstalled.addListener(async (details) => {
 
+      log("here is refresh")
       const services = new Services();
       const state = await getDataLocal(LABELS.STATE);
       const pendingTxBalance = state.pendingTransactionBalance;
@@ -1720,6 +1721,7 @@ export class GeneralWalletRPC {
       const eventPayload = await this.nominatorValidatorHandler.handleNativeAppsTask(state, message, true);
       return eventPayload;
     } catch (err) {
+      log("here is error: ", err)
       return new EventPayload(null, null, null, new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, err.message?.errMessage ? err.message.errMessage : err.message));
     }
   }

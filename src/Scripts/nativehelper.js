@@ -27,26 +27,31 @@ export default class ValidatorNominatorHandler {
   handleNativeAppsTask = async (state, message, isFee) => {
     const payload = { data: {}, options: { ...message?.options }};
     const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
-    const balance = state.allAccountsBalance[message.options?.account.evmAddress][message.options?.network];
+  
+    
+    const externalData = activeSession?.message || message.options.externalTransaction.message;
+    const method = activeSession?.method || message.options.externalTransaction.method;
 
-
-    if (hasProperty(ValidatorNominatorHandler.instance, activeSession.method)) {
-      const methodDetails = this.getFormattedMethod(activeSession.method, activeSession.message);
-
+    if (hasProperty(ValidatorNominatorHandler.instance, method)) {
+      const methodDetails = this.getFormattedMethod(method, externalData);
+      
+      if(!isFee) {
       //check for sufficent balance to perfrom operation
       const network = message?.transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
-      if (Number(methodDetails.amount) >= (Number(balance?.nativeBalance) - (state.pendingTransactionBalance[message.options?.account.evmAddress][network].native - Number(methodDetails.amount))))
+      const balance = state.allAccountsBalance[message.options?.account.evmAddress][network];
+        if (Number(methodDetails.amount) >= (Number(balance?.nativeBalance) - (state.pendingTransactionBalance[message.options?.account.evmAddress][network].native - Number(methodDetails.amount))))
         new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, { error: true, data: ERROR_MESSAGES.INSUFFICENT_BALANCE })).throw();
 
       //check if the amount is valid
       if (Number(methodDetails.amount) < 0 || isNaN(Number(methodDetails.amount)))
         new Error(new ErrorPayload(ERRCODES.INVALID_INPUT, { error: true, data: ERROR_MESSAGES.INVALID_AMOUNT })).throw();
+      }
 
 
-      const res = await ValidatorNominatorHandler.instance[activeSession.method](state, activeSession.message, isFee);
+      const res = await ValidatorNominatorHandler.instance[method](state, externalData, isFee);
       //if error occured then throw it
       if (res?.error) new Error(new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, res)).throw();
-
+      log("payload is here: ", res.data, methodDetails)
       if (isFee) payload.data = { fee: res.data, ...methodDetails };
       else {
         const transactionHistory = { ...message?.transactionHistoryTrack, status: STATUS.PENDING, txHash: res.data?.txHash, method: methodDetails.methodName, amount: methodDetails.amount };
