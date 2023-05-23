@@ -19,7 +19,7 @@ export const WINDOW_HEIGHT = 620;
 export const EXISTENTIAL_DEPOSITE = 1;
 export const ONE_ETH_IN_GWEI = 1000000000;
 export const AUTO_BALANCE_UPDATE_TIMER = 8000;
-export const LAPSED_TRANSACTION_CHECKER_TIMER = 25*1000;
+export const LAPSED_TRANSACTION_CHECKER_TIMER = 25 * 1000;
 export const WEI_IN_ONE_ETH = 1000000000000000000;
 export const TRANSACTION_STATUS_CHECK_TIMER = 5000;
 export const VERSION = "0.1.4";
@@ -147,7 +147,7 @@ export const SUCCESS_MESSAGES = {
     DISCONNECTED: "Disconnected.",
     LOGIN_SUCCESS: "Login successfully.",
     LOGOUT_SUCCESS: "Logout successfully",
-    HASH_COPIED: "Transacion hash copied.",
+    HASH_COPIED: "Transaction hash copied.",
     PASS_CREATED_SUCCESS: "Successfully created password for user.",
 };
 
@@ -267,7 +267,7 @@ export const MESSAGE_EVENT_LABELS = {
     EVM_TO_NATIVE_SWAP: "evmToNativeSwap",
     NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
     CLOSE_POPUP_SESSION: "closePopupSession",
-    
+
     LOCK: "lock",
     UNLOCK: "unlock",
     ADD_ACCOUNT: "addAccount",
@@ -280,7 +280,7 @@ export const MESSAGE_EVENT_LABELS = {
     RECOVER_OLD_ACCOUNTS: "recoverOldStateAccounts",
     VERIFY_USER_PASSWORD: "verifyUserPassword",
     IMPORT_BY_MNEMONIC: "importAccountByMnemonics",
-    
+
     //network related events
     NETWORK_CONNECTION_ERROR: "networkConnectionError",
     NETWORK_CHANGE: "networkChange",
@@ -312,7 +312,7 @@ export const STATE_CHANGE_ACTIONS = {
     APP_CONNECTION_UPDATE: "appConnectionUpdate",
     UPDATE_CURRENT_SESSION: "updateCurrentSession",
     ADD_NEW_CONNECTION_TASK: "addNewConnectionTask",
-    CLEAR_ALL_EXTERNAL_REQUESTS:"clearAllExternalRequests",
+    CLEAR_ALL_EXTERNAL_REQUESTS: "clearAllExternalRequests",
 
     //transaction queue state
     REMOVE_FAILED_TX: "removeFailedTx",
@@ -418,9 +418,9 @@ export const RESTRICTED_ETHEREUM_METHODS = {
 
 //array of all wallet handled method
 export const RESTRICTED_METHODS = [...Object.values(VALIDATOR_NOMINATOR_METHOD),
-    ...Object.values(CONNECTION_METHODS),
-    ...Object.values(WALLET_METHODS),
-    ...Object.values(SIGNER_METHODS),
-    ...Object.values(RESTRICTED_ETHEREUM_METHODS)
+...Object.values(CONNECTION_METHODS),
+...Object.values(WALLET_METHODS),
+...Object.values(SIGNER_METHODS),
+...Object.values(RESTRICTED_ETHEREUM_METHODS)
 ]
 export const VALIDATION_METHODS_VD_NM = [VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_BONDMORE, VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_BONDMORE, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR]
