@@ -308,22 +308,21 @@ export class InitBackground {
   bindInstallandUpdateEvents = async () => {   
     Browser.runtime.onInstalled.addListener(async (details) => {
 
-      log("refreshed")
-
+      log("here is refresh")
       const services = new Services();
-  
-      //clear the all pending request from local store when extension updated or refreshed
-      await services.updateLocalState(STATE_CHANGE_ACTIONS.CLEAR_ALL_EXTERNAL_REQUESTS, {});
-      
-      //clear the pending transaction balance
+      const state = await getDataLocal(LABELS.STATE);
+      const pendingTxBalance = state.pendingTransactionBalance;
+
+      // clear the pending transaction balance
       const transactionBalance = {evm:0, native: 0};
-      for(const account of HybridKeyring.accounts) {
+      for(const account of Object.keys(pendingTxBalance)) {
         for(const network of  Object.values(NETWORK)) {
-          await services.updateLocalState(STATE_CHANGE_ACTIONS.UPDATE_PENDING_TRANSACTION_BALANCE, transactionBalance, { network, address: account.evmAddress});
-          
+          await services.updateLocalState(STATE_CHANGE_ACTIONS.UPDATE_PENDING_TRANSACTION_BALANCE, transactionBalance, { network: network.toLowerCase(), address: account});
         }
       }
       
+      //clear the all pending request from local store when extension updated or refreshed
+      await services.updateLocalState(STATE_CHANGE_ACTIONS.CLEAR_ALL_EXTERNAL_REQUESTS, {});
       //clear the transaction queue when refreshed
       await services.updateLocalState(STATE_CHANGE_ACTIONS.CLEAR_TRANSACTION_QUEUE, {});
 
@@ -595,8 +594,9 @@ class TransactionQueue {
       //if the current transaction is null then it is failed and removed
       if (!transactionQueue.currentTransaction?.transactionHistoryTrack) {
         const {options, data} = transactionQueue.currentTransaction;
+        log("here is options data: ", transactionQueue);
         //update the current transaction pending balance state
-        await this.services.updatePendingTransactionBalance(network, options.address.evmAddress, isNaN(Number(data?.value)) ? 0 : Number(data?.value), options.isEvm);
+        await this.services.updatePendingTransactionBalance(network, options.account.evmAddress, isNaN(Number(data?.value)) ? 0 : Number(data?.value), options.isEvm);
 
         //check if there any pending transaction into queue
         if (!isEqual(hasPendingTx, 0)) {
@@ -1082,7 +1082,7 @@ export class TransactionsRPC {
 
       const tempAmount = data?.options?.isBig ? (new BigNumber(data.value).dividedBy(DECIMALS)).toString() : data.value;
 
-      if (Number(tempAmount) > (Number(balance?.evmBalance) - state.pendingTransactionBalance[account.evmAddress][network].evm)) new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
+      if (Number(tempAmount) > (Number(balance?.evmBalance) - (state.pendingTransactionBalance[account.evmAddress][network].evm - tempAmount))) new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
 
 
       else {
@@ -1173,7 +1173,7 @@ export class TransactionsRPC {
 
       // transactionHistory.status = STATUS.PENDING;
 
-      if (Number(data.value) >= (Number(balance?.evmBalance) - state.pendingTransactionBalance[account.evmAddress][network].evm))
+      if (Number(data.value) >= (Number(balance?.evmBalance) - (state.pendingTransactionBalance[account.evmAddress][network].evm - Number(data.value))))
         new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
 
       else {
@@ -1247,7 +1247,7 @@ export class TransactionsRPC {
 
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
-      if (Number(data.value) >= (Number(balance?.nativeBalance) - state.pendingTransactionBalance[account.evmAddress][network].native))
+      if (Number(data.value) >= (Number(balance?.nativeBalance) - (state.pendingTransactionBalance[account.evmAddress][network].native - Number(data.value))))
         new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
       else {
 
@@ -1342,7 +1342,7 @@ export class TransactionsRPC {
 
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
-      if (Number(data?.value) >= (Number(balance?.nativeBalance) - state.pendingTransactionBalance[account.evmAddress][network].native))
+      if (Number(data?.value) >= (Number(balance?.nativeBalance) - (state.pendingTransactionBalance[account.evmAddress][network].native - Number(data.value))))
         new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
       else {
         // transactionHistory.status = STATUS.PENDING;
@@ -1721,6 +1721,7 @@ export class GeneralWalletRPC {
       const eventPayload = await this.nominatorValidatorHandler.handleNativeAppsTask(state, message, true);
       return eventPayload;
     } catch (err) {
+      log("here is error: ", err)
       return new EventPayload(null, null, null, new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, err.message?.errMessage ? err.message.errMessage : err.message));
     }
   }
