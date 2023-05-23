@@ -84,7 +84,7 @@ function UnlockWelcome() {
 
   return (
     <div className={style.cardWhite} onKeyDown={handleClick}>
-      <MenuRestofHeaders logosilver={false} title="5ireChain Wallet" />
+      <MenuRestofHeaders logosilver={false} title="5ire Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__centerLogo}>
           <div className={style.cardWhite__cardInner__innerLogocontact}>

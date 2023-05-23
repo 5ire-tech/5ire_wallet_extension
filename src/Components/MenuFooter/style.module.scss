@@ -83,10 +83,13 @@
   &__cancleContinue1 {
     display: flex;
     justify-content: space-between;
-
-    gap: 67px;
-    border-top: 1px solid #404058;
+flex-direction: column;
+    gap: 23px;
     padding: 16px 37px;
+    position: fixed;
+    bottom: 0;
+    max-width: 336px;
+    width: 100%;
   }
 }
 

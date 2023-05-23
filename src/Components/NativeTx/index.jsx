@@ -146,17 +146,18 @@ function NativeSigner() {
           </div>
         </Content>
         <div className={footerstyle.menuItems__cancleContinue1}>
+        <ButtonComp
+            onClick={() => handleClick(true)}
+            text={"Approve"}
+            maxWidth={"100%"}
+          />
           <ButtonComp
             bordered={true}
             text={"Reject"}
             maxWidth={"100%"}
             onClick={() => handleClick(false)}
           />
-          <ButtonComp
-            onClick={() => handleClick(true)}
-            text={"Approve"}
-            maxWidth={"100%"}
-          />
+         
         </div>
       </div>
     </div>

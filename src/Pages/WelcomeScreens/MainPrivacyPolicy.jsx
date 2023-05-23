@@ -6,7 +6,7 @@ import { ROUTES } from "../../Routes";
 function MainPrivacyPolicy() {
   return (
     <div className={style.cardWhite}>
-      <MenuRestofHeaders backTo={ROUTES.BEFORE_BEGIN} logosilver={true} title="5ireChain Wallet" />
+      <MenuRestofHeaders backTo={ROUTES.BEFORE_BEGIN} logosilver={true} title="5ire Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Privacy Policy</h1>

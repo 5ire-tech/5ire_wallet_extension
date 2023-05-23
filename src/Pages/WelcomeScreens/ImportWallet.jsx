@@ -147,7 +147,7 @@ function ImportWallet() {
       {
         !isLogin && <StepHeaders active={2} isCreate={false} />
       }
-      <MenuRestofHeaders logosilver={true} title="5ireChain Wallet" />
+      <MenuRestofHeaders logosilver={true} title="5ire Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Import Wallet </h1>
