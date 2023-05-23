@@ -17,12 +17,12 @@ function CreateWalletChain() {
   useEffect(() => {
     updateLoading(true);
 
-    if (newAccount.mnemonic || newAccount.drivedMnemonic)
+    if (newAccount?.mnemonic || newAccount?.drivedMnemonic)
       setTimeout(() => {
         updateLoading(false);
       }, 400);
-
-  }, [newAccount.mnemonic, newAccount.drivedMnemonic]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newAccount?.mnemonic, newAccount?.drivedMnemonic]);
 
   const handleEyeOpen = (e) => {
     const name = e.target.name;

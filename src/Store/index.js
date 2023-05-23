@@ -2,9 +2,11 @@ import { ROUTES } from "../Routes/index";
 import Browser from "webextension-polyfill";
 import { useNavigate } from "react-router-dom";
 import { isManifestV3 } from "../Scripts/utils";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 import { isNullorUndef, log } from "../Utility/utility";
 import { sessionStorage, localStorage } from "../Storage";
+import { sendEventToTab, setTimer } from "../Helper/helper";
+import { TabMessagePayload } from "../Utility/network_calls";
 import { bindRuntimeMessageListener } from "../Utility/message_helper";
 import {
   LABELS,
@@ -17,10 +19,7 @@ import {
   externalControls,
   newAccountInitialState,
   initialExternalNativeTransaction,
-  transactionQueue
 } from "./initialState";
-import { sendEventToTab, setTimer } from "../Helper/helper";
-import { TabMessagePayload } from "../Utility/network_calls";
 
 //context created
 export const AuthContext = createContext();
@@ -44,14 +43,14 @@ export default function Context({ children }) {
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
   const [externalControlsState, setExternalControlState] = useState(externalControls);
   const [showCongratLoader, setShowCongratLoader] = useState(false);
-  
+
   //transaction queue
   // const [transactionQueues, setTransactionQueues] = useState(transactionQueue);
   const [pendingBalance, setPendingBalance] = useState(0);
 
   const [isStateLoaded, setStateLoaded] = useState(false);
-  
-  
+
+
   //background error's
   const [backgroundError, setBackgroundError] = useState(null);
   const [networkError, setNetworkError] = useState(null);
@@ -107,10 +106,10 @@ export default function Context({ children }) {
       } else if (message.event === MESSAGE_EVENT_LABELS.BACKGROUND_ERROR) {
         setBackgroundError(message.data);
         setTimer(updateLoading.bind(null, false));
-      } else if(message.event === MESSAGE_EVENT_LABELS.NETWORK_CONNECTION_ERROR) {
+      } else if (message.event === MESSAGE_EVENT_LABELS.NETWORK_CONNECTION_ERROR) {
         setNetworkError(message.data);
         setTimer(updateLoading.bind(null, false));
-      } else if(message.event === MESSAGE_EVENT_LABELS.NETWORK_CHECK) {
+      } else if (message.event === MESSAGE_EVENT_LABELS.NETWORK_CHECK) {
         setTimer(updateLoading.bind(null, false));
       }
     }

@@ -1,13 +1,21 @@
+import BigNumber from "bignumber.js";
+import { isAlreadyConnected } from "./utils";
+import { getDataLocal } from "../Storage/loadstore";
+import { generateErrorMessage } from "../Helper/helper";
+import { isEqual, isNullorUndef } from "../Utility/utility";
+import { sendMessageToTab } from "../Utility/message_helper";
 import { ExtensionStorageHandler } from "../Storage/loadstore";
 import WindowManager, { NotificationAndBedgeManager } from "./platform";
 import { ExternalAppsRequest, TabMessagePayload } from "../Utility/network_calls";
-import { isEqual, log, isNullorUndef } from "../Utility/utility";
-import { EVM_JSON_RPC_METHODS, HTTP_END_POINTS, LABELS, ROUTE_FOR_APPROVAL_WINDOWS, STATE_CHANGE_ACTIONS, ERROR_MESSAGES, SUCCESS_MESSAGES, DECIMALS } from "../Constants";
-import { getDataLocal } from "../Storage/loadstore";
-import { sendMessageToTab } from "../Utility/message_helper";
-import { isAlreadyConnected } from "./utils";
-import { generateErrorMessage } from "../Helper/helper";
-import BigNumber from "bignumber.js";
+import {
+  LABELS,
+  DECIMALS,
+  ERROR_MESSAGES,
+  HTTP_END_POINTS,
+  EVM_JSON_RPC_METHODS,
+  STATE_CHANGE_ACTIONS,
+  ROUTE_FOR_APPROVAL_WINDOWS,
+} from "../Constants";
 
 
 //control the external connections and window popup creation
@@ -78,7 +86,7 @@ export class ExternalWindowControl {
     //show the popup after changing active session from pending queue
     const externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
     // log("change the session: ", externalControlsState);
-    if(externalControlsState.activeSession) await this.activatePopupSession(externalControlsState.activeSession);
+    if (externalControlsState.activeSession) await this.activatePopupSession(externalControlsState.activeSession);
   }
 
   /**
@@ -240,17 +248,17 @@ export class ExternalConnection {
       const amt = BigNumber(Number(data.message.value)).dividedBy(DECIMALS).toString();
 
       //invalid amount check
-      if(Number(amt) < 0 || isNaN(amt)) {
+      if (Number(amt) < 0 || isNaN(amt)) {
         sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.INVALID_AMOUNT));
         return;
       }
 
       //check the data or to field
-      if(isNullorUndef(data.message?.data) && isNullorUndef(data.message?.to)) {
+      if (isNullorUndef(data.message?.data) && isNullorUndef(data.message?.to)) {
         sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.AMOUNT_DATA_CHECK));
         return;
       }
-      
+
       data.message.value = Number(amt).noExponents()
     } else data.message["value"] = "0";
 
@@ -279,7 +287,7 @@ export class ExternalConnection {
 
       if (data?.tabId) {
         //pass the current network http endpoint
-        sendMessageToTab(data.tabId, new TabMessagePayload(data.id, { result: HTTP_END_POINTS[state.currentNetwork.toUpperCase()]}, data.method))
+        sendMessageToTab(data.tabId, new TabMessagePayload(data.id, { result: HTTP_END_POINTS[state.currentNetwork.toUpperCase()] }, data.method))
       }
     } catch (err) {
       console.log("Error while sending the endpoint: ", err);

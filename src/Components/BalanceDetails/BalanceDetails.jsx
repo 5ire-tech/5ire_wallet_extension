@@ -31,7 +31,6 @@ import {
   NETWORK,
   EMTY_STR,
   CURRENCY,
-  ZERO_CHAR,
   TABS_EVENT,
   WALLET_TYPES,
   HTTP_END_POINTS,
@@ -73,6 +72,7 @@ function BalanceDetails({ mt0 }) {
       MESSAGE_EVENT_LABELS.GET_ACCOUNTS,
       {}
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentNetwork, currentAccount?.evmAddress]);
 
   //network change handler
@@ -102,7 +102,6 @@ function BalanceDetails({ mt0 }) {
     );
   };
 
-  //todo
   //account change handler
   const onSelectAcc = (name) => {
     //update the current account
@@ -255,19 +254,6 @@ function BalanceDetails({ mt0 }) {
                               : ""}
                             <img src={Info} alt="infoIcon" />
                           </p>
-                          {/* <span>
-                            {currentAccount?.evmAddress
-                              ? shortner(currentAccount.evmAddress)
-                              : ""}{" "}
-                            <img
-                              draggable={false}
-                              src={CopyIcon}
-                              alt="copyIcon"
-                              name={EVM}
-                              onClick={handleCopy}
-                              style={{ cursor: "pointer" }}
-                            />
-                          </span> */}
                         </>
                       ) : (
                         <>
@@ -663,9 +649,6 @@ function BalanceDetails({ mt0 }) {
                   <div className={style.balanceDetails__nativemodal__modalOr}>
                     <p>or</p>
                   </div>
-                  {/* <p className={style.balanceDetails__nativemodal__addressText}>
-                    Your 5ire EVM Address
-                  </p> */}
                   <div className={style.balanceDetails__nativemodal__wrapedText}>
                     <p>
                       {currentAccount?.evmAddress
@@ -680,11 +663,6 @@ function BalanceDetails({ mt0 }) {
                       />
                     </p>
                   </div>
-                  {/* <div
-                    className={style.balanceDetails__nativemodal__footerbuttons}
-                  > */}
-                  {/* <ButtonComp text={"Share Address"} /> */}
-                  {/* </div> */}
                 </div>
               </div>
             </ModalCustom>

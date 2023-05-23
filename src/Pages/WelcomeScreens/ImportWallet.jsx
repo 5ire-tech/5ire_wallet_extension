@@ -36,14 +36,12 @@ function ImportWallet() {
     if (isLogin) {
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.GET_ACCOUNTS, {});
     }
-  }, []);
+  }, [isLogin]);
 
 
   useEffect(() => {
-    if (inputError) {
+    if (inputError)
       setWarrning(p => ({ ...p, key: inputError }));
-    }
-
   }, [inputError]);
 
 
@@ -82,10 +80,9 @@ function ImportWallet() {
       setWarrning(p => ({ ...p, acc: ERROR_MESSAGES.ALPHANUMERIC_CHARACTERS }))
       setDisable(true);
     }
-    else {
+    else
       setWarrning((p) => ({ ...p, acc: "" }));
-      // setDisable(false);
-    }
+
   };
 
 
@@ -99,9 +96,9 @@ function ImportWallet() {
       setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INVALID_MNEMONIC }));
       setDisable(true);
     }
-    else {
+    else
       setWarrning((p) => ({ ...p, key: EMTY_STR }));
-    }
+
   };
 
   const handleClick = async (e) => {

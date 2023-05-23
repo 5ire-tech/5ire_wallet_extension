@@ -33,6 +33,7 @@ function ApproveTx() {
         options: { account: state.currentAccount },
       }
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const activeDetail = () => {
@@ -100,9 +101,9 @@ function ApproveTx() {
                       <span>
                         {" "}
                         {activeSession?.message?.to
-                          ? activeSession?.message?.to : LABELS.CONTRACT }
+                          ? activeSession?.message?.to : LABELS.CONTRACT}
                       </span>
-                      { activeSession?.message?.to && <img
+                      {activeSession?.message?.to && <img
                         src={CopyIcon}
                         alt="copyIcon"
                         draggable={false}

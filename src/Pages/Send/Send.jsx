@@ -13,6 +13,10 @@ import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import {
+  InputField,
+  InputFieldOnly,
+} from "../../Components/InputField/InputFieldSimple";
+import {
   EVM,
   LABELS,
   NATIVE,
@@ -23,10 +27,6 @@ import {
   MESSAGE_EVENT_LABELS,
   EXISTENTIAL_DEPOSITE,
 } from "../../Constants/index";
-import {
-  InputField,
-  InputFieldOnly,
-} from "../../Components/InputField/InputFieldSimple";
 
 
 function Send() {
@@ -48,11 +48,13 @@ function Send() {
     updateEstimatedGas(null);
     setErr({ to: "", amount: "" });
     setData({ to: "", amount: "" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentAccount?.evmAddress, currentAccount?.nativeAddress, currentNetwork]);
 
 
   useEffect(() => {
     setBalance(allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance,
     allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.nativeBalance,
@@ -103,7 +105,7 @@ function Send() {
     } else {
       setDisable(false);
     }
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [err.to, err.amount, data?.to, data?.amount, isEd, estimatedGas]);
 
   //Check for Insufficent balance
@@ -115,11 +117,11 @@ function Send() {
         if (estimatedGas && !data.amount && data.to) {
 
           const amount = Number(balance?.evmBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0) + pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm);
+
           !(Number(amount) > 0) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
           setData(p => ({ ...p, amount: amount > 0 ? amount : "" }));
-          // setErr(p => ({ ...p, amount: amount > 0 ? "" : ERROR_MESSAGES.INSUFFICENT_BALANCE }));
-
           return;
         }
         else if (data?.amount && estimatedGas && data?.to) {
@@ -129,15 +131,10 @@ function Send() {
             (isEd ? EXISTENTIAL_DEPOSITE : 0) >
             (Number(balance?.evmBalance) - pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm)
           ) {
-            // setDisable(true);
-
             updateEstimatedGas(null);
             setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
           } else {
-
-            // setDisable(false);
             setErr((p) => ({ ...p, amount: "" }));
-
           }
 
         }
@@ -149,9 +146,6 @@ function Send() {
           !(Number(amount) > 0) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
           setData(p => ({ ...p, amount: amount > 0 ? amount : "" }));
-          // setErr(p => ({ ...p, amount: amount > 0 ? "" : ERROR_MESSAGES.INSUFFICENT_BALANCE }));
-
-
           return;
         }
         else if (
@@ -162,17 +156,15 @@ function Send() {
         ) {
 
           updateEstimatedGas(null);
-          // setDisable(true);
           setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
 
         } else {
-
-          // setDisable(false);
           setErr((p) => ({ ...p, amount: "" }));
 
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [estimatedGas, activeTab, balance?.evmBalance, balance?.nativeBalance, data.amount, data.to, isEd]);
 
 
@@ -182,7 +174,6 @@ function Send() {
   const onChangeToggler = (checked) => {
     setEd(checked);
     updateEstimatedGas(null);
-    // setMaxDisabled(true);
     setErr(p => ({ ...p, amount: "" }));
     setData(p => ({ ...p, amount: "" }));
   };
@@ -221,7 +212,6 @@ function Send() {
         if (res.error) setErr((p) => ({ ...p, to: res.data }));
         else {
           setErr((p) => ({ ...p, to: "" }));
-          // setMaxDisabled(false);
         }
       }
     } else if (activeTab === NATIVE) {
@@ -237,9 +227,7 @@ function Send() {
         if (res.error) setErr((p) => ({ ...p, to: res.data }));
         else {
           setErr((p) => ({ ...p, to: "" }));
-          // setMaxDisabled(false);
         }
-
       }
     }
   };
@@ -358,7 +346,6 @@ function Send() {
   };
 
   const activeSend = (e) => {
-    // setDisable(true);
     updateEstimatedGas(null);
     setActiveTab(e.target.name);
     setErr({ to: "", amount: "" });
@@ -367,7 +354,6 @@ function Send() {
 
   //handle Ok and cancel button of popup
   const handle_OK_Cancel = () => {
-    // setDisable(true);
     setIsFaildOpen(false);
     updateEstimatedGas(null);
     setData({ to: "", amount: "" });
@@ -504,17 +490,6 @@ function Send() {
               draggable={false}
             />
             <h2 className="title">Transfer Processed</h2>
-            {/* <p className="transId">Your Transaction ID</p>
-            <h3 className="hashTag">{txHash ? shortner(txHash): ""}</h3>
-              {txHash && <img
-              draggable={false}
-              src={CopyIcon}
-              alt="copyIcon"
-              style={{cursor: "pointer"}}
-              name="naiveAddress"
-              onClick={handleCopy}
-            />} */}
-
             <div className="footerbuttons">
               <ButtonComp text={"Transfer Again"} onClick={handle_OK_Cancel} />
             </div>

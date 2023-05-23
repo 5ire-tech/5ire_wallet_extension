@@ -1,7 +1,7 @@
-import {INPAGE, getId } from "./constants";
-import SafeEventEmitter from "@metamask/safe-event-emitter"
-import { SIGNER_METHODS, RESTRICTED_METHODS, TABS_EVENT, WALLET_METHODS, EVM_JSON_RPC_METHODS, VERSION } from "../Constants";
+import { INPAGE, getId } from "./constants";
 import { InjectedScript } from "./injected-helper";
+import SafeEventEmitter from "@metamask/safe-event-emitter"
+import { SIGNER_METHODS, RESTRICTED_METHODS, VERSION } from "../Constants";
 /*
 Custom Web3 provider for interacting with the 5ire browser extension and pass to
 5ire extension to handle the json-rpc request and send the response back
@@ -64,7 +64,7 @@ export class FireProvider extends SafeEventEmitter {
 
 
   //for checking JSON-RPC headers
-  async passReq(method, payload, id=null) {
+  async passReq(method, payload, id = null) {
     if (method === undefined && method.trim() === "") return Error("invalid method");
 
     //pass the request to extension
