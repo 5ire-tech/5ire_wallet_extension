@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { AuthContext } from '../../Store'
 import ModalCustom from '../ModalCustom/ModalCustom';
-import FaildSwap from "../../Assets/DarkLogo.svg";
+import FaildSwap from "../../Assets/ConnectFaild.svg";
 import ButtonComp from '../ButtonComp/ButtonComp';
 import { MESSAGE_EVENT_LABELS, MESSAGE_TYPE_LABELS } from '../../Constants';
 import { sendRuntimeMessage } from '../../Utility/message_helper';
@@ -22,7 +22,7 @@ export default function ErrorModal() {
 
   return (
     <ModalCustom
-      isModalOpen={!!networkError}
+      isModalOpen={true}
       handleOk={handleRetry}
       handleCancel={handleRetry}
       centered
@@ -32,12 +32,11 @@ export default function ErrorModal() {
           <img
             src={FaildSwap}
             alt="swapFaild"
-            width={80}
-            height={80}
             draggable={false}
           />
-          <h3 className="title">Connection Error</h3>
-          <p className="transId">{networkError}</p>
+          <h3 className="rongText">Connection Error</h3>
+          {/* <p className="transId">{networkError}</p> */}
+          <p className="transId">Network Connection Error, please change network or try again later</p>
           <div className="footerbuttons">
             <ButtonComp text={"Retry"} onClick={handleRetry} />
           </div>
