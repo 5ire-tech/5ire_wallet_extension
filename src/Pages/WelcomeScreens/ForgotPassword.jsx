@@ -54,7 +54,7 @@ function ForgotPassword() {
       setError((p) => ({ ...p, confirmPass: EMTY_STR }));
     else if (data.confirmPass !== EMTY_STR)
       setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }));
-  }, [data.pass, data.confirmPass]);
+  }, [data?.pass, data?.confirmPass]);
 
   const handleChange = (e) => {
     setData((p) => {
@@ -154,7 +154,7 @@ function ForgotPassword() {
   return (
 
     <div className={style.cardWhite} onKeyDown={handleSubmit}>
-      <MenuRestofHeaders logosilver={true} title="5irechain Wallet" backTo={ROUTES.UNLOACK_WALLET} />
+      <MenuRestofHeaders logosilver={true} title="5ire Wallet" backTo={ROUTES.UNLOACK_WALLET} />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Forgot password</h1>

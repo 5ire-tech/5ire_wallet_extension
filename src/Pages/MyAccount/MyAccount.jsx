@@ -224,7 +224,7 @@ function MyAccount() {
                       },
                     ],
                   }}
-                  trigger={["click"]}
+                  trigger={["hover"]}
                 >
                   <div style={{ cursor: "pointer" }} onClick={(e) => e.preventDefault()}>
                     <Space>

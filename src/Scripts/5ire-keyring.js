@@ -12,7 +12,6 @@ import SimpleKeyring from '@metamask/eth-simple-keyring';
 import { WALLET_TYPES, KEYRING_EVENTS } from "../Constants";
 import { ERRCODES, ERROR_MESSAGES } from "../Constants/index";
 import { ErrorPayload, Error } from "../Utility/error_helper";
-import { message } from "antd";
 // import { mnemonicToMiniSecret, ed25519PairFromSeed } from "@polkadot/util-crypto";
 
 

@@ -7,21 +7,56 @@ import { EventEmitter } from "./eventemitter";
 import { TypeRegistry } from "@polkadot/types";
 import { HybridKeyring } from "./5ire-keyring";
 import { txNotificationStringTemplate } from "./utils";
+import ValidatorNominatorHandler from "./nativehelper";
+import { httpRequest } from "../Utility/network_calls";
+import { Connection } from "../Helper/connection.helper";
 import { NotificationAndBedgeManager } from "./platform";
+import { Error, ErrorPayload } from "../Utility/error_helper";
+import ExtensionPortStream from './extension-port-stream-mod/index';
 import { ExternalConnection, ExternalWindowControl } from "./controller";
 import { getDataLocal, ExtensionStorageHandler } from "../Storage/loadstore";
-import { INTERNAL_EVENT_LABELS, DECIMALS, MESSAGE_TYPE_LABELS, STATE_CHANGE_ACTIONS, TX_TYPE, STATUS, LABELS, MESSAGE_EVENT_LABELS, AUTO_BALANCE_UPDATE_TIMER, TRANSACTION_STATUS_CHECK_TIMER, ONE_ETH_IN_GWEI, SIGNER_METHODS, TABS_EVENT, VALIDATOR_NOMINATOR_METHOD, STREAM_CHANNELS, LAPSED_TRANSACTION_CHECKER_TIMER, EVM, NATIVE, NETWORK } from "../Constants";
-import { hasLength, isNullorUndef, hasProperty, log, isEqual, isString } from "../Utility/utility";
-import { HTTP_END_POINTS, API, HTTP_METHODS, EVM_JSON_RPC_METHODS, ERRCODES, ERROR_MESSAGES, ERROR_EVENTS_LABELS } from "../Constants";
-import { EVMRPCPayload, EventPayload, TransactionPayload, TransactionProcessingPayload, TabMessagePayload } from "../Utility/network_calls";
-import { httpRequest } from "../Utility/network_calls";
-import { checkStringInclusionIntoArray, formatNumUptoSpecificDecimal, numFormatter } from "../Helper/helper";
-import { Connection } from "../Helper/connection.helper";
-import { Error, ErrorPayload } from "../Utility/error_helper"
 import { sendMessageToTab, sendRuntimeMessage } from "../Utility/message_helper";
-import { assert, compactToU8a, isHex, u8aConcat, u8aEq, u8aWrapBytes } from "@polkadot/util"
-import ValidatorNominatorHandler from "./nativehelper";
-import ExtensionPortStream from './extension-port-stream-mod/index';
+import { assert, compactToU8a, isHex, u8aConcat, u8aEq, u8aWrapBytes } from "@polkadot/util";
+import { checkStringInclusionIntoArray, formatNumUptoSpecificDecimal } from "../Helper/helper";
+import {
+  API,
+  STATUS,
+  LABELS,
+  TX_TYPE,
+  NETWORK,
+  ERRCODES,
+  HTTP_METHODS,
+  ERROR_MESSAGES,
+  STREAM_CHANNELS,
+  HTTP_END_POINTS,
+  ERROR_EVENTS_LABELS,
+  EVM_JSON_RPC_METHODS,
+  STATE_CHANGE_ACTIONS,
+  MESSAGE_EVENT_LABELS,
+  INTERNAL_EVENT_LABELS,
+  AUTO_BALANCE_UPDATE_TIMER,
+  VALIDATOR_NOMINATOR_METHOD,
+  DECIMALS, MESSAGE_TYPE_LABELS,
+  TRANSACTION_STATUS_CHECK_TIMER,
+  ONE_ETH_IN_GWEI, SIGNER_METHODS,
+  LAPSED_TRANSACTION_CHECKER_TIMER,
+} from "../Constants";
+import {
+  log,
+  isEqual,
+  hasLength,
+  isString,
+  hasProperty,
+  isNullorUndef,
+} from "../Utility/utility";
+import {
+  EventPayload,
+  EVMRPCPayload,
+  TabMessagePayload,
+  TransactionPayload,
+  TransactionProcessingPayload,
+} from "../Utility/network_calls";
+
 
 let tester = 0;
 
@@ -307,7 +342,7 @@ export class InitBackground {
   /** Fired when the extension is first installed,
   when the extension is updated to a new version,
   and when Chrome is updated to a new version. */
-  bindInstallandUpdateEvents = async () => {   
+  bindInstallandUpdateEvents = async () => {
     Browser.runtime.onInstalled.addListener(async (details) => {
 
       log("here is refresh")
@@ -316,13 +351,13 @@ export class InitBackground {
       const pendingTxBalance = state.pendingTransactionBalance;
 
       // clear the pending transaction balance
-      const transactionBalance = {evm:0, native: 0};
-      for(const account of Object.keys(pendingTxBalance)) {
-        for(const network of  Object.values(NETWORK)) {
-          await services.updateLocalState(STATE_CHANGE_ACTIONS.UPDATE_PENDING_TRANSACTION_BALANCE, transactionBalance, { network: network.toLowerCase(), address: account});
+      const transactionBalance = { evm: 0, native: 0 };
+      for (const account of Object.keys(pendingTxBalance)) {
+        for (const network of Object.values(NETWORK)) {
+          await services.updateLocalState(STATE_CHANGE_ACTIONS.UPDATE_PENDING_TRANSACTION_BALANCE, transactionBalance, { network: network.toLowerCase(), address: account });
         }
       }
-      
+
       //clear the all pending request from local store when extension updated or refreshed
       await services.updateLocalState(STATE_CHANGE_ACTIONS.CLEAR_ALL_EXTERNAL_REQUESTS, {});
       //clear the transaction queue when refreshed
@@ -460,7 +495,7 @@ class RpcRequestProcessor {
 
       //send the transaction into tx queue
       await this.transactionQueue.addNewTransaction(transactionProcessingPayload);
- 
+
     } catch (err) {
       ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.INTERNAL, err.message))
     }
@@ -497,7 +532,7 @@ class TransactionQueue {
     //add the transaction history track
     const { data, options } = transactionProcessingPayload;
     transactionProcessingPayload.transactionHistoryTrack = new TransactionPayload(data?.to || options?.to, data?.value ? Number(data?.value).toString() : "0", options?.isEvm, options?.network, options?.type);
-    
+
     //check if there is method inside tx payload (only nominator and validator transactions case)
     transactionProcessingPayload.transactionHistoryTrack.method = options?.method || null;
 
@@ -598,7 +633,7 @@ class TransactionQueue {
 
       //if the current transaction is null then it is failed and removed
       if (!transactionQueue.currentTransaction?.transactionHistoryTrack) {
-        const {options, data} = transactionQueue.currentTransaction;
+        const { options, data } = transactionQueue.currentTransaction;
         log("here is options data: ", transactionQueue);
         //update the current transaction pending balance state
         await this.services.updatePendingTransactionBalance(network, options.account.evmAddress, isNaN(Number(data?.value)) ? (0 + Number(options?.fee)) : (Number(data?.value) + Number(options?.fee)), options.isEvm);
@@ -657,7 +692,7 @@ class TransactionQueue {
           this.services.showNotification(txNotificationStringTemplate(transactionStatus.status, txHash));
 
           //update the pending transaction balance
-          await this.services.updatePendingTransactionBalance(network, currentTransaction.options.account.evmAddress, isNaN(Number( currentTransaction.data?.value)) ? (0 + Number(currentTransaction.options.fee)) : (Number(currentTransaction.data?.value) + Number(currentTransaction.options.fee)), currentTransaction.options.isEvm);
+          await this.services.updatePendingTransactionBalance(network, currentTransaction.options.account.evmAddress, isNaN(Number(currentTransaction.data?.value)) ? (0 + Number(currentTransaction.options.fee)) : (Number(currentTransaction.data?.value) + Number(currentTransaction.options.fee)), currentTransaction.options.isEvm);
 
           //check if there any pending transaction into queue
           if (!isEqual(hasPendingTx, 0)) {
@@ -995,19 +1030,19 @@ export class Services {
   }
 
   //update the pending transaction balance
-  updatePendingTransactionBalance = async (network, address, value, isEvm, isInc=false) => {
+  updatePendingTransactionBalance = async (network, address, value, isEvm, isInc = false) => {
     const transactionBalance = { evm: 0, native: 0 };
     const state = await getDataLocal(LABELS.STATE);
     const accountBalance = state.pendingTransactionBalance[address][network];
-    
-    if(isInc) {
-      if(isEvm) transactionBalance.evm = accountBalance.evm + value;
+
+    if (isInc) {
+      if (isEvm) transactionBalance.evm = accountBalance.evm + value;
       else transactionBalance.native = accountBalance.native + value;
     } else {
-      if(isEvm) transactionBalance.evm = accountBalance.evm - value;
+      if (isEvm) transactionBalance.evm = accountBalance.evm - value;
       else transactionBalance.native = accountBalance.native - value;
     }
- 
+
     // log(`Here is the Balance: evm: ${transactionBalance.evm} native: ${transactionBalance.native} for acc ${address} and network ${network} or chain is evm (true/false): ${isEvm}`);
 
     await this.updateLocalState(STATE_CHANGE_ACTIONS.UPDATE_PENDING_TRANSACTION_BALANCE, transactionBalance, { network, address });
@@ -1651,22 +1686,23 @@ export class GeneralWalletRPC {
 
     const hex = activeSession.message?.method;
 
-    const DEFAULT_INFO = {
-      decoded: null,
-      extrinsicCall: null,
-      extrinsicError: null,
-      extrinsicFn: null,
-      extrinsicHex: null,
-      extrinsicKey: 'none',
-      extrinsicPayload: null,
-      isCall: true
-    };
+    // const DEFAULT_INFO = {
+    //   decoded: null,
+    //   extrinsicCall: null,
+    //   extrinsicError: null,
+    //   extrinsicFn: null,
+    //   extrinsicHex: null,
+    //   extrinsicKey: 'none',
+    //   extrinsicPayload: null,
+    //   isCall: true
+    // };
 
 
     try {
       assert(isHex(hex), 'Expected a hex-encoded call');
 
-      let extrinsicCall, extrinsicPayload = null, decoded = null, isCall = false;
+      let extrinsicCall, extrinsicPayload = null, decoded = null;
+      // let isCall = false;
 
       try {
         // cater for an extrinsic input
@@ -1686,7 +1722,7 @@ export class GeneralWalletRPC {
 
           if (callHex === hex) {
             // all good, we have a call
-            isCall = true;
+            // isCall = true;
           } else if (hex.startsWith(callHex)) {
             // this could be an un-prefixed payload...
             const prefixed = u8aConcat(compactToU8a(extrinsicCall.encodedLength), hex);

@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
-import { AuthContext } from '../../Store';
-import FaildSwap from "../../Assets/DarkLogo.svg";
-import ButtonComp from '../ButtonComp/ButtonComp';
+import React, { useContext } from 'react'
+import { AuthContext } from '../../Store'
 import ModalCustom from '../ModalCustom/ModalCustom';
+import FaildSwap from "../../Assets/FaildSwap.svg";
+import ButtonComp from '../ButtonComp/ButtonComp';
 
 export default function ErrorModal() {
   const { backgroundError, setBackgroundError } = useContext(AuthContext);
@@ -27,10 +27,10 @@ export default function ErrorModal() {
             height={80}
             draggable={false}
           />
-          <h3 className="title">Something went wrong!</h3>
+          <h3 className="rongText">Something went wrong!</h3>
           <p className="transId">{backgroundError}</p>
-          <div className="footerbuttons">
-            <ButtonComp text={"Ok"} onClick={handleErrorModal} />
+          <div className="footerbuttons" style={{ marginTop: "25px" }}>
+            <ButtonComp text={"Okay"} onClick={handleErrorModal} />
           </div>
         </div>
       </div>

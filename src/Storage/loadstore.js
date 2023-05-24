@@ -245,7 +245,7 @@ export class ExtensionStorageHandler {
 
     // set the new Account
     createOrRestore = async (message, state) => {
-        const { vault, type, newAccount } = message;
+        const { vault, newAccount } = message;
         const currentAccount = {
             evmAddress: newAccount.evmAddress,
             accountName: newAccount.accountName,
@@ -260,35 +260,6 @@ export class ExtensionStorageHandler {
         const newState = { ...state, vault, isLogin: true, currentAccount, txHistory, allAccountsBalance, pendingTransactionBalance };
 
 
-        // if (state?.oldAccounts) {
-        //     const index = state.oldAccounts.findIndex(e => e?.evmAddress === newAccount?.evmAddress);
-        //     const account = state.oldAccounts[index];
-
-        //     console.log("Account in cretate ::: ", account);
-        //     const oldtxHistory = [];
-
-        //     for (let i = 0; i < account.txHistory.length; i++) {
-        //         const tx = {
-        //             ...account.txHistory[i],
-        //             args: null,
-        //             gasUsed: "",
-        //             method: null,
-        //             timeStamp: account.txHistory[i].dateTime,
-        //             txHash: account.txHistory[i].txHash?.mainHash,
-        //             intermidateHash: account.txHistory[i].txHash?.hash,
-        //         }
-        //         oldtxHistory.push(tx);
-        //     }
-
-        //     txHistory = this._txProperty(state, newAccount.evmAddress, oldtxHistory);
-
-        //     if (state?.oldAccounts?.length === index + 1) delete newState.oldAccounts
-        //     delete newState.pass;
-        // }
-
-        // newState.txHistory = txHistory;
-
-        // console.log("newState in Create: ", newState);
 
         this._updateSession(LABELS.ISLOGIN, true);
         return await this._updateStorage(newState);
@@ -296,7 +267,7 @@ export class ExtensionStorageHandler {
 
 
     forgotPassByMnemonic = async (message, state) => {
-        const { vault, newAccount, type } = message;
+        const { vault, newAccount } = message;
 
         const currentAccount = {
             evmAddress: newAccount.evmAddress,

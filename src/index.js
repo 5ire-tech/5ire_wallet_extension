@@ -3,15 +3,13 @@ import App from "./App";
 import React from "react";
 import Context from "./Store";
 import ReactDOM from "react-dom/client";
-import browser from "webextension-polyfill";
+import { Toaster } from 'react-hot-toast';
 import { MemoryRouter } from "react-router-dom";
-import { EMTY_STR, LABELS, MESSAGE_EVENT_LABELS, MESSAGE_TYPE_LABELS, STREAM_CHANNELS } from "./Constants";
+import { EMTY_STR, LABELS } from "./Constants";
 import { getDataLocal } from "../src/Storage/loadstore"
 import { sessionStorage } from "../src/Storage/index";
-import { log } from "./Utility/utility";
-import { Toaster } from 'react-hot-toast';
-import ExtensionPortStream from "./Scripts/extension-port-stream-mod/index";
-import { MessageOverStream, sendRuntimeMessage } from "./Utility/message_helper";
+import { MessageOverStream } from "./Utility/message_helper";
+// import ExtensionPortStream from "./Scripts/extension-port-stream-mod/index";
 
 //For Dev Enviroment Check
 // const isDev = process.env.NODE_ENV === "development";
@@ -65,7 +63,7 @@ const initApp = (data, externalControlsState) => {
 
     //created the transaction queue
     await getDataLocal(LABELS.TRANSACTION_QUEUE);
-    
+
     const loginState = await sessionStorage.get(LABELS.ISLOGIN);
     currentLocalState.isLogin = !loginState?.isLogin ? false : currentLocalState?.isLogin;
     initApp(currentLocalState, externalControlsState);

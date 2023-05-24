@@ -3,7 +3,7 @@ import { ROUTES } from "./Routes";
 import Send from "./Pages/Send/Send";
 import Swap from "./Pages/Swap/Swap";
 import { AuthContext } from "./Store";
-import { EMTY_STR } from "./Constants";
+import { log } from "./Utility/utility";
 import Wallet from "./Pages/Wallet/Wallet";
 import Loader from "./Pages/Loader/Loader";
 import NativeTx from "./Components/NativeTx";
@@ -33,17 +33,16 @@ import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
 import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
 import ValidatorNominatorTxns from "./Components/ValidatorNominatorTxns";
 import CongratulationsScreen from "./Pages/WelcomeScreens/CongratulationsScreen"
-import { log } from "./Utility/utility";
 
 
-function getParameterByName(name, url = window.location.href) {
-  name = name.replace(/[[\]]/g, "\\$&");
-  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-    results = regex.exec(url);
-  if (!results) return null;
-  if (!results[2]) return EMTY_STR;
-  return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
+// function getParameterByName(name, url = window.location.href) {
+//   name = name.replace(/[[\]]/g, "\\$&");
+//   var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+//     results = regex.exec(url);
+//   if (!results) return null;
+//   if (!results[2]) return EMTY_STR;
+//   return decodeURIComponent(results[2].replace(/\+/g, " "));
+// }
 
 
 function App(props) {
@@ -62,18 +61,19 @@ function App(props) {
 
   const navigate = useNavigate();
 
-  
+
   const { isLogin, vault } = isStateLoaded ? state : props.data;
-  const {activeSession} = isStateLoaded ? externalControlsState : props.externalControlsState;
-  
-  
+  const { activeSession } = isStateLoaded ? externalControlsState : props.externalControlsState;
+
+
   useEffect(() => {
     if (props.data && props.externalControlsState) {
       setState(props.data);
       setExternalControlState(props.externalControlsState);
       setStateLoaded(true);
     }
-   }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
 
   useEffect(() => {
@@ -101,9 +101,10 @@ function App(props) {
       // if (route) {
       //   navigate(ROUTES.DEFAULT + route);
       // } else {
-        navigate(ROUTES.DEFAULT);
+      navigate(ROUTES.DEFAULT);
       // }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLogin, vault, newAccount?.evmAddress, state?.pass, detailsPage, externalControlsState?.activeSession?.id]);
 
 
@@ -237,7 +238,7 @@ function App(props) {
           element={<WelcomeLayout children={<MainPrivacyPolicy />} />}
         />
       </Routes>
-      
+
       {/* for network, validation and internal error modals */}
       <ErrorModal />
       <RetryModal />

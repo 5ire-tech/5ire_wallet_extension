@@ -1,32 +1,23 @@
 import { Drawer } from "antd";
 import { ROUTES } from "../../Routes";
+import React, { useState } from "react";
 import style from "./style.module.scss";
-import { AuthContext } from "../../Store";
 import PrivacyPolicy from "./PrivacyPolicy";
 import Setting from "../../Assets/setting.svg";
 import Wallet from "../../Assets/WalletIcon.svg";
 import HistoryIcon from "../../Assets/histry.svg";
 import PrivacyPo from "../../Assets/PrivacyPo.svg";
 import Myaccount from "../../Assets/myaccount.svg";
-import React, { useState, useContext } from "react";
-import Sendhistry from "../../Assets/sendhistry.svg";
 import { openBrowserTab } from "../../Helper/helper";
 import { Link, useLocation } from "react-router-dom";
-import { arrayReverser } from "../../Utility/utility";
 import BackArrow from "../../Assets/PNG/arrowright.png";
-import { shortner, formatDate } from "../../Helper/helper";
 import SocialAccount from "../SocialAccount/SocialAccount";
 import ModalCloseIcon from "../../Assets/ModalCloseIcon.svg";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
-import TransectionHistry from "../TransectionHistry/TransectionHistry";
 import {
-  TX_TYPE,
-  CURRENCY,
-  EMTY_STR,
+  SOCIAL_LINKS,
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
-  SOCIAL_LINKS,
-  LABELS
 } from "../../Constants/index";
 import FooterStepOne, {
   ApproveTx,
@@ -36,16 +27,8 @@ import FooterStepOne, {
 
 function MenuFooter() {
   const getLocation = useLocation();
-  const [open1, setOpen1] = useState(false);
   const [open2, setOpen2] = useState(false);
-  const { state } = useContext(AuthContext);
-
   const { pathname } = getLocation;
-  const { currentAccount, currentNetwork, txHistory } = state;
-
-  const onClose1 = () => {
-    setOpen1(false);
-  };
 
   const onClose2 = () => {
     setOpen2(false);

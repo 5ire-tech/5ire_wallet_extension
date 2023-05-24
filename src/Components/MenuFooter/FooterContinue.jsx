@@ -1,19 +1,26 @@
-import style from "./style.module.scss";
 import { ROUTES } from "../../Routes";
+import style from "./style.module.scss";
+import { toast } from "react-hot-toast";
 import { AuthContext } from "../../Store";
 import { useNavigate } from "react-router-dom";
+import { isEqual } from "../../Utility/utility";
 import ButtonComp from "../ButtonComp/ButtonComp";
-import { EVM_JSON_RPC_METHODS, LABELS, STATE_CHANGE_ACTIONS, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS, ERROR_MESSAGES, TX_TYPE, DECIMALS, HTTP_END_POINTS, TABS_EVENT } from "../../Constants/index";
 import React, { useContext, useEffect, useState } from "react";
+import { TabMessagePayload } from "../../Utility/network_calls";
 import { newAccountInitialState } from "../../Store/initialState";
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
-import { isEqual, log } from "../../Utility/utility";
-import { sendMessageToTab, sendRuntimeMessage } from "../../Utility/message_helper";
-import { TabMessagePayload } from "../../Utility/network_calls";
-import { toast } from "react-hot-toast";
-import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
 import { sendMessageOverStream } from "../../Utility/message_helper";
-import { sendEventToTab, sendEventUsingTabId } from "../../Helper/helper";
+import { sendMessageToTab, sendRuntimeMessage } from "../../Utility/message_helper";
+import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
+import {
+  LABELS,
+  TX_TYPE,
+  ERROR_MESSAGES,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS,
+  EVM_JSON_RPC_METHODS,
+  STATE_CHANGE_ACTIONS,
+} from "../../Constants/index";
 
 //Before We begin
 function FooterStepOne() {
@@ -153,7 +160,7 @@ export const ApproveLogin = () => {
 export const ApproveTx = () => {
   const { state, externalControlsState, estimatedGas } = useContext(AuthContext);
   const { activeSession } = externalControlsState;
-  const {pendingTransactionBalance, balance, currentAccount, currentNetwork} = state;
+  const { pendingTransactionBalance, balance, currentAccount, currentNetwork } = state;
   const [disableApproval, setDisableApproval] = useState(true);
 
   const navigate = useNavigate();
@@ -165,7 +172,8 @@ export const ApproveTx = () => {
       setDisableApproval(true);
       return;
     } else setDisableApproval(!estimatedGas);
-  }, [estimatedGas]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [estimatedGas, activeSession.message?.value, balance?.evmBalance, currentAccount?.evmAddress, currentNetwork]);
 
 
   function handleClick(isApproved) {

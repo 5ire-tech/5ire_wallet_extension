@@ -38,8 +38,8 @@ function CreateNewWallet() {
 
     if (newWalletName.trim().length >= 2)
       setDisable(false);
-      
-  }, []);
+
+  }, [isLogin, newWalletName]);
 
   const handleChange = (e) => {
     setNewWalletName(e.target.value);
@@ -109,7 +109,7 @@ function CreateNewWallet() {
           <StepHeaders active={2} />
 
         }
-        <MenuRestofHeaders logosilver={true} title="5ireChain Wallet" />
+        <MenuRestofHeaders logosilver={true} title="5ire Wallet" />
         <div className={style.cardWhite__cardInner}>
           <div className={style.cardWhite__cardInner__innercontact}>
             <h1>Create a New Wallet</h1>
