@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import DarkRyt from "../../Assets/darkRyt.svg";
-import { CURRENCY, STATUS, TX_TYPE } from "../../Constants";
+import { CURRENCY, STATUS, SUCCESS_MESSAGES, TX_TYPE } from "../../Constants";
 import {
   shortner,
   fixNumber,
@@ -19,7 +19,7 @@ function TransectionHistry({ selectedTransaction, account }) {
   //for copying the hash to clipboard
   const handleClick = (hash) => {
     navigator.clipboard.writeText(hash);
-    toast.success("Transaction hash copied.");
+    toast.success(SUCCESS_MESSAGES.HASH_COPIED);
   };
 
   //for opening the explorer tab
