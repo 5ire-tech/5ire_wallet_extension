@@ -63,7 +63,7 @@ function ValidatorNominatorTxns() {
             }
         }
         // updateLoading(true);
-        sendMessageOverStream(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_TRANSACTION, { approve: isApproved, options: { account: currentAccount, isEvm: false, network: currentNetwork, type: TX_TYPE.NATIVE_APP } });
+        sendMessageOverStream(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_TRANSACTION, { approve: isApproved, options: { account: currentAccount, isEvm: false, network: currentNetwork, type: TX_TYPE.NATIVE_APP, fee: valdatorNominatorFee} });
         setValdatorNominatorFee(null);
         navigate(ROUTES.WALLET);
     }

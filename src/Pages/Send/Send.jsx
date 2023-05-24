@@ -316,6 +316,7 @@ function Send() {
               network: state.currentNetwork,
               type: TX_TYPE.SEND,
               isEvm: true,
+              fee: estimatedGas
             },
           }
         );
@@ -333,6 +334,7 @@ function Send() {
               network: state.currentNetwork,
               type: TX_TYPE.SEND,
               isEvm: false,
+              fee: estimatedGas
             },
           }
         );
