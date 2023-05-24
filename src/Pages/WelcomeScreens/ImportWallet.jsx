@@ -19,6 +19,8 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
+import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
+import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
 
 
 
@@ -31,6 +33,8 @@ function ImportWallet() {
   const { state, userPass, allAccounts, inputError, setInputError } = useContext(AuthContext);
   const { isLogin } = state;
   const [show, setShow] = useState(false)
+  const [isOpenEye, setEye] = useState(false);
+
 
   useEffect(() => {
     if (isLogin) {
@@ -62,6 +66,9 @@ function ImportWallet() {
   const handleChange = (e) => {
     setData((p) => ({ ...p, [e.target.name]: e.target.value }));
     if (e.target.name === LABELS.KEY) {
+      if (e.target.value?.trim())
+        setEye(true)
+
       setInputError("");
     }
   };
@@ -163,15 +170,7 @@ function ImportWallet() {
             <p className="errorText">{warrning.acc}</p>
           </div>
           <div className="inputFieldOnly">
-            {/* <InputFieldOnly
-              type="password"
-              placeholder={"Enter mnemonic here"}
-              placeholderBaseColor={true}
-              coloredBg={true}
-              name="key"
-              onChange={handleChange}
-              keyUp={validateKey}
-            /> */}
+
             <TextArea
               rows={4}
               name={LABELS.KEY}
@@ -179,7 +178,19 @@ function ImportWallet() {
               onChange={handleChange}
               onDrop={e => { e.preventDefault() }}
               placeholder={"Enter mnemonic here"}
+              className={isOpenEye && "blurContact"}
             />
+
+            <img
+              width={19}
+              height={16}
+              alt="eyeClose"
+              src={isOpenEye ? EyeCloseIcon : EyeOpenIcon}
+              draggable={false}
+              onClick={() => { setEye((old => !old)) }}
+            />
+
+
             <p className="errorText">{warrning.key}</p>
           </div>
         </div>
