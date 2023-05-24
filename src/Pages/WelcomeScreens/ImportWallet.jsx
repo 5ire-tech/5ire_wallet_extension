@@ -182,6 +182,7 @@ function ImportWallet() {
             />
 
             <img
+            className="eyeIcon"
               width={19}
               height={16}
               alt="eyeClose"
