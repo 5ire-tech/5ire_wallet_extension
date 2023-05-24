@@ -19,7 +19,7 @@ function TransectionHistry({ selectedTransaction, account }) {
   //for copying the hash to clipboard
   const handleClick = (hash) => {
     navigator.clipboard.writeText(hash);
-    toast.success("Transacion hash copied.");
+    toast.success("Transaction hash copied.");
   };
 
   //for opening the explorer tab
