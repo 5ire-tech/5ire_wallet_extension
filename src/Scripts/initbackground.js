@@ -495,7 +495,7 @@ class TransactionQueue {
     //add the transaction history track
     const { data, options } = transactionProcessingPayload;
     transactionProcessingPayload.transactionHistoryTrack = new TransactionPayload(data?.to || options?.to, data?.value ? Number(data?.value).toString() : "0", options?.isEvm, options?.network, options?.type);
-
+    
     //check if there is method inside tx payload (only nominator and validator transactions case)
     transactionProcessingPayload.transactionHistoryTrack.method = options?.method || null;
 
@@ -901,7 +901,7 @@ class ExternalTxTasks {
       const methodDetails = getFormattedMethod(activeSession?.method, activeSession?.message);
 
       //process the external evm transactions
-      const externalTransactionProcessingPayload = new TransactionProcessingPayload({ ...activeSession.message, value: methodDetails?.amount, options: { ...message?.data.options, method: methodDetails?.methodName, externalTransaction: { ...activeSession } } }, message.event, null, activeSession.message?.data, { ...message?.data.options, externalTransaction: { ...activeSession } });
+      const externalTransactionProcessingPayload = new TransactionProcessingPayload({ ...activeSession.message, value: methodDetails?.amount, options: { ...message?.data.options, externalTransaction: { ...activeSession } } }, message.event, null, activeSession.message?.data, { ...message?.data.options, externalTransaction: { ...activeSession }, method: methodDetails?.methodName });
 
       await this.transactionQueueHandler.addNewTransaction(externalTransactionProcessingPayload);
     }
