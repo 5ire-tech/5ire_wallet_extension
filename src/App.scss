@@ -170,6 +170,14 @@ body {
     &::placeholder {
       color: $white !important;
     }
+   
+  }
+  .eyeIcon{
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
   }
 
   textarea {
