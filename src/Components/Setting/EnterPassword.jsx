@@ -1,17 +1,20 @@
 import { useContext } from "react";
 import { ROUTES } from "../../Routes";
-import PrivateKey from "./PrivateKey";
 import style from "./style.module.scss";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../Store/index";
-import { isEmpty } from "../../Utility/utility.js"
 import ButtonComp from "../ButtonComp/ButtonComp";
+import { isEmpty } from "../../Utility/utility.js";
 import InputFieldSimple from "../InputField/InputFieldSimple.jsx";
 import { sendRuntimeMessage } from "../../Utility/message_helper.js";
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
-// import ModalCustom from "../ModalCustom/ModalCustom";
-import { LABELS, ERROR_MESSAGES, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
-import { useParams, useNavigate } from "react-router-dom";
+import {
+  LABELS,
+  ERROR_MESSAGES,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS
+} from "../../Constants/index";
 
 
 function EnterPassword() {
@@ -24,7 +27,8 @@ function EnterPassword() {
   const { inputError, setInputError, passVerified, setPassVerified } = useContext(AuthContext);
 
   useEffect(() => {
-    setInputError('')
+    setInputError('');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -41,6 +45,7 @@ function EnterPassword() {
       setPassVerified(false);
       navigate(ROUTES.PVT_KEY);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [passVerified]);
 
 
@@ -48,11 +53,6 @@ function EnterPassword() {
     setData(e.target.value);
     setInputError("");
   }
-
-  const handle_OK_Cancel = () => {
-    setData("");
-    // setModalOpen(false);
-  };
 
 
   const validateInput = () => {
@@ -80,7 +80,7 @@ function EnterPassword() {
           <div className={style.enterPassword}>
             <div className={style.commonHeadeing}>
               <p>
-              Enter your wallet password to reveal secret keys
+                Enter your wallet password to reveal secret keys
               </p>
             </div>
             <InputFieldSimple

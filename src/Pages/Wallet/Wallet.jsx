@@ -1,10 +1,10 @@
 import Send from "../Send/Send";
 import Swap from "../Swap/Swap.jsx";
 import style from "./style.module.scss";
+import { AuthContext } from "../../Store";
 import SwapLogo from "../../Assets/swap_arrow.svg";
 import TransferLogo from "../../Assets/send_arrow.svg";
 import React, { useEffect, useState, useContext } from "react";
-import { AuthContext } from "../../Store";
 
 function Wallet() {
   const [activeTab, setActiveTab] = useState("send");
@@ -12,6 +12,7 @@ function Wallet() {
 
   useEffect(() => {
     updateEstimatedGas(null);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   const activeSend = () => {

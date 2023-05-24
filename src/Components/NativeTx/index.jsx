@@ -1,36 +1,33 @@
 import { Layout } from "antd";
-import React, { useEffect, useContext, useState } from "react";
+import { ROUTES } from "../../Routes";
+import { isObject } from "@polkadot/util";
 import { AuthContext } from "../../Store";
-import style from "../../Layout/style.module.scss";
-import footerstyle from "../MenuFooter/style.module.scss";
-import pageStyle from "../../Pages/RejectNotification/style.module.scss";
+import { shortner } from "../../Helper/helper";
 import { useNavigate } from "react-router-dom";
-
+import CopyIcon from "../../Assets/CopyIcon.svg";
 import ButtonComp from "../ButtonComp/ButtonComp";
-import {
-  isObject,
-} from "@polkadot/util";
+import style from "../../Layout/style.module.scss";
 import { shortLongAddress } from "../../Utility/utility";
+import footerstyle from "../MenuFooter/style.module.scss";
+import React, { useEffect, useContext, useState } from "react";
+import { sendMessageOverStream } from "../../Utility/message_helper";
+import pageStyle from "../../Pages/RejectNotification/style.module.scss";
 import {
+  SIGNER_METHODS,
   MESSAGE_EVENT_LABELS,
   MESSAGE_TYPE_LABELS,
-  SIGNER_METHODS,
 } from "../../Constants";
-import { sendMessageOverStream } from "../../Utility/message_helper";
-import { ROUTES } from "../../Routes";
-import { shortner } from "../../Helper/helper";
-import CopyIcon from "../../Assets/CopyIcon.svg";
 
 function NativeSigner() {
-  const [formattedMethod, setFormattedMethod] = useState("");
   const { Content } = Layout;
+  const navigate = useNavigate();
+  const [formattedMethod, setFormattedMethod] = useState("");
   const {
     externalControlsState: { activeSession },
     state,
     externalNativeTxDetails,
     updateLoading,
   } = useContext(AuthContext);
-  const navigate = useNavigate();
 
   const handleClick = async (isApproved) => {
     sendMessageOverStream(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.NATIVE_SIGNER, { ...externalNativeTxDetails, approve: isApproved, options: { account: state.currentAccount, network: state.currentNetwork, nativeSigner: true } });
@@ -42,8 +39,10 @@ function NativeSigner() {
     if (SIGNER_METHODS.SIGN_PAYLOAD === method) {
       updateLoading(true);
       sendMessageOverStream(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS, { options: { account: state.currentAccount, network: state.currentNetwork } });
-    } else setFormattedMethod(SIGNER_METHODS.SIGN_RAW)
-  }, [])
+    }
+    else setFormattedMethod(SIGNER_METHODS.SIGN_RAW)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function RecComponent({ data }) {
     return Object.keys(data).map((v) => {
@@ -146,7 +145,7 @@ function NativeSigner() {
           </div>
         </Content>
         <div className={footerstyle.menuItems__cancleContinue1}>
-        <ButtonComp
+          <ButtonComp
             onClick={() => handleClick(true)}
             text={"Approve"}
             maxWidth={"100%"}
@@ -157,7 +156,7 @@ function NativeSigner() {
             maxWidth={"100%"}
             onClick={() => handleClick(false)}
           />
-         
+
         </div>
       </div>
     </div>

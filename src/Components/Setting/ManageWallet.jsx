@@ -1,15 +1,14 @@
 import { ROUTES } from "../../Routes";
 import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
-import { AuthContext } from "../../Store/index";
+import { shortner } from "../../Helper/helper";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../Store/index";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import React, { useContext, useEffect } from "react";
 import ButtonComp from "../ButtonComp/ButtonComp.jsx";
-import { NATIVE, EVM, COPIED, PVT_KEY, MNEMONIC } from "../../Constants/index";
-import Exportprivate from "../../Assets/PNG/exportprivate.png";
+import { NATIVE, EVM, COPIED } from "../../Constants";
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx";
-import { shortner } from "../../Helper/helper";
 
 function ManageWallet() {
   const navigate = useNavigate();
@@ -19,6 +18,7 @@ function ManageWallet() {
 
   useEffect(() => {
     setPassVerified(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCopy = (e) => {

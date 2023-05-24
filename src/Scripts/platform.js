@@ -1,9 +1,8 @@
 import Browser from "webextension-polyfill";
-import { WINDOW_HEIGHT, WINDOW_WIDTH, ERRCODES, ERROR_MESSAGES } from "../Constants";
-import { log, hasLength, isString, isNumber } from "../Utility/utility";
 import { isNullorUndef } from "../Utility/utility";
 import { Error, ErrorPayload } from "../Utility/error_helper";
-import { isManifestV3 } from "./utils";
+import { hasLength, isString, isNumber } from "../Utility/utility";
+import { WINDOW_HEIGHT, WINDOW_WIDTH, ERRCODES, ERROR_MESSAGES } from "../Constants";
 
 
 //Handle the window and notification creation

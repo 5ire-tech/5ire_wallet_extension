@@ -1,15 +1,15 @@
 import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
+import { Link } from "react-router-dom";
 import useAuth from "../../Hooks/useAuth";
 import { AuthContext } from "../../Store";
+import { isEmpty } from "../../Utility/utility";
 import PlaceLogo from "../../Assets/PlaceLog.svg";
+import { decryptor } from "../../Helper/CryptoHelper";
 import React, { useEffect, useState, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
-import { isEmpty } from "../../Utility/utility";
-import { decryptor } from "../../Helper/CryptoHelper";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 import {
   LABELS,
@@ -18,7 +18,6 @@ import {
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
 
-import * as StorageUpdator from "../../Storage/loadstore";
 
 function UnlockWelcome() {
   const { verifyPass } = useAuth()
@@ -91,7 +90,6 @@ function UnlockWelcome() {
             <img src={PlaceLogo} alt="placeLogo" draggable={false} />
             <div className={style.cardWhite__cardInner__innercontact}>
               <h1>Welcome Back!</h1>
-              {/* <span>The Decentralized Web Awaits</span> */}
             </div>
           </div>
         </div>

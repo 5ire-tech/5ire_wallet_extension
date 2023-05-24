@@ -48,11 +48,12 @@ function Swap() {
     setError("");
     setAmount("");
     updateEstimatedGas(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toFrom?.to, currentNetwork]);
 
   useEffect(() => {
-    console.log("allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()] : ", allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]);
     setBalance(allAccountsBalance[currentAccount?.evmAddress][currentNetwork?.toLowerCase()]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance,
     allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.nativeBalance,
@@ -90,8 +91,7 @@ function Swap() {
     } else if (!amount || error || !estimatedGas) {
       setDisable(true);
     }
-
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amount, error, isEd, toFrom?.from, estimatedGas]);
 
 
@@ -151,6 +151,7 @@ function Swap() {
 
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [estimatedGas, amount, balance?.nativeBalance, isEd, toFrom.from, balance?.evmBalance]);
 
   const blockInvalidChar = e => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
@@ -314,78 +315,18 @@ function Swap() {
     <button disabled={isMaxDisabled} className="maxBtn" onClick={handleMaxClick}>Max</button>
   );
 
-
-  // useEffect(() => {
-  //   const getData = setTimeout(() => {
-  //     if (
-  //       (!isEmpty(amount) && !error)
-  //       ||
-  //       !amount
-  //     ) {
-  //       getFee(!amount ? false : true);
-  //     } else {
-  //       updateEstimatedGas(null);
-  //       setDisable(true);
-  //     }
-  //   }, 1000);
-
-  //   return () => clearTimeout(getData);
-
-  // }, [amount, error, isEd, maxAmount, toFrom.from]);
-
-
-  // const handleCopy = (e) => {
-  //   if (e.target.name.toLowerCase() === NATIVE.toLowerCase())
-  //     navigator.clipboard.writeText(currentAccount?.nativeAddress);
-
-  //   if (e.target.name.toLowerCase() === EVM.toLowerCase())
-  //     navigator.clipboard.writeText(currentAccount?.evmAddress);
-
-  //   // if (e.target.name.toLowerCase() === "hash")
-  //   //   navigator.clipboard.writeText(txHash);
-
-  //   toast.success(COPIED);
-  // };
-
-
   return (
     <>
       <div className={style.swap} onKeyDown={handleEnter} >
         <div className={style.swap__swapCopy}>
           <div className={style.swap__swapSec}>
             <h3>From {toFrom.from}</h3>
-            {/* <span>
-              {shortner(address.fromAddress)}
-              <img
-                width={15}
-                height={15}
-                alt="copyIcon"
-                src={CopyIcon}
-                draggable={false}
-                name={toFrom.from}
-                onClick={handleCopy}
-              />
-            </span> */}
-            {/* <span>{isEqual(toFrom.to, EVM) ? shortner(currentAccount.evmAddress) : shortner(currentAccount.nativeAddress)}</span> */}
           </div>
           <div className={style.swap__icon} onClick={handleClick}>
             <img src={SwapIcon} alt="swapIcon" draggable={false} />
           </div>
           <div className={style.swap__swapSec}>
             <h3>To {toFrom.to}</h3>
-            {/* <span>
-              {shortner(address.toAddress)}{" "}
-              <img
-                width={15}
-                height={15}
-                src={CopyIcon}
-                alt="copyIcon"
-                name={toFrom.to}
-                draggable={false}
-                onClick={handleCopy}
-              />
-            </span> */}
-            {/* <span>{!isEqual(toFrom.to, EVM) ? shortner(currentAccount.evmAddress) : shortner(currentAccount.nativeAddress)}</span> */}
           </div>
         </div>
         <div className={style.swap__swapAccount}>
@@ -447,30 +388,6 @@ function Swap() {
           <div className="innerContact">
             <img src={ComplSwap} alt="swapIcon" width={127} height={127} draggable={false} />
             <h2 className="title">Swap Processed</h2>
-            {/* <p className="transId">Your Swapped Transaction ID</p>
-             <h3 className="hashTag">{txHash ? shortner(txHash): ""}</h3>
-              {txHash && <img
-              draggable={false}
-              src={CopyIcon}
-              alt="copyIcon"
-              name="naiveAddress"
-              style={{cursor: "pointer"}}
-              onClick={handleCopy}
-            />} */}
-
-            {/* <span className="address">
-              {txHash ? shortner(txHash) : ""}
-              <img
-                width={15}
-                height={15}
-                name={"hash"}
-                src={CopyIcon}
-                alt="copyIcon"
-                draggable={false}
-                onClick={handleCopy}
-              />
-            </span> */}
-
             <div className="footerbuttons">
               <ButtonComp text={"Swap Again"} onClick={handle_OK_Cancel} />
             </div>
@@ -488,8 +405,6 @@ function Swap() {
           <div className="innerContact">
             <img src={FaildSwap} alt="swapFaild" width={127} height={127} draggable={false} />
             <h2 className="title">Swap Failed!</h2>
-            {/* <p className="transId">{swapErr}</p> */}
-
             <div className="footerbuttons">
               <ButtonComp text={"Try Again"} onClick={handle_OK_Cancel} />
             </div>

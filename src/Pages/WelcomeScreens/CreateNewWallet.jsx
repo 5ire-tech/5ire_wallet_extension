@@ -39,7 +39,7 @@ function CreateNewWallet() {
     if (newWalletName.trim().length >= 2)
       setDisable(false);
 
-  }, []);
+  }, [isLogin, newWalletName]);
 
   const handleChange = (e) => {
     setNewWalletName(e.target.value);

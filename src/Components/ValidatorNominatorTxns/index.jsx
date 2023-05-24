@@ -36,7 +36,9 @@ function ValidatorNominatorTxns() {
             setDisableApproval(true);
             // setValdatorNominatorFee(null);
             return;
-        } else setDisableApproval(false)
+        } else
+            setDisableApproval(false);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [valdatorNominatorFee?.fee]);
 
 
@@ -45,6 +47,7 @@ function ValidatorNominatorTxns() {
         updateLoading(true);
         sendMessageOverStream(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE, {});
         setDisableApproval(!valdatorNominatorFee?.fee);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
 
@@ -64,11 +67,6 @@ function ValidatorNominatorTxns() {
         setValdatorNominatorFee(null);
         navigate(ROUTES.WALLET);
     }
-
-
-
-
-
 
     function formatParams(messageInfo) {
         try {
@@ -95,11 +93,11 @@ function ValidatorNominatorTxns() {
                         <div className={pageStyle.rejectedSec}>
                             <div className={`${pageStyle.rejectedSec__detailDataSec} ${pageStyle.rejectedSec__transactionDetailMain}`}>
 
-                                    <h3
-                                        className={`${pageStyle.rejectedSec__sendSwapbtn__txnDetailHeading} }`}
-                                    >
-                                        Transaction Details
-                                    </h3>
+                                <h3
+                                    className={`${pageStyle.rejectedSec__sendSwapbtn__txnDetailHeading} }`}
+                                >
+                                    Transaction Details
+                                </h3>
                                 <div className={`${pageStyle.rejectedSec__listReject} ${pageStyle.rejectedSec__txnDetail}`}>
 
                                     <div className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact1}`}>
@@ -130,7 +128,7 @@ function ValidatorNominatorTxns() {
 
                 </Content>
                 <div className={footerstyle.menuItems__cancleContinue1}>
-                <ButtonComp
+                    <ButtonComp
                         onClick={() => handleClick(true)}
                         text={"Approve"}
                         maxWidth={"100%"}
@@ -142,7 +140,7 @@ function ValidatorNominatorTxns() {
                         maxWidth={"100%"}
                         onClick={() => handleClick(false)}
                     />
-                  
+
                 </div>
             </div>
 

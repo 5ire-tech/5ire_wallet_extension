@@ -8,7 +8,7 @@ import { LABELS, ERROR_MESSAGES, SUCCESS_MESSAGES } from "../Constants/index";
 
 export default function useAuth() {
   const { state, updateState } = useContext(AuthContext);
-  const { allAccounts, newAccount, pass, txHistory} = state;
+  const { allAccounts, newAccount, txHistory } = state;
 
   const setUserPass = (p) => {
     return new Promise(async (resolve) => {
@@ -88,7 +88,7 @@ export default function useAuth() {
   const logout = async () => {
     try {
 
-      updateState(LABELS.ISLOGIN,false, true, true);
+      updateState(LABELS.ISLOGIN, false, true, true);
 
       return {
         error: false,

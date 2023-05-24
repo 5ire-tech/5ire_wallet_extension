@@ -54,7 +54,7 @@ function ForgotPassword() {
       setError((p) => ({ ...p, confirmPass: EMTY_STR }));
     else if (data.confirmPass !== EMTY_STR)
       setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }));
-  }, [data.pass, data.confirmPass]);
+  }, [data?.pass, data?.confirmPass]);
 
   const handleChange = (e) => {
     setData((p) => {

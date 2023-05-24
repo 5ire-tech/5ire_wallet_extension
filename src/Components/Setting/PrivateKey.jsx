@@ -27,19 +27,17 @@ function PrivateKey() {
     setOpen((p) => ({ ...p, [name]: !isOpen[name] }));
   };
   useEffect(() => {
-    // if (id === PVT_KEY) {
     sendRuntimeMessage(
       MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
       MESSAGE_EVENT_LABELS.EXPORT_PRIVATE_KEY,
       { address: currentAccount?.evmAddress }
     );
-    // } else {
     sendRuntimeMessage(
       MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
       MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE,
       { address: currentAccount.nativeAddress }
     );
-    // }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCopy = (e) => {

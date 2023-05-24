@@ -3,8 +3,7 @@ import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
 import { Link } from "react-router-dom";
 import PlaceLogo from "../../Assets/PlaceLog.svg";
-import PrivacyPolicy from "../../Components/MenuFooter/PrivacyPolicy";
-// import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+
 
 function WelcomeScreen() {
   return (
@@ -21,16 +20,14 @@ function WelcomeScreen() {
           </div>
         </div>
         <div className={style.cardWhite__linkOuter}>
-          <Link /*to={ROUTES.CREATE_WALLET}*/ to={ROUTES.BEFORE_BEGIN} className="bluegradient">
+          <Link to={ROUTES.BEFORE_BEGIN} className="bluegradient">
             Create a New Wallet
           </Link>
-          {/* <Link className="grayBtn" to={ROUTES.IMPORT_WALLET}> */}
           <Link className="grayBtn" to={ROUTES.SET_PASS + "/import"}>
             Import Wallet
           </Link>
         </div>
       </div>
-      {/* <PrivacyPolicy/> */}
     </div>
   );
 }
