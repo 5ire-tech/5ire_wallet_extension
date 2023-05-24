@@ -2,8 +2,6 @@ import Browser from "webextension-polyfill";
 import { EMTY_STR, VALIDATOR_NOMINATOR_METHOD } from "../Constants";
 import { isNullorUndef } from "../Utility/utility";
 import { v4 as uuid4 } from 'uuid';
-import Browser from "webextension-polyfill";
-import { isNullorUndef } from "../Utility/utility";
 
 export const getUrlOrigin = (url) => {
   return new URL(url).origin;
