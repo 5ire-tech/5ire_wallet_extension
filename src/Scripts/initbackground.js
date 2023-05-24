@@ -1,5 +1,5 @@
 import Web3 from "web3";
-import { isManifestV3 } from "./utils";
+import { getFormattedMethod, isManifestV3 } from "./utils";
 import { BigNumber } from "bignumber.js";
 import { u8aToHex } from "@polkadot/util";
 import Browser from "webextension-polyfill";
@@ -494,7 +494,10 @@ class TransactionQueue {
 
     //add the transaction history track
     const { data, options } = transactionProcessingPayload;
-    transactionProcessingPayload.transactionHistoryTrack = new TransactionPayload(data?.to || options?.to, data?.value ? parseFloat(Number(data?.value)).toString() : "", options?.isEvm, options?.network, options?.type);
+    transactionProcessingPayload.transactionHistoryTrack = new TransactionPayload(data?.to || options?.to, data?.value ? Number(data?.value).toString() : "0", options?.isEvm, options?.network, options?.type);
+
+    //check if there is method inside tx payload (only nominator and validator transactions case)
+    transactionProcessingPayload.transactionHistoryTrack.method = options?.method || null;
 
     //insert transaction history with flag "Queued"
     await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY, transactionProcessingPayload.transactionHistoryTrack, transactionProcessingPayload.options);
@@ -824,7 +827,6 @@ class ExternalTxTasks {
   constructor() {
     this.transactionQueueHandler = TransactionQueue.getInstance();
     this.nativeSignerhandler = new NativeSigner();
-    this.validatorNominatorHandler = new ValidatorNominatorHandler();
   }
 
   //process and check external task (connection, tx approval)
@@ -895,8 +897,11 @@ class ExternalTxTasks {
     if (message.data?.approve) {
       const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
 
+      //get the method and amount
+      const methodDetails = getFormattedMethod(activeSession?.method, activeSession?.message);
+
       //process the external evm transactions
-      const externalTransactionProcessingPayload = new TransactionProcessingPayload({ ...activeSession.message, options: { ...message?.data.options, externalTransaction: { ...activeSession } } }, message.event, null, activeSession.message?.data, { ...message?.data.options, externalTransaction: { ...activeSession } });
+      const externalTransactionProcessingPayload = new TransactionProcessingPayload({ ...activeSession.message, value: methodDetails?.amount, options: { ...message?.data.options, method: methodDetails?.methodName, externalTransaction: { ...activeSession } } }, message.event, null, activeSession.message?.data, { ...message?.data.options, externalTransaction: { ...activeSession } });
 
       await this.transactionQueueHandler.addNewTransaction(externalTransactionProcessingPayload);
     }
@@ -994,7 +999,7 @@ export class Services {
       else transactionBalance.native = accountBalance.native - value;
     }
  
-    log(`Here is the Balance: evm: ${transactionBalance.evm} native: ${transactionBalance.native} for acc ${address} and network ${network} or chain is evm (true/false): ${isEvm}`);
+    // log(`Here is the Balance: evm: ${transactionBalance.evm} native: ${transactionBalance.native} for acc ${address} and network ${network} or chain is evm (true/false): ${isEvm}`);
 
     await this.updateLocalState(STATE_CHANGE_ACTIONS.UPDATE_PENDING_TRANSACTION_BALANCE, transactionBalance, { network, address });
   }

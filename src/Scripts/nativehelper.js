@@ -7,6 +7,7 @@ import { hasProperty, log } from "../Utility/utility";
 import { EventPayload } from "../Utility/network_calls";
 import { ErrorPayload, Error } from "../Utility/error_helper";
 import { getDataLocal } from "../Storage/loadstore";
+import { getFormattedMethod } from "./utils";
 
 export default class ValidatorNominatorHandler {
   static instance = null;
@@ -33,25 +34,25 @@ export default class ValidatorNominatorHandler {
     const method = activeSession?.method || message.options.externalTransaction.method;
 
     if (hasProperty(ValidatorNominatorHandler.instance, method)) {
-      const methodDetails = this.getFormattedMethod(method, externalData);
-      
-      if(!isFee) {
-      //check for sufficent balance to perfrom operation
-      const network = message?.transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
-      const balance = state.allAccountsBalance[message.options?.account.evmAddress][network];
-        if (Number(methodDetails.amount) >= (Number(balance?.nativeBalance) - (state.pendingTransactionBalance[message.options?.account.evmAddress][network].native - Number(methodDetails.amount))))
-        new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, { error: true, data: ERROR_MESSAGES.INSUFFICENT_BALANCE })).throw();
+      const methodDetails = getFormattedMethod(method, externalData);
 
-      //check if the amount is valid
-      if (Number(methodDetails.amount) < 0 || isNaN(Number(methodDetails.amount)))
-        new Error(new ErrorPayload(ERRCODES.INVALID_INPUT, { error: true, data: ERROR_MESSAGES.INVALID_AMOUNT })).throw();
-      }
+      // if(!isFee) {
+      // //check for sufficent balance to perfrom operation
+      // const network = message?.transactionHistoryTrack?.chain.toLowerCase() || state.currentNetwork.toLowerCase();
+      // const balance = state.allAccountsBalance[message.options?.account.evmAddress][network];
+      //   if (Number(methodDetails.amount) >= (Number(balance?.nativeBalance) - (state.pendingTransactionBalance[message.options?.account.evmAddress][network].native - Number(methodDetails.amount))))
+      //   new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, { error: true, data: ERROR_MESSAGES.INSUFFICENT_BALANCE })).throw();
 
+      // //check if the amount is valid
+      // if (Number(methodDetails.amount) < 0 || isNaN(Number(methodDetails.amount)))
+      //   new Error(new ErrorPayload(ERRCODES.INVALID_INPUT, { error: true, data: ERROR_MESSAGES.INVALID_AMOUNT })).throw();
+      // }
 
       const res = await ValidatorNominatorHandler.instance[method](state, externalData, isFee);
       //if error occured then throw it
       if (res?.error) new Error(new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, res)).throw();
-      log("payload is here: ", res.data, methodDetails)
+
+      //check if request is for fee-estimation or transaction 
       if (isFee) payload.data = { fee: res.data, ...methodDetails };
       else {
         const transactionHistory = { ...message?.transactionHistoryTrack, status: STATUS.PENDING, txHash: res.data?.txHash, method: methodDetails.methodName, amount: methodDetails.amount };
@@ -61,87 +62,6 @@ export default class ValidatorNominatorHandler {
       return new EventPayload(null, message.event, payload);
     } else new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.INVALID_PROPERTY)).throw();
   }
-
-  getFormattedMethod = (method, message) => {
-    let methodName = "", amount = 0;
-    switch (method) {
-      case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_NOMINATOR:
-        methodName = "Add Nominator";
-        amount = message?.stakeAmount;
-        break;
-      case VALIDATOR_NOMINATOR_METHOD.NATIVE_RENOMINATE:
-        methodName = "Re-Nominate";
-        break;
-      case VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_PAYOUT:
-        methodName = "Nominator Payout";
-        amount = message?.amount;
-        break;
-      case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_PAYOUT:
-        methodName = "Validator Payout";
-        amount = message?.amount;
-        break;
-      case VALIDATOR_NOMINATOR_METHOD.NATIVE_STOP_VALIDATOR:
-        methodName = "Stop Validator";
-        break;
-
-      case VALIDATOR_NOMINATOR_METHOD.NATIVE_STOP_NOMINATOR:
-        methodName = "Stop Nominator";
-        break;
-      case VALIDATOR_NOMINATOR_METHOD.NATIVE_UNBOND_VALIDATOR:
-        methodName = "Unbond Validator";
-        amount = message?.amount;
-        break;
-
-      case VALIDATOR_NOMINATOR_METHOD.NATIVE_UNBOND_NOMINATOR:
-        methodName = "Unbond Nominator";
-        amount = message?.amount;
-
-        break;
-      case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR:
-        methodName = "Send Funds";
-        amount = message?.amount;
-        break;
-
-      case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR:
-        methodName = "Send Funds";
-        amount = message?.amount;
-
-        break;
-      case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR_UNBONDED:
-        methodName = "Withdraw Nominator Unbonded";
-        amount = message?.value;
-        break;
-
-      case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR_UNBONDED:
-        methodName = "Withdraw Validator Unbonded";
-        amount = message?.value;
-        break;
-
-      case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_VALIDATOR:
-        methodName = "Add Validator";
-        amount = message?.amount;
-        break;
-
-      case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_BONDMORE:
-        methodName = "Bond More Funds";
-        amount = message?.amount;
-
-        break;
-      case VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_BONDMORE:
-        methodName = "Bond More Funds";
-        amount = message?.amount;
-
-        break;
-      case VALIDATOR_NOMINATOR_METHOD.NATIVE_RESTART_VALIDATOR:
-        methodName = "Restart Validator";
-        break;
-      default:
-
-    }
-
-    return { methodName, amount }
-  }
-
 
   getKeyring = (address) => {
     try {
