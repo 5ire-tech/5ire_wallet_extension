@@ -34,6 +34,7 @@ function ImportWallet() {
   const { isLogin } = state;
   const [show, setShow] = useState(false)
   const [isOpenEye, setEye] = useState(false);
+  const [isMannual, setMannual] = useState(false);
 
 
   useEffect(() => {
@@ -66,7 +67,7 @@ function ImportWallet() {
   const handleChange = (e) => {
     setData((p) => ({ ...p, [e.target.name]: e.target.value }));
     if (e.target.name === LABELS.KEY) {
-      if (e.target.value?.trim())
+      if (e.target.value?.trim() && !isMannual)
         setEye(true)
 
       setInputError("");
@@ -187,7 +188,10 @@ function ImportWallet() {
               alt="eyeClose"
               src={isOpenEye ? EyeCloseIcon : EyeOpenIcon}
               draggable={false}
-              onClick={() => { setEye((old => !old)) }}
+              onClick={() => {
+                setEye((old => !old));
+                setMannual(true)
+              }}
             />
 
 
