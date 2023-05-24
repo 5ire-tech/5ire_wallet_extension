@@ -56,6 +56,7 @@ export const formatNumUptoSpecificDecimal = (num, numOfDecimals = 4) => {
         } else {
             num = num.toString();
             const reDot = /[.]/;
+            if(!reDot.test(num)) return Number(num);
             let index = num.search(reDot);
 
             if (numOfDecimals <= 0)
@@ -65,6 +66,7 @@ export const formatNumUptoSpecificDecimal = (num, numOfDecimals = 4) => {
         }
     } catch (err) {
         // console.log("Error while formatting num : ", err);
+        return 0;
     }
 };
 
