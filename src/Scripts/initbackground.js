@@ -506,7 +506,7 @@ class TransactionQueue {
     await this.services.updateLocalState(STATE_CHANGE_ACTIONS.ADD_NEW_TRANSACTION, transactionProcessingPayload, { localStateKey: LABELS.TRANSACTION_QUEUE, network: transactionProcessingPayload.options?.network.toLowerCase() });
 
     //update the current transaction pending balance state
-    await this.services.updatePendingTransactionBalance(options.network.toLowerCase(), options.account.evmAddress, isNaN(Number(data?.value)) ? 0 : Number(data?.value), options?.isEvm, true);
+    await this.services.updatePendingTransactionBalance(options.network.toLowerCase(), options.account.evmAddress, isNaN(Number(data?.value)) ? (0 + Number(options?.fee)) : (Number(data?.value) + Number(options?.fee)), options?.isEvm, true);
     //emit the event that new transaction is added into queue
     ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.NEW_TRANSACTION_INQUEUE, options.network.toLowerCase());
   }
@@ -599,7 +599,7 @@ class TransactionQueue {
         const {options, data} = transactionQueue.currentTransaction;
         log("here is options data: ", transactionQueue);
         //update the current transaction pending balance state
-        await this.services.updatePendingTransactionBalance(network, options.account.evmAddress, isNaN(Number(data?.value)) ? 0 : Number(data?.value), options.isEvm);
+        await this.services.updatePendingTransactionBalance(network, options.account.evmAddress, isNaN(Number(data?.value)) ? (0 + Number(options?.fee)) : (Number(data?.value) + Number(options?.fee)), options.isEvm);
 
         //check if there any pending transaction into queue
         if (!isEqual(hasPendingTx, 0)) {
@@ -655,7 +655,7 @@ class TransactionQueue {
           this.services.showNotification(txNotificationStringTemplate(transactionStatus.status, txHash));
 
           //update the pending transaction balance
-          await this.services.updatePendingTransactionBalance(network, currentTransaction.options.account.evmAddress, isNaN(Number( currentTransaction.data?.value)) ? 0 : Number(currentTransaction.data?.value), currentTransaction.options.isEvm);
+          await this.services.updatePendingTransactionBalance(network, currentTransaction.options.account.evmAddress, isNaN(Number( currentTransaction.data?.value)) ? (0 + Number(currentTransaction.options.fee)) : (Number(currentTransaction.data?.value) + Number(currentTransaction.options.fee)), currentTransaction.options.isEvm);
 
           //check if there any pending transaction into queue
           if (!isEqual(hasPendingTx, 0)) {
@@ -1076,7 +1076,7 @@ export class TransactionsRPC {
     try {
 
       const { data, transactionHistoryTrack, contractBytecode } = message;
-      const { options: { account } } = data;
+      const { options: { account, fee } } = data;
       const network = transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase()
       const { evmApi } = NetworkHandler.api[network];
       const balance = state.allAccountsBalance[account?.evmAddress][network];
@@ -1086,8 +1086,9 @@ export class TransactionsRPC {
       // transactionHistory.status = STATUS.PENDING
 
       const tempAmount = data?.options?.isBig ? (new BigNumber(data.value).dividedBy(DECIMALS)).toString() : data.value;
+      const balanceWithFee = (Number(tempAmount) + Number(fee));
 
-      if (Number(tempAmount) > (Number(balance?.evmBalance) - (state.pendingTransactionBalance[account.evmAddress][network].evm - tempAmount))) new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
+      if (balanceWithFee > (Number(balance?.evmBalance) - (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee))) new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
 
 
       else {
@@ -1169,7 +1170,7 @@ export class TransactionsRPC {
 
     try {
       const { data, transactionHistoryTrack } = message;
-      const { options: { account } } = data;
+      const { options: { account, fee } } = data;
       const network = transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
       const { evmApi, nativeApi } = NetworkHandler.api[network];
       const balance = state.allAccountsBalance[account?.evmAddress][network];
@@ -1178,7 +1179,9 @@ export class TransactionsRPC {
 
       // transactionHistory.status = STATUS.PENDING;
 
-      if (Number(data.value) >= (Number(balance?.evmBalance) - (state.pendingTransactionBalance[account.evmAddress][network].evm - Number(data.value))))
+      const balanceWithFee = (Number(data.value) + Number(fee));
+
+      if (balanceWithFee >= (Number(balance?.evmBalance) - (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)))
         new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
 
       else {
@@ -1244,7 +1247,7 @@ export class TransactionsRPC {
 
     try {
       const { data, transactionHistoryTrack } = message;
-      const { options: { account } } = data;
+      const { options: { account, fee } } = data;
       const network = transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
       const { nativeApi } = NetworkHandler.api[network];
       const balance = state.allAccountsBalance[account?.evmAddress][network];
@@ -1252,7 +1255,9 @@ export class TransactionsRPC {
 
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
-      if (Number(data.value) >= (Number(balance?.nativeBalance) - (state.pendingTransactionBalance[account.evmAddress][network].native - Number(data.value))))
+      const balanceWithFee = (Number(data.value) + Number(fee));
+
+      if (balanceWithFee >= (Number(balance?.nativeBalance) - (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)))
         new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
       else {
 
@@ -1340,14 +1345,16 @@ export class TransactionsRPC {
 
     try {
       const { data, transactionHistoryTrack } = message;
-      const { options: { account } } = data;
+      const { options: { account, fee } } = data;
       const network = transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
       const { nativeApi } = NetworkHandler.api[network];
       const balance = state.allAccountsBalance[account.evmAddress][network];
 
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
-      if (Number(data?.value) >= (Number(balance?.nativeBalance) - (state.pendingTransactionBalance[account.evmAddress][network].native - Number(data.value))))
+      const balanceWithFee = (Number(data.value) + Number(fee));
+
+      if (balanceWithFee >= (Number(balance?.nativeBalance) - (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)))
         new Error(new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)).throw();
       else {
         // transactionHistory.status = STATUS.PENDING;
