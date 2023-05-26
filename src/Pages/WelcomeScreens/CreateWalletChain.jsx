@@ -64,7 +64,7 @@ function CreateWalletChain() {
           Copy All
         </button>
       </div>
-      <div className={style.cardWhite__addressInput}>
+      <div className={style.cardWhite__addressInput} style={{marginTop:"40px"}} >
         <label>EVM Chain Address:</label>
         <p className={style.cardWhite__addressInput__copyText}>
           <span>{newAccount?.evmAddress}</span>
