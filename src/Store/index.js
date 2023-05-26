@@ -19,6 +19,7 @@ import {
   externalControls,
   newAccountInitialState,
   initialExternalNativeTransaction,
+  windowAndTabState,
 } from "./initialState";
 
 //context created
@@ -57,12 +58,14 @@ export default function Context({ children }) {
   const [valdatorNominatorFee, setValdatorNominatorFee] = useState(null);
   const [tempBalance, setTempBalance] = useState({ evmBalance: 0, nativeBalance: 0 });
   const [externalNativeTxDetails, setExternalNativeTxDetails] = useState(initialExternalNativeTransaction);
+  const [windowAndTab, setWindowAndTab] = useState(windowAndTabState);
 
 
   Browser.storage.local.onChanged.addListener((changedData) => {
     //change the state whenever the local storage is updated
     !isNullorUndef(changedData?.state) && setState(changedData.state.newValue);
     !isNullorUndef(changedData?.externalControls) && setExternalControlState(changedData.externalControls.newValue);
+    !isNullorUndef(changedData?.windowAndTabState) && setWindowAndTab(changedData.windowAndTabState.newValue);
   })
 
 
@@ -85,11 +88,11 @@ export default function Context({ children }) {
       } else if (message.event === MESSAGE_EVENT_LABELS.ADD_ACCOUNT) {
         addAccount(message.data);
         //send account details whenever account is changed
-        sendEventToTab(new TabMessagePayload(TABS_EVENT.ACCOUNT_CHANGE_EVENT, { result: { evmAddress: state.currentAccount.evmAddress, nativeAddress: state.currentAccount.nativeAddress } }, null, TABS_EVENT.ACCOUNT_CHANGE_EVENT), externalControlsState.connectedApps);
+        sendEventToTab(windowAndTab, new TabMessagePayload(TABS_EVENT.ACCOUNT_CHANGE_EVENT, { result: { evmAddress: state.currentAccount.evmAddress, nativeAddress: state.currentAccount.nativeAddress } }, null, TABS_EVENT.ACCOUNT_CHANGE_EVENT), externalControlsState.connectedApps);
       } else if (message.event === MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC) {
         importAccountByMnemonics(message.data);
         //send account details whenever account is changed
-        sendEventToTab(new TabMessagePayload(TABS_EVENT.ACCOUNT_CHANGE_EVENT, { result: { evmAddress: state.currentAccount.evmAddress, nativeAddress: state.currentAccount.nativeAddress } }, null, TABS_EVENT.ACCOUNT_CHANGE_EVENT), externalControlsState.connectedApps);
+        sendEventToTab(windowAndTab, new TabMessagePayload(TABS_EVENT.ACCOUNT_CHANGE_EVENT, { result: { evmAddress: state.currentAccount.evmAddress, nativeAddress: state.currentAccount.nativeAddress } }, null, TABS_EVENT.ACCOUNT_CHANGE_EVENT), externalControlsState.connectedApps);
       } else if (message.event === MESSAGE_EVENT_LABELS.GET_ACCOUNTS) {
         getAccounts(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.VERIFY_USER_PASSWORD) {
@@ -251,6 +254,7 @@ export default function Context({ children }) {
     accountName,
     networkError,
     estimatedGas,
+    windowAndTab,
     passVerified,
     isStateLoaded,
     newWalletName,
@@ -272,8 +276,9 @@ export default function Context({ children }) {
     updateLoading,
     setNewAccount,
     setPrivateKey,
-    setStateLoaded,
     setTempBalance,
+    setStateLoaded,
+    setWindowAndTab,
     // removeHistory,
     setNetworkError,
     setPassVerified,

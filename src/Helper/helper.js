@@ -128,12 +128,10 @@ export const generateErrorMessage = (method, origin) => {
 }
 
 //send event to the connected tab
-export const sendEventToTab = async (tabMessagePayload, connectedApps, emitWithoutConnectionCheck = false) => {
-    getCurrentTabDetails().then((tabDetails) => {
-        if (!checkStringInclusionIntoArray(tabDetails.tabUrl, RESTRICTED_URLS) && ((connectedApps &&connectedApps[tabDetails?.tabUrl]?.isConnected) || emitWithoutConnectionCheck)) {
-            sendMessageToTab(tabDetails.tabId, tabMessagePayload)
+export const sendEventToTab = async (tabDetails, tabMessagePayload, connectedApps, emitWithoutConnectionCheck = false) => {
+        if (!checkStringInclusionIntoArray(tabDetails.tabDetails.origin, RESTRICTED_URLS) && ((connectedApps && connectedApps[tabDetails.tabDetails.origin]?.isConnected) || emitWithoutConnectionCheck)) {
+            tabDetails.tabDetails.tabId && sendMessageToTab(tabDetails.tabDetails.tabId, tabMessagePayload);
         }
-    });
 }
 
 //send event to specfic tab
@@ -141,7 +139,7 @@ export const sendEventUsingTabId = async (tabId, tabEventPayload, connectedApps=
     if(connectedApps) {
     const tabDetails = getTabDetailsUsingTabId(tabId);
         if(tabDetails) {
-            const isConnected = connectedApps[new URL(tabDetails.url).hostname]?.isConnected;
+            const isConnected = connectedApps[new URL(tabDetails.url).origin]?.isConnected;
             isConnected && sendMessageToTab(tabId, tabEventPayload);
         }
     } else sendMessageToTab(tabId, tabEventPayload);

@@ -1,8 +1,8 @@
 import { localStorage, sessionStorage } from ".";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import { ERRCODES, ERROR_MESSAGES, LABELS, STATUS, NETWORK } from "../Constants";
-import { userState, externalControls, transactionQueue } from "../Store/initialState";
-import { hasLength, isEqual, isNullorUndef, isString, isEmpty, hasProperty } from "../Utility/utility";
+import { userState, externalControls, transactionQueue, windowAndTabState } from "../Store/initialState";
+import { hasLength, isEqual, isNullorUndef, isString, isEmpty, hasProperty, log } from "../Utility/utility";
 
 
 //local storage data null safety check
@@ -31,6 +31,9 @@ export const getDataLocal = async (key) => {
         } else if (!localState?.transactionQueue && isEqual(key, LABELS.TRANSACTION_QUEUE)) {
             await localStorage.set({ transactionQueue });
             return transactionQueue
+        } else if (!localState?.windowAndTabState && isEqual(key, LABELS.WINDOW_AND_TAB_STATE)) {
+            await localStorage.set({ windowAndTabState });
+            return windowAndTabState
         }
 
         return localState[key];
@@ -228,12 +231,19 @@ export class ExtensionStorageHandler {
 
     //clear transaction queue
     clearTransactionQueue = async (data, state) => {
-        const newState = transactionQueue;
+        const newState = {...transactionQueue};
         return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE)
     }
 
-    /**************************Keyring Related Tasks***********************************/
 
+    /************************** Window and Tabs State Tasks ***************************/
+    saveTabAndWindowState = async (data, state) => {
+    const newState = {...data};
+    return await this._updateStorage(newState, LABELS.WINDOW_AND_TAB_STATE);
+    }
+
+
+    /************************** Keyring Related Tasks *********************************/
 
     // unlockWallet 
     unlock = async (message) => {

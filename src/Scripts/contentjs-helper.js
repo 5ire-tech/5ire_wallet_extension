@@ -3,6 +3,7 @@ import { CONTENT_SCRIPT, INPAGE } from "./constants";
 import { WindowPostMessageStream } from "./stream";
 import { SIGNER_METHODS, STREAM_CHANNELS, VALIDATOR_NOMINATOR_METHOD } from "../Constants";
 import ExtensionPostStream from "./extension-port-stream-mod/index"
+import { log } from "../Utility/utility";
 
 
 // for content script
@@ -47,8 +48,9 @@ export class ContentJS {
 
        //bind the data event on window post message stream from injected script
        bindDataFromPageStream() {
+
         ContentJS.pageStream.on("data", async (data) => {
-      
+
             if (!data?.method) return;
           
             try {

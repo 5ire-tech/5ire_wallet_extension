@@ -48,6 +48,16 @@ export const initialExternalNativeTransaction = {
     txHash: ""
 }
 
+//initial state for current active window and active tab
+export const windowAndTabState = {
+    windowId: 0,
+    tabDetails: {
+        origin: "",
+        url: "",
+        tabId: 0,
+    }
+}
+
 // initial state for transaction queue
 export const transactionQueue = (() => {
     const queues = {};
