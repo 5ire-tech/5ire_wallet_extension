@@ -40,6 +40,7 @@ function MyAccount() {
     // removeHistory,
     externalControlsState,
     setNewWalletName,
+    windowAndTab
   } = useContext(AuthContext);
   const { connectedApps } = externalControlsState;
   const { currentAccount, allAccountsBalance, currentNetwork } = state;
@@ -118,7 +119,7 @@ function MyAccount() {
     }
 
     //send account details whenever account is changed
-    sendEventToTab(
+    sendEventToTab(windowAndTab,
       new TabMessagePayload(
         TABS_EVENT.ACCOUNT_CHANGE_EVENT,
         {

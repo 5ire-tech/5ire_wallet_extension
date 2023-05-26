@@ -57,6 +57,7 @@ function App(props) {
     showCongratLoader,
     externalControlsState,
     setExternalControlState,
+    setWindowAndTab
   } = useContext(AuthContext);
 
   const navigate = useNavigate();
@@ -70,6 +71,7 @@ function App(props) {
     if (props.data && props.externalControlsState) {
       setState(props.data);
       setExternalControlState(props.externalControlsState);
+      setWindowAndTab(props.windowAndTabState);
       setStateLoaded(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

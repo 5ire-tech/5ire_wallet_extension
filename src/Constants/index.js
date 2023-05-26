@@ -191,6 +191,7 @@ export const LABELS = {
     STATE: "state",
     EXTERNAL_CONTROLS: "externalControls",
     TRANSACTION_QUEUE: "transactionQueue",
+    WINDOW_AND_TAB_STATE: "windowAndTabState",
 
     VAULT: "vault",
     ISLOGIN: "isLogin",
@@ -319,7 +320,10 @@ export const STATE_CHANGE_ACTIONS = {
     ADD_NEW_TRANSACTION: "addNewTransaction",
     UPDATE_HISTORY_TRACK: "updateHistoryTrack",
     PROCESS_QUEUE_TRANSACTION: "processQueuedTransaction",
-    CLEAR_TRANSACTION_QUEUE: "clearTransactionQueue"
+    CLEAR_TRANSACTION_QUEUE: "clearTransactionQueue",
+
+    //window and tabs state
+    SAVE_TAB_AND_WINDOW_STATE: "saveTabAndWindowState"
 }
 
 export const ERROR_EVENTS_LABELS = {

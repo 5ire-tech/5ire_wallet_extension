@@ -160,7 +160,6 @@ export class InitBackground {
     const externalEventStream = async ({ message, sender }) => {
       const localData = await getDataLocal(LABELS.STATE);
 
-
       try {
         //check if message is array or onject
         message.message = hasLength(message.message) ? message.message[0] : message.message;
@@ -168,7 +167,8 @@ export class InitBackground {
         //data for futher proceeding
         const data = {
           ...message,
-          origin: sender.origin,
+          //for firefox and chrome tab origin
+          origin: sender?.origin || new URL(sender?.url).origin,
           tabId: sender.tab?.id
         };
 
@@ -566,9 +566,9 @@ class TransactionQueue {
     const state = await getDataLocal(LABELS.STATE);
     const allQueues = await getDataLocal(LABELS.TRANSACTION_QUEUE);
     const { currentTransaction } = allQueues[network];
+    log("current transaction inside the process transaction: ", currentTransaction);
     try {
-
-      if (hasProperty(this.transactionRpc, currentTransaction.type)) {
+      if (hasProperty(this.transactionRpc, currentTransaction?.type)) {
         const rpcResponse = await this.transactionRpc[currentTransaction.type](currentTransaction, state);
         return rpcResponse;
       } else new Error(new ErrorPayload(ERRCODES.INTERNAL, ERROR_MESSAGES.INVALID_RPC_OPERATION)).throw();
@@ -584,7 +584,8 @@ class TransactionQueue {
 
   //parse the response after processing the transaction
   parseTransactionResponse = async (network) => {
-    //perform the current active transactions 
+    //perform the current active transactions
+    tester++;
     const transactionResponse = await this.processTransaction(network);
 
     const { txHash } = transactionResponse.payload?.data;
@@ -634,7 +635,7 @@ class TransactionQueue {
       //if the current transaction is null then it is failed and removed
       if (!transactionQueue.currentTransaction?.transactionHistoryTrack) {
         const { options, data } = transactionQueue.currentTransaction;
-        log("here is options data: ", transactionQueue);
+        console.log("here is options data: ", transactionQueue);
         //update the current transaction pending balance state
         await this.services.updatePendingTransactionBalance(network, options.account.evmAddress, isNaN(Number(data?.value)) ? (0 + Number(options?.fee)) : (Number(data?.value) + Number(options?.fee)), options.isEvm);
 
@@ -644,6 +645,7 @@ class TransactionQueue {
           await this.parseTransactionResponse(network);
           TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus.bind(null, network)))
         } else {
+          await this.processQueuedTransaction(network);
           TransactionQueue.networkTransactionHandler = TransactionQueue.networkTransactionHandler.filter(item => item !== network);
           //reset the timeout id as null so whenever new transaction made the timeout start again
           TransactionQueue.setIntervalId(null);
@@ -657,6 +659,7 @@ class TransactionQueue {
 
       //check if transaction status is pending then only check the status
       if (currentTransaction && isEqual(currentTransaction.transactionHistoryTrack.status, STATUS.PENDING) && currentTransaction.transactionHistoryTrack?.txHash) {
+
         const { transactionHistoryTrack: { txHash, isEvm, chain } } = currentTransaction;
         const transactionStatus = await this.services.getTransactionStatus(txHash, isEvm, chain);
 
@@ -680,8 +683,6 @@ class TransactionQueue {
             transactionHistoryTrack.amount = formatNumUptoSpecificDecimal(Number(Number(transactionStatus?.value).noExponents()) / 10 ** 18, 6);
           }
 
-          //dequeue the new transaction and set as active for processing
-          await this.processQueuedTransaction(network);
           //update the transaction status and other details after confirmation
           await this.services.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, transactionHistoryTrack, currentTransaction?.options);
 
@@ -694,11 +695,25 @@ class TransactionQueue {
           //update the pending transaction balance
           await this.services.updatePendingTransactionBalance(network, currentTransaction.options.account.evmAddress, isNaN(Number(currentTransaction.data?.value)) ? (0 + Number(currentTransaction.options.fee)) : (Number(currentTransaction.data?.value) + Number(currentTransaction.options.fee)), currentTransaction.options.isEvm);
 
+
+          /***********************************Test */
+          console.log("length of pending in upper: ", hasPendingTx)
+          console.log("here is tx count: ", tester);
+          const tempTxQueues = await getDataLocal(LABELS.TRANSACTION_QUEUE);
+          const tempQueue = tempTxQueues[network];
+          const tempTxQueueLenght = tempQueue.txQueue.length;
+
+          console.log("here is queue tx: ", tempTxQueueLenght);
+
           //check if there any pending transaction into queue
-          if (!isEqual(hasPendingTx, 0)) {
+          if (!isEqual(tempTxQueueLenght, 0)) {
+            //dequeue the new transaction and set as active for processing
+            await this.processQueuedTransaction(network);
             await this.parseTransactionResponse(network);
             TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus.bind(null, network)))
           } else {
+            //dequeue the new transaction and set as active for processing
+            await this.processQueuedTransaction(network);
             TransactionQueue.networkTransactionHandler = TransactionQueue.networkTransactionHandler.filter(item => item !== network);
             //reset the timeout id as null so whenever new transaction made the timeout start again
             TransactionQueue.setIntervalId(null);
@@ -709,7 +724,6 @@ class TransactionQueue {
           TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus.bind(null, network)))
         }
       } else {
-        await this.services.updatePendingTransactionBalance(network, currentTransaction.options.account.evmAddress, isNaN(Number( currentTransaction.data?.value)) ? (0 + Number(currentTransaction.options.fee)) : (Number(currentTransaction.data?.value) + Number(currentTransaction.options.fee)), currentTransaction.options.isEvm);
         log("transaction not processed: ", currentTransaction)
       }
     } catch (err) {
@@ -722,18 +736,15 @@ class TransactionQueue {
   /******************************* Event Callbacks *************************/
   //callback for new transaction inserted into queue event
   newTransactionAddedEventCallback = async (network) => {
-    log("network here: ", network, !TransactionQueue.networkTransactionHandler.includes(network), TransactionQueue.networkTransactionHandler);
+    log("network here: ", network, !TransactionQueue.networkTransactionHandler.includes(network), TransactionQueue.networkTransactionHandler, tester);
+    log("new transaction added")
     // isNullorUndef(TransactionQueue.transactionIntervalId) 
     if (!TransactionQueue.networkTransactionHandler.includes(network)) {
-      tester++;
       TransactionQueue.networkTransactionHandler.push(network);
       await this.processQueuedTransaction(network);
-      log("processed from queue", tester)
       await this.parseTransactionResponse(network);
-      log("get the response", tester)
 
       TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus.bind(null, network)))
-      log("timer setup", tester)
     }
   }
 
