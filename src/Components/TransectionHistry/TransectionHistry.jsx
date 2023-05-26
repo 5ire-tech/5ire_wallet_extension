@@ -12,6 +12,7 @@ import {
   openBrowserTab,
   generateTransactionUrl,
 } from "../../Helper/helper";
+import { isEqual } from "lodash";
 
 
 function TransectionHistry({ selectedTransaction, account }) {
@@ -107,7 +108,7 @@ function TransectionHistry({ selectedTransaction, account }) {
         </div>
       </div>
       <div className={style.transectionHistry__viewExplorer}>
-        <p className={selectedTransaction?.status.toLowerCase() === STATUS.QUEUED.toLowerCase() ? "viewDisable" : ""} disabled={selectedTransaction.txHash ? false : true} onClick={openExplorerTab}>View on Explorer <img src={DarkRyt} alt="view on explorer" /></p>
+        <p className={(isEqual(selectedTransaction?.status.toLowerCase(), STATUS.QUEUED.toLowerCase()) || isEqual(selectedTransaction?.status.toLowerCase(), STATUS.FAILED.toLowerCase())) ? "viewDisable" : ""} disabled={selectedTransaction.txHash ? false : true} onClick={openExplorerTab}>View on Explorer <img src={DarkRyt} alt="view on explorer" /></p>
       </div>
     </div>
   );
