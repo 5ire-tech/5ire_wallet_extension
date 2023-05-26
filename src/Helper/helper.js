@@ -21,24 +21,12 @@ export const formatDate = (_date) => {
         let minutes = currentDate.getMinutes().toString();
         let month = (currentDate.getMonth() + 1).toString();
 
-        date = date.length === 1 ? "0" + date : date;
-
-        month = month.length === 1 ? "0" + month : month;
-
-        hours = hours.length === 1 ? "0" + hours : hours;
-
-        minutes = minutes.length === 1 ? "0" + minutes : minutes;
-
-        seconds = seconds.length === 1 ? "0" + seconds : seconds;
-
-        const fullDate = date + "-" + month + "-" + fullYear + " | ";
-
+        const fullDate = date.padStart(2, "0") + "-" + month.padStart(2, "0") + "-" + fullYear + " | ";
         let time = hours + ":" + minutes + ":" + seconds;
-
         time = time.split(":");
         time[3] = time[0] < 12 ? " AM" : " PM";
         time[0] = time[0] > 12 ? time[0] % 12 : time[0];
-        const dateTime = fullDate + `${time[0]}:${time[1]}:${time[2]}${time[3]}`;
+        const dateTime = fullDate + `${time[0].toString().padStart(2, "0")}:${time[1].toString().padStart(2, "0")}:${time[2].toString().padStart(2, "0")}${time[3]}`;
 
         return dateTime;
 
@@ -56,7 +44,7 @@ export const formatNumUptoSpecificDecimal = (num, numOfDecimals = 4) => {
         } else {
             num = num.toString();
             const reDot = /[.]/;
-            if(!reDot.test(num)) return Number(num);
+            if (!reDot.test(num)) return Number(num);
             let index = num.search(reDot);
 
             if (numOfDecimals <= 0)
@@ -143,7 +131,7 @@ export const sendEventUsingTabId = async (tabId, tabEventPayload, connectedApps=
             isConnected && sendMessageToTab(tabId, tabEventPayload);
         }
     } else sendMessageToTab(tabId, tabEventPayload);
-    
+
 }
 
 //get tab using tab id
@@ -168,6 +156,6 @@ export const fixNumber = (num, decimalPlaces = 6, roundingMode = 8) => {
 }
 
 //set default timeout for 1sec
-export const setTimer = (callback, timer=1000) => {
+export const setTimer = (callback, timer = 1000) => {
     return setTimeout(callback, timer);
 }
