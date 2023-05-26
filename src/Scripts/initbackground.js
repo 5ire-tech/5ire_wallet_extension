@@ -58,6 +58,8 @@ import {
 } from "../Utility/network_calls";
 
 
+let tester = 0;
+
 //for initilization of background events
 export class InitBackground {
   //check if there is time interval binded
@@ -654,7 +656,7 @@ class TransactionQueue {
       const transactionHistoryTrack = { ...currentTransaction.transactionHistoryTrack }
 
       //check if transaction status is pending then only check the status
-      if (currentTransaction && isEqual(currentTransaction.transactionHistoryTrack.status, STATUS.PENDING)) {
+      if (currentTransaction && isEqual(currentTransaction.transactionHistoryTrack.status, STATUS.PENDING) && currentTransaction.transactionHistoryTrack?.txHash) {
         const { transactionHistoryTrack: { txHash, isEvm, chain } } = currentTransaction;
         const transactionStatus = await this.services.getTransactionStatus(txHash, isEvm, chain);
 
@@ -706,6 +708,9 @@ class TransactionQueue {
         else {
           TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus.bind(null, network)))
         }
+      } else {
+        await this.services.updatePendingTransactionBalance(network, currentTransaction.options.account.evmAddress, isNaN(Number( currentTransaction.data?.value)) ? (0 + Number(currentTransaction.options.fee)) : (Number(currentTransaction.data?.value) + Number(currentTransaction.options.fee)), currentTransaction.options.isEvm);
+        log("transaction not processed: ", currentTransaction)
       }
     } catch (err) {
       log("error while transaction processing: ", err)
@@ -720,11 +725,15 @@ class TransactionQueue {
     log("network here: ", network, !TransactionQueue.networkTransactionHandler.includes(network), TransactionQueue.networkTransactionHandler);
     // isNullorUndef(TransactionQueue.transactionIntervalId) 
     if (!TransactionQueue.networkTransactionHandler.includes(network)) {
+      tester++;
       TransactionQueue.networkTransactionHandler.push(network);
       await this.processQueuedTransaction(network);
+      log("processed from queue", tester)
       await this.parseTransactionResponse(network);
+      log("get the response", tester)
 
       TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus.bind(null, network)))
+      log("timer setup", tester)
     }
   }
 
