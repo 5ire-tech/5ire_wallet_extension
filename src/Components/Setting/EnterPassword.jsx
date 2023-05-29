@@ -19,11 +19,9 @@ import {
 
 function EnterPassword() {
 
-  // const params = useParams();
   const navigate = useNavigate()
   const [data, setData] = useState("");
   const [isDisable, setDisable] = useState(true);
-  // const [isModalOpen, setModalOpen] = useState(false);
   const { inputError, setInputError, passVerified, setPassVerified } = useContext(AuthContext);
 
   useEffect(() => {
@@ -41,7 +39,6 @@ function EnterPassword() {
 
   useEffect(() => {
     if (passVerified) {
-      // setModalOpen(true);
       setPassVerified(false);
       navigate(ROUTES.PVT_KEY);
     }
@@ -98,7 +95,6 @@ function EnterPassword() {
             <div>
               <ButtonComp
                 onClick={handleClick}
-                // onClick={() => handleModalOpen}
                 text="Continue"
                 isDisable={isDisable}
               ></ButtonComp>

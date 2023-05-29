@@ -19,7 +19,6 @@ import {
 function ForgotPassword() {
 
   const [isDisable, setDisable] = useState(true);
-
   const [data, setData] = useState({
     pass: EMTY_STR,
     confirmPass: EMTY_STR,
@@ -51,18 +50,16 @@ function ForgotPassword() {
 
   useEffect(() => {
     if (data.confirmPass === data.pass || data.pass === EMTY_STR)
-      setError((p) => ({ ...p, confirmPass: EMTY_STR }));
+      setError(p => ({ ...p, confirmPass: EMTY_STR }));
     else if (data.confirmPass !== EMTY_STR)
-      setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }));
+      setError(p => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }));
   }, [data?.pass, data?.confirmPass]);
 
   const handleChange = (e) => {
-    setData((p) => {
-      return {
-        ...p,
-        [e.target.name]: e.target.value,
-      };
-    });
+    setData(p => ({
+      ...p,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   //validate Password
@@ -80,48 +77,43 @@ function ForgotPassword() {
       errMsg = ERROR_MESSAGES.CREATE_PASS_MSG;
     else errMsg = EMTY_STR;
 
-    setError((p) => ({ ...p, pass: errMsg }));
+    setError(p => ({ ...p, pass: errMsg }));
   };
 
   //validate Confirm Password
   const validateConfirmPass = () => {
     if (isEmpty(data.confirmPass))
-      setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.INPUT_REQUIRED }));
+      setError(p => ({ ...p, confirmPass: ERROR_MESSAGES.INPUT_REQUIRED }));
     else if (data?.confirmPass !== data?.pass)
-      setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }));
-    else setError((p) => ({ ...p, confirmPass: EMTY_STR }));
+      setError(p => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }));
+    else setError(p => ({ ...p, confirmPass: EMTY_STR }));
   };
 
   //check Mnemonic
   const validateKey = () => {
-    if (isEmpty(data.key)) {
-      setError((p) => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
-      // setDisable(true);
-    } else if (!validateMnemonic(data.key.trim())) {
-      setError((p) => ({ ...p, key: ERROR_MESSAGES.INVALID_MNEMONIC }));
-      // setDisable(true);
-    } else {
-      setError((p) => ({ ...p, key: EMTY_STR }));
-    }
+    if (isEmpty(data.key))
+      setError(p => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
+    else if (!validateMnemonic(data.key.trim()))
+      setError(p => ({ ...p, key: ERROR_MESSAGES.INVALID_MNEMONIC }));
+    else
+      setError(p => ({ ...p, key: EMTY_STR }));
+
   };
 
   const validateAccName = () => {
-    if (data.accName.trim().length < 2 || data.accName.trim().length >= 16) {
-      setError((p) => ({
+    if (data.accName.trim().length < 2 || data.accName.trim().length >= 16)
+      setError(p => ({
         ...p,
         accName: ERROR_MESSAGES.INPUT_BETWEEN_2_TO_18,
       }));
-      // setDisable(true);
-    } else if (!REGEX.WALLET_NAME.test(data.accName)) {
-      setError((p) => ({
+    else if (!REGEX.WALLET_NAME.test(data.accName))
+      setError(p => ({
         ...p,
         accName: ERROR_MESSAGES.ALPHANUMERIC_CHARACTERS,
       }));
-      // setDisable(true);
-    } else {
-      setError((p) => ({ ...p, accName: "" }));
-      // setDisable(false);
-    }
+    else
+      setError(p => ({ ...p, accName: "" }));
+
   };
 
   const handleSubmit = (e) => {

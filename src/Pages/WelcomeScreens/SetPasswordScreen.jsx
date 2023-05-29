@@ -32,9 +32,9 @@ export default function SetPasswordScreen() {
 
   useEffect(() => {
     if (pass.confirmPass === pass.pass || pass.pass === EMTY_STR)
-      setError((p) => ({ ...p, confirmPass: EMTY_STR }));
+      setError(p => ({ ...p, confirmPass: EMTY_STR }));
     else if (pass.confirmPass !== EMTY_STR)
-      setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }));
+      setError(p => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }));
   }, [pass.pass, pass.confirmPass]);
 
   useEffect(() => {
@@ -64,20 +64,19 @@ export default function SetPasswordScreen() {
       errMsg = ERROR_MESSAGES.CREATE_PASS_MSG;
     else errMsg = EMTY_STR;
 
-    setError((p) => ({ ...p, pass: errMsg }));
+    setError(p => ({ ...p, pass: errMsg }));
   };
 
   const validateConfirmPass = () => {
     if (isEmpty(pass.confirmPass))
-      setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.INPUT_REQUIRED }));
+      setError(p => ({ ...p, confirmPass: ERROR_MESSAGES.INPUT_REQUIRED }));
     else if (pass.confirmPass !== pass.pass)
-      setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }));
-    else setError((p) => ({ ...p, confirmPass: EMTY_STR }));
+      setError(p => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }));
+    else setError(p => ({ ...p, confirmPass: EMTY_STR }));
   };
 
   const handleCancel = () => {
     updateState(LABELS.NEW_ACCOUNT, null, false);
-    // updateState(LABELS.ACCOUNT_NAME, null, false);
     navigate(ROUTES.DEFAULT);
   };
 
@@ -101,9 +100,9 @@ export default function SetPasswordScreen() {
   };
 
   const handleChange = (e) => {
-    setPass((prev) => {
+    setPass(p => {
       return {
-        ...prev,
+        ...p,
         [e.target.name]: e.target.value.trim(),
       };
     });

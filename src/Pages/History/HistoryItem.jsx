@@ -43,8 +43,9 @@ export default function HistoryItem({ historyItem, handleHistoryOpen }) {
           <img alt="hash" src={getTxIcon(historyItem.type, historyItem.status.toLowerCase())} />
 
           <div className={style.historySec__historyMarketSwap__leftContact} onClick={() => { handleHistoryOpen(historyItem) }}>
-            <h3>{isEqual(historyItem?.type, TX_TYPE.NATIVE_APP) ? historyItem?.method : historyItem.type}</h3>
-            {/* <p>{historyItem.to && historyItem.to.length > 40 ? shortner(historyItem.to) : historyItem.to}</p> */}
+            <h3>
+              {isEqual(historyItem?.type, TX_TYPE.NATIVE_APP) ? historyItem?.method : historyItem.type}
+            </h3>
             <p>{historyItem?.to && historyItem?.to?.length > 40 ? (historyItem?.to?.startsWith(5) ? NATIVE : EVM) : historyItem.to}</p>
           </div>
 

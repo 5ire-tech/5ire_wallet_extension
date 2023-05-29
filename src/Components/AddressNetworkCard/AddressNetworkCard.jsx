@@ -1,6 +1,7 @@
 import React from "react";
-import { Card } from "antd";
 import style from "./style.module.scss";
+
+
 function AddressNetworkCard(props) {
     const {heading,address,currency } = props;
   return (

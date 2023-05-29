@@ -44,7 +44,6 @@ function BalanceDetails({ mt0 }) {
   const [url, setUrl] = useState("");
   const [isNewSite, setNewSite] = useState(false);
   const [isEvmModal, setIsEvmModal] = useState(false);
-  // const [balan, setBalance] = useState();
   const [isConnected, setIsConnected] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHeaderActive, setHeaderActive] = useState(false);
@@ -539,7 +538,6 @@ function BalanceDetails({ mt0 }) {
                         title={allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance ? allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance : ""}
                       >
                         <h3>
-                          {/* <img src={WalletCardLogo} draggable={false} alt="balanceLogo" /> */}
                           {allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance ? allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance : ""}
                         </h3>
                       </Tooltip>
@@ -594,9 +592,6 @@ function BalanceDetails({ mt0 }) {
                   <div className={style.balanceDetails__nativemodal__modalOr}>
                     <p>or</p>
                   </div>
-                  {/* <p className={style.balanceDetails__nativemodal__addressText}>
-                    Your 5ire Native Address
-                  </p> */}
                   <div className={style.balanceDetails__nativemodal__wrapedText}>
                     <p>
                       {currentAccount?.nativeAddress

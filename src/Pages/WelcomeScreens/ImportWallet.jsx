@@ -21,8 +21,6 @@ import {
 } from "../../Constants/index";
 
 
-
-
 function ImportWallet() {
   const navigate = useNavigate();
   const [isDisable, setDisable] = useState(true);
@@ -47,30 +45,29 @@ function ImportWallet() {
 
   useEffect(() => {
 
-    if ((!data.accName.length || !data.key || data.accName.length < 2)) {
+    if ((!data.accName.length || !data.key || data.accName.length < 2))
       setDisable(true);
-    } else {
-      if (!warrning.acc && !warrning.key) {
+    else
+      if (!warrning.acc && !warrning.key)
         setDisable(false);
-      } else {
+      else
         setDisable(true);
-      }
-    }
+
   }, [data.accName, data.key, warrning]);
 
 
   const handleChange = (e) => {
     setData((p) => ({ ...p, [e.target.name]: e.target.value }));
-    if (e.target.name === LABELS.KEY) {
+    if (e.target.name === LABELS.KEY)
       setInputError("");
-    }
+
   };
 
 
   const validateAccName = () => {
 
     if (data.accName.trim().length < 2 || data.accName.trim().length >= 16) {
-      setWarrning((p) => ({
+      setWarrning(p => ({
         ...p,
         acc: ERROR_MESSAGES.INPUT_BETWEEN_2_TO_18
       }));
@@ -81,7 +78,7 @@ function ImportWallet() {
       setDisable(true);
     }
     else
-      setWarrning((p) => ({ ...p, acc: "" }));
+      setWarrning(p => ({ ...p, acc: "" }));
 
   };
 
@@ -89,15 +86,15 @@ function ImportWallet() {
   const validateKey = () => {
 
     if (isEmpty(data.key)) {
-      setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
+      setWarrning(p => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
       setDisable(true);
     }
     else if (!validateMnemonic(data?.key?.trim())) {
-      setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INVALID_MNEMONIC }));
+      setWarrning(p => ({ ...p, key: ERROR_MESSAGES.INVALID_MNEMONIC }));
       setDisable(true);
     }
     else
-      setWarrning((p) => ({ ...p, key: EMTY_STR }));
+      setWarrning(p => ({ ...p, key: EMTY_STR }));
 
   };
 
@@ -163,15 +160,6 @@ function ImportWallet() {
             <p className="errorText">{warrning.acc}</p>
           </div>
           <div className="inputFieldOnly">
-            {/* <InputFieldOnly
-              type="password"
-              placeholder={"Enter mnemonic here"}
-              placeholderBaseColor={true}
-              coloredBg={true}
-              name="key"
-              onChange={handleChange}
-              keyUp={validateKey}
-            /> */}
             <TextArea
               rows={4}
               name={LABELS.KEY}

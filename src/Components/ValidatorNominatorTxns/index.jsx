@@ -1,17 +1,22 @@
 import { Layout } from "antd";
-import React, { useContext, useEffect, useState } from "react";
-import style from "../../Layout/style.module.scss";
-import footerstyle from "../MenuFooter/style.module.scss"
-import pageStyle from "../../Pages/RejectNotification/style.module.scss"
-import ButtonComp from "../ButtonComp/ButtonComp";
-import { ERROR_MESSAGES, MESSAGE_EVENT_LABELS, MESSAGE_TYPE_LABELS, TX_TYPE, VALIDATION_METHODS_VD_NM } from "../../Constants";
-import { shortLongAddress } from "../../Utility/utility";
-import { AuthContext } from "../../Store";
-import { sendMessageOverStream } from "../../Utility/message_helper";
-// import { toast } from "react-toastify";
-import { toast } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../Routes";
+import { toast } from "react-hot-toast";
+import { AuthContext } from "../../Store";
+import { useNavigate } from "react-router-dom";
+import ButtonComp from "../ButtonComp/ButtonComp";
+import style from "../../Layout/style.module.scss";
+import { shortLongAddress } from "../../Utility/utility";
+import footerstyle from "../MenuFooter/style.module.scss"
+import React, { useContext, useEffect, useState } from "react";
+import { sendMessageOverStream } from "../../Utility/message_helper";
+import pageStyle from "../../Pages/RejectNotification/style.module.scss";
+import {
+    TX_TYPE,
+    ERROR_MESSAGES,
+    MESSAGE_TYPE_LABELS,
+    MESSAGE_EVENT_LABELS,
+    VALIDATION_METHODS_VD_NM
+} from "../../Constants";
 
 
 

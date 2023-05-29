@@ -1,9 +1,26 @@
-import React from "react";
+import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
+import React, { useContext } from "react";
+import { AuthContext } from "../../Store";
+import { useNavigate } from "react-router-dom";
+import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
 
 
 function Beforebegin() {
+  const { state, setNewWalletName } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { isLogin } = state;
+
+  const handleCancel = () => {
+    if (isLogin) navigate(ROUTES.WALLET);
+    else navigate(ROUTES.DEFAULT);
+  }
+
+  const handleClick = () => {
+    setNewWalletName("");
+    navigate(ROUTES.CREATE_WALLET);
+  }
 
   return (
     <div>
@@ -22,26 +39,21 @@ function Beforebegin() {
             share a common mnemonic phrase to access the wallet.
           </p>
         </div>
-        {/* {current < steps.length - 1 && (
-          <Button type="primary" onClick={() => next()}>
-            Next
-          </Button>
-        )}
-        {current === steps.length - 1 && (
-          <Button type="primary" onClick={() => message.success('Processing complete!')}>
-            Done
-          </Button>
-        )}
-        {current > 0 && (
-          <Button
-            style={{
-              margin: '0 8px',
-            }}
-            onClick={() => prev()}
-          >
-            Previous
-          </Button>
-        )} */}
+      </div>
+
+      <div className={`${style.cancleContinueContainer}`}>
+        <ButtonComp
+          onClick={handleCancel}
+          bordered={true}
+          text={"Cancel"}
+          maxWidth={"100%"}
+        />
+        <ButtonComp
+          onClick={handleClick}
+          text={"Continue"}
+          maxWidth={"100%"}
+        />
+
       </div>
     </div>
   );

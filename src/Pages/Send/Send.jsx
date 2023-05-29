@@ -21,6 +21,7 @@ import {
   LABELS,
   NATIVE,
   TX_TYPE,
+  MESSAGES,
   EXTRA_FEE,
   ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
@@ -33,10 +34,10 @@ function Send() {
   const [isEd, setEd] = useState(true);
   const [disableBtn, setDisable] = useState(true);
   const [activeTab, setActiveTab] = useState(NATIVE);
-  const [isMaxDisabled, setMaxDisabled] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [err, setErr] = useState({ to: "", amount: "" });
+  const [isMaxDisabled, setMaxDisabled] = useState(true);
   const [data, setData] = useState({ to: "", amount: "" });
   const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
 
@@ -465,7 +466,7 @@ function Send() {
 
         </div>
         <div className={style.sendSec__inFoAccount}>
-          <Tooltip title="5ireChain requires a minimum of 1 5ire to keep your wallet active">
+          <Tooltip title={MESSAGES.ED}>
             <img src={Info} style={{ cursor: "pointer" }} alt="infoIcon" />
           </Tooltip>
           <h3>Transfer with account keep alive checks </h3>

@@ -337,8 +337,6 @@ export class ExtensionStorageHandler {
         if (newState?.allAccountsBalance.hasOwnProperty(removedAccountAddress)) {
             delete newState.allAccountsBalance[removedAccountAddress];
         }
-        console.log("newState?.pendingTransactionBalance.hasOwnProperty(removedAccountAddress)", newState?.pendingTransactionBalance.hasOwnProperty(removedAccountAddress));
-
         if (newState?.pendingTransactionBalance.hasOwnProperty(removedAccountAddress)) {
             delete newState.pendingTransactionBalance[removedAccountAddress];
         }

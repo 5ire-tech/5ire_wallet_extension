@@ -43,7 +43,6 @@ function TransectionHistry({ selectedTransaction, account }) {
           (
             <div className={style.transectionHistry__swapCopy}>
               <div className={style.transectionHistry__swapSec}>
-                {/* <h3>{isEvm ? "Evm" : "Native"}</h3> */}
                 <h3>{`From ${isEvm ? "EVM" : "Native"}`}</h3>
                 <span>{shortner(isEvm ? account?.evmAddress : account?.nativeAddress)}</span>
               </div>
@@ -51,7 +50,6 @@ function TransectionHistry({ selectedTransaction, account }) {
                 <img src={SwapIcon} alt="swapIcon" draggable={false} />
               </div>
               <div className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
-                {/* <h3>{!isEvm ? "Evm" : "Native"}</h3> */}
                 <h3>{`To ${isEvm ? "Native" : "EVM"}`}</h3>
                 <span>{shortner(isEvm ? account?.nativeAddress : account?.evmAddress)}</span>
               </div>
@@ -61,7 +59,6 @@ function TransectionHistry({ selectedTransaction, account }) {
           (
             <div className={style.transectionHistry__swapCopy}>
               <div className={style.transectionHistry__swapSec}>
-                {/* <h3>From</h3> */}
                 <h3>{`From ${isEvm ? "EVM" : "Native"}`}</h3>
                 <span>{shortner(isEvm ? account?.evmAddress : account?.nativeAddress)}</span>
               </div>
@@ -69,7 +66,6 @@ function TransectionHistry({ selectedTransaction, account }) {
                 <img src={SwapIcon} alt="swapIcon" draggable={false} />
               </div>
               <div className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
-                {/* <h3>To</h3> */}
                 <h3>{`To ${isEvm ? "EVM" : "Native"}`}</h3>
                 <span>{selectedTransaction?.to ? shortner(selectedTransaction?.to) : "Contract Transactions"}</span>
               </div>

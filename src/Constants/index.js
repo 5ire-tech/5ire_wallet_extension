@@ -19,7 +19,7 @@ export const WINDOW_HEIGHT = 620;
 export const EXISTENTIAL_DEPOSITE = 1;
 export const ONE_ETH_IN_GWEI = 1000000000;
 export const AUTO_BALANCE_UPDATE_TIMER = 8000;
-export const LAPSED_TRANSACTION_CHECKER_TIMER = 25*1000;
+export const LAPSED_TRANSACTION_CHECKER_TIMER = 25 * 1000;
 export const WEI_IN_ONE_ETH = 1000000000000000000;
 export const TRANSACTION_STATUS_CHECK_TIMER = 5000;
 export const VERSION = "0.1.4";
@@ -96,6 +96,7 @@ export const EVM_JSON_RPC_METHODS = {
 
 export const ERROR_MESSAGES = {
     ERR_OCCURED: "Error occured.",
+    INVALID_AMOUNT: "Amount is invalid.",
     LOGOUT_ERR: "Error while logging out",
     INVALID_MNEMONIC: "Invalid mnemonic.",
     INCORRECT_PASS: "Incorrect password.",
@@ -103,7 +104,6 @@ export const ERROR_MESSAGES = {
     INPUT_REQUIRED: "This field is required.",
     PASS_DONT_MATCH: "Password do not match.",
     INSUFFICENT_BALANCE: "Insufficient Balance.",
-    INSUFFICENT_BALANCE_VD_NM: "Insufficient Funds: Fee + Amount is more than available balance.",
     UNDEF_PROPERTY: "Object not has given property",
     AMOUNT_CANT_BE_0: "Amount can't be 0 or less than 0",
     SINGER_ERROR: "Error while signing the the raw/payload",
@@ -112,20 +112,20 @@ export const ERROR_MESSAGES = {
     NOT_VALID_JSON_RPC_METHOD: "JSON-RPC method is not valid.",
     INTERNAL_ERROR: "Something wrong happend, please try again",
     PASS_CREATED_SUCCESS: "Successfully created password for user.",
+    AMOUNT_DATA_CHECK: "To or Data is fields is missing from request",
     AMOUNT_CANT_LESS_THEN_ONE: "Swap amount can't be less than 1 5ire",
     ALPHANUMERIC_CHARACTERS: "Please enter alphanumeric characters only.",
     MNEMONICS_ALREADY_EXISTS: "Wallet with this mnemonic already exists.",
     NOT_YOUR_OWN_ADDRESS: "Recipient address should not be your own address.",
     EXTERNAL_NATIVE_TRANSACTION_ERROR: "Error while external native transaction.",
     ACCESS_NOT_GRANTED: "The requested method has not been authorized by the user",
+    ERROR_WHILE_TRANSACTION_STATUS_CHECK: "Error while fething the transaction recipt.",
     ACCOUNT_ACCESS_NOT_GRANTED: "The requested account has not been authorized by the user",
     ERROR_WHILE_TRANSACTION: "Transaction failed, error occured during transaction processing",
-    ERROR_WHILE_TRANSACTION_STATUS_CHECK: "Error while fething the transaction recipt.",
+    INSUFFICENT_BALANCE_VD_NM: "Insufficient Funds: Fee + Amount is more than available balance.",
     ERROR_WHILE_GAS_ESTIMATION: "Gas Estimation Failed, something wrong happend while gas estimation",
     CREATE_PASS_MSG: "Password must have at least 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
     ERROR_WHILE_NETWORK_CONNECTION: "Network Connection Error, please change network or try again later",
-    INVALID_AMOUNT: "Amount is invalid.",
-    AMOUNT_DATA_CHECK: "To or Data is fields is missing from request",
 
 
     INVALID_PROPERTY: "Invalid property.",
@@ -151,6 +151,10 @@ export const SUCCESS_MESSAGES = {
     PASS_CREATED_SUCCESS: "Successfully created password for user.",
 };
 
+export const MESSAGES = {
+    ED: "5ireChain requires a minimum of 1 5ire to keep your wallet active",
+}
+
 export const ERRCODES = {
     INTERNAL: 1,
     CHECK_FAIL: 2,
@@ -169,7 +173,6 @@ export const ERRCODES = {
     RUNTIME_MESSAGE_SECTION_ERROR: 15,
     ERROR_WHILE_TRANSACTION_STATUS_CHECK: 16
 }
-
 
 
 export const LABELS = {
@@ -267,7 +270,7 @@ export const MESSAGE_EVENT_LABELS = {
     EVM_TO_NATIVE_SWAP: "evmToNativeSwap",
     NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
     CLOSE_POPUP_SESSION: "closePopupSession",
-    
+
     LOCK: "lock",
     UNLOCK: "unlock",
     ADD_ACCOUNT: "addAccount",
@@ -280,7 +283,7 @@ export const MESSAGE_EVENT_LABELS = {
     RECOVER_OLD_ACCOUNTS: "recoverOldStateAccounts",
     VERIFY_USER_PASSWORD: "verifyUserPassword",
     IMPORT_BY_MNEMONIC: "importAccountByMnemonics",
-    
+
     //network related events
     NETWORK_CONNECTION_ERROR: "networkConnectionError",
     NETWORK_CHANGE: "networkChange",
@@ -312,7 +315,7 @@ export const STATE_CHANGE_ACTIONS = {
     APP_CONNECTION_UPDATE: "appConnectionUpdate",
     UPDATE_CURRENT_SESSION: "updateCurrentSession",
     ADD_NEW_CONNECTION_TASK: "addNewConnectionTask",
-    CLEAR_ALL_EXTERNAL_REQUESTS:"clearAllExternalRequests",
+    CLEAR_ALL_EXTERNAL_REQUESTS: "clearAllExternalRequests",
 
     //transaction queue state
     REMOVE_FAILED_TX: "removeFailedTx",
@@ -418,9 +421,9 @@ export const RESTRICTED_ETHEREUM_METHODS = {
 
 //array of all wallet handled method
 export const RESTRICTED_METHODS = [...Object.values(VALIDATOR_NOMINATOR_METHOD),
-    ...Object.values(CONNECTION_METHODS),
-    ...Object.values(WALLET_METHODS),
-    ...Object.values(SIGNER_METHODS),
-    ...Object.values(RESTRICTED_ETHEREUM_METHODS)
+...Object.values(CONNECTION_METHODS),
+...Object.values(WALLET_METHODS),
+...Object.values(SIGNER_METHODS),
+...Object.values(RESTRICTED_ETHEREUM_METHODS)
 ]
 export const VALIDATION_METHODS_VD_NM = [VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_BONDMORE, VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_BONDMORE, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR, VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR]

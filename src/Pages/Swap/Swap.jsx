@@ -8,10 +8,8 @@ import Info from "../../Assets/infoIcon.svg";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import SmallLogo from "../../Assets/smallLogo.svg";
-// import { isEmpty } from "../../Utility/utility";
 import ComplSwap from "../../Assets/succeslogo.svg";
 import React, { useState, useContext } from "react";
-// import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
@@ -26,6 +24,7 @@ import {
   MESSAGE_TYPE_LABELS,
   EXISTENTIAL_DEPOSITE,
   MESSAGE_EVENT_LABELS,
+  MESSAGES,
 } from "../../Constants/index";
 
 
@@ -365,7 +364,7 @@ function Swap() {
 
         </div>
         <div className={style.swap__inFoAccount}>
-          <Tooltip title="5ireChain requires a minimum of 1 5ire to keep your wallet active">
+          <Tooltip title={MESSAGES.ED}>
             <img src={Info} alt="infoImage" />
           </Tooltip>
           <h3>Transfer with account keep alive checks </h3>
