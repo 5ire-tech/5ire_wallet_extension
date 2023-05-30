@@ -59,8 +59,7 @@ function PrivateKey() {
               <div className={style.wallet__addressInput}>
                 <label>EVM Private Key:</label>
                 <p
-                  className={`${style.wallet__addressInput__copyText} ${style.wallet__addressInput__privateCopyText}`}
-                >
+                  className={`${style.wallet__addressInput__copyText} ${style.wallet__addressInput__privateCopyText}`}>
                   <span className={isOpen.open1 && "blurContact"}>
                     {privateKey ? privateKey : ""}
                   </span>
@@ -100,8 +99,7 @@ function PrivateKey() {
               <div className={style.wallet__addressInput}>
                 <label>Mnemonic Phrase:</label>
                 <p
-                  className={`${style.wallet__addressInput__copyText} ${style.wallet__addressInput__privateCopyText}`}
-                >
+                  className={`${style.wallet__addressInput__copyText} ${style.wallet__addressInput__privateCopyText}`}>
                   <span className={isOpen.open2 && "blurContact"}>
                     {seedPhrase ? seedPhrase : ""}
                   </span>

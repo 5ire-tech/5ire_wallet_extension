@@ -438,8 +438,7 @@ function Send() {
     <button
       disabled={isMaxDisabled}
       className="maxBtn"
-      onClick={handleMaxClick}
-    >
+      onClick={handleMaxClick}>
       Max
     </button>
   );
@@ -458,8 +457,7 @@ function Send() {
                 activeTab === NATIVE &&
                 style.sendSec__sendSwapbtn__buttons__active
               }
-            `}
-            >
+            `}>
               Native
             </button>
             <button
@@ -467,15 +465,13 @@ function Send() {
               name={EVM}
               className={`${style.sendSec__sendSwapbtn__buttons}  ${
                 activeTab === EVM && style.sendSec__sendSwapbtn__buttons__active
-              }`}
-            >
+              }`}>
               EVM
             </button>
             <div
               className={`${activeTab === NATIVE && style.activeFirst} ${
                 activeTab === EVM && style.activeSecond
-              } ${style.animations}`}
-            ></div>
+              } ${style.animations}`}></div>
           </div>
         </div>
         <div className={style.sendSec__inputInnerSec}>
@@ -538,8 +534,7 @@ function Send() {
         isModalOpen={isModalOpen}
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
-        centered
-      >
+        centered>
         <div className="swapsendModel">
           <div className="innerContact">
             <img
@@ -561,8 +556,7 @@ function Send() {
         isModalOpen={isFaildOpen}
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
-        centered
-      >
+        centered>
         <div className="swapsendModel">
           <div className="innerContact">
             <img

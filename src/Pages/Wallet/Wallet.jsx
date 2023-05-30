@@ -35,8 +35,7 @@ function Wallet() {
                 activeTab === "send" &&
                 style.wallet__sendSwapbtn__buttons__active
               }
-            `}
-            >
+            `}>
               <img src={TransferLogo} alt="transferLogo" />
               Transfer
             </button>
@@ -47,15 +46,13 @@ function Wallet() {
               }  ${
                 activeTab === "swap" &&
                 style.wallet__sendSwapbtn__buttons__active
-              }`}
-            >
+              }`}>
               <img src={SwapLogo} alt="swapLogo" /> Swap
             </button>
             <div
               className={`${activeTab === "send" && style.activeFirst} ${
                 activeTab === "swap" && style.activeSecond
-              } ${style.animations}`}
-            ></div>
+              } ${style.animations}`}></div>
           </div>
         </div>
         {activeTab === "send" && (

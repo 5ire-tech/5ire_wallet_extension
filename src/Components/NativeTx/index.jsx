@@ -91,8 +91,7 @@ function NativeSigner() {
               <div className={pageStyle.rejectedSec__detailDataSec}>
                 <div className={pageStyle.rejectedSec__sendSwapbtn}>
                   <button
-                    className={`${pageStyle.rejectedSec__sendSwapbtn__buttons}  ${pageStyle.rejectedSec__sendSwapbtn__buttons__active}`}
-                  >
+                    className={`${pageStyle.rejectedSec__sendSwapbtn__buttons}  ${pageStyle.rejectedSec__sendSwapbtn__buttons__active}`}>
                     Txn Detail
                   </button>
                 </div>
@@ -141,8 +140,7 @@ function NativeSigner() {
 
                   {externalNativeTxDetails?.estimatedGas && (
                     <div
-                      className={pageStyle.rejectedSec__listReject__innerList}
-                    >
+                      className={pageStyle.rejectedSec__listReject__innerList}>
                       <h4>Estimated Fee: </h4>
                       <h4>
                         {externalNativeTxDetails?.estimatedGas || ""} 5IRE

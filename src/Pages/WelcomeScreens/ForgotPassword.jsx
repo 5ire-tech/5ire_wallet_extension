@@ -172,8 +172,7 @@ function ForgotPassword() {
           <h1>Forgot password</h1>
         </div>
         <div
-          className={`${style.cardWhite__importWalletlinkOuter} ${style.cardWhite__forgotPassword}`}
-        >
+          className={`${style.cardWhite__importWalletlinkOuter} ${style.cardWhite__forgotPassword}`}>
           <div>
             <InputFieldOnly
               name="accName"
@@ -232,8 +231,7 @@ function ForgotPassword() {
             </p>
           </div>
           <div
-            className={`${style.setPassword__footerbuttons}${style.setPassword__forGotBtn}`}
-          >
+            className={`${style.setPassword__footerbuttons}${style.setPassword__forGotBtn}`}>
             <ButtonComp
               text={"Change"}
               onClick={handleSubmit}

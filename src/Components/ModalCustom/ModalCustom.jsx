@@ -28,8 +28,7 @@ function ModalCustom({
         onOk={handleOk}
         onCancel={handleCancel}
         footer={false}
-        centered={centered}
-      >
+        centered={centered}>
         {children}
       </Modal>
     </div>

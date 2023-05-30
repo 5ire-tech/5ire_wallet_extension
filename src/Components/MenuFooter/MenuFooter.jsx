@@ -53,8 +53,7 @@ function MenuFooter() {
             to={ROUTES.WALLET}
             className={`${style.menuItems__items} ${
               pathname === ROUTES.WALLET ? style.menuItems__items__active : ""
-            }`}
-          >
+            }`}>
             <div className={style.menuItems__items__img}>
               <img src={Wallet} alt="HistoryIcon" draggable={false} />
             </div>
@@ -67,8 +66,7 @@ function MenuFooter() {
               pathname === ROUTES.HISTORY_P
                 ? style.menuItems__items__active
                 : ""
-            }`}
-          >
+            }`}>
             <div className={style.menuItems__items__img}>
               <img src={HistoryIcon} alt="HistoryIcon" draggable={false} />
             </div>
@@ -83,8 +81,7 @@ function MenuFooter() {
               pathname === ROUTES.MY_ACCOUNT
                 ? style.menuItems__items__active
                 : ""
-            }`}
-          >
+            }`}>
             <div className={style.menuItems__items__img}>
               <img src={Myaccount} alt="Myaccount" draggable={false} />
             </div>
@@ -98,8 +95,7 @@ function MenuFooter() {
               pathname === ROUTES.MANAGE_WALLET
                 ? style.menuItems__items__active
                 : ""
-            }`}
-          >
+            }`}>
             <div className={style.menuItems__items__img}>
               <img src={Setting} alt="Setting" draggable={false} />
             </div>
@@ -125,8 +121,7 @@ function MenuFooter() {
             draggable={false}
             className="closeModalIcon"
           />
-        }
-      >
+        }>
         <Link to={ROUTES.MANAGE_WALLET} draggable={false}>
           <div className={style.sttings}>
             <div className={style.sttings__left}>
@@ -161,8 +156,7 @@ function MenuFooter() {
         <div
           className={style.sttings}
           style={{ marginTop: "14px" }}
-          onClick={() => openBrowserTab(SOCIAL_LINKS.POLICY)}
-        >
+          onClick={() => openBrowserTab(SOCIAL_LINKS.POLICY)}>
           <div className={style.sttings__left}>
             <div className={style.walletIconBorder}>
               <img

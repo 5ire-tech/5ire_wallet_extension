@@ -8,29 +8,25 @@ export function StepHeaders({ active, isCreate = true }) {
         <div className={style.steps} style={{ color: "white" }}>
           <div className={`${style.innerStep} ${style.innerStepLast}`}>
             <div
-              className={`${style.stepsItems} ${active === 1 && style.active}`}
-            >
+              className={`${style.stepsItems} ${active === 1 && style.active}`}>
               1
             </div>
           </div>
           <div className={style.innerStep}>
             <div
-              className={`${style.stepsItems} ${active === 2 && style.active}`}
-            >
+              className={`${style.stepsItems} ${active === 2 && style.active}`}>
               2
             </div>
           </div>
           <div className={`${style.innerStep}`}>
             <div
-              className={`${style.stepsItems} ${active === 3 && style.active}`}
-            >
+              className={`${style.stepsItems} ${active === 3 && style.active}`}>
               3
             </div>
           </div>
           <div className={`${style.innerStep}`}>
             <div
-              className={`${style.stepsItems} ${active === 4 && style.active}`}
-            >
+              className={`${style.stepsItems} ${active === 4 && style.active}`}>
               4
             </div>
           </div>
@@ -38,19 +34,16 @@ export function StepHeaders({ active, isCreate = true }) {
       ) : (
         <div
           className={`${style.steps} ${style.importSteps}`}
-          style={{ color: "white" }}
-        >
+          style={{ color: "white" }}>
           <div className={`${style.innerStep} ${style.innerStepLast}`}>
             <div
-              className={`${style.stepsItems} ${active === 1 && style.active}`}
-            >
+              className={`${style.stepsItems} ${active === 1 && style.active}`}>
               1
             </div>
           </div>
           <div className={`${style.innerStep} ${style.importAfter}`}>
             <div
-              className={`${style.stepsItems} ${active === 2 && style.active}`}
-            >
+              className={`${style.stepsItems} ${active === 2 && style.active}`}>
               2
             </div>
           </div>

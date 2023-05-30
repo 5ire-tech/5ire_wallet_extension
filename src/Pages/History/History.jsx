@@ -70,8 +70,7 @@ function History() {
             draggable={false}
             className="closeModalIcon"
           />
-        }
-      >
+        }>
         <TransectionHistry
           selectedTransaction={selectedTransaction}
           account={currentAccount}

@@ -10,8 +10,7 @@ function ButtonComp({ text, bordered, onClick, maxWidth, img, isDisable }) {
         bordered ? style.ButtonStyle__bordered : ""
       }`}
       onClick={onClick}
-      style={{ maxWidth: maxWidth }}
-    >
+      style={{ maxWidth: maxWidth }}>
       {img && <img src={img} alt="" draggable={false} />}
       {text}
     </button>

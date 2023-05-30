@@ -6,8 +6,7 @@ function ManageCustom({ active, img, checkValue, onSelectAcc, data }) {
     <>
       <div
         className={style.manageList}
-        onClick={() => onSelectAcc(data?.accountName)}
-      >
+        onClick={() => onSelectAcc(data?.accountName)}>
         <div className={style.manageList__imgcurrency}>
           <img src={img} alt="" draggable={false} />
           <div className={style.manageList__imgcurrency_Name}>

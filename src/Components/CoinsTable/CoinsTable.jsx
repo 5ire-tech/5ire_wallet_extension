@@ -35,8 +35,7 @@ function CoinsTable({ dataArray }) {
               <div
                 onClick={() => handleClick(ele)}
                 className={style.coinsTable__textTop}
-                style={{ cursor: "pointer" }}
-              >
+                style={{ cursor: "pointer" }}>
                 {ele.coinName}
                 <div className={`${style.coinsTable__grayText12} textBold`}>
                   /{ele.coinSubName}
@@ -46,8 +45,7 @@ function CoinsTable({ dataArray }) {
                 ${ele.coinPrice} |
                 <div
                   className={`${style.coinsTable__grayText12} positiveText`}
-                  style={{ marginLeft: "3px" }}
-                >
+                  style={{ marginLeft: "3px" }}>
                   {ele.coinStatus}
                 </div>
               </div>
@@ -57,8 +55,7 @@ function CoinsTable({ dataArray }) {
             <div className={style.coinsTable__textTop}>{ele.currCryptoBal}</div>
             <div
               className={style.coinsTable__grayText12}
-              style={{ justifyContent: "flex-end" }}
-            >
+              style={{ justifyContent: "flex-end" }}>
               ${ele.currDollerBal}
             </div>
           </div>

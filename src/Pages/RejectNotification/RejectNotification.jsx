@@ -56,8 +56,7 @@ function ApproveTx() {
                 activeTab === "detail" &&
                 style.rejectedSec__sendSwapbtn__buttons__active
               }
-            `}
-            >
+            `}>
               Details
             </button>
             <button
@@ -65,8 +64,7 @@ function ApproveTx() {
               className={`${style.rejectedSec__sendSwapbtn__buttons}  ${
                 activeTab === "data" &&
                 style.rejectedSec__sendSwapbtn__buttons__active
-              }`}
-            >
+              }`}>
               HEX Data
             </button>
           </div>
@@ -93,8 +91,7 @@ function ApproveTx() {
                   </div>
                   <div
                     className={style.rejectedSec__icon}
-                    style={{ marginTop: "30px" }}
-                  >
+                    style={{ marginTop: "30px" }}>
                     <img src={SwapIcon} alt="swapIcon" />
                   </div>
                   <div className={style.rejectedSec__listReject__innerList}>

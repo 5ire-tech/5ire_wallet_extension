@@ -381,8 +381,7 @@ function Swap() {
     <button
       disabled={isMaxDisabled}
       className="maxBtn"
-      onClick={handleMaxClick}
-    >
+      onClick={handleMaxClick}>
       Max
     </button>
   );
@@ -450,8 +449,7 @@ function Swap() {
         isModalOpen={isModalOpen}
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
-        centered
-      >
+        centered>
         <div className="swapsendModel">
           <div className="innerContact">
             <img
@@ -473,8 +471,7 @@ function Swap() {
         isModalOpen={isFaildOpen}
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
-        centered
-      >
+        centered>
         <div className="swapsendModel">
           <div className="innerContact">
             <img

@@ -73,8 +73,7 @@ function CreateWalletChain() {
             <button
               className={style.cardWhite__addressInput__copyAll}
               name={"all"}
-              onClick={handleCopy}
-            >
+              onClick={handleCopy}>
               Copy All
             </button>
           </div>

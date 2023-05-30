@@ -27,8 +27,7 @@ export default function ErrorModal() {
       isModalOpen={!!networkError}
       handleOk={handleRetry}
       handleCancel={handleRetry}
-      centered
-    >
+      centered>
       <div className="swapsendModel">
         <div className="innerContact">
           <img src={FaildSwap} alt="swapFaild" draggable={false} />

@@ -9,8 +9,7 @@ function DefiList(props) {
       <div
         className={` ${style.defiList} ${
           bordered ? style.defiList__bordered : ""
-        }`}
-      >
+        }`}>
         <div className={style.defiList__stakingList}>
           <img src={tickIcon} alt="tickIcon" draggable={false} />{" "}
           <div>

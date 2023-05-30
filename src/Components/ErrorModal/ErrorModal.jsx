@@ -16,8 +16,7 @@ export default function ErrorModal() {
       isModalOpen={!!backgroundError}
       handleOk={handleErrorModal}
       handleCancel={handleErrorModal}
-      centered
-    >
+      centered>
       <div className="swapsendModel">
         <div className="innerContact">
           <img
