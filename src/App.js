@@ -81,7 +81,7 @@ function App(props) {
   useEffect(() => {
     // const route = getParameterByName("route");
 
-    log("here is some data: ", isStateLoaded, window.location.href, isLogin, vault, state?.pass);
+    // log("here is some data: ", isStateLoaded, window.location.href, isLogin, vault, state?.pass);
     //sync the current action route with main popup
     if (activeSession && isLogin) {
       navigate(`/${activeSession.route}`);

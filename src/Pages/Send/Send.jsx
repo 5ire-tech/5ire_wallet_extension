@@ -7,7 +7,7 @@ import Info from "../../Assets/infoIcon.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import SmallLogo from "../../Assets/smallLogo.svg";
 import ComplSwap from "../../Assets/succeslogo.svg";
-import { validateAddress } from "../../Utility/utility";
+import { log, validateAddress } from "../../Utility/utility";
 import React, { useState, useEffect, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
@@ -118,7 +118,6 @@ function Send() {
         if (estimatedGas && !data.amount && data.to) {
 
           const amount = Number(balance?.evmBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0) + pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm);
-
           !(Number(amount) > 0) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
 
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
@@ -141,8 +140,8 @@ function Send() {
         }
       } else if (activeTab === NATIVE) {
         if (estimatedGas && !data.amount && data.to) {
-
           const amount = Number(balance?.nativeBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0) + pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native);
+          log("here is the balance low: ", Number(balance?.nativeBalance), Number(estimatedGas), EXTRA_FEE, (isEd ? EXISTENTIAL_DEPOSITE : 0), pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native)
 
           !(Number(amount) > 0) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
@@ -246,6 +245,7 @@ function Send() {
           value: data?.amount ? data.amount : balance?.nativeBalance,
           toAddress: data.to,
           options: { account: state.currentAccount },
+          isEd
         }
       );
     } else if (activeTab === EVM && Number(balance?.evmBalance) > 0) {
@@ -259,6 +259,7 @@ function Send() {
           value: data?.amount ? data.amount : balance?.evmBalance,
           toAddress: data.to,
           options: { account: state.currentAccount },
+          isEd
         }
       );
     }
@@ -319,6 +320,7 @@ function Send() {
               isEvm: true,
               fee: estimatedGas
             },
+            isEd
           }
         );
         setIsModalOpen(true);
@@ -337,6 +339,7 @@ function Send() {
               isEvm: false,
               fee: estimatedGas
             },
+            isEd
           }
         );
         setIsModalOpen(true);
