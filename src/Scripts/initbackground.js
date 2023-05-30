@@ -1,5 +1,4 @@
 import Web3 from "web3";
-import { getFormattedMethod, isManifestV3 } from "./utils";
 import { BigNumber } from "bignumber.js";
 import { u8aToHex } from "@polkadot/util";
 import Browser from "webextension-polyfill";
@@ -11,6 +10,7 @@ import ValidatorNominatorHandler from "./nativehelper";
 import { httpRequest } from "../Utility/network_calls";
 import { Connection } from "../Helper/connection.helper";
 import { NotificationAndBedgeManager } from "./platform";
+import { getFormattedMethod, isManifestV3 } from "./utils";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import ExtensionPortStream from "./extension-port-stream-mod/index";
 import { ExternalConnection, ExternalWindowControl } from "./controller";
@@ -25,22 +25,25 @@ import {
   TX_TYPE,
   NETWORK,
   ERRCODES,
+  DECIMALS,
   HTTP_METHODS,
+  WALLET_METHODS,
   ERROR_MESSAGES,
+  SIGNER_METHODS,
   STREAM_CHANNELS,
   HTTP_END_POINTS,
+  ONE_ETH_IN_GWEI,
+  CONNECTION_METHODS,
   ERROR_EVENTS_LABELS,
+  MESSAGE_TYPE_LABELS,
   EVM_JSON_RPC_METHODS,
   STATE_CHANGE_ACTIONS,
   MESSAGE_EVENT_LABELS,
   INTERNAL_EVENT_LABELS,
   AUTO_BALANCE_UPDATE_TIMER,
   VALIDATOR_NOMINATOR_METHOD,
-  DECIMALS,
-  MESSAGE_TYPE_LABELS,
+  RESTRICTED_ETHEREUM_METHODS,
   TRANSACTION_STATUS_CHECK_TIMER,
-  ONE_ETH_IN_GWEI,
-  SIGNER_METHODS,
   LAPSED_TRANSACTION_CHECKER_TIMER
 } from "../Constants";
 import { log, isEqual, hasLength, isString, hasProperty, isNullorUndef } from "../Utility/utility";
@@ -181,18 +184,18 @@ export class InitBackground {
 
         //checks for event from injected script
         switch (data.method) {
-          case "connect":
-          case "eth_requestAccounts":
-          case "eth_accounts":
+          case CONNECTION_METHODS.CONNECT:
+          case CONNECTION_METHODS.ETH_REQUEST_ACCOUNTS:
+          case CONNECTION_METHODS.ETH_ACCOUNTS:
             await this.internalHandler.handleConnect(data, localData);
             break;
-          case "disconnect":
+          case WALLET_METHODS.DISCONNECT:
             await this.internalHandler.handleDisconnect(data, localData);
             break;
-          case "eth_sendTransaction":
+          case RESTRICTED_ETHEREUM_METHODS.ETH_SEND_TRANSACTION:
             await this.internalHandler.handleEthTransaction(data, localData);
             break;
-          case "get_endPoint":
+          case WALLET_METHODS.GET_END_POINT:
             await this.internalHandler.sendEndPoint(data, localData);
             break;
           case SIGNER_METHODS.SIGN_PAYLOAD:
@@ -212,8 +215,8 @@ export class InitBackground {
           case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_BONDMORE:
           case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_PAYOUT:
           case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR:
-          case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR_UNBONDED:
           case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR_UNBONDED:
           case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR_UNBONDED:
             await this.internalHandler.handleValidatorNominatorTransactions(data);
             break;
@@ -231,7 +234,7 @@ export class InitBackground {
               );
         }
       } catch (err) {
-        log("err is here: ", err);
+        log("error in externalEventStream : ", err);
         ExtensionEventHandle.eventEmitter.emit(
           INTERNAL_EVENT_LABELS.ERROR,
           new ErrorPayload(ERRCODES.RUNTIME_MESSAGE_SECTION_ERROR, err.message)
@@ -356,7 +359,6 @@ export class InitBackground {
   and when Chrome is updated to a new version. */
   bindInstallandUpdateEvents = async () => {
     Browser.runtime.onInstalled.addListener(async () => {
-      log("here is refresh");
       const services = new Services();
       const state = await getDataLocal(LABELS.STATE);
       const pendingTxBalance = state.pendingTransactionBalance;
@@ -407,7 +409,7 @@ export class InitBackground {
 
   //background startup events binding
   bindBackgroundStartupEvents = async () => {
-    Browser.runtime.onStartup.addListener(() => {});
+    Browser.runtime.onStartup.addListener(() => { });
   };
 
   //event called when extension is suspended or closed
@@ -436,7 +438,6 @@ export class InitBackground {
   _checkLapsedPendingTransactions = () => {
     return setInterval(() => {
       if (!InitBackground.isStatusCheckerRunning && !TransactionQueue.transactionIntervalId) {
-        console.log("running the service for transaction status check");
         ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.LAPSED_TRANSACTION_CHECK);
       }
     }, LAPSED_TRANSACTION_CHECKER_TIMER);
@@ -733,7 +734,6 @@ class TransactionQueue {
       //if the current transaction is null then it is failed and removed
       if (!transactionQueue.currentTransaction?.transactionHistoryTrack) {
         const { options, data } = transactionQueue.currentTransaction;
-        console.log("here is options data: ", transactionQueue);
         //update the current transaction pending balance state
         await this.services.updatePendingTransactionBalance(
           network,
@@ -788,8 +788,8 @@ class TransactionQueue {
             transactionHistoryTrack.to = transactionHistoryTrack.intermidateHash
               ? transactionHistoryTrack.to
               : transactionHistoryTrack.isEvm
-              ? transactionStatus.to || transactionStatus.contractAddress
-              : transactionHistoryTrack.to;
+                ? transactionStatus.to || transactionStatus.contractAddress
+                : transactionHistoryTrack.to;
 
           //set the used gas
           transactionHistoryTrack.gasUsed = transactionHistoryTrack.isEvm
@@ -1285,7 +1285,7 @@ export class Services {
 
             transactionObj[signedBlock.block.extrinsics[index].hash.toString()] =
               transactionObj[signedBlock.block.extrinsics[index].hash.toString()]?.sectionmethod !==
-              "staking.Bonded"
+                "staking.Bonded"
                 ? {}
                 : transactionObj[signedBlock.block.extrinsics[index].hash.toString()];
 
@@ -1400,10 +1400,10 @@ export class Services {
                 to_address: "N/A",
                 value: transactionObj[signedBlock.block.extrinsics[index].hash.toString()]?.value
                   ? (
-                      Number(
-                        transactionObj[signedBlock.block.extrinsics[index].hash.toString()]?.value
-                      ) + Number(event.data[1])
-                    ).toString()
+                    Number(
+                      transactionObj[signedBlock.block.extrinsics[index].hash.toString()]?.value
+                    ) + Number(event.data[1])
+                  ).toString()
                   : 0 + Number(event.data[1]),
                 txhash: signedBlock.block.extrinsics[index].hash.toString(),
                 reason: event.method.toLowerCase(),
@@ -1577,8 +1577,8 @@ export class Services {
               hItem.to = hItem.intermidateHash
                 ? hItem.to
                 : hItem.isEvm
-                ? transactionStatus.to || transactionStatus.contractAddress
-                : hItem.to;
+                  ? transactionStatus.to || transactionStatus.contractAddress
+                  : hItem.to;
 
             await this.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, hItem, { account });
           }
@@ -1634,7 +1634,7 @@ export class TransactionsRPC {
       if (
         balanceWithFee >
         Number(balance?.evmBalance) -
-          (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
+        (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -1742,7 +1742,7 @@ export class TransactionsRPC {
       if (
         balanceWithFee >=
         Number(balance?.evmBalance) -
-          (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
+        (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -1812,7 +1812,6 @@ export class TransactionsRPC {
       payload = null;
 
     try {
-      console.log("Message nativeTransfer : ", message);
       const { data, transactionHistoryTrack } = message;
       const {
         options: { account, fee },
@@ -1832,7 +1831,7 @@ export class TransactionsRPC {
       if (
         balanceWithFee >=
         Number(balance?.nativeBalance) -
-          (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)
+        (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -1947,7 +1946,7 @@ export class TransactionsRPC {
       if (
         balanceWithFee >=
         Number(balance?.nativeBalance) -
-          (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)
+        (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -2088,7 +2087,7 @@ export class GeneralWalletRPC {
       // console.log("network and api: ", NetworkHandler.api, state.currentNetwork);
       const balance =
         state.allAccountsBalance[state.currentAccount?.evmAddress][
-          state.currentNetwork.toLowerCase()
+        state.currentNetwork.toLowerCase()
         ];
 
       if (!NetworkHandler.api[state.currentNetwork.toLowerCase()]?.evmApi)
@@ -2165,8 +2164,8 @@ export class GeneralWalletRPC {
       let toAddress = data.toAddress
         ? data.toAddress
         : data?.data
-        ? account.evmAddress
-        : account.nativeAddress;
+          ? account.evmAddress
+          : account.nativeAddress;
       let amount = data?.value;
 
       if (toAddress?.startsWith("5")) toAddress = u8aToHex(toAddress).slice(0, 42);
@@ -2209,14 +2208,11 @@ export class GeneralWalletRPC {
   nativeFee = async (message, state) => {
     try {
       const { data } = message;
-      console.log("Message nativeFee :::: ", message);
       const {
         options: { account },
         isEd
       } = data;
       const { nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
-
-      console.log("isEd native fee ::: ", isEd);
 
       if (isNullorUndef(account))
         new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
