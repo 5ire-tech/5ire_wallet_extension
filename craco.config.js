@@ -12,6 +12,7 @@ module.exports = {
       );
 
       webpackConfig.resolve.plugins.splice(scopePluginIndex, 1);
+      webpackConfig.ignoreWarnings = [/Failed to parse source map/];
 
       return {
         ...webpackConfig,

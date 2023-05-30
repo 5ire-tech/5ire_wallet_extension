@@ -1,17 +1,21 @@
 @import "../../styles/__vars.scss";
+
 .histryList {
   display: flex;
   justify-content: space-between;
   border-bottom: 1px solid $border-C4D7F8;
   padding: 25px 0px 20px;
+
   p {
     color: $baseColor-Text;
     font-size: 14px;
     font-weight: bold;
+
     span {
       font-size: 12px;
       color: $gray-80838E-Dark2;
     }
+
     &:last-child {
       font-size: 12px;
       color: $gray-80838E-Dark2;
@@ -21,6 +25,7 @@
       white-space: nowrap;
     }
   }
+
   &__Status {
     display: flex;
     gap: 10px;
@@ -34,8 +39,10 @@
       border-radius: 20px;
     }
   }
+
   &__Currency {
     text-align: end;
+
     p {
       &:last-child {
         font-size: 12px;
