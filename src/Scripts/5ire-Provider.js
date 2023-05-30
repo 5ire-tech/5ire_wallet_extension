@@ -61,7 +61,8 @@ export class FireProvider extends SafeEventEmitter {
 
   //for checking JSON-RPC headers
   async passReq(method, payload, id = null) {
-    if (method === undefined && method.trim() === "") return Error("invalid method");
+    if (method === undefined && method.trim() === "")
+      return Error("invalid method");
 
     //pass the request to extension
     const isObject = typeof method === "object" && method !== undefined;
@@ -87,7 +88,12 @@ export class FireProvider extends SafeEventEmitter {
               Accept: "application/json",
               "Content-Type": "application/json"
             },
-            body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params: message })
+            body: JSON.stringify({
+              jsonrpc: "2.0",
+              id: 1,
+              method,
+              params: message
+            })
           });
 
           const content = await rawResponse.json();

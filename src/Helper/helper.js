@@ -21,16 +21,22 @@ export const formatDate = (_date) => {
     let minutes = currentDate.getMinutes().toString();
     let month = (currentDate.getMonth() + 1).toString();
 
-    const fullDate = date.padStart(2, "0") + "-" + month.padStart(2, "0") + "-" + fullYear + " | ";
+    const fullDate =
+      date.padStart(2, "0") +
+      "-" +
+      month.padStart(2, "0") +
+      "-" +
+      fullYear +
+      " | ";
     let time = hours + ":" + minutes + ":" + seconds;
     time = time.split(":");
     time[3] = time[0] < 12 ? " AM" : " PM";
     time[0] = time[0] > 12 ? time[0] % 12 : time[0];
     const dateTime =
       fullDate +
-      `${time[0].toString().padStart(2, "0")}:${time[1].toString().padStart(2, "0")}:${time[2]
+      `${time[0].toString().padStart(2, "0")}:${time[1]
         .toString()
-        .padStart(2, "0")}${time[3]}`;
+        .padStart(2, "0")}:${time[2].toString().padStart(2, "0")}${time[3]}`;
 
     return dateTime;
   } catch (error) {
@@ -83,7 +89,9 @@ export const numFormatter = (num) => {
 export const generateTransactionUrl = (network, txHash, isEvm) => {
   try {
     if (isNullorUndef(network) && isNullorUndef(txHash))
-      new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
+      new Error(
+        new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)
+      ).throw();
     const explorerUrl = EXPLORERS[network.toUpperCase()];
     return `${explorerUrl}/${isEvm ? "evm/tx" : "testnet/tx"}/${txHash}`;
   } catch (err) {
@@ -101,9 +109,14 @@ export const openBrowserTab = (url) => {
 };
 
 //check if string is included into array
-export const checkStringInclusionIntoArray = (str, strArr = Object.values(CONNECTION_METHODS)) => {
+export const checkStringInclusionIntoArray = (
+  str,
+  strArr = Object.values(CONNECTION_METHODS)
+) => {
   if (isNullorUndef(str) && isNullorUndef(strArr))
-    new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
+    new Error(
+      new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)
+    ).throw();
   return strArr.includes(str);
 };
 
@@ -120,20 +133,30 @@ export const sendEventToTab = async (
   emitWithoutConnectionCheck = false
 ) => {
   if (
-    !checkStringInclusionIntoArray(tabDetails.tabDetails.origin, RESTRICTED_URLS) &&
-    ((connectedApps && connectedApps[tabDetails.tabDetails.origin]?.isConnected) ||
+    !checkStringInclusionIntoArray(
+      tabDetails.tabDetails.origin,
+      RESTRICTED_URLS
+    ) &&
+    ((connectedApps &&
+      connectedApps[tabDetails.tabDetails.origin]?.isConnected) ||
       emitWithoutConnectionCheck)
   ) {
-    tabDetails.tabDetails.tabId && sendMessageToTab(tabDetails.tabDetails.tabId, tabMessagePayload);
+    tabDetails.tabDetails.tabId &&
+      sendMessageToTab(tabDetails.tabDetails.tabId, tabMessagePayload);
   }
 };
 
 //send event to specfic tab
-export const sendEventUsingTabId = async (tabId, tabEventPayload, connectedApps = null) => {
+export const sendEventUsingTabId = async (
+  tabId,
+  tabEventPayload,
+  connectedApps = null
+) => {
   if (connectedApps) {
     const tabDetails = getTabDetailsUsingTabId(tabId);
     if (tabDetails) {
-      const isConnected = connectedApps[new URL(tabDetails.url).origin]?.isConnected;
+      const isConnected =
+        connectedApps[new URL(tabDetails.url).origin]?.isConnected;
       isConnected && sendMessageToTab(tabId, tabEventPayload);
     }
   } else sendMessageToTab(tabId, tabEventPayload);
@@ -152,7 +175,9 @@ export const getTabDetailsUsingTabId = async (tabId) => {
 //fix number upto certain decimals
 export const fixNumber = (num, decimalPlaces = 6, roundingMode = 8) => {
   try {
-    const number = new BigNumber(Number(num)).toFixed(decimalPlaces, roundingMode).toString();
+    const number = new BigNumber(Number(num))
+      .toFixed(decimalPlaces, roundingMode)
+      .toString();
     return number;
   } catch (error) {
     return "";

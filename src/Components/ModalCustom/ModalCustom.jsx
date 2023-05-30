@@ -15,7 +15,12 @@ function ModalCustom({
     <div>
       <Modal
         closeIcon={
-          <img src={ModalCloseIcon} alt="close" draggable={false} className="closeModalIcon" />
+          <img
+            src={ModalCloseIcon}
+            alt="close"
+            draggable={false}
+            className="closeModalIcon"
+          />
         }
         title={title}
         className={`modalCustom ${customClass && customClass}`}
@@ -23,7 +28,8 @@ function ModalCustom({
         onOk={handleOk}
         onCancel={handleCancel}
         footer={false}
-        centered={centered}>
+        centered={centered}
+      >
         {children}
       </Modal>
     </div>

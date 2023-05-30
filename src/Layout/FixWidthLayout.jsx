@@ -6,10 +6,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import BalanceDetails from "../Components/BalanceDetails/BalanceDetails";
 import MenuFooter from "../Components/MenuFooter/MenuFooter";
 import { isEqual } from "../Utility/utility";
-// import MenuRestofHeaders from "../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 
 function FixWidthLayout({ children }) {
   const { Content } = Layout;
+
   const getLocation = useLocation();
   const navigate = useNavigate();
 

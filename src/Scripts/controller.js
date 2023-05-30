@@ -6,7 +6,10 @@ import { isEqual, isNullorUndef, log } from "../Utility/utility";
 import { sendMessageToTab } from "../Utility/message_helper";
 import { ExtensionStorageHandler } from "../Storage/loadstore";
 import WindowManager, { NotificationAndBedgeManager } from "./platform";
-import { ExternalAppsRequest, TabMessagePayload } from "../Utility/network_calls";
+import {
+  ExternalAppsRequest,
+  TabMessagePayload
+} from "../Utility/network_calls";
 import {
   LABELS,
   DECIMALS,
@@ -32,7 +35,8 @@ export class ExternalWindowControl {
       this._handleTabChange,
       this._handleTabUpdate
     );
-    this.notificationAndBedgeHandler = NotificationAndBedgeManager.getInstance();
+    this.notificationAndBedgeHandler =
+      NotificationAndBedgeManager.getInstance();
   }
 
   /**
@@ -55,7 +59,10 @@ export class ExternalWindowControl {
    * @returns
    */
   newConnectionRequest = async (data, externalControlsState) => {
-    const isOriginAlreadyExist = this._checkNewRequestOrigin(externalControlsState, data.origin);
+    const isOriginAlreadyExist = this._checkNewRequestOrigin(
+      externalControlsState,
+      data.origin
+    );
 
     if (isOriginAlreadyExist) {
       sendMessageToTab(
@@ -73,7 +80,10 @@ export class ExternalWindowControl {
 
     //check if already connected or not
     if (isEqual(data.route, ROUTE_FOR_APPROVAL_WINDOWS.CONNECTION_ROUTE)) {
-      const isAlreadyConnected = this._checkAlreadyConnected(externalControlsState, data.origin);
+      const isAlreadyConnected = this._checkAlreadyConnected(
+        externalControlsState,
+        data.origin
+      );
       if (isAlreadyConnected) return;
     }
 
@@ -147,7 +157,9 @@ export class ExternalWindowControl {
       }
 
       //if window find then close the window
-      await this.windowManager.closePopup(externalControlsState.activeSession.popupId);
+      await this.windowManager.closePopup(
+        externalControlsState.activeSession.popupId
+      );
     }
   };
 
@@ -159,8 +171,13 @@ export class ExternalWindowControl {
    * @param {*} origin
    */
   _checkNewRequestOrigin = (externalControlsState, origin) => {
-    const inCurrent = isEqual(externalControlsState.activeSession?.origin, origin);
-    const inPending = externalControlsState.connectionQueue.find((item) => item.origin === origin);
+    const inCurrent = isEqual(
+      externalControlsState.activeSession?.origin,
+      origin
+    );
+    const inPending = externalControlsState.connectionQueue.find(
+      (item) => item.origin === origin
+    );
 
     return inPending || inCurrent;
   };
@@ -174,7 +191,10 @@ export class ExternalWindowControl {
    */
   _handleClose = async (windowId) => {
     const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
-    this.windowManager.filterAndRemoveWindows(ExternalWindowControl.currentPopup, false);
+    this.windowManager.filterAndRemoveWindows(
+      ExternalWindowControl.currentPopup,
+      false
+    );
     isEqual(windowId, ExternalWindowControl.currentPopup) &&
       this._sendRejectAndCloseResponse(activeSession);
   };
@@ -192,11 +212,16 @@ export class ExternalWindowControl {
   _handleWindowFocusChange = async (windowId) => {
     try {
       if (windowId !== -1) {
-        const windowAndTabState = await getDataLocal(LABELS.WINDOW_AND_TAB_STATE);
+        const windowAndTabState = await getDataLocal(
+          LABELS.WINDOW_AND_TAB_STATE
+        );
         if (windowAndTabState.windowId !== windowId) {
           log("window id: ", windowId);
 
-          const tab = await Browser.tabs.query({ active: true, windowId: windowId });
+          const tab = await Browser.tabs.query({
+            active: true,
+            windowId: windowId
+          });
           const windowAndTabDetails = {
             windowId: windowId,
             tabDetails: {
@@ -262,7 +287,10 @@ export class ExternalWindowControl {
       const windowAndTabState = await getDataLocal(LABELS.WINDOW_AND_TAB_STATE);
       if (windowAndTabState.tabDetails.tabId === tabId) {
         const tab = await Browser.tabs.get(tabId);
-        if (windowAndTabState.tabDetails.origin !== new URL(tab?.pendingUrl || tab.url).origin) {
+        if (
+          windowAndTabState.tabDetails.origin !==
+          new URL(tab?.pendingUrl || tab.url).origin
+        ) {
           log("changed the url details: ");
           const windowAndTabDetails = {
             windowId: windowAndTabState.windowId,
@@ -357,7 +385,10 @@ export class ExternalConnection {
       isEqual(data?.method, EVM_JSON_RPC_METHODS.ETH_REQUEST_ACCOUNT) ||
       isEqual(data?.method, EVM_JSON_RPC_METHODS.ETH_ACCOUNTS);
 
-    const isConnected = isAlreadyConnected(externalControls.connectedApps, data.origin);
+    const isConnected = isAlreadyConnected(
+      externalControls.connectedApps,
+      data.origin
+    );
 
     if (isConnected) {
       const res = isEthReq
@@ -370,7 +401,10 @@ export class ExternalConnection {
           };
 
       //send the message to requester tab
-      sendMessageToTab(data.tabId, new TabMessagePayload(data.id, res, data?.method));
+      sendMessageToTab(
+        data.tabId,
+        new TabMessagePayload(data.id, res, data?.method)
+      );
     } else {
       await this.externalWindowController.newConnectionRequest(
         { route: ROUTE_FOR_APPROVAL_WINDOWS.CONNECTION_ROUTE, ...data },
@@ -383,11 +417,20 @@ export class ExternalConnection {
   async handleEthTransaction(data, state) {
     //check if the from account is our current account
     if (
-      !isEqual(state.currentAccount.evmAddress?.toLowerCase(), data.message?.from?.toLowerCase())
+      !isEqual(
+        state.currentAccount.evmAddress?.toLowerCase(),
+        data.message?.from?.toLowerCase()
+      )
     ) {
       sendMessageToTab(
         data.tabId,
-        new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.ACCOUNT_ACCESS_NOT_GRANTED)
+        new TabMessagePayload(
+          data.id,
+          null,
+          null,
+          null,
+          ERROR_MESSAGES.ACCOUNT_ACCESS_NOT_GRANTED
+        )
       );
       return;
     }
@@ -396,22 +439,39 @@ export class ExternalConnection {
 
     //We are divding this value from 18 units to simple integer its handled internally in evmTransfer method
     if (data?.message?.value) {
-      const amt = BigNumber(Number(data.message.value)).dividedBy(DECIMALS).toString();
+      const amt = BigNumber(Number(data.message.value))
+        .dividedBy(DECIMALS)
+        .toString();
 
       //invalid amount check
       if (Number(amt) < 0 || isNaN(amt)) {
         sendMessageToTab(
           data.tabId,
-          new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.INVALID_AMOUNT)
+          new TabMessagePayload(
+            data.id,
+            null,
+            null,
+            null,
+            ERROR_MESSAGES.INVALID_AMOUNT
+          )
         );
         return;
       }
 
       //check the data or to field
-      if (isNullorUndef(data.message?.data) && isNullorUndef(data.message?.to)) {
+      if (
+        isNullorUndef(data.message?.data) &&
+        isNullorUndef(data.message?.to)
+      ) {
         sendMessageToTab(
           data.tabId,
-          new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.AMOUNT_DATA_CHECK)
+          new TabMessagePayload(
+            data.id,
+            null,
+            null,
+            null,
+            ERROR_MESSAGES.AMOUNT_DATA_CHECK
+          )
         );
         return;
       }
@@ -470,6 +530,10 @@ export class ExternalConnection {
       { connected: false, origin: data.origin },
       { localStateKey: LABELS.EXTERNAL_CONTROLS }
     );
-    sendMessageToTab(data.tabId, new TabMessagePayload(data.id, { result: null }), data.method);
+    sendMessageToTab(
+      data.tabId,
+      new TabMessagePayload(data.id, { result: null }),
+      data.method
+    );
   }
 }

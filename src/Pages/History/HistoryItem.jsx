@@ -50,7 +50,10 @@ export default function HistoryItem({ historyItem, handleHistoryOpen }) {
       </div>
       <div className={style.historySec__historyMarketSwap}>
         <div className={style.historySec__historyMarketSwap__leftSide}>
-          <img alt="hash" src={getTxIcon(historyItem.type, historyItem.status.toLowerCase())} />
+          <img
+            alt="hash"
+            src={getTxIcon(historyItem.type, historyItem.status.toLowerCase())}
+          />
 
           <div
             className={style.historySec__historyMarketSwap__leftContact}
@@ -62,7 +65,6 @@ export default function HistoryItem({ historyItem, handleHistoryOpen }) {
                 ? historyItem?.method
                 : historyItem.type}
             </h3>
-            {/* <p>{historyItem.to && historyItem.to.length > 40 ? shortner(historyItem.to) : historyItem.to}</p> */}
             <p>
               {historyItem?.to && historyItem?.to?.length > 40
                 ? historyItem?.to?.startsWith(5)
@@ -74,15 +76,22 @@ export default function HistoryItem({ historyItem, handleHistoryOpen }) {
         </div>
 
         <div className={style.historySec__historyMarketSwap__rytSide}>
-          <h3>{historyItem?.amount ? numFormatter(fixNumber(historyItem.amount)) : "0"} 5ire</h3>
+          <h3>
+            {historyItem?.amount
+              ? numFormatter(fixNumber(historyItem.amount))
+              : "0"}{" "}
+            5ire
+          </h3>
           <p>
             Status :{" "}
             <span
               className={
-                historyItem.status.toLowerCase() === STATUS.PENDING.toLowerCase() ||
+                historyItem.status.toLowerCase() ===
+                  STATUS.PENDING.toLowerCase() ||
                 historyItem.status.toLowerCase() === STATUS.QUEUED.toLowerCase()
                   ? style.historySec__pending
-                  : historyItem.status.toLowerCase() === STATUS.SUCCESS.toLowerCase()
+                  : historyItem.status.toLowerCase() ===
+                    STATUS.SUCCESS.toLowerCase()
                   ? style.historySec__success
                   : style.historySec__failed
               }>

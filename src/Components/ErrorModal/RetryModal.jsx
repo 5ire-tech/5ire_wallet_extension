@@ -7,7 +7,8 @@ import { MESSAGE_EVENT_LABELS, MESSAGE_TYPE_LABELS } from "../../Constants";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 
 export default function ErrorModal() {
-  const { networkError, setNetworkError, updateLoading } = useContext(AuthContext);
+  const { networkError, setNetworkError, updateLoading } =
+    useContext(AuthContext);
 
   const handleRetry = () => {
     setNetworkError(null);
@@ -26,13 +27,15 @@ export default function ErrorModal() {
       isModalOpen={!!networkError}
       handleOk={handleRetry}
       handleCancel={handleRetry}
-      centered>
+      centered
+    >
       <div className="swapsendModel">
         <div className="innerContact">
           <img src={FaildSwap} alt="swapFaild" draggable={false} />
           <h3 className="rongText">Connection Error</h3>
           <p className="transId">
-            {networkError || "Network Connection Error, please change network or try again later"}
+            {networkError ||
+              "Network Connection Error, please change network or try again later"}
           </p>
           <div className="footerbuttons">
             <ButtonComp text={"Retry"} onClick={handleRetry} />

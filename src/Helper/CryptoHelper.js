@@ -18,7 +18,11 @@ export function encryptor(text, key) {
   try {
     const ENCRYPTION_KEY = Buffer.from(key.toString(), "base64");
     let iv = crypto.randomBytes(IV_LENGTH);
-    let cipher = crypto.createCipheriv(algorithm, Buffer.from(unpack(ENCRYPTION_KEY), "hex"), iv);
+    let cipher = crypto.createCipheriv(
+      algorithm,
+      Buffer.from(unpack(ENCRYPTION_KEY), "hex"),
+      iv
+    );
     let encrypted = cipher.update(text);
     encrypted = Buffer.concat([encrypted, cipher.final()]);
     return iv.toString("hex") + ":" + encrypted.toString("hex");

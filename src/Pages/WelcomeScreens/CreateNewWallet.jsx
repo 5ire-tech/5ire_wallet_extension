@@ -52,7 +52,10 @@ function CreateNewWallet() {
     if (newWalletName.trim().length === 0) {
       setWarrning(ERROR_MESSAGES.INPUT_REQUIRED);
       setDisable(true);
-    } else if (newWalletName.trim().length < 2 || newWalletName.trim().length >= 19) {
+    } else if (
+      newWalletName.trim().length < 2 ||
+      newWalletName.trim().length >= 19
+    ) {
       setWarrning(ERROR_MESSAGES.INPUT_BETWEEN_2_TO_18);
       setDisable(true);
     } else if (!REGEX.WALLET_NAME.test(newWalletName)) {
@@ -68,7 +71,9 @@ function CreateNewWallet() {
     if (e.key === LABELS.ENTER || e.key === undefined) {
       if (!warrning && newWalletName.trim()) {
         if (isLogin) {
-          const match = allAccounts?.find((a) => a.accountName === newWalletName.trim());
+          const match = allAccounts?.find(
+            (a) => a.accountName === newWalletName.trim()
+          );
           if (match) {
             setWarrning(ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS);
           } else {
@@ -122,8 +127,16 @@ function CreateNewWallet() {
             </div>
           </div>
           <div className={style.setPassword__footerbuttons}>
-            <ButtonComp onClick={handleClick} text={"Create Wallet"} isDisable={isDisable} />
-            <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancle} />
+            <ButtonComp
+              onClick={handleClick}
+              text={"Create Wallet"}
+              isDisable={isDisable}
+            />
+            <ButtonComp
+              bordered={true}
+              text={"Cancel"}
+              onClick={handleCancle}
+            />
           </div>
         </div>
       </div>

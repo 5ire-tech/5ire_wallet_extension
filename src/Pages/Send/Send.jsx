@@ -12,7 +12,10 @@ import React, { useState, useEffect, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
-import { InputField, InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
+import {
+  InputField,
+  InputFieldOnly
+} from "../../Components/InputField/InputFieldSimple";
 import {
   EVM,
   LABELS,
@@ -34,9 +37,17 @@ function Send() {
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [err, setErr] = useState({ to: "", amount: "" });
   const [data, setData] = useState({ to: "", amount: "" });
-  const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
 
-  const { currentAccount, pendingTransactionBalance, currentNetwork, allAccountsBalance } = state;
+  const { state, estimatedGas, updateEstimatedGas, updateLoading } =
+    useContext(AuthContext);
+
+  const {
+    currentAccount,
+    pendingTransactionBalance,
+    currentNetwork,
+    allAccountsBalance
+  } = state;
+
   const [balance, setBalance] = useState(
     allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
   );
@@ -47,15 +58,25 @@ function Send() {
     setErr({ to: "", amount: "" });
     setData({ to: "", amount: "" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentAccount?.evmAddress, currentAccount?.nativeAddress, currentNetwork]);
+  }, [
+    currentAccount?.evmAddress,
+    currentAccount?.nativeAddress,
+    currentNetwork
+  ]);
 
   useEffect(() => {
-    setBalance(allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]);
+    setBalance(
+      allAccountsBalance[currentAccount?.evmAddress][
+        currentNetwork.toLowerCase()
+      ]
+    );
   }, [
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance,
+    allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
+      ?.evmBalance,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.nativeBalance,
+    allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
+      ?.nativeBalance,
     currentAccount?.evmAddress,
     currentNetwork,
     allAccountsBalance
@@ -78,7 +99,13 @@ function Send() {
     } else {
       setMaxDisabled(false);
     }
-  }, [balance?.evmBalance, balance?.nativeBalance, activeTab, data?.to, err.to]);
+  }, [
+    balance?.evmBalance,
+    balance?.nativeBalance,
+    activeTab,
+    data?.to,
+    err.to
+  ]);
 
   //Get fee if to and amount is present
   useEffect(() => {
@@ -107,21 +134,30 @@ function Send() {
             (Number(estimatedGas) +
               EXTRA_FEE +
               (isEd ? EXISTENTIAL_DEPOSITE : 0) +
-              pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
-                .evm);
-          !(Number(amount) > 0) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+              pendingTransactionBalance[currentAccount.evmAddress][
+                currentNetwork.toLowerCase()
+              ].evm);
+          !(Number(amount) > 0) &&
+            toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
 
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
           setData((p) => ({ ...p, amount: amount > 0 ? amount : "" }));
           return;
         } else if (data?.amount && estimatedGas && data?.to) {
           if (
-            Number(data.amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0) >
+            Number(data.amount) +
+              Number(estimatedGas) +
+              (isEd ? EXISTENTIAL_DEPOSITE : 0) >
             Number(balance?.evmBalance) -
-              pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
+              pendingTransactionBalance[currentAccount.evmAddress][
+                currentNetwork.toLowerCase()
+              ].evm
           ) {
             updateEstimatedGas(null);
-            setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
+            setErr((p) => ({
+              ...p,
+              amount: ERROR_MESSAGES.INSUFFICENT_BALANCE
+            }));
           } else {
             setErr((p) => ({ ...p, amount: "" }));
           }
@@ -133,27 +169,33 @@ function Send() {
             (Number(estimatedGas) +
               EXTRA_FEE +
               (isEd ? EXISTENTIAL_DEPOSITE : 0) +
-              pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
-                .native);
+              pendingTransactionBalance[currentAccount.evmAddress][
+                currentNetwork.toLowerCase()
+              ].native);
           log(
             "here is the balance low: ",
             Number(balance?.nativeBalance),
             Number(estimatedGas),
             EXTRA_FEE,
             isEd ? EXISTENTIAL_DEPOSITE : 0,
-            pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
-              .native
+            pendingTransactionBalance[currentAccount.evmAddress][
+              currentNetwork.toLowerCase()
+            ].native
           );
 
-          !(Number(amount) > 0) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+          !(Number(amount) > 0) &&
+            toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
           setData((p) => ({ ...p, amount: amount > 0 ? amount : "" }));
           return;
         } else if (
-          Number(data.amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0) >
+          Number(data.amount) +
+            Number(estimatedGas) +
+            (isEd ? EXISTENTIAL_DEPOSITE : 0) >
           Number(balance?.nativeBalance) -
-            pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
-              .native
+            pendingTransactionBalance[currentAccount.evmAddress][
+              currentNetwork.toLowerCase()
+            ].native
         ) {
           updateEstimatedGas(null);
           setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
@@ -173,7 +215,8 @@ function Send() {
     isEd
   ]);
 
-  const blockInvalidChar = (e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
+  const blockInvalidChar = (e) =>
+    ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
 
   //set the ED toggler state
   const onChangeToggler = (checked) => {
@@ -185,7 +228,8 @@ function Send() {
 
   //validate amount
   const validateAmount = () => {
-    if (!data.amount) setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INPUT_REQUIRED }));
+    if (!data.amount)
+      setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INPUT_REQUIRED }));
     else if (isNaN(data.amount))
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.ENTER_AMOUNT_CORRECTLY }));
     else if (Number(data.amount) <= 0)
@@ -194,7 +238,9 @@ function Send() {
       if (
         Number(data.amount) >=
         Number(balance?.evmBalance) -
-          pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
+          pendingTransactionBalance[currentAccount.evmAddress][
+            currentNetwork.toLowerCase()
+          ].evm
       )
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
       else setErr((p) => ({ ...p, amount: "" }));
@@ -202,7 +248,9 @@ function Send() {
       if (
         Number(data.amount) >=
         Number(balance?.nativeBalance) -
-          pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native
+          pendingTransactionBalance[currentAccount.evmAddress][
+            currentNetwork.toLowerCase()
+          ].native
       )
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
       else setErr((p) => ({ ...p, amount: "" }));
@@ -212,7 +260,8 @@ function Send() {
   //validate to address
   const validateToAddress = async () => {
     if (activeTab === EVM) {
-      if (!data.to) setErr((p) => ({ ...p, to: ERROR_MESSAGES.INPUT_REQUIRED }));
+      if (!data.to)
+        setErr((p) => ({ ...p, to: ERROR_MESSAGES.INPUT_REQUIRED }));
       else if (!data.to?.startsWith("0x"))
         setErr((p) => ({ ...p, to: ERROR_MESSAGES.INCORRECT_ADDRESS }));
       else if (data.to === currentAccount.evmAddress)
@@ -226,7 +275,8 @@ function Send() {
         }
       }
     } else if (activeTab === NATIVE) {
-      if (!data.to) setErr((p) => ({ ...p, to: ERROR_MESSAGES.INPUT_REQUIRED }));
+      if (!data.to)
+        setErr((p) => ({ ...p, to: ERROR_MESSAGES.INPUT_REQUIRED }));
       else if (!data.to?.startsWith("5"))
         setErr((p) => ({ ...p, to: ERROR_MESSAGES.INCORRECT_ADDRESS }));
       else if (data.to === currentAccount.nativeAddress)
@@ -248,22 +298,30 @@ function Send() {
       loader && updateLoading(true);
 
       //calculate the native fee
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, {
-        value: data?.amount ? data.amount : balance?.nativeBalance,
-        toAddress: data.to,
-        options: { account: state.currentAccount },
-        isEd
-      });
+      sendRuntimeMessage(
+        MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
+        MESSAGE_EVENT_LABELS.NATIVE_FEE,
+        {
+          value: data?.amount ? data.amount : balance?.nativeBalance,
+          toAddress: data.to,
+          options: { account: state.currentAccount },
+          isEd
+        }
+      );
     } else if (activeTab === EVM && Number(balance?.evmBalance) > 0) {
       loader && updateLoading(true);
 
       //calculate the evm fee
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {
-        value: data?.amount ? data.amount : balance?.evmBalance,
-        toAddress: data.to,
-        options: { account: state.currentAccount },
-        isEd
-      });
+      sendRuntimeMessage(
+        MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
+        MESSAGE_EVENT_LABELS.EVM_FEE,
+        {
+          value: data?.amount ? data.amount : balance?.evmBalance,
+          toAddress: data.to,
+          options: { account: state.currentAccount },
+          isEd
+        }
+      );
     }
   };
 
@@ -308,33 +366,41 @@ function Send() {
     try {
       if (activeTab === EVM) {
         //pass the message request for evm transfer
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TX, {
-          to: data.to,
-          value: data.amount,
-          options: {
-            account: state.currentAccount,
-            network: state.currentNetwork,
-            type: TX_TYPE.SEND,
-            isEvm: true,
-            fee: estimatedGas
-          },
-          isEd
-        });
+        sendRuntimeMessage(
+          MESSAGE_TYPE_LABELS.INTERNAL_TX,
+          MESSAGE_EVENT_LABELS.EVM_TX,
+          {
+            to: data.to,
+            value: data.amount,
+            options: {
+              account: state.currentAccount,
+              network: state.currentNetwork,
+              type: TX_TYPE.SEND,
+              isEvm: true,
+              fee: estimatedGas
+            },
+            isEd
+          }
+        );
         setIsModalOpen(true);
       } else if (activeTab === NATIVE) {
         //pass the message request for native transfer
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TX, {
-          to: data.to,
-          value: data.amount,
-          options: {
-            account: state.currentAccount,
-            network: state.currentNetwork,
-            type: TX_TYPE.SEND,
-            isEvm: false,
-            fee: estimatedGas
-          },
-          isEd
-        });
+        sendRuntimeMessage(
+          MESSAGE_TYPE_LABELS.INTERNAL_TX,
+          MESSAGE_EVENT_LABELS.NATIVE_TX,
+          {
+            to: data.to,
+            value: data.amount,
+            options: {
+              account: state.currentAccount,
+              network: state.currentNetwork,
+              type: TX_TYPE.SEND,
+              isEvm: false,
+              fee: estimatedGas
+            },
+            isEd
+          }
+        );
         setIsModalOpen(true);
       }
 
@@ -369,23 +435,13 @@ function Send() {
   };
 
   const suffix = (
-    <button disabled={isMaxDisabled} className="maxBtn" onClick={handleMaxClick}>
+    <button
+      disabled={isMaxDisabled}
+      className="maxBtn"
+      onClick={handleMaxClick}>
       Max
     </button>
   );
-
-  // const handleCopy = (e) => {
-  //   if (e.target.name.toLowerCase() === NATIVE.toLowerCase())
-  //     navigator.clipboard.writeText(currentAccount?.nativeAddress);
-
-  //   if (e.target.name.toLowerCase() === EVM.toLowerCase())
-  //     navigator.clipboard.writeText(currentAccount?.evmAddress);
-
-  //   // if (e.target.name.toLowerCase() === "hash")
-  //   //   navigator.clipboard.writeText(txHash);
-
-  //   toast.success(COPIED);
-  // };
 
   return (
     <>
@@ -397,7 +453,10 @@ function Send() {
               onClick={activeSend}
               name={NATIVE}
               className={`${style.sendSec__sendSwapbtn__buttons} 
-              ${activeTab === NATIVE && style.sendSec__sendSwapbtn__buttons__active}
+              ${
+                activeTab === NATIVE &&
+                style.sendSec__sendSwapbtn__buttons__active
+              }
             `}>
               Native
             </button>
@@ -478,7 +537,13 @@ function Send() {
         centered>
         <div className="swapsendModel">
           <div className="innerContact">
-            <img src={ComplSwap} alt="swapImage" width={127} height={127} draggable={false} />
+            <img
+              src={ComplSwap}
+              alt="swapImage"
+              width={127}
+              height={127}
+              draggable={false}
+            />
             <h2 className="title">Transfer Processed</h2>
             <div className="footerbuttons">
               <ButtonComp text={"Transfer Again"} onClick={handle_OK_Cancel} />
@@ -494,9 +559,14 @@ function Send() {
         centered>
         <div className="swapsendModel">
           <div className="innerContact">
-            <img src={FaildSwap} alt="swapFaild" width={127} height={127} draggable={false} />
+            <img
+              src={FaildSwap}
+              alt="swapFaild"
+              width={127}
+              height={127}
+              draggable={false}
+            />
             <h2 className="title">Transfer Failed!</h2>
-            {/* <p className="transId">{sendError}</p> */}
 
             <div className="footerbuttons">
               <ButtonComp text={"Try Again"} onClick={handle_OK_Cancel} />

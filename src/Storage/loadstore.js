@@ -1,6 +1,12 @@
 import { localStorage, sessionStorage } from ".";
 import { Error, ErrorPayload } from "../Utility/error_helper";
-import { ERRCODES, ERROR_MESSAGES, LABELS, STATUS, NETWORK } from "../Constants";
+import {
+  ERRCODES,
+  ERROR_MESSAGES,
+  LABELS,
+  STATUS,
+  NETWORK
+} from "../Constants";
 import {
   userState,
   externalControls,
@@ -19,7 +25,8 @@ import {
 //local storage data null safety check
 export const getDataLocal = async (key) => {
   try {
-    if (!isString(key) && isEmpty(key.trim())) throw new Error("Query key is invalid");
+    if (!isString(key) && isEmpty(key.trim()))
+      throw new Error("Query key is invalid");
     const localState = await localStorage.get(key);
 
     if (!localState?.state && isEqual(key, LABELS.STATE)) {
@@ -36,13 +43,22 @@ export const getDataLocal = async (key) => {
       };
       await localStorage.set({ state: newState });
       return newState;
-    } else if (!localState?.externalControls && isEqual(key, LABELS.EXTERNAL_CONTROLS)) {
+    } else if (
+      !localState?.externalControls &&
+      isEqual(key, LABELS.EXTERNAL_CONTROLS)
+    ) {
       await localStorage.set({ externalControls });
       return externalControls;
-    } else if (!localState?.transactionQueue && isEqual(key, LABELS.TRANSACTION_QUEUE)) {
+    } else if (
+      !localState?.transactionQueue &&
+      isEqual(key, LABELS.TRANSACTION_QUEUE)
+    ) {
       await localStorage.set({ transactionQueue });
       return transactionQueue;
-    } else if (!localState?.windowAndTabState && isEqual(key, LABELS.WINDOW_AND_TAB_STATE)) {
+    } else if (
+      !localState?.windowAndTabState &&
+      isEqual(key, LABELS.WINDOW_AND_TAB_STATE)
+    ) {
       await localStorage.set({ windowAndTabState });
       return windowAndTabState;
     }
@@ -57,7 +73,8 @@ export const getDataLocal = async (key) => {
 //session storage data null safety check
 export const getDataSession = async (key) => {
   try {
-    if (!isString(key) && isEmpty(key.trim())) throw new Error("Query key is invalid");
+    if (!isString(key) && isEmpty(key.trim()))
+      throw new Error("Query key is invalid");
     const sessionState = await sessionStorage.get(key);
     return sessionState ? sessionState : null;
   } catch (err) {
@@ -77,10 +94,15 @@ export class ExtensionStorageHandler {
       isNullorUndef(key) &&
         !hasLength(key) &&
         new Error(
-          new ErrorPayload(ERRCODES.INVALID_ARGU_TYPE, ERROR_MESSAGES.INVALID_TYPE)
+          new ErrorPayload(
+            ERRCODES.INVALID_ARGU_TYPE,
+            ERROR_MESSAGES.INVALID_TYPE
+          )
         ).throw();
       isNullorUndef(data) &&
-        new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
+        new Error(
+          new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)
+        ).throw();
 
       if (isNullorUndef(ExtensionStorageHandler.instance)) {
         ExtensionStorageHandler.instance = new ExtensionStorageHandler();
@@ -88,7 +110,9 @@ export class ExtensionStorageHandler {
       }
 
       if (!hasProperty(ExtensionStorageHandler.instance, key))
-        new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_PROPERTY)).throw();
+        new Error(
+          new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_PROPERTY)
+        ).throw();
 
       const state = await getDataLocal(options?.localStateKey || LABELS.STATE);
       await ExtensionStorageHandler.instance[key](data, state, options);
@@ -210,7 +234,8 @@ export class ExtensionStorageHandler {
   //update the popup id in currentTask
   updateCurrentSession = async (data, state) => {
     const newState = { ...state };
-    newState.activeSession.popupId = data.popupId || newState.activeSession.popupId;
+    newState.activeSession.popupId =
+      data.popupId || newState.activeSession.popupId;
     newState.activeSession.route = data.route || newState.activeSession.route;
 
     return await this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS);
@@ -328,7 +353,10 @@ export class ExtensionStorageHandler {
       type: newAccount.type
     };
     const allAccountsBalance = this._setAccountBalance(state, newAccount);
-    const pendingTransactionBalance = this._setAllAccountPendingBalance(state, newAccount);
+    const pendingTransactionBalance = this._setAllAccountPendingBalance(
+      state,
+      newAccount
+    );
     const txHistory = this._txProperty(state, newAccount.evmAddress);
     // }
     const newState = {
@@ -358,11 +386,15 @@ export class ExtensionStorageHandler {
     let txHistory = {};
 
     if (state?.txHistory?.hasOwnProperty(newAccount.evmAddress))
-      txHistory[newAccount?.evmAddress] = state.txHistory[newAccount.evmAddress];
+      txHistory[newAccount?.evmAddress] =
+        state.txHistory[newAccount.evmAddress];
     else txHistory = this._txProperty({ txHistory: {} }, newAccount.evmAddress);
 
     const allAccountsBalance = this._setAccountBalance(state, newAccount);
-    const pendingTransactionBalance = this._setAllAccountPendingBalance(state, newAccount);
+    const pendingTransactionBalance = this._setAllAccountPendingBalance(
+      state,
+      newAccount
+    );
 
     const newState = {
       ...state,
@@ -382,7 +414,10 @@ export class ExtensionStorageHandler {
     const { newAccount, vault } = message;
     const txHistory = this._txProperty(state, newAccount.evmAddress);
     const allAccountsBalance = this._setAccountBalance(state, newAccount);
-    const pendingTransactionBalance = this._setAllAccountPendingBalance(state, newAccount);
+    const pendingTransactionBalance = this._setAllAccountPendingBalance(
+      state,
+      newAccount
+    );
     const newState = {
       ...state,
       vault,
@@ -406,7 +441,10 @@ export class ExtensionStorageHandler {
     };
     const txHistory = this._txProperty(state, newAccount.evmAddress);
     const allAccountsBalance = this._setAccountBalance(state, newAccount);
-    const pendingTransactionBalance = this._setAllAccountPendingBalance(state, newAccount);
+    const pendingTransactionBalance = this._setAllAccountPendingBalance(
+      state,
+      newAccount
+    );
     const newState = {
       ...state,
       vault,
@@ -440,7 +478,9 @@ export class ExtensionStorageHandler {
       newState?.pendingTransactionBalance.hasOwnProperty(removedAccountAddress)
     );
 
-    if (newState?.pendingTransactionBalance.hasOwnProperty(removedAccountAddress)) {
+    if (
+      newState?.pendingTransactionBalance.hasOwnProperty(removedAccountAddress)
+    ) {
       delete newState.pendingTransactionBalance[removedAccountAddress];
     }
     if (message?.isInitialAccount) {
@@ -456,7 +496,10 @@ export class ExtensionStorageHandler {
   recoverOldStateAccounts = async (message, state) => {
     const { vault, currentAccount } = message;
     const allAccountsBalance = this._setAccountBalance(state, currentAccount);
-    const pendingTransactionBalance = this._setAllAccountPendingBalance(state, currentAccount);
+    const pendingTransactionBalance = this._setAllAccountPendingBalance(
+      state,
+      currentAccount
+    );
     const newState = {
       ...state,
       vault,

@@ -91,7 +91,10 @@ export class Connection {
       web3Provider = new Web3.providers.HttpProvider(networkEndpoint, options);
     } else if (networkEndpoint?.startsWith("ws")) {
       //WebSocket connection Web3 (evm)
-      web3Provider = new Web3.providers.WebsocketProvider(networkEndpoint, options);
+      web3Provider = new Web3.providers.WebsocketProvider(
+        networkEndpoint,
+        options
+      );
 
       //bind event for failure for reconnect
       web3Provider.on("end", async () => {

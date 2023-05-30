@@ -5,7 +5,9 @@ import React, { useState, useEffect } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { isEmpty, validateMnemonic } from "../../Utility/utility";
-import InputFieldSimple, { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
+import InputFieldSimple, {
+  InputFieldOnly
+} from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 import {
   REGEX,
@@ -160,13 +162,18 @@ function ForgotPassword() {
 
   return (
     <div className={style.cardWhite} onKeyDown={handleSubmit}>
-      <MenuRestofHeaders logosilver={true} title="5ire Wallet" backTo={ROUTES.UNLOACK_WALLET} />
+      <MenuRestofHeaders
+        logosilver={true}
+        title="5ire Wallet"
+        backTo={ROUTES.UNLOACK_WALLET}
+      />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Forgot password</h1>
         </div>
         <div
-          className={`${style.cardWhite__importWalletlinkOuter} ${style.cardWhite__forgotPassword}`}>
+          className={`${style.cardWhite__importWalletlinkOuter} ${style.cardWhite__forgotPassword}`}
+        >
           <div>
             <InputFieldOnly
               name="accName"
@@ -179,7 +186,9 @@ function ForgotPassword() {
                 e.preventDefault();
               }}
             />
-            <p className={style.errorText}>{error?.accName ? error.accName : ""}</p>
+            <p className={style.errorText}>
+              {error?.accName ? error.accName : ""}
+            </p>
           </div>
           <div className="inputFieldOnly">
             <TextArea
@@ -218,10 +227,18 @@ function ForgotPassword() {
                 e.preventDefault();
               }}
             />
-            <p className={style.errorText}>{error?.confirmPass ? error.confirmPass : ""}</p>
+            <p className={style.errorText}>
+              {error?.confirmPass ? error.confirmPass : ""}
+            </p>
           </div>
-          <div className={`${style.setPassword__footerbuttons}${style.setPassword__forGotBtn}`}>
-            <ButtonComp text={"Change"} onClick={handleSubmit} isDisable={isDisable} />
+          <div
+            className={`${style.setPassword__footerbuttons}${style.setPassword__forGotBtn}`}
+          >
+            <ButtonComp
+              text={"Change"}
+              onClick={handleSubmit}
+              isDisable={isDisable}
+            />
             {/* <ButtonComp text={"Cancel"} onClick={handleCancel} /> */}
           </div>
         </div>

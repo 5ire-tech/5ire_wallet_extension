@@ -100,10 +100,18 @@ export class WindowPostMessageStream extends BasePostMessageStream {
    * @param args.targetWindow - The window object of the target stream. Defaults
    * to `window`.
    */
-  constructor({ name, target, targetOrigin = window.location.origin, targetWindow = window }) {
+  constructor({
+    name,
+    target,
+    targetOrigin = window.location.origin,
+    targetWindow = window
+  }) {
     super();
 
-    if (typeof window === "undefined" || typeof window.postMessage !== "function") {
+    if (
+      typeof window === "undefined" ||
+      typeof window.postMessage !== "function"
+    ) {
       throw new Error(
         "window.postMessage is not a function. This class should only be instantiated in a Window."
       );

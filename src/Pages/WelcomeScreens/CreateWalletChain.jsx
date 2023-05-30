@@ -6,7 +6,13 @@ import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
 import { useContext, useState, useEffect } from "react";
 import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
 import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
-import { PVT_KEY, NATIVE, EVM, COPIED, MNEMONIC } from "../../Constants/index.js";
+import {
+  PVT_KEY,
+  NATIVE,
+  EVM,
+  COPIED,
+  MNEMONIC
+} from "../../Constants/index.js";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx";
 
 function CreateWalletChain() {
@@ -29,16 +35,19 @@ function CreateWalletChain() {
   };
 
   const handleCopy = (e) => {
-    if (e.target.name === NATIVE) navigator.clipboard.writeText(newAccount?.nativeAddress);
+    if (e.target.name === NATIVE)
+      navigator.clipboard.writeText(newAccount?.nativeAddress);
 
-    if (e.target.name === EVM) navigator.clipboard.writeText(newAccount?.evmAddress);
+    if (e.target.name === EVM)
+      navigator.clipboard.writeText(newAccount?.evmAddress);
 
     if (e.target.name === MNEMONIC)
       navigator.clipboard.writeText(
         newAccount?.mnemonic ? newAccount?.mnemonic : newAccount?.drivedMnemonic
       );
 
-    if (e.target.name === PVT_KEY) navigator.clipboard.writeText(newAccount?.evmPrivateKey);
+    if (e.target.name === PVT_KEY)
+      navigator.clipboard.writeText(newAccount?.evmPrivateKey);
 
     if (e.target.name === "all") {
       let string = `Mnemonic: ${
@@ -64,7 +73,8 @@ function CreateWalletChain() {
             <button
               className={style.cardWhite__addressInput__copyAll}
               name={"all"}
-              onClick={handleCopy}>
+              onClick={handleCopy}
+            >
               Copy All
             </button>
           </div>
@@ -97,7 +107,9 @@ function CreateWalletChain() {
         <label>Mnemonic Phrase: </label>
         <p className={style.cardWhite__addressInput__copyText}>
           <span className={isOpen.open1 && "blurContact"}>
-            {newAccount?.mnemonic ? newAccount.mnemonic : newAccount.drivedMnemonic}
+            {newAccount?.mnemonic
+              ? newAccount.mnemonic
+              : newAccount.drivedMnemonic}
           </span>
           {isOpen?.open1 ? (
             <img
@@ -132,7 +144,9 @@ function CreateWalletChain() {
       <div className={`${style.cardWhite__addressInput}`}>
         <label>EVM Private Key:</label>
         <p className={style.cardWhite__addressInput__copyText}>
-          <span className={isOpen.open2 && "blurContact"}>{newAccount?.evmPrivateKey}</span>
+          <span className={isOpen.open2 && "blurContact"}>
+            {newAccount?.evmPrivateKey}
+          </span>
           {isOpen?.open2 ? (
             <img
               width={19}
@@ -154,7 +168,12 @@ function CreateWalletChain() {
               onClick={handleEyeOpen}
             />
           )}
-          <img name={PVT_KEY} src={CopyIcon} alt="copyIcon" onClick={handleCopy} />{" "}
+          <img
+            name={PVT_KEY}
+            src={CopyIcon}
+            alt="copyIcon"
+            onClick={handleCopy}
+          />{" "}
         </p>
       </div>
     </div>

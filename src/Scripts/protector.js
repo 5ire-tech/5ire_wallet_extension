@@ -14,7 +14,12 @@ const STRING_ENCODING = "utf-8";
  * @param salt - The salt to use to encrypt.
  * @returns The encrypted vault.
  */
-export async function encrypt(password, dataObj, key = null, salt = generateSalt()) {
+export async function encrypt(
+  password,
+  dataObj,
+  key = null,
+  salt = generateSalt()
+) {
   const cryptoKey = key || (await keyFromPassword(password, salt));
   const payload = await encryptWithKey(cryptoKey, dataObj);
   payload.salt = salt;
@@ -30,7 +35,11 @@ export async function encrypt(password, dataObj, key = null, salt = generateSalt
  * @param salt - The salt used to encrypt.
  * @returns The vault and exported key string.
  */
-export async function encryptWithDetail(password, dataObj, salt = generateSalt()) {
+export async function encryptWithDetail(
+  password,
+  dataObj,
+  salt = generateSalt()
+) {
   const key = await keyFromPassword(password, salt, true);
   // const exportedKeyString = await exportKey(key);
   const vault = await encrypt(password, dataObj, key, salt);
@@ -138,7 +147,9 @@ export async function decryptWithKey(key, payload) {
     const decryptedStr = Buffer.from(decryptedData).toString(STRING_ENCODING);
     decryptedObj = JSON.parse(decryptedStr);
   } catch (e) {
-    new Error(new ErrorPayload(ERRCODES.INVALID_INPUT, ERROR_MESSAGES.INCORRECT_PASS)).throw();
+    new Error(
+      new ErrorPayload(ERRCODES.INVALID_INPUT, ERROR_MESSAGES.INCORRECT_PASS)
+    ).throw();
   }
 
   return decryptedObj;
@@ -186,10 +197,13 @@ export async function keyFromPassword(password, salt, exportable = false) {
   const passBuffer = Buffer.from(password, STRING_ENCODING);
   const saltBuffer = Buffer.from(salt, "base64");
 
-  const key = await global.crypto.subtle.importKey("raw", passBuffer, { name: "PBKDF2" }, false, [
-    "deriveBits",
-    "deriveKey"
-  ]);
+  const key = await global.crypto.subtle.importKey(
+    "raw",
+    passBuffer,
+    { name: "PBKDF2" },
+    false,
+    ["deriveBits", "deriveKey"]
+  );
 
   const derivedKey = await global.crypto.subtle.deriveKey(
     {

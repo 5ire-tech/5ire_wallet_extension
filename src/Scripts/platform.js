@@ -2,7 +2,12 @@ import Browser from "webextension-polyfill";
 import { isNullorUndef } from "../Utility/utility";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import { hasLength, isString, isNumber } from "../Utility/utility";
-import { WINDOW_HEIGHT, WINDOW_WIDTH, ERRCODES, ERROR_MESSAGES } from "../Constants";
+import {
+  WINDOW_HEIGHT,
+  WINDOW_WIDTH,
+  ERRCODES,
+  ERROR_MESSAGES
+} from "../Constants";
 import { isManifestV3 } from "./utils";
 
 //Handle the window and notification creation
@@ -117,12 +122,16 @@ export default class WindowManager {
     const allPopupWindows = await this.getAllPopupWindows();
 
     if (isRemoveAll) {
-      for (let itemWindow of allPopupWindows) await this.closePopup(itemWindow.id);
+      for (let itemWindow of allPopupWindows)
+        await this.closePopup(itemWindow.id);
       return;
     }
 
-    const otherWindowThanTask = allPopupWindows.filter((item) => item.id !== filterId);
-    for (let itemWindow of otherWindowThanTask) await this.closePopup(itemWindow.id);
+    const otherWindowThanTask = allPopupWindows.filter(
+      (item) => item.id !== filterId
+    );
+    for (let itemWindow of otherWindowThanTask)
+      await this.closePopup(itemWindow.id);
   };
 
   /**
@@ -221,7 +230,8 @@ export default class WindowManager {
 
   //get the app version
   getVersion() {
-    const { version, version_name: versionName } = Browser.runtime.getManifest();
+    const { version, version_name: versionName } =
+      Browser.runtime.getManifest();
 
     const versionParts = version.split(".");
     if (versionName) {
@@ -337,7 +347,9 @@ export class NotificationAndBedgeManager {
   //show extension notifications
   showNotification(message, title = "5ire", type = "basic") {
     if (!isString(message) && !hasLength(message))
-      new Error(new ErrorPayload(ERRCODES.CHECK_FAIL, ERROR_MESSAGES.INVALID_TYPE)).throw();
+      new Error(
+        new ErrorPayload(ERRCODES.CHECK_FAIL, ERROR_MESSAGES.INVALID_TYPE)
+      ).throw();
 
     Browser.notifications.create("", {
       iconUrl: Browser.runtime.getURL("logo192.png"),
@@ -352,7 +364,11 @@ export class NotificationAndBedgeManager {
     const isNum = isNumber(bedgeMessage);
     const actionKey = isManifestV3 ? "action" : "browserAction";
     Browser[actionKey].setBadgeText({
-      text: isNum ? (bedgeMessage > 0 ? String(bedgeMessage) : "") : bedgeMessage
+      text: isNum
+        ? bedgeMessage > 0
+          ? String(bedgeMessage)
+          : ""
+        : bedgeMessage
     });
   }
 }

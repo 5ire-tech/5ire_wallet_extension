@@ -9,10 +9,6 @@ import { EMTY_STR, LABELS } from "./Constants";
 import { getDataLocal } from "../src/Storage/loadstore";
 import { sessionStorage } from "../src/Storage/index";
 import { MessageOverStream } from "./Utility/message_helper";
-// import ExtensionPortStream from "./Scripts/extension-port-stream-mod/index";
-
-//For Dev Enviroment Check
-// const isDev = process.env.NODE_ENV === "development";
 
 // eslint-disable-next-line no-extend-native
 Number.prototype.noExponents = function () {
@@ -70,7 +66,9 @@ const initApp = (data, externalControlsState, windowAndTabState) => {
     await getDataLocal(LABELS.TRANSACTION_QUEUE);
 
     const loginState = await sessionStorage.get(LABELS.ISLOGIN);
-    currentLocalState.isLogin = !loginState?.isLogin ? false : currentLocalState?.isLogin;
+    currentLocalState.isLogin = !loginState?.isLogin
+      ? false
+      : currentLocalState?.isLogin;
     initApp(currentLocalState, externalControlsState, windowAndTabState);
   } catch (err) {
     console.log("Error in the initlization of main app: ", err);

@@ -15,7 +15,10 @@ import { TabMessagePayload } from "../../Utility/network_calls";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import AccountSetting from "../../Components/AccountSetting/AccountSetting";
-import { sendEventToTab, formatNumUptoSpecificDecimal } from "../../Helper/helper";
+import {
+  sendEventToTab,
+  formatNumUptoSpecificDecimal
+} from "../../Helper/helper";
 
 import {
   LABELS,
@@ -29,24 +32,24 @@ import {
 
 function MyAccount() {
   const navigate = useNavigate();
-  // const [accounts, setAccounts] = useState([]);
+
   const [isModalOpen, setModalOpen] = useState(false);
   const [addressToRemove, setAddressToRemove] = useState(null);
+
   const {
     allAccounts,
     state,
     updateState,
-    // removeHistory,
     externalControlsState,
     setNewWalletName,
     windowAndTab
   } = useContext(AuthContext);
+
   const { connectedApps } = externalControlsState;
   const { currentAccount, allAccountsBalance, currentNetwork } = state;
 
   //remove Account
   const handleRemoveAcc = () => {
-    // console.log("addressToRemove : ", addressToRemove);
     if (!addressToRemove) {
       toast.error(ERROR_MESSAGES.UNABLE_TO_REMOVE_ACC);
     } else {
@@ -58,7 +61,9 @@ function MyAccount() {
       );
 
       if (currentAccount.evmAddress === addressToRemove) {
-        const index = allAccounts.findIndex((acc) => acc.evmAddress === addressToRemove);
+        const index = allAccounts.findIndex(
+          (acc) => acc.evmAddress === addressToRemove
+        );
         updateCurrentAccount(allAccounts[index - 1]);
       }
 
@@ -76,7 +81,11 @@ function MyAccount() {
     navigate(ROUTES.IMPORT_WALLET);
   };
   const handleLogout = async () => {
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.LOCK, {});
+    sendRuntimeMessage(
+      MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+      MESSAGE_EVENT_LABELS.LOCK,
+      {}
+    );
   };
 
   const handleModalOpen = (address) => {
@@ -107,7 +116,11 @@ function MyAccount() {
       );
     } else {
       //fetch balance of changed account
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.BALANCE, {});
+      sendRuntimeMessage(
+        MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
+        MESSAGE_EVENT_LABELS.BALANCE,
+        {}
+      );
     }
 
     //send account details whenever account is changed
@@ -136,7 +149,11 @@ function MyAccount() {
           title="Create New Account"
           onClick={hanldeCreateNewAcc}
         />
-        <AccountSetting img={Import} title="Import Account" onClick={handleImportAcc} />
+        <AccountSetting
+          img={Import}
+          title="Import Account"
+          onClick={handleImportAcc}
+        />
         <AccountSetting img={Logout} title="Logout" onClick={handleLogout} />
       </div>
       <div className={style.myAccountSec__accountHeading}>
@@ -144,7 +161,9 @@ function MyAccount() {
       </div>
       <div className={style.myAccountScrool}>
         {allAccounts?.map((e, i) => (
-          <div className={style.myAccountSec__accountActive} key={i + e?.accountIndex}>
+          <div
+            className={style.myAccountSec__accountActive}
+            key={i + e?.accountIndex}>
             <div className={style.myAccountSec__leftSec}>
               <img src={DarkLogo} alt="logo" draggable={false} />
               <div className={style.myAccountSec__leftSec__accountConatct}>
@@ -153,8 +172,11 @@ function MyAccount() {
                     <>
                       <h2>
                         {" "}
-                        <img src={GreenCircle} alt="connectionLogo" draggable={false} />
-                        {/* {LABELS.ACTIVE} */}
+                        <img
+                          src={GreenCircle}
+                          alt="connectionLogo"
+                          draggable={false}
+                        />
                       </h2>
                     </>
                   )}
@@ -162,11 +184,13 @@ function MyAccount() {
                 </div>
                 <p>
                   {e?.accountName === currentAccount?.accountName ? (
-                    allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
-                      ?.totalBalance ? (
+                    allAccountsBalance[currentAccount?.evmAddress][
+                      currentNetwork.toLowerCase()
+                    ]?.totalBalance ? (
                       `${formatNumUptoSpecificDecimal(
-                        allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
-                          ?.totalBalance,
+                        allAccountsBalance[currentAccount?.evmAddress][
+                          currentNetwork.toLowerCase()
+                        ]?.totalBalance,
                         2
                       )} ${CURRENCY}`
                     ) : (
@@ -198,14 +222,15 @@ function MyAccount() {
                         label: (
                           <span onClick={() => handleModalOpen(e.evmAddress)}>
                             Remove
-                            {/* <img src={fillArow} /> */}
                           </span>
                         )
                       }
                     ]
                   }}
                   trigger={["hover"]}>
-                  <div style={{ cursor: "pointer" }} onClick={(e) => e.preventDefault()}>
+                  <div
+                    style={{ cursor: "pointer" }}
+                    onClick={(e) => e.preventDefault()}>
                     <Space>
                       <img src={ThreeDot} alt="3dots" />
                     </Space>
@@ -224,7 +249,9 @@ function MyAccount() {
         closeIcon={false}>
         <div className={`${style.activeDis_Modal} yesnoPopup`}>
           <center>
-            <h3 style={{ color: "white" }}>Are you sure, you want to remove this account ?</h3>
+            <h3 style={{ color: "white" }}>
+              Are you sure, you want to remove this account ?
+            </h3>
             <div className="innerContct">
               <button onClick={handleRemoveAcc} className="btnYesNo">
                 Yes

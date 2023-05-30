@@ -24,8 +24,10 @@ export const closeBoth = (onlyPopupClose = false) => {
 //set the route and window control in storage
 export const setWindowControl = async (popupRoute, popupStatus) => {
   try {
-    !isUndef(popupRoute) && (await Browser.storage.local.set({ popupRoute: popupRoute }));
-    !isUndef(popupStatus) && (await Browser.storage.local.set({ popupStatus: popupStatus }));
+    !isUndef(popupRoute) &&
+      (await Browser.storage.local.set({ popupRoute: popupRoute }));
+    !isUndef(popupStatus) &&
+      (await Browser.storage.local.set({ popupStatus: popupStatus }));
   } catch (err) {
     console.log("Error while saving the control settings: ", err);
   }

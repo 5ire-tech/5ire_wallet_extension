@@ -34,7 +34,10 @@ export default function useAuth() {
 
             updateState(LABELS.PASS, hash);
             updateState(LABELS.NEW_ACCOUNT, null);
-            updateState(LABELS.TX_HISTORY, { ...txHistory, [newAccount.evmAddress]: [] });
+            updateState(LABELS.TX_HISTORY, {
+              ...txHistory,
+              [newAccount.evmAddress]: []
+            });
             updateState(LABELS.ALL_ACCOUNTS, [...allAccounts, dataToDispatch]);
             updateState(LABELS.CURRENT_ACCOUNT, currentAccountDetails);
             updateState(LABELS.ISLOGIN, true, true, true);

@@ -1,7 +1,11 @@
 import Browser from "webextension-polyfill";
 import { CONTENT_SCRIPT, INPAGE } from "./constants";
 import { WindowPostMessageStream } from "./stream";
-import { SIGNER_METHODS, STREAM_CHANNELS, VALIDATOR_NOMINATOR_METHOD } from "../Constants";
+import {
+  SIGNER_METHODS,
+  STREAM_CHANNELS,
+  VALIDATOR_NOMINATOR_METHOD
+} from "../Constants";
 import ExtensionPostStream from "./extension-port-stream-mod/index";
 
 // for content script
@@ -40,7 +44,9 @@ export class ContentJS {
 
   //connet the port stream to background worker
   connectPortStream() {
-    const portConnection = Browser.runtime.connect({ name: STREAM_CHANNELS.CONTENTSCRIPT });
+    const portConnection = Browser.runtime.connect({
+      name: STREAM_CHANNELS.CONTENTSCRIPT
+    });
     ContentJS.postStreamForBackground = new ExtensionPostStream(portConnection);
   }
 
@@ -75,7 +81,10 @@ export class ContentJS {
             break;
 
           case "eth_sendTransaction":
-            if (data.method !== "eth_sendTransaction" || data.message?.length < 0) {
+            if (
+              data.method !== "eth_sendTransaction" ||
+              data.message?.length < 0
+            ) {
               ContentJS.pageStream.write({
                 id: data.id,
                 error: "Invalid Transaction Request"
@@ -126,7 +135,10 @@ export class ContentJS {
       const scriptTag = document.createElement("script");
       scriptTag.setAttribute("async", "false");
       // scriptTag.textContent = content;
-      scriptTag.setAttribute("src", Browser.runtime.getURL("static/js/injected.js"));
+      scriptTag.setAttribute(
+        "src",
+        Browser.runtime.getURL("static/js/injected.js")
+      );
 
       container.insertBefore(scriptTag, container.children[0]);
       container.removeChild(scriptTag);

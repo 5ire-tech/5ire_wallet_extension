@@ -1,4 +1,9 @@
-import { HTTP_METHODS, HTTP_CONTENT_TYPE, ERROR_MESSAGES, STATUS } from "../Constants";
+import {
+  HTTP_METHODS,
+  HTTP_CONTENT_TYPE,
+  ERROR_MESSAGES,
+  STATUS
+} from "../Constants";
 import { getUUID } from "../Scripts/utils";
 import { isString } from "../Utility/utility";
 
@@ -29,7 +34,8 @@ export async function httpRequest(
 //rpc payload construction class
 export class EVMRPCPayload {
   constructor(method, params = [], id = 1, jsonrpc = "2.0") {
-    if (!isString(method)) throw new Error(ERROR_MESSAGES.NOT_VALID_JSON_RPC_METHOD);
+    if (!isString(method))
+      throw new Error(ERROR_MESSAGES.NOT_VALID_JSON_RPC_METHOD);
     this.method = method;
     this.jsonrpc = jsonrpc;
     this.params = params;
@@ -39,7 +45,12 @@ export class EVMRPCPayload {
 
 //paylod for rpc response from rpc operations
 export class EventPayload {
-  constructor(stateChangeKey = null, eventForEmitting = null, payload = null, error = null) {
+  constructor(
+    stateChangeKey = null,
+    eventForEmitting = null,
+    payload = null,
+    error = null
+  ) {
     this.stateChangeKey = stateChangeKey;
     this.eventEmit = eventForEmitting;
     this.payload = payload;
@@ -73,7 +84,13 @@ export class ExternalAppsRequest {
 
 //for the transaction processing payload creation
 export class TransactionProcessingPayload {
-  constructor(data, type, transactionHistoryTrack = null, contractBytecode = null, options = null) {
+  constructor(
+    data,
+    type,
+    transactionHistoryTrack = null,
+    contractBytecode = null,
+    options = null
+  ) {
     this.data = data;
     this.type = type;
     this.transactionHistoryTrack = transactionHistoryTrack;

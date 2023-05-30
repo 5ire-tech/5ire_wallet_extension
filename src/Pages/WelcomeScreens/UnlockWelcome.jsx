@@ -1,12 +1,12 @@
+import React, { useEffect, useState, useContext } from "react";
+import { Link } from "react-router-dom";
 import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
-import { Link } from "react-router-dom";
 import useAuth from "../../Hooks/useAuth";
 import { AuthContext } from "../../Store";
 import { isEmpty } from "../../Utility/utility";
 import PlaceLogo from "../../Assets/PlaceLog.svg";
 import { decryptor } from "../../Helper/CryptoHelper";
-import React, { useEffect, useState, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
@@ -70,10 +70,14 @@ function UnlockWelcome() {
           setInputError(passRes.data);
         }
       } else if (pass && !inputError) {
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.UNLOCK, {
-          password: pass,
-          vault: vault
-        });
+        sendRuntimeMessage(
+          MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+          MESSAGE_EVENT_LABELS.UNLOCK,
+          {
+            password: pass,
+            vault: vault
+          }
+        );
       }
     }
   };
@@ -93,7 +97,6 @@ function UnlockWelcome() {
         <div className={style.cardWhite__importWalletlinkOuter}>
           <div>
             <InputFieldSimple
-              // type="password"
               name={"key"}
               coloredBg={true}
               keyUp={validateInput}
@@ -111,7 +114,11 @@ function UnlockWelcome() {
           </div>
         </div>
         <div className={style.setPassword__footerbuttons}>
-          <ButtonComp onClick={handleClick} text={"Unlock"} isDisable={isDisable} />
+          <ButtonComp
+            onClick={handleClick}
+            text={"Unlock"}
+            isDisable={isDisable}
+          />
         </div>
       </div>
     </div>

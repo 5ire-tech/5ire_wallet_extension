@@ -3,6 +3,7 @@ import { Input } from "antd";
 import style from "./style.module.scss";
 import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
 import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
+
 function InputFieldSimple({
   name,
   keyUp,
@@ -27,13 +28,23 @@ function InputFieldSimple({
       name={name}
       value={value}
       autoComplete="off"
-      // className={style.inputSimple}
-      // placeholder={placeholder}
       iconRender={(visible) =>
         visible ? (
-          <img src={EyeOpenIcon} width={19} height={12} draggable={false} alt="eyeOpen" />
+          <img
+            src={EyeOpenIcon}
+            width={19}
+            height={12}
+            draggable={false}
+            alt="eyeOpen"
+          />
         ) : (
-          <img src={EyeCloseIcon} width={19} height={16} draggable={false} alt="eyeClose" />
+          <img
+            src={EyeCloseIcon}
+            width={19}
+            height={16}
+            draggable={false}
+            alt="eyeClose"
+          />
         )
       }
     />
@@ -114,9 +125,9 @@ export const InputFieldOnly = ({
         autoComplete="off"
         value={value}
         type={type ? type : "text"}
-        className={`${style.inputSimple} ${placeholderBaseColor ? "placeholderBaseColor" : ""} ${
-          coloredBg ? style.inputField__coloredBg : ""
-        }`}
+        className={`${style.inputSimple} ${
+          placeholderBaseColor ? "placeholderBaseColor" : ""
+        } ${coloredBg ? style.inputField__coloredBg : ""}`}
         placeholder={placeholder}
         style={{ minHeight: minHeight }}
         onChange={onChange}

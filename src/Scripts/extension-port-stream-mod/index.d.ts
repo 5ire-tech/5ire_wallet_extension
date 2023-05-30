@@ -46,7 +46,10 @@ declare const _default: {
       }[],
       callback: (error?: Error | null | undefined) => void
     ): void;
-    _destroy(error: Error | null, callback: (error: Error | null) => void): void;
+    _destroy(
+      error: Error | null,
+      callback: (error: Error | null) => void
+    ): void;
     _final(callback: (error?: Error | null | undefined) => void): void;
     write(
       chunk: any,
@@ -64,7 +67,10 @@ declare const _default: {
         | undefined,
       cb?: ((error: Error | null | undefined) => void) | undefined
     ): boolean;
-    write(chunk: any, cb?: ((error: Error | null | undefined) => void) | undefined): boolean;
+    write(
+      chunk: any,
+      cb?: ((error: Error | null | undefined) => void) | undefined
+    ): boolean;
     setDefaultEncoding(encoding: BufferEncoding): any;
     end(cb?: (() => void) | undefined): void;
     end(chunk: any, cb?: (() => void) | undefined): void;
@@ -150,7 +156,10 @@ declare const _default: {
     addListener(event: "pause", listener: () => void): any;
     addListener(event: "readable", listener: () => void): any;
     addListener(event: "resume", listener: () => void): any;
-    addListener(event: string | symbol, listener: (...args: any[]) => void): any;
+    addListener(
+      event: string | symbol,
+      listener: (...args: any[]) => void
+    ): any;
     emit(event: "close"): boolean;
     emit(event: "data", chunk: any): boolean;
     emit(event: "end"): boolean;
@@ -182,7 +191,10 @@ declare const _default: {
     prependListener(event: "pause", listener: () => void): any;
     prependListener(event: "readable", listener: () => void): any;
     prependListener(event: "resume", listener: () => void): any;
-    prependListener(event: string | symbol, listener: (...args: any[]) => void): any;
+    prependListener(
+      event: string | symbol,
+      listener: (...args: any[]) => void
+    ): any;
     prependOnceListener(event: "close", listener: () => void): any;
     prependOnceListener(event: "data", listener: (chunk: any) => void): any;
     prependOnceListener(event: "end", listener: () => void): any;
@@ -190,7 +202,10 @@ declare const _default: {
     prependOnceListener(event: "pause", listener: () => void): any;
     prependOnceListener(event: "readable", listener: () => void): any;
     prependOnceListener(event: "resume", listener: () => void): any;
-    prependOnceListener(event: string | symbol, listener: (...args: any[]) => void): any;
+    prependOnceListener(
+      event: string | symbol,
+      listener: (...args: any[]) => void
+    ): any;
     removeListener(event: "close", listener: () => void): any;
     removeListener(event: "data", listener: (chunk: any) => void): any;
     removeListener(event: "end", listener: () => void): any;
@@ -198,7 +213,10 @@ declare const _default: {
     removeListener(event: "pause", listener: () => void): any;
     removeListener(event: "readable", listener: () => void): any;
     removeListener(event: "resume", listener: () => void): any;
-    removeListener(event: string | symbol, listener: (...args: any[]) => void): any;
+    removeListener(
+      event: string | symbol,
+      listener: (...args: any[]) => void
+    ): any;
     [Symbol.asyncIterator](): AsyncIterableIterator<any>;
     pipe<T extends NodeJS.WritableStream>(
       destination: T,
@@ -229,7 +247,10 @@ declare const _default: {
   Duplex: typeof Duplex;
   Transform: typeof import("stream").Transform;
   PassThrough: typeof import("stream").PassThrough;
-  listenerCount(emitter: import("events").EventEmitter, event: string | symbol): number;
+  listenerCount(
+    emitter: import("events").EventEmitter,
+    event: string | symbol
+  ): number;
   defaultMaxListeners: number;
   readonly errorMonitor: unique symbol;
 };

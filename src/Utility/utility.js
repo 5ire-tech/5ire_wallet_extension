@@ -28,7 +28,9 @@ export const validateAddress = async (address) => {
     }
   } else if (address?.startsWith("5")) {
     try {
-      encodeAddress(isHex(address) ? hexToU8a(address) : decodeAddress(address));
+      encodeAddress(
+        isHex(address) ? hexToU8a(address) : decodeAddress(address)
+      );
       return {
         error: false
       };
@@ -98,7 +100,10 @@ export function isEqual(arg1, arg2) {
 
 //slice the string to any size
 export const shortLongAddress = (data = "", startLen = 10, endLen = 10) => {
-  return `${data.substring(0, startLen)}...${data.substring(data?.length - endLen, data?.length)}`;
+  return `${data.substring(0, startLen)}...${data.substring(
+    data?.length - endLen,
+    data?.length
+  )}`;
 };
 
 export const arrayReverser = (arr) => {

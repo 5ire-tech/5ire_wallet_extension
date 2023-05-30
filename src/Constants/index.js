@@ -99,7 +99,8 @@ export const ERROR_MESSAGES = {
   INPUT_REQUIRED: "This field is required.",
   PASS_DONT_MATCH: "Password do not match.",
   INSUFFICENT_BALANCE: "Insufficient Balance.",
-  INSUFFICENT_BALANCE_VD_NM: "Insufficient Funds: Fee + Amount is more than available balance.",
+  INSUFFICENT_BALANCE_VD_NM:
+    "Insufficient Funds: Fee + Amount is more than available balance.",
   UNDEF_PROPERTY: "Object not has given property",
   AMOUNT_CANT_BE_0: "Amount can't be 0 or less than 0",
   SINGER_ERROR: "Error while signing the the raw/payload",
@@ -113,11 +114,16 @@ export const ERROR_MESSAGES = {
   MNEMONICS_ALREADY_EXISTS: "Wallet with this mnemonic already exists.",
   NOT_YOUR_OWN_ADDRESS: "Recipient address should not be your own address.",
   EXTERNAL_NATIVE_TRANSACTION_ERROR: "Error while external native transaction.",
-  ACCESS_NOT_GRANTED: "The requested method has not been authorized by the user",
-  ACCOUNT_ACCESS_NOT_GRANTED: "The requested account has not been authorized by the user",
-  ERROR_WHILE_TRANSACTION: "Transaction failed, error occured during transaction processing",
-  ERROR_WHILE_TRANSACTION_STATUS_CHECK: "Error while fething the transaction recipt.",
-  ERROR_WHILE_GAS_ESTIMATION: "Gas Estimation Failed, something wrong happend while gas estimation",
+  ACCESS_NOT_GRANTED:
+    "The requested method has not been authorized by the user",
+  ACCOUNT_ACCESS_NOT_GRANTED:
+    "The requested account has not been authorized by the user",
+  ERROR_WHILE_TRANSACTION:
+    "Transaction failed, error occured during transaction processing",
+  ERROR_WHILE_TRANSACTION_STATUS_CHECK:
+    "Error while fething the transaction recipt.",
+  ERROR_WHILE_GAS_ESTIMATION:
+    "Gas Estimation Failed, something wrong happend while gas estimation",
   CREATE_PASS_MSG:
     "Password must have at least 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
   ERROR_WHILE_NETWORK_CONNECTION:
@@ -136,8 +142,10 @@ export const ERROR_MESSAGES = {
   INVAILD_ERROR_MESSAGE: "Error message must be an object.",
   INVALID_RPC_OPERATION: "RPC is not the part of rpc call system",
   INVALID_NON_RPC_TASK: "Task is not defined in non-rpc task handler class",
-  INVALID_ERROR_PAYLOAD: "Error payload is invalid, (missing required properties).",
-  INPUT_BETWEEN_2_TO_18: "Please input account name between " + 2 + " and " + 18 + " characters."
+  INVALID_ERROR_PAYLOAD:
+    "Error payload is invalid, (missing required properties).",
+  INPUT_BETWEEN_2_TO_18:
+    "Please input account name between " + 2 + " and " + 18 + " characters."
 };
 
 export const SUCCESS_MESSAGES = {
@@ -220,13 +228,15 @@ export const SOCIAL_LINKS = {
   FACEBOOK: "https://www.facebook.com/5irechain/",
   INSTAGRAM: "https://www.instagram.com/5irechain/",
   LINKDIN: "https://www.linkedin.com/company/5irechain/",
-  POLICY: "https://5ire-wallet-extension.s3.amazonaws.com/5ire-wallet-extension-privacy-policy.pdf"
+  POLICY:
+    "https://5ire-wallet-extension.s3.amazonaws.com/5ire-wallet-extension-privacy-policy.pdf"
 };
 
 export const API = {
   QA: "https://qa-api-exp.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
   UAT: "https://uat-api-exp.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
-  TESTNET: "https://explorer-api.5ire.network/api/firechain/explorer/get-transaction-by-hash/"
+  TESTNET:
+    "https://explorer-api.5ire.network/api/firechain/explorer/get-transaction-by-hash/"
 };
 
 export const EXPLORERS = {
@@ -245,7 +255,8 @@ export const MESSAGE_EVENT_LABELS = {
   NATIVE_SIGNER: "nativeSigner",
   VALIDATOR_NOMINATOR_FEE: "validatorNominatorFee",
   VALIDATOR_NOMINATOR_TRANSACTION: "validatorNominatorTransaction",
-  EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS: "externalNativeTransactionArgsAndGas",
+  EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS:
+    "externalNativeTransactionArgsAndGas",
 
   TX_HASH: "txHash",
   EVM_FEE: "evmFee",

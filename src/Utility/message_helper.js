@@ -8,12 +8,18 @@ import ExtensionPortStream from "../Scripts/extension-port-stream-mod/index";
 export const sendRuntimeMessage = (typeLabel, eventLabel, message) => {
   try {
     if (!isObject(message) && isNullorUndef(message))
-      throw new Error("Invalid message, (*Only Objects or Array is valid value)");
+      throw new Error(
+        "Invalid message, (*Only Objects or Array is valid value)"
+      );
     if (!isString(eventLabel) && eventLabel.trim().length === 0)
       throw new Error("Invalid event Label");
     if (!isString(typeLabel) && typeLabel.trim().length === 0)
       throw new Error("Invalid type Label");
-    Browser.runtime.sendMessage({ type: typeLabel, event: eventLabel, data: message });
+    Browser.runtime.sendMessage({
+      type: typeLabel,
+      event: eventLabel,
+      data: message
+    });
   } catch (err) {
     console.log("Error while sending message to background: ", err.message);
   }
@@ -44,21 +50,33 @@ export class MessageOverStream {
   sendMessageOverStream = (typeLabel, eventLabel, message) => {
     try {
       if (!MessageOverStream.portStream)
-        new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
+        new Error(
+          new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)
+        ).throw();
       if (!isObject(message) && isNullorUndef(message))
-        throw new Error("Invalid message, (*Only Objects or Array is valid value)");
+        throw new Error(
+          "Invalid message, (*Only Objects or Array is valid value)"
+        );
       if (!isString(eventLabel) && eventLabel.trim().length === 0)
         throw new Error("Invalid event Label");
       if (!isString(typeLabel) && typeLabel.trim().length === 0)
         throw new Error("Invalid type Label");
-      MessageOverStream.portStream.write({ type: typeLabel, event: eventLabel, data: message });
+      MessageOverStream.portStream.write({
+        type: typeLabel,
+        event: eventLabel,
+        data: message
+      });
     } catch (err) {
-      console.log("Error while sending message to background over streams: ", err.message);
+      console.log(
+        "Error while sending message to background over streams: ",
+        err.message
+      );
     }
   };
 }
 
-export const sendMessageOverStream = MessageOverStream.getInstance().sendMessageOverStream;
+export const sendMessageOverStream =
+  MessageOverStream.getInstance().sendMessageOverStream;
 
 //bind the message listner
 export const bindRuntimeMessageListener = (listner) => {

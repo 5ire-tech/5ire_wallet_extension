@@ -33,15 +33,6 @@ import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
 import ValidatorNominatorTxns from "./Components/ValidatorNominatorTxns";
 import CongratulationsScreen from "./Pages/WelcomeScreens/CongratulationsScreen";
 
-// function getParameterByName(name, url = window.location.href) {
-//   name = name.replace(/[[\]]/g, "\\$&");
-//   var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-//     results = regex.exec(url);
-//   if (!results) return null;
-//   if (!results[2]) return EMTY_STR;
-//   return decodeURIComponent(results[2].replace(/\+/g, " "));
-// }
-
 function App(props) {
   const {
     state,
@@ -60,7 +51,9 @@ function App(props) {
   const navigate = useNavigate();
 
   const { isLogin, vault } = isStateLoaded ? state : props.data;
-  const { activeSession } = isStateLoaded ? externalControlsState : props.externalControlsState;
+  const { activeSession } = isStateLoaded
+    ? externalControlsState
+    : props.externalControlsState;
 
   useEffect(() => {
     if (props.data && props.externalControlsState) {
@@ -73,9 +66,6 @@ function App(props) {
   }, []);
 
   useEffect(() => {
-    // const route = getParameterByName("route");
-
-    // log("here is some data: ", isStateLoaded, window.location.href, isLogin, vault, state?.pass);
     //sync the current action route with main popup
     if (activeSession && isLogin) {
       navigate(`/${activeSession.route}`);
@@ -84,21 +74,12 @@ function App(props) {
 
     if ((!isLogin && vault) || (state?.pass && !isLogin && !vault)) {
       navigate(ROUTES.UNLOACK_WALLET);
-      // {
-      //   state: {
-      //     redirectRoute: route ? ROUTES.DEFAULT + route : EMTY_STR,
-      //   },
-      // }
     } else if (detailsPage) {
       navigate(ROUTES.NEW_WALLET_DETAILS);
     } else if (isLogin && vault && !detailsPage) {
       navigate(ROUTES.WALLET);
     } else if (!isLogin && !vault) {
-      // if (route) {
-      //   navigate(ROUTES.DEFAULT + route);
-      // } else {
       navigate(ROUTES.DEFAULT);
-      // }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -134,15 +115,14 @@ function App(props) {
               path={ROUTES.FORGOT_PASSWORD}
               element={<WelcomeLayout children={<ForgotPassword />} />}
             />
-
-            {/* <Route
-              path="*"
-              element={<WelcomeLayout children={<WelcomeScreen />} />}
-            /> */}
           </>
         ) : (
           <>
-            <Route index path={ROUTES.WALLET} element={<FixWidthLayout children={<Wallet />} />} />
+            <Route
+              index
+              path={ROUTES.WALLET}
+              element={<FixWidthLayout children={<Wallet />} />}
+            />
             <Route
               index
               path={ROUTES.HISTORY_P}
@@ -164,8 +144,16 @@ function App(props) {
               path={ROUTES.ENTER_PASS}
               element={<OnlyContent children={<EnterPassword />} />}
             />
-            <Route index path={ROUTES.SEND} element={<OnlyContent children={<Send />} />} />
-            <Route index path={ROUTES.SWAP} element={<OnlyContent children={<Swap />} />} />
+            <Route
+              index
+              path={ROUTES.SEND}
+              element={<OnlyContent children={<Send />} />}
+            />
+            <Route
+              index
+              path={ROUTES.SWAP}
+              element={<OnlyContent children={<Swap />} />}
+            />
             <Route
               index
               path={ROUTES.MANAGE_WALLET}
@@ -193,10 +181,6 @@ function App(props) {
               path={ROUTES.LOGIN_APPROVE}
               element={<WelcomeLayout children={<LoginApprove />} />}
             />
-            {/* <Route
-              path="*"
-              element={<WelcomeLayout children={<Wallet />} />}
-            /> */}
           </>
         )}
 
@@ -209,7 +193,10 @@ function App(props) {
           path={ROUTES.NEW_WALLET_DETAILS}
           element={<WelcomeLayout children={<CreateWalletChain />} />}
         />
-        <Route path={ROUTES.BEFORE_BEGIN} element={<WelcomeLayout children={<Beforebegin />} />} />
+        <Route
+          path={ROUTES.BEFORE_BEGIN}
+          element={<WelcomeLayout children={<Beforebegin />} />}
+        />
 
         <Route
           path={ROUTES.CREATE_WALLET}

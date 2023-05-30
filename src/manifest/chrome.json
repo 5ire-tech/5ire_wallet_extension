@@ -12,7 +12,14 @@
     "48": "logo192.png",
     "128": "logo192.png"
   },
-  "permissions": ["activeTab", "clipboardWrite", "notifications", "scripting", "storage", "tabs"],
+  "permissions": [
+    "activeTab",
+    "clipboardWrite",
+    "notifications",
+    "scripting",
+    "storage",
+    "tabs"
+  ],
   "host_permissions": ["http://*/", "https://*/"],
   "background": {
     "service_worker": "static/js/background.js"

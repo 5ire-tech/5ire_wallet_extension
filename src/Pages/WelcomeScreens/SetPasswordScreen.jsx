@@ -1,12 +1,9 @@
+import React, { useContext, useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
-// import { toast } from "react-hot-toast";
-// import useAuth from "../../Hooks/useAuth";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import { isEmpty } from "../../Utility/utility";
-import React, { useContext, useEffect, useState } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
@@ -116,15 +113,21 @@ export default function SetPasswordScreen() {
           <StepHeaders active={1} isCreate={false} />
         )}
         <MenuRestofHeaders
-          backTo={params.id === LABELS.CREATE ? ROUTES.CREATE_WALLET : ROUTES.DEFAULT}
+          backTo={
+            params.id === LABELS.CREATE ? ROUTES.CREATE_WALLET : ROUTES.DEFAULT
+          }
           title={"Create Password"}
         />
-        <div className={`${style.cardWhite__beginText} ${style.cardWhite__createPassText}`}>
+        <div
+          className={`${style.cardWhite__beginText} ${style.cardWhite__createPassText}`}>
           <p>
-            Your password is used to unlock your wallet and is stored securely on your device. We
-            recommend 12 characters, with uppercase and lowercase letters, symbols and numbers.
+            Your password is used to unlock your wallet and is stored securely
+            on your device. We recommend 12 characters, with uppercase and
+            lowercase letters, symbols and numbers.
           </p>
-          <div className={style.cardWhite__beginText__passInputSec} style={{ marginTop: "20px" }}>
+          <div
+            className={style.cardWhite__beginText__passInputSec}
+            style={{ marginTop: "20px" }}>
             <InputFieldSimple
               coloredBg={true}
               value={pass?.pass}
@@ -139,7 +142,9 @@ export default function SetPasswordScreen() {
             />
           </div>
           <p className={style.errorText}>{error.pass ? error.pass : ""}</p>
-          <div className={style.cardWhite__beginText__passInputSec} style={{ marginTop: "34px" }}>
+          <div
+            className={style.cardWhite__beginText__passInputSec}
+            style={{ marginTop: "34px" }}>
             <InputFieldSimple
               coloredBg={true}
               name="confirmPass"
@@ -152,7 +157,9 @@ export default function SetPasswordScreen() {
                 e.preventDefault();
               }}
             />
-            <p className={style.errorText}>{error.confirmPass ? error.confirmPass : ""}</p>
+            <p className={style.errorText}>
+              {error.confirmPass ? error.confirmPass : ""}
+            </p>
           </div>
 
           <div style={{ marginTop: "50px" }} className={style.contBtn}>
@@ -162,7 +169,12 @@ export default function SetPasswordScreen() {
               text={"Continue"}
               maxWidth={"100%"}
             />
-            <ButtonComp bordered={true} onClick={handleCancel} text={"Cancel"} maxWidth={"100%"} />
+            <ButtonComp
+              bordered={true}
+              onClick={handleCancel}
+              text={"Cancel"}
+              maxWidth={"100%"}
+            />
           </div>
         </div>
       </div>

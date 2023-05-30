@@ -27,7 +27,8 @@ function ImportWallet() {
   const [isDisable, setDisable] = useState(true);
   const [data, setData] = useState({ accName: "", key: "" });
   const [warrning, setWarrning] = useState({ acc: "", key: "" });
-  const { state, userPass, allAccounts, inputError, setInputError } = useContext(AuthContext);
+  const { state, userPass, allAccounts, inputError, setInputError } =
+    useContext(AuthContext);
   const { isLogin } = state;
   const [show, setShow] = useState(false);
   const [isOpenEye, setEye] = useState(false);
@@ -76,7 +77,10 @@ function ImportWallet() {
       }));
       setDisable(true);
     } else if (!REGEX.WALLET_NAME.test(data.accName)) {
-      setWarrning((p) => ({ ...p, acc: ERROR_MESSAGES.ALPHANUMERIC_CHARACTERS }));
+      setWarrning((p) => ({
+        ...p,
+        acc: ERROR_MESSAGES.ALPHANUMERIC_CHARACTERS
+      }));
       setDisable(true);
     } else setWarrning((p) => ({ ...p, acc: "" }));
   };
@@ -103,13 +107,18 @@ function ImportWallet() {
               MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE,
               {
                 password: userPass,
-                opts: { mnemonic: data?.key?.trim(), name: data?.accName?.trim() },
+                opts: {
+                  mnemonic: data?.key?.trim(),
+                  name: data?.accName?.trim()
+                },
                 type: LABELS.IMPORT
               }
             );
           }, 2000);
         } else {
-          const match = allAccounts?.find((a) => a.accountName === data.accName.trim());
+          const match = allAccounts?.find(
+            (a) => a.accountName === data.accName.trim()
+          );
 
           if (match) {
             setWarrning((p) => ({
@@ -187,7 +196,11 @@ function ImportWallet() {
           </div>
         </div>
         <div className={style.setPassword__footerbuttons}>
-          <ButtonComp onClick={handleClick} text={"Import"} isDisable={isDisable} />
+          <ButtonComp
+            onClick={handleClick}
+            text={"Import"}
+            isDisable={isDisable}
+          />
           <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancel} />
         </div>
         {show && !warrning.key && (

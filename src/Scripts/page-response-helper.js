@@ -17,7 +17,9 @@ export class PageResponseHandler {
 
   //resolve the requets
   resolve(data) {
-    this.handlers[data.id]?.resolve(data.response?.result ? data.response.result : data.response);
+    this.handlers[data.id]?.resolve(
+      data.response?.result ? data.response.result : data.response
+    );
     this._deleteHandler(data.id);
   }
 

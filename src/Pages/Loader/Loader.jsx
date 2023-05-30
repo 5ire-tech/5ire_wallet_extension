@@ -1,5 +1,6 @@
 import { Player } from "@lottiefiles/react-lottie-player";
 import JsonData from "../../Assets/JsonFiles/loader";
+
 export default function Loader() {
   return (
     <div className="loader">

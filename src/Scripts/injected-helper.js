@@ -62,7 +62,8 @@ export class InjectedScript {
           this._afterConnecting(data.response?.result?.evmAddress);
         } else if (isEqual(data.event, TABS_EVENT.NETWORK_CHANGE_EVENT))
           this._afterNetworkChange(data.response?.result?.url);
-        else if (isEqual(data.event, TABS_EVENT.WALLET_DISCONNECTED_EVENT)) this._clearAllConfig();
+        else if (isEqual(data.event, TABS_EVENT.WALLET_DISCONNECTED_EVENT))
+          this._clearAllConfig();
         else if (isEqual(data.event, TABS_EVENT.ACCOUNT_CHANGE_EVENT))
           this._injectSelectedAddress(data.response.result?.evmAddress);
 
@@ -79,7 +80,11 @@ export class InjectedScript {
         if (data.error) {
           InjectedScript.pageResponseHandler.reject(data);
         } else {
-          if (Object.values(CONNECTION_METHODS).find((item) => item === handler?.method)) {
+          if (
+            Object.values(CONNECTION_METHODS).find(
+              (item) => item === handler?.method
+            )
+          ) {
             !isEqual(data.id, RELOAD_ID) &&
               this._afterConnecting(
                 data.response.result?.length
@@ -138,7 +143,10 @@ export class InjectedScript {
   //inject the http endpoint for specfic network
   async _getHttpProvider() {
     try {
-      const res = await InjectedScript.fireProvider.passReq(WALLET_METHODS.GET_END_POINT, null);
+      const res = await InjectedScript.fireProvider.passReq(
+        WALLET_METHODS.GET_END_POINT,
+        null
+      );
       if (res) this._setHttpHost(res);
       return false;
     } catch (err) {
@@ -151,7 +159,10 @@ export class InjectedScript {
   async _getChainid() {
     try {
       if (InjectedScript.fireProvider.httpHost) {
-        const res = await InjectedScript.fireProvider.passReq(EVM_JSON_RPC_METHODS.ETH_CHAINID, []);
+        const res = await InjectedScript.fireProvider.passReq(
+          EVM_JSON_RPC_METHODS.ETH_CHAINID,
+          []
+        );
         this._injectChainId(res);
       } else return true;
       return false;

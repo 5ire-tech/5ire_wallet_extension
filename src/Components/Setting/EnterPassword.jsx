@@ -17,12 +17,13 @@ import {
 } from "../../Constants/index";
 
 function EnterPassword() {
-  // const params = useParams();
   const navigate = useNavigate();
+
   const [data, setData] = useState("");
   const [isDisable, setDisable] = useState(true);
-  // const [isModalOpen, setModalOpen] = useState(false);
-  const { inputError, setInputError, passVerified, setPassVerified } = useContext(AuthContext);
+
+  const { inputError, setInputError, passVerified, setPassVerified } =
+    useContext(AuthContext);
 
   useEffect(() => {
     setInputError("");
@@ -39,7 +40,6 @@ function EnterPassword() {
 
   useEffect(() => {
     if (passVerified) {
-      // setModalOpen(true);
       setPassVerified(false);
       navigate(ROUTES.PVT_KEY);
     }
@@ -73,7 +73,10 @@ function EnterPassword() {
   return (
     <>
       <div className={`scrollableCont`} onKeyDown={handleClick}>
-        <MenuRestofHeaders backTo={ROUTES.MANAGE_WALLET} title={"Enter Password"} />
+        <MenuRestofHeaders
+          backTo={ROUTES.MANAGE_WALLET}
+          title={"Enter Password"}
+        />
         <div className={`flexedContent`}>
           <div className={style.enterPassword}>
             <div className={style.commonHeadeing}>
@@ -96,18 +99,10 @@ function EnterPassword() {
             <div>
               <ButtonComp
                 onClick={handleClick}
-                // onClick={() => handleModalOpen}
                 text="Continue"
                 isDisable={isDisable}></ButtonComp>
             </div>
           </div>
-          {/* <ModalCustom
-            isModalOpen={isModalOpen}
-            handleOk={handle_OK_Cancel}
-            handleCancel={handle_OK_Cancel}
-          > */}
-          {/* <PrivateKey id={params?.id} /> */}
-          {/* </ModalCustom> */}
         </div>
       </div>
     </>

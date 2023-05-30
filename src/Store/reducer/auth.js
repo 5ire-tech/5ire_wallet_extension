@@ -22,23 +22,6 @@ export const userState = {
 
   uiData: {},
 
-  // httpEndPoints: {
-  //   qa: "https://qa-http-nodes.5ire.network",
-  //   testnet: "https://rpc-testnet.5ire.network"
-  //   // testnet: "http://52.15.41.233:9933"
-  // },
-
-  // api: {
-  //   testnet: "https://explorer-api.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
-  //   qa: "https://qa-api-exp.5ire.network/api/firechain/explorer/get-transaction-by-hash/"
-  // },
-
-  // wsEndPoints: {
-  //   qa: "wss://qa-wss-nodes.5ire.network",
-  //   testnet: "wss://wss-testnet.5ire.network"
-  //   // testnet: "ws://52.15.41.233:9944"
-  // },
-
   balance: {
     evmBalance: "",
     nativeBalance: "",
@@ -81,7 +64,9 @@ const reducers = {
     let accounts = state.accounts;
 
     if (accounts.length > 0) {
-      let res = accounts.find((acc) => acc.accountName === action.payload.accountName);
+      let res = accounts.find(
+        (acc) => acc.accountName === action.payload.accountName
+      );
 
       if (!res) {
         state.accounts.push(action.payload);
@@ -154,14 +139,18 @@ const reducers = {
 
   updateTxHistory: (state, action) => {
     const currentTx = state.currentAccount.txHistory.find((item) => {
-      if (action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash;
+      if (action.payload.isSwap)
+        return item.txHash.mainHash === action.payload.txHash;
       return item.txHash === action.payload.txHash;
     });
 
-    const otherAcc = state.accounts.find((item) => item.accountName === action.payload.accountName);
+    const otherAcc = state.accounts.find(
+      (item) => item.accountName === action.payload.accountName
+    );
 
     const otherTx = otherAcc.txHistory.find((item) => {
-      if (action.payload.isSwap) return item.txHash.mainHash === action.payload.txHash;
+      if (action.payload.isSwap)
+        return item.txHash.mainHash === action.payload.txHash;
       return item.txHash === action.payload.txHash;
     });
 
@@ -186,7 +175,9 @@ const reducers = {
   },
 
   toggleSite: (state, action) => {
-    const siteIndex = state?.connectedSites.findIndex((st) => (st.origin = action.payload.origin));
+    const siteIndex = state?.connectedSites.findIndex(
+      (st) => (st.origin = action.payload.origin)
+    );
     if (siteIndex > -1) {
       state.connectedSites[siteIndex].isConnected = action.payload.isConnected;
     }

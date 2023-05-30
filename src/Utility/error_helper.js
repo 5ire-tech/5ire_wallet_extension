@@ -6,7 +6,10 @@ export class Error {
   message = null;
   constructor(message) {
     if (!isObject(message)) this.throw(ERROR_MESSAGES.INVAILD_ERROR_MESSAGE);
-    if (!hasProperty(message, LABELS.ERRCODE) && !hasProperty(message, LABELS.ERRMESSAGE))
+    if (
+      !hasProperty(message, LABELS.ERRCODE) &&
+      !hasProperty(message, LABELS.ERRMESSAGE)
+    )
       this.throw(ERROR_MESSAGES.INVALID_ERROR_PAYLOAD);
     this.message = message;
   }
@@ -25,9 +28,16 @@ export class ErrorPayload {
   errMessage = null;
 
   constructor(errCode, errMessage) {
-    if (isNullorUndef(errCode) && isNullorUndef(errMessage) && !hasLength(errMessage))
+    if (
+      isNullorUndef(errCode) &&
+      isNullorUndef(errMessage) &&
+      !hasLength(errMessage)
+    )
       new Error(
-        new ErrorPayload(ERRCODES.CHECK_FAIL, ERROR_MESSAGES.INVALID_ERROR_PAYLOAD)
+        new ErrorPayload(
+          ERRCODES.CHECK_FAIL,
+          ERROR_MESSAGES.INVALID_ERROR_PAYLOAD
+        )
       ).throw();
 
     this.errCode = errCode;

@@ -1,5 +1,6 @@
 import React from "react";
 import style from "./style.module.scss";
+
 function AccountSetting(props) {
   const { title, img, onClick } = props;
 

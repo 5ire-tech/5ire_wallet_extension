@@ -8,7 +8,12 @@ import { sessionStorage, localStorage } from "../Storage";
 import { sendEventToTab, setTimer } from "../Helper/helper";
 import { TabMessagePayload } from "../Utility/network_calls";
 import { bindRuntimeMessageListener } from "../Utility/message_helper";
-import { LABELS, TABS_EVENT, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../Constants";
+import {
+  LABELS,
+  TABS_EVENT,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS
+} from "../Constants";
 import {
   userState,
   externalControls,
@@ -36,11 +41,11 @@ export default function Context({ children }) {
   const [newWalletName, setNewWalletName] = useState("");
   const [passVerified, setPassVerified] = useState(false);
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
-  const [externalControlsState, setExternalControlState] = useState(externalControls);
+  const [externalControlsState, setExternalControlState] =
+    useState(externalControls);
   const [showCongratLoader, setShowCongratLoader] = useState(false);
 
   //transaction queue
-  // const [transactionQueues, setTransactionQueues] = useState(transactionQueue);
   const [pendingBalance, setPendingBalance] = useState(0);
 
   const [isStateLoaded, setStateLoaded] = useState(false);
@@ -49,7 +54,10 @@ export default function Context({ children }) {
   const [backgroundError, setBackgroundError] = useState(null);
   const [networkError, setNetworkError] = useState(null);
   const [valdatorNominatorFee, setValdatorNominatorFee] = useState(null);
-  const [tempBalance, setTempBalance] = useState({ evmBalance: 0, nativeBalance: 0 });
+  const [tempBalance, setTempBalance] = useState({
+    evmBalance: 0,
+    nativeBalance: 0
+  });
   const [externalNativeTxDetails, setExternalNativeTxDetails] = useState(
     initialExternalNativeTransaction
   );
@@ -73,7 +81,10 @@ export default function Context({ children }) {
       ) {
         !estimatedGas && updateEstimatedGas(message.data.fee);
         setTimer(updateLoading.bind(null, false));
-      } else if (message.event === MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS) {
+      } else if (
+        message.event ===
+        MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS
+      ) {
         setExternalNativeTxDetails(message.data);
         setTimer(updateLoading.bind(null, false));
       } else if (message.event === MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE) {
@@ -126,13 +137,17 @@ export default function Context({ children }) {
         exportSeedPhrase(message.data);
       } else if (message.event === MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT) {
         removeAccount(message.data);
-      } else if (message.event === MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE) {
+      } else if (
+        message.event === MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE
+      ) {
         setValdatorNominatorFee(message.data);
         setTimer(updateLoading.bind(null, false));
       } else if (message.event === MESSAGE_EVENT_LABELS.BACKGROUND_ERROR) {
         setBackgroundError(message.data);
         setTimer(updateLoading.bind(null, false));
-      } else if (message.event === MESSAGE_EVENT_LABELS.NETWORK_CONNECTION_ERROR) {
+      } else if (
+        message.event === MESSAGE_EVENT_LABELS.NETWORK_CONNECTION_ERROR
+      ) {
         setNetworkError(message.data);
         setTimer(updateLoading.bind(null, false));
       } else if (message.event === MESSAGE_EVENT_LABELS.NETWORK_CHECK) {
@@ -235,13 +250,6 @@ export default function Context({ children }) {
     setSeedPhrase(data?.seedPhrase);
   };
 
-  // remove entries of history of specific account from TxHistory
-  // const removeHistory = (accName) => {
-  //   const newTx = { ...state.txHistory };
-  //   delete newTx[accName];
-  //   updateState(LABELS.TX_HISTORY, newTx)
-  // }
-
   const removeAccount = (data) => {
     const { accounts, isInitialAccount } = data;
     setNewAccount(newAccountInitialState);
@@ -252,7 +260,6 @@ export default function Context({ children }) {
   };
 
   const values = {
-    //data
     state,
     userPass,
     isLoading,
@@ -272,7 +279,6 @@ export default function Context({ children }) {
     newWalletName,
     pendingBalance,
     backgroundError,
-    // transactionQueues,
     showCongratLoader,
     valdatorNominatorFee,
     externalControlsState,
@@ -291,14 +297,12 @@ export default function Context({ children }) {
     setTempBalance,
     setStateLoaded,
     setWindowAndTab,
-    // removeHistory,
     setNetworkError,
     setPassVerified,
     setNewWalletName,
     setPendingBalance,
     setBackgroundError,
     updateEstimatedGas,
-    // setTransactionQueues,
     setShowCongratLoader,
     setValdatorNominatorFee,
     setExternalControlState,

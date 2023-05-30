@@ -10,7 +10,10 @@ import { TabMessagePayload } from "../../Utility/network_calls";
 import { newAccountInitialState } from "../../Store/initialState";
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
 import { sendMessageOverStream } from "../../Utility/message_helper";
-import { sendMessageToTab, sendRuntimeMessage } from "../../Utility/message_helper";
+import {
+  sendMessageToTab,
+  sendRuntimeMessage
+} from "../../Utility/message_helper";
 import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
 import {
   LABELS,
@@ -42,7 +45,12 @@ function FooterStepOne() {
     <>
       <div className={`${style.menuItems__cancleContinue} ${style.beginStyle}`}>
         <ButtonComp onClick={handleClick} text={"Continue"} maxWidth={"100%"} />
-        <ButtonComp onClick={handleCancle} bordered={true} text={"Cancel"} maxWidth={"100%"} />
+        <ButtonComp
+          onClick={handleCancle}
+          bordered={true}
+          text={"Cancel"}
+          maxWidth={"100%"}
+        />
       </div>
     </>
   );
@@ -76,7 +84,12 @@ export const FooterStepTwo = () => {
   return (
     <>
       <div className={style.menuItems__cancleContinue}>
-        <ButtonComp bordered={true} text={"Cancel"} maxWidth={"100%"} onClick={handleCancle} />
+        <ButtonComp
+          bordered={true}
+          text={"Cancel"}
+          maxWidth={"100%"}
+          onClick={handleCancle}
+        />
 
         <ButtonComp onClick={handleClick} text={"Continue"} maxWidth={"100%"} />
       </div>
@@ -108,8 +121,10 @@ export const ApproveLogin = () => {
 
       //check if current connection request is for evm
       const isEthReq =
-        isEqual(activeSession.method, EVM_JSON_RPC_METHODS.ETH_REQUEST_ACCOUNT) ||
-        isEqual(activeSession.method, EVM_JSON_RPC_METHODS.ETH_ACCOUNTS);
+        isEqual(
+          activeSession.method,
+          EVM_JSON_RPC_METHODS.ETH_REQUEST_ACCOUNT
+        ) || isEqual(activeSession.method, EVM_JSON_RPC_METHODS.ETH_ACCOUNTS);
 
       const res = isEthReq
         ? { method: activeSession.method, result: [account?.evmAddress] }
@@ -139,7 +154,11 @@ export const ApproveLogin = () => {
   return (
     <>
       <div className={`${style.menuItems__cancleContinue} approveBtn`}>
-        <ButtonComp onClick={() => handleClick(true)} text={"Approve"} maxWidth={"100%"} />
+        <ButtonComp
+          onClick={() => handleClick(true)}
+          text={"Approve"}
+          maxWidth={"100%"}
+        />
         <ButtonComp
           bordered={true}
           text={"Cancel"}
@@ -153,9 +172,11 @@ export const ApproveLogin = () => {
 
 //approve the evm transactions
 export const ApproveTx = () => {
-  const { state, externalControlsState, estimatedGas } = useContext(AuthContext);
+  const { state, externalControlsState, estimatedGas } =
+    useContext(AuthContext);
   const { activeSession } = externalControlsState;
-  const { pendingTransactionBalance, balance, currentAccount, currentNetwork } = state;
+  const { pendingTransactionBalance, balance, currentAccount, currentNetwork } =
+    state;
   const [disableApproval, setDisableApproval] = useState(true);
 
   const navigate = useNavigate();
@@ -166,7 +187,9 @@ export const ApproveTx = () => {
       estimatedGas &&
       Number(activeSession.message?.value) + Number(estimatedGas) >=
         Number(balance?.evmBalance) -
-          pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
+          pendingTransactionBalance[currentAccount.evmAddress][
+            currentNetwork.toLowerCase()
+          ].evm
     ) {
       toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       setDisableApproval(true);
@@ -189,15 +212,19 @@ export const ApproveTx = () => {
           : TX_TYPE.CONTRACT_DEPLOYMENT
         : TX_TYPE.SEND;
 
-      sendMessageOverStream(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.EVM_TX, {
-        options: {
-          account: currentAccount,
-          network: currentNetwork,
-          type: txType,
-          isEvm: true,
-          fee: estimatedGas
+      sendMessageOverStream(
+        MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL,
+        MESSAGE_EVENT_LABELS.EVM_TX,
+        {
+          options: {
+            account: currentAccount,
+            network: currentNetwork,
+            type: txType,
+            isEvm: true,
+            fee: estimatedGas
+          }
         }
-      });
+      );
     }
     sendMessageOverStream(
       MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL,
@@ -227,5 +254,4 @@ export const ApproveTx = () => {
   );
 };
 
-//default export
 export default FooterStepOne;

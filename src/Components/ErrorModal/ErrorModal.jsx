@@ -16,10 +16,17 @@ export default function ErrorModal() {
       isModalOpen={!!backgroundError}
       handleOk={handleErrorModal}
       handleCancel={handleErrorModal}
-      centered>
+      centered
+    >
       <div className="swapsendModel">
         <div className="innerContact">
-          <img src={FaildSwap} alt="swapFaild" width={80} height={80} draggable={false} />
+          <img
+            src={FaildSwap}
+            alt="swapFaild"
+            width={80}
+            height={80}
+            draggable={false}
+          />
           <h3 className="rongText">Something went wrong!</h3>
           <p className="transId">{backgroundError}</p>
           <div className="footerbuttons" style={{ marginTop: "25px" }}>

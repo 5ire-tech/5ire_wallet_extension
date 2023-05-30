@@ -1,9 +1,16 @@
 import React from "react";
 import style from "./style.module.scss";
-// import TickIcon from "../../Assets/TickIcon.svg"
+
 function HistryList(props) {
-  const { sendRecieve, coinname, address, valueCurrency, dollercurrency, addressTo, TickIcon } =
-    props;
+  const {
+    sendRecieve,
+    coinname,
+    address,
+    valueCurrency,
+    dollercurrency,
+    addressTo,
+    TickIcon
+  } = props;
 
   return (
     <>
