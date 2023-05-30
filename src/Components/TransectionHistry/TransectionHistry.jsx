@@ -49,11 +49,13 @@ function TransectionHistry({ selectedTransaction, account }) {
           </div>
           <div
             className={style.transectionHistry__icon}
-            style={{ marginRight: "20px" }}>
+            style={{ marginRight: "20px" }}
+          >
             <img src={SwapIcon} alt="swapIcon" draggable={false} />
           </div>
           <div
-            className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
+            className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}
+          >
             <h3>{`To ${isEvm ? "Native" : "EVM"}`}</h3>
             <span>
               {shortner(isEvm ? account?.nativeAddress : account?.evmAddress)}
@@ -70,11 +72,13 @@ function TransectionHistry({ selectedTransaction, account }) {
           </div>
           <div
             className={style.transectionHistry__icon}
-            style={{ marginRight: "29px" }}>
+            style={{ marginRight: "29px" }}
+          >
             <img src={SwapIcon} alt="swapIcon" draggable={false} />
           </div>
           <div
-            className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
+            className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}
+          >
             <h3>{`To ${isEvm ? "EVM" : "Native"}`}</h3>
             <span>
               {selectedTransaction?.to
@@ -87,7 +91,8 @@ function TransectionHistry({ selectedTransaction, account }) {
 
       <div
         className={style.transectionHistry__swapCopy}
-        style={{ marginTop: "29px" }}>
+        style={{ marginTop: "29px" }}
+      >
         <div className={style.transectionHistry__swapSec}>
           <h3>Status</h3>
 
@@ -102,12 +107,14 @@ function TransectionHistry({ selectedTransaction, account }) {
                   STATUS.SUCCESS.toLowerCase()
                 ? style.transectionHistry__success
                 : style.transectionHistry__failed
-            }>
+            }
+          >
             {selectedTransaction?.status}
           </span>
         </div>
         <div
-          className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
+          className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}
+        >
           <h3>Transaction ID</h3>
           {selectedTransaction?.txHash ? (
             <span>
@@ -125,14 +132,17 @@ function TransectionHistry({ selectedTransaction, account }) {
       </div>
       <div
         className={style.transectionHistry__swapCopy}
-        style={{ marginTop: "29px" }}>
+        style={{ marginTop: "29px" }}
+      >
         <div
-          className={`${style.transectionHistry__swapSec} ${style.transectionHistry__datetimeSwap}`}>
+          className={`${style.transectionHistry__swapSec} ${style.transectionHistry__datetimeSwap}`}
+        >
           <h3>Date & Time</h3>
           <span>{formatDate(selectedTransaction?.timeStamp)}</span>
         </div>
         <div
-          className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
+          className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}
+        >
           <h3>Fee</h3>
           <span>
             {selectedTransaction?.gasUsed
@@ -156,7 +166,8 @@ function TransectionHistry({ selectedTransaction, account }) {
               : ""
           }
           disabled={selectedTransaction.txHash ? false : true}
-          onClick={openExplorerTab}>
+          onClick={openExplorerTab}
+        >
           View on Explorer <img src={DarkRyt} alt="view on explorer" />
         </p>
       </div>

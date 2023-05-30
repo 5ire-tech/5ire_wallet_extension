@@ -100,7 +100,8 @@ function EnterPassword() {
               <ButtonComp
                 onClick={handleClick}
                 text="Continue"
-                isDisable={isDisable}></ButtonComp>
+                isDisable={isDisable}
+              ></ButtonComp>
             </div>
           </div>
         </div>

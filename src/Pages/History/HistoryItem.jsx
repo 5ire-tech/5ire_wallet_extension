@@ -59,7 +59,8 @@ export default function HistoryItem({ historyItem, handleHistoryOpen }) {
             className={style.historySec__historyMarketSwap__leftContact}
             onClick={() => {
               handleHistoryOpen(historyItem);
-            }}>
+            }}
+          >
             <h3>
               {isEqual(historyItem?.type, TX_TYPE.NATIVE_APP)
                 ? historyItem?.method
@@ -94,7 +95,8 @@ export default function HistoryItem({ historyItem, handleHistoryOpen }) {
                     STATUS.SUCCESS.toLowerCase()
                   ? style.historySec__success
                   : style.historySec__failed
-              }>
+              }
+            >
               {historyItem.status}
             </span>
           </p>

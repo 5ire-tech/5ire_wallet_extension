@@ -266,7 +266,8 @@ function BalanceDetails({ mt0 }) {
                     isConnected && !isEqual(pathname, ROUTES.APPROVE_TXN)
                       ? style.balanceDetails__accountName
                       : style.balanceDetails__accountName1
-                  } ${style.headerInfo}`}>
+                  } ${style.headerInfo}`}
+                >
                   {isConnected && !isEqual(pathname, ROUTES.APPROVE_TXN) ? (
                     <>
                       <p onClick={headerActive}>
@@ -290,7 +291,8 @@ function BalanceDetails({ mt0 }) {
                             isEqual(pathname, ROUTES.APPROVE_TXN)
                               ? "Connected"
                               : "Not Connected"
-                          }>
+                          }
+                        >
                           <img
                             src={
                               isEqual(pathname, ROUTES.APPROVE_TXN)
@@ -313,7 +315,8 @@ function BalanceDetails({ mt0 }) {
               <ModalCustom
                 isModalOpen={isHeaderActive}
                 handleOk={handle_OK_Cancel}
-                handleCancel={handle_OK_Cancel}>
+                handleCancel={handle_OK_Cancel}
+              >
                 <div className={style.activeDis_Modal}>
                   <div className={style.activeDis_Modal__modalHeading}>
                     <h3>{url.replace(/[a-z]+:\/\//, "")}</h3>
@@ -331,13 +334,15 @@ function BalanceDetails({ mt0 }) {
                       allAccounts.map((e, i) => (
                         <div
                           className={style.activeDis_Modal__accountActive}
-                          key={i + e?.accountName}>
+                          key={i + e?.accountName}
+                        >
                           <div className={style.activeDis_Modal__leftSec}>
                             <img src={DarkLogo} alt="logo" />
                             <div
                               className={
                                 style.activeDis_Modal__leftSec__accountConatct
-                              }>
+                              }
+                            >
                               <h2>
                                 {e.accountName ===
                                   currentAccount?.accountName && isConnected ? (
@@ -352,7 +357,8 @@ function BalanceDetails({ mt0 }) {
                                 ) : (
                                   <Tooltip
                                     placement="bottom"
-                                    title="Not Connected">
+                                    title="Not Connected"
+                                  >
                                     <img
                                       className={style.grayCircle}
                                       src={GrayCircle}
@@ -371,7 +377,8 @@ function BalanceDetails({ mt0 }) {
                                   <span
                                     className={
                                       style.activeDis_Modal__leftSec__spanContact
-                                    }>
+                                    }
+                                  >
                                     {`${formatNumUptoSpecificDecimal(
                                       allAccountsBalance[
                                         currentAccount?.evmAddress
@@ -390,7 +397,8 @@ function BalanceDetails({ mt0 }) {
                               ) : (
                                 <p
                                   className={style.activeDis_Modal__switchAcc}
-                                  onClick={() => onSelectAcc(e?.accountName)}>
+                                  onClick={() => onSelectAcc(e?.accountName)}
+                                >
                                   <span>Switch Account</span>
                                 </p>
                               )}
@@ -414,7 +422,8 @@ function BalanceDetails({ mt0 }) {
                                             isConnected
                                               ? handleDisconnect
                                               : handleConnect
-                                          }>
+                                          }
+                                        >
                                           {isConnected
                                             ? "Disconnect"
                                             : "Connect"}
@@ -423,7 +432,8 @@ function BalanceDetails({ mt0 }) {
                                     }
                                   ]
                                 }}
-                                trigger="hover">
+                                trigger="hover"
+                              >
                                 <Space style={{ cursor: "pointer" }}>
                                   <img src={ThreeDot} alt="3dots" />
                                 </Space>
@@ -505,7 +515,8 @@ function BalanceDetails({ mt0 }) {
                             allAccountsBalance[currentAccount?.evmAddress][
                               currentNetwork.toLowerCase()
                             ].totalBalance
-                          }>
+                          }
+                        >
                           <span className="totalBal">
                             {
                               allAccountsBalance[currentAccount?.evmAddress][
@@ -524,9 +535,11 @@ function BalanceDetails({ mt0 }) {
               </div>
               <div className={style.balanceDetails__innerBalance__chainBalance}>
                 <div
-                  className={style.balanceDetails__innerBalance__balanceCard}>
+                  className={style.balanceDetails__innerBalance__balanceCard}
+                >
                   <div
-                    className={style.balanceDetails__innerBalance__balanceName}>
+                    className={style.balanceDetails__innerBalance__balanceName}
+                  >
                     <p>Native Chain Balance</p>
                     <Tooltip
                       title={
@@ -537,7 +550,8 @@ function BalanceDetails({ mt0 }) {
                               currentNetwork.toLowerCase()
                             ]?.nativeBalance
                           : ""
-                      }>
+                      }
+                    >
                       <h3>
                         {/* <img src={WalletCardLogo} draggable={false} alt="walletLogo" /> */}
                         {allAccountsBalance[currentAccount?.evmAddress][
@@ -562,9 +576,11 @@ function BalanceDetails({ mt0 }) {
                   </div>
                 </div>
                 <div
-                  className={style.balanceDetails__innerBalance__balanceCard}>
+                  className={style.balanceDetails__innerBalance__balanceCard}
+                >
                   <div
-                    className={style.balanceDetails__innerBalance__balanceName}>
+                    className={style.balanceDetails__innerBalance__balanceName}
+                  >
                     <p>EVM Chain Balance</p>
                     <Tooltip
                       title={
@@ -575,7 +591,8 @@ function BalanceDetails({ mt0 }) {
                               currentNetwork.toLowerCase()
                             ]?.evmBalance
                           : ""
-                      }>
+                      }
+                    >
                       <h3>
                         {allAccountsBalance[currentAccount?.evmAddress][
                           currentNetwork.toLowerCase()
@@ -606,7 +623,8 @@ function BalanceDetails({ mt0 }) {
             isModalOpen={isModalOpen}
             handleOk={handleOk}
             handleCancel={handleCancel}
-            centered>
+            centered
+          >
             <div className={style.balanceDetails__nativemodal}>
               <div className={style.balanceDetails__nativemodal__innerContact}>
                 <div className={style.balanceDetails__nativemodal__logoFlex}>
@@ -657,7 +675,8 @@ function BalanceDetails({ mt0 }) {
             isModalOpen={isEvmModal}
             handleOk={evmOk}
             handleCancel={evmCancel}
-            centered>
+            centered
+          >
             <div className={style.balanceDetails__nativemodal}>
               <div className={style.balanceDetails__nativemodal__innerContact}>
                 <div className={style.balanceDetails__nativemodal__logoFlex}>

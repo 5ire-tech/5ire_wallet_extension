@@ -119,7 +119,8 @@ export default function SetPasswordScreen() {
           title={"Create Password"}
         />
         <div
-          className={`${style.cardWhite__beginText} ${style.cardWhite__createPassText}`}>
+          className={`${style.cardWhite__beginText} ${style.cardWhite__createPassText}`}
+        >
           <p>
             Your password is used to unlock your wallet and is stored securely
             on your device. We recommend 12 characters, with uppercase and
@@ -127,7 +128,8 @@ export default function SetPasswordScreen() {
           </p>
           <div
             className={style.cardWhite__beginText__passInputSec}
-            style={{ marginTop: "20px" }}>
+            style={{ marginTop: "20px" }}
+          >
             <InputFieldSimple
               coloredBg={true}
               value={pass?.pass}
@@ -144,7 +146,8 @@ export default function SetPasswordScreen() {
           <p className={style.errorText}>{error.pass ? error.pass : ""}</p>
           <div
             className={style.cardWhite__beginText__passInputSec}
-            style={{ marginTop: "34px" }}>
+            style={{ marginTop: "34px" }}
+          >
             <InputFieldSimple
               coloredBg={true}
               name="confirmPass"

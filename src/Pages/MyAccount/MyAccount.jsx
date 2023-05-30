@@ -163,7 +163,8 @@ function MyAccount() {
         {allAccounts?.map((e, i) => (
           <div
             className={style.myAccountSec__accountActive}
-            key={i + e?.accountIndex}>
+            key={i + e?.accountIndex}
+          >
             <div className={style.myAccountSec__leftSec}>
               <img src={DarkLogo} alt="logo" draggable={false} />
               <div className={style.myAccountSec__leftSec__accountConatct}>
@@ -199,7 +200,8 @@ function MyAccount() {
                   ) : (
                     <span
                       onClick={() => onSelectAcc(e?.accountName)}
-                      className={style.myAccountSec__switchAcc}>
+                      className={style.myAccountSec__switchAcc}
+                    >
                       Switch to this account
                     </span>
                   )}
@@ -227,10 +229,12 @@ function MyAccount() {
                       }
                     ]
                   }}
-                  trigger={["hover"]}>
+                  trigger={["hover"]}
+                >
                   <div
                     style={{ cursor: "pointer" }}
-                    onClick={(e) => e.preventDefault()}>
+                    onClick={(e) => e.preventDefault()}
+                  >
                     <Space>
                       <img src={ThreeDot} alt="3dots" />
                     </Space>
@@ -246,7 +250,8 @@ function MyAccount() {
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
         centered
-        closeIcon={false}>
+        closeIcon={false}
+      >
         <div className={`${style.activeDis_Modal} yesnoPopup`}>
           <center>
             <h3 style={{ color: "white" }}>

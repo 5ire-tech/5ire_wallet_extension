@@ -121,15 +121,19 @@ function ValidatorNominatorTxns() {
           <div>
             <div className={pageStyle.rejectedSec}>
               <div
-                className={`${pageStyle.rejectedSec__detailDataSec} ${pageStyle.rejectedSec__transactionDetailMain}`}>
+                className={`${pageStyle.rejectedSec__detailDataSec} ${pageStyle.rejectedSec__transactionDetailMain}`}
+              >
                 <h3
-                  className={`${pageStyle.rejectedSec__sendSwapbtn__txnDetailHeading} }`}>
+                  className={`${pageStyle.rejectedSec__sendSwapbtn__txnDetailHeading} }`}
+                >
                   Transaction Details
                 </h3>
                 <div
-                  className={`${pageStyle.rejectedSec__listReject} ${pageStyle.rejectedSec__txnDetail}`}>
+                  className={`${pageStyle.rejectedSec__listReject} ${pageStyle.rejectedSec__txnDetail}`}
+                >
                   <div
-                    className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact1}`}>
+                    className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact1}`}
+                  >
                     <h4>From: </h4>
                     <p>
                       {shortLongAddress(
@@ -140,7 +144,8 @@ function ValidatorNominatorTxns() {
                     </p>
                   </div>
                   <div
-                    className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact}`}>
+                    className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact}`}
+                  >
                     <h4>Method: </h4>
                     <p>{valdatorNominatorFee?.methodName || ""}</p>
                   </div>
@@ -149,7 +154,8 @@ function ValidatorNominatorTxns() {
                     return (
                       <div
                         key={d.key}
-                        className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact}`}>
+                        className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact}`}
+                      >
                         <h4>{d.key}: </h4>
 
                         <p>{d.value}</p>
@@ -158,7 +164,8 @@ function ValidatorNominatorTxns() {
                   })}
 
                   <div
-                    className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact}`}>
+                    className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__txnDetail__txnContact}`}
+                  >
                     <h4>Estimated Fee: </h4>
                     <p>{valdatorNominatorFee?.fee} 5IRE</p>
                   </div>
