@@ -19,7 +19,7 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
   EVM_JSON_RPC_METHODS,
-  STATE_CHANGE_ACTIONS,
+  STATE_CHANGE_ACTIONS
 } from "../../Constants/index";
 
 //Before We begin
@@ -31,28 +31,18 @@ function FooterStepOne() {
   const handleCancle = () => {
     if (isLogin) navigate(ROUTES.WALLET);
     else navigate(ROUTES.DEFAULT);
-  }
+  };
 
   const handleClick = () => {
     setNewWalletName("");
     navigate(ROUTES.CREATE_WALLET);
-  }
+  };
 
   return (
     <>
       <div className={`${style.menuItems__cancleContinue} ${style.beginStyle}`}>
-        <ButtonComp
-          onClick={handleClick}
-          text={"Continue"}
-          maxWidth={"100%"}
-        />
-        <ButtonComp
-          onClick={handleCancle}
-          bordered={true}
-          text={"Cancel"}
-          maxWidth={"100%"}
-        />
-
+        <ButtonComp onClick={handleClick} text={"Continue"} maxWidth={"100%"} />
+        <ButtonComp onClick={handleCancle} bordered={true} text={"Cancel"} maxWidth={"100%"} />
       </div>
     </>
   );
@@ -60,13 +50,16 @@ function FooterStepOne() {
 
 //Footer of New wallet Detail Page
 export const FooterStepTwo = () => {
-
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const { setNewAccount, newAccount, setDetailsPage } = useContext(AuthContext);
 
   const handleCancle = async () => {
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT, { address: newAccount?.evmAddress });
+    sendRuntimeMessage(
+      MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+      MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT,
+      { address: newAccount?.evmAddress }
+    );
     setDetailsPage(false);
   };
 
@@ -83,22 +76,18 @@ export const FooterStepTwo = () => {
   return (
     <>
       <div className={style.menuItems__cancleContinue}>
-
-        <ButtonComp
-          bordered={true}
-          text={"Cancel"}
-          maxWidth={"100%"}
-          onClick={handleCancle}
-        />
+        <ButtonComp bordered={true} text={"Cancel"} maxWidth={"100%"} onClick={handleCancle} />
 
         <ButtonComp onClick={handleClick} text={"Continue"} maxWidth={"100%"} />
       </div>
-      {show && <div className="loader">
-        <CongratulationsScreen text={"Your wallet has been created"} /></div>}
+      {show && (
+        <div className="loader">
+          <CongratulationsScreen text={"Your wallet has been created"} />
+        </div>
+      )}
     </>
   );
 };
-
 
 //approve the connection to pass the accounts
 export const ApproveLogin = () => {
@@ -107,54 +96,60 @@ export const ApproveLogin = () => {
   const { activeSession } = externalControlsState;
   const navigate = useNavigate();
 
-
   //handle the approval and reject click
   const handleClick = async (isApproved) => {
-
     if (isApproved) {
       //add the app into connected list
-      await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.APP_CONNECTION_UPDATE, { connected: true, origin: activeSession.origin }, { localStateKey: LABELS.EXTERNAL_CONTROLS })
+      await ExtensionStorageHandler.updateStorage(
+        STATE_CHANGE_ACTIONS.APP_CONNECTION_UPDATE,
+        { connected: true, origin: activeSession.origin },
+        { localStateKey: LABELS.EXTERNAL_CONTROLS }
+      );
 
       //check if current connection request is for evm
-      const isEthReq = isEqual(activeSession.method, EVM_JSON_RPC_METHODS.ETH_REQUEST_ACCOUNT) || isEqual(activeSession.method, EVM_JSON_RPC_METHODS.ETH_ACCOUNTS)
+      const isEthReq =
+        isEqual(activeSession.method, EVM_JSON_RPC_METHODS.ETH_REQUEST_ACCOUNT) ||
+        isEqual(activeSession.method, EVM_JSON_RPC_METHODS.ETH_ACCOUNTS);
 
-      const res = isEthReq ? { method: activeSession.method, result: [account?.evmAddress] } : {
-        result: {
-          evmAddress: account?.evmAddress,
-          nativeAddress: account?.nativeAddress,
-        }
-      };
+      const res = isEthReq
+        ? { method: activeSession.method, result: [account?.evmAddress] }
+        : {
+            result: {
+              evmAddress: account?.evmAddress,
+              nativeAddress: account?.nativeAddress
+            }
+          };
 
       //send the message to tab after approve request
-      sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, res, activeSession.method))
+      sendMessageToTab(
+        activeSession.tabId,
+        new TabMessagePayload(activeSession.id, res, activeSession.method)
+      );
     }
 
     //send closure message to backend
-    sendMessageOverStream(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION, { approve: isApproved });
+    sendMessageOverStream(
+      MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL,
+      MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION,
+      { approve: isApproved }
+    );
     navigate(ROUTES.WALLET);
-  }
-
+  };
 
   return (
     <>
       <div className={`${style.menuItems__cancleContinue} approveBtn`}>
-        <ButtonComp
-          onClick={() => handleClick(true)}
-          text={"Approve"}
-          maxWidth={"100%"}
-        />
+        <ButtonComp onClick={() => handleClick(true)} text={"Approve"} maxWidth={"100%"} />
         <ButtonComp
           bordered={true}
           text={"Cancel"}
           maxWidth={"100%"}
           onClick={() => handleClick(false)}
         />
-
       </div>
     </>
   );
 };
-
 
 //approve the evm transactions
 export const ApproveTx = () => {
@@ -167,22 +162,48 @@ export const ApproveTx = () => {
 
   //check if user has sufficent balance to make transaction
   useEffect(() => {
-    if (estimatedGas && (Number(activeSession.message?.value) + Number(estimatedGas)) >= (Number(balance?.evmBalance) - pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm)) {
+    if (
+      estimatedGas &&
+      Number(activeSession.message?.value) + Number(estimatedGas) >=
+        Number(balance?.evmBalance) -
+          pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
+    ) {
       toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       setDisableApproval(true);
       return;
     } else setDisableApproval(!estimatedGas);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [estimatedGas, activeSession.message?.value, balance?.evmBalance, currentAccount?.evmAddress, currentNetwork]);
-
+  }, [
+    estimatedGas,
+    activeSession.message?.value,
+    balance?.evmBalance,
+    currentAccount?.evmAddress,
+    currentNetwork
+  ]);
 
   function handleClick(isApproved) {
     if (isApproved) {
-      const txType = activeSession.message?.data ? activeSession.message?.to ? TX_TYPE.CONTRACT_EXECUTION : TX_TYPE.CONTRACT_DEPLOYMENT : TX_TYPE.SEND;
+      const txType = activeSession.message?.data
+        ? activeSession.message?.to
+          ? TX_TYPE.CONTRACT_EXECUTION
+          : TX_TYPE.CONTRACT_DEPLOYMENT
+        : TX_TYPE.SEND;
 
-      sendMessageOverStream(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.EVM_TX, { options: { account: currentAccount, network: currentNetwork, type: txType, isEvm: true, fee: estimatedGas}});
+      sendMessageOverStream(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.EVM_TX, {
+        options: {
+          account: currentAccount,
+          network: currentNetwork,
+          type: txType,
+          isEvm: true,
+          fee: estimatedGas
+        }
+      });
     }
-    sendMessageOverStream(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION, { approve: isApproved });
+    sendMessageOverStream(
+      MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL,
+      MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION,
+      { approve: isApproved }
+    );
     navigate(ROUTES.WALLET);
   }
 

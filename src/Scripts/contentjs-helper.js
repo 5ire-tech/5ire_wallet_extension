@@ -2,8 +2,7 @@ import Browser from "webextension-polyfill";
 import { CONTENT_SCRIPT, INPAGE } from "./constants";
 import { WindowPostMessageStream } from "./stream";
 import { SIGNER_METHODS, STREAM_CHANNELS, VALIDATOR_NOMINATOR_METHOD } from "../Constants";
-import ExtensionPostStream from "./extension-port-stream-mod/index"
-
+import ExtensionPostStream from "./extension-port-stream-mod/index";
 
 // for content script
 export class ContentJS {
@@ -15,17 +14,17 @@ export class ContentJS {
     //create a page stream to get and pass the message to content script
     ContentJS.pageStream = new WindowPostMessageStream({
       name: CONTENT_SCRIPT,
-      target: INPAGE,
+      target: INPAGE
     });
 
     //inject the injected-script into firefox
-    this.injectScript()
+    this.injectScript();
 
     //bind the data event on page stream
     this.bindDataFromPageStream();
 
     //connect to background worker using port stream
-    this.connectPortStream()
+    this.connectPortStream();
 
     //bind message event from extension side
     this.bindMessageFromBackgroundWorker();
@@ -47,9 +46,7 @@ export class ContentJS {
 
   //bind the data event on window post message stream from injected script
   bindDataFromPageStream() {
-
     ContentJS.pageStream.on("data", async (data) => {
-
       if (!data?.method) return;
 
       try {
@@ -78,13 +75,10 @@ export class ContentJS {
             break;
 
           case "eth_sendTransaction":
-            if (
-              data.method !== "eth_sendTransaction" ||
-              data.message?.length < 0
-            ) {
+            if (data.method !== "eth_sendTransaction" || data.message?.length < 0) {
               ContentJS.pageStream.write({
                 id: data.id,
-                error: "Invalid Transaction Request",
+                error: "Invalid Transaction Request"
               });
             } else {
               ContentJS.postStreamForBackground.write(data);
@@ -100,14 +94,14 @@ export class ContentJS {
           default:
             ContentJS.pageStream.write({
               id: data.id,
-              error: "Invalid request method",
+              error: "Invalid request method"
             });
         }
       } catch (err) {
         console.log("Error in Content Script: ", err);
         ContentJS.pageStream.write({
           id: data.id,
-          error: "Error while performing the operation",
+          error: "Error while performing the operation"
         });
       }
     });
@@ -129,15 +123,15 @@ export class ContentJS {
   injectScript() {
     try {
       const container = document.head || document.documentElement;
-      const scriptTag = document.createElement('script');
-      scriptTag.setAttribute('async', 'false');
+      const scriptTag = document.createElement("script");
+      scriptTag.setAttribute("async", "false");
       // scriptTag.textContent = content;
-      scriptTag.setAttribute('src', Browser.runtime.getURL('static/js/injected.js'));
+      scriptTag.setAttribute("src", Browser.runtime.getURL("static/js/injected.js"));
 
       container.insertBefore(scriptTag, container.children[0]);
       container.removeChild(scriptTag);
     } catch (error) {
-      console.error('failed to inject the inpage script', error);
+      console.error("failed to inject the inpage script", error);
     }
   }
 }

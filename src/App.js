@@ -3,7 +3,6 @@ import { ROUTES } from "./Routes";
 import Send from "./Pages/Send/Send";
 import Swap from "./Pages/Swap/Swap";
 import { AuthContext } from "./Store";
-import { log } from "./Utility/utility";
 import Wallet from "./Pages/Wallet/Wallet";
 import Loader from "./Pages/Loader/Loader";
 import NativeTx from "./Components/NativeTx";
@@ -32,8 +31,7 @@ import CreateWalletChain from "./Pages/WelcomeScreens/CreateWalletChain";
 import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
 import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
 import ValidatorNominatorTxns from "./Components/ValidatorNominatorTxns";
-import CongratulationsScreen from "./Pages/WelcomeScreens/CongratulationsScreen"
-
+import CongratulationsScreen from "./Pages/WelcomeScreens/CongratulationsScreen";
 
 // function getParameterByName(name, url = window.location.href) {
 //   name = name.replace(/[[\]]/g, "\\$&");
@@ -43,7 +41,6 @@ import CongratulationsScreen from "./Pages/WelcomeScreens/CongratulationsScreen"
 //   if (!results[2]) return EMTY_STR;
 //   return decodeURIComponent(results[2].replace(/\+/g, " "));
 // }
-
 
 function App(props) {
   const {
@@ -62,10 +59,8 @@ function App(props) {
 
   const navigate = useNavigate();
 
-
   const { isLogin, vault } = isStateLoaded ? state : props.data;
   const { activeSession } = isStateLoaded ? externalControlsState : props.externalControlsState;
-
 
   useEffect(() => {
     if (props.data && props.externalControlsState) {
@@ -76,7 +71,6 @@ function App(props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
 
   useEffect(() => {
     // const route = getParameterByName("route");
@@ -107,8 +101,14 @@ function App(props) {
       // }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLogin, vault, newAccount?.evmAddress, state?.pass, detailsPage, externalControlsState?.activeSession?.id]);
-
+  }, [
+    isLogin,
+    vault,
+    newAccount?.evmAddress,
+    state?.pass,
+    detailsPage,
+    externalControlsState?.activeSession?.id
+  ]);
 
   return (
     <div className="App">
@@ -139,15 +139,10 @@ function App(props) {
               path="*"
               element={<WelcomeLayout children={<WelcomeScreen />} />}
             /> */}
-
           </>
         ) : (
           <>
-            <Route
-              index
-              path={ROUTES.WALLET}
-              element={<FixWidthLayout children={<Wallet />} />}
-            />
+            <Route index path={ROUTES.WALLET} element={<FixWidthLayout children={<Wallet />} />} />
             <Route
               index
               path={ROUTES.HISTORY_P}
@@ -169,16 +164,8 @@ function App(props) {
               path={ROUTES.ENTER_PASS}
               element={<OnlyContent children={<EnterPassword />} />}
             />
-            <Route
-              index
-              path={ROUTES.SEND}
-              element={<OnlyContent children={<Send />} />}
-            />
-            <Route
-              index
-              path={ROUTES.SWAP}
-              element={<OnlyContent children={<Swap />} />}
-            />
+            <Route index path={ROUTES.SEND} element={<OnlyContent children={<Send />} />} />
+            <Route index path={ROUTES.SWAP} element={<OnlyContent children={<Swap />} />} />
             <Route
               index
               path={ROUTES.MANAGE_WALLET}
@@ -195,11 +182,7 @@ function App(props) {
               path={ROUTES.APPROVE_TXN}
               element={<FixWidthLayout children={<ApproveTx />} />}
             />
-            <Route
-              index
-              path={ROUTES.NATIVE_TXN}
-              element={<NativeTx />}
-            />
+            <Route index path={ROUTES.NATIVE_TXN} element={<NativeTx />} />
 
             <Route
               index
@@ -226,10 +209,7 @@ function App(props) {
           path={ROUTES.NEW_WALLET_DETAILS}
           element={<WelcomeLayout children={<CreateWalletChain />} />}
         />
-        <Route
-          path={ROUTES.BEFORE_BEGIN}
-          element={<WelcomeLayout children={<Beforebegin />} />}
-        />
+        <Route path={ROUTES.BEFORE_BEGIN} element={<WelcomeLayout children={<Beforebegin />} />} />
 
         <Route
           path={ROUTES.CREATE_WALLET}
@@ -246,9 +226,11 @@ function App(props) {
       <RetryModal />
 
       {isLoading && <Loader />}
-      {showCongratLoader && <div className="loader">
-        <CongratulationsScreen text={"Your wallet has been imported"} /></div>}
-
+      {showCongratLoader && (
+        <div className="loader">
+          <CongratulationsScreen text={"Your wallet has been imported"} />
+        </div>
+      )}
     </div>
   );
 }

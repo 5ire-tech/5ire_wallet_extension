@@ -4,7 +4,6 @@ import style from "./style.module.scss";
 import { Link } from "react-router-dom";
 import PlaceLogo from "../../Assets/PlaceLog.svg";
 
-
 function WelcomeScreen() {
   return (
     <div className={`${style.cardWhite} ${style.cardWhiteCenterd}`}>

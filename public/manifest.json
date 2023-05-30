@@ -13,30 +13,15 @@
     "128": "logo192.png"
   },
 
-  "permissions": [
-    "activeTab",
-    "notifications",
-    "scripting",
-    "storage",
-    "tabs",
-    "webRequest"
-  ],
-  "host_permissions": [
-    "http://*/",
-    "https://*/"
-  ],
+  "permissions": ["activeTab", "notifications", "scripting", "storage", "tabs", "webRequest"],
+  "host_permissions": ["http://*/", "https://*/"],
   "background": {
     "service_worker": "./static/js/background.js"
   },
   "content_scripts": [
     {
-      "matches": [
-        "http://*/",
-        "https://*/"
-      ],
-      "js": [
-        "./static/js/content.js"
-      ],
+      "matches": ["http://*/", "https://*/"],
+      "js": ["./static/js/content.js"],
       "all_frames": false,
       "run_at": "document_end"
     }

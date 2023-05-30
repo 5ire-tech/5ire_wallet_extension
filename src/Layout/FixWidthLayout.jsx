@@ -16,7 +16,6 @@ function FixWidthLayout({ children }) {
   const { pathname } = getLocation;
 
   useEffect(() => {
-
     if (!pathname) {
       navigate(ROUTES.WALLET);
     }
@@ -26,7 +25,11 @@ function FixWidthLayout({ children }) {
   return (
     <div className={`${style.fixedLayout}`}>
       <div className={style.fixedLayout__inner}>
-        {(pathname === ROUTES.WALLET || ROUTES.SWAP_APPROVE || ROUTES.APPROVE_TXN || pathname === ROUTES.HISTORY_P || pathname === ROUTES.MY_ACCOUNT) && (
+        {(pathname === ROUTES.WALLET ||
+          ROUTES.SWAP_APPROVE ||
+          ROUTES.APPROVE_TXN ||
+          pathname === ROUTES.HISTORY_P ||
+          pathname === ROUTES.MY_ACCOUNT) && (
           <div className={style.fixedLayout__inner__walletLayout}>
             <div className={style.decoratedBg} style={{ textAlign: "left" }}>
               <BalanceDetails />
@@ -35,7 +38,10 @@ function FixWidthLayout({ children }) {
         )}
 
         <Content className={style.fixedLayout__content}>{children} </Content>
-        {(isEqual(pathname, ROUTES.APPROVE_TXN) || isEqual(pathname, ROUTES.WALLET) || isEqual(pathname, ROUTES.HISTORY_P) || isEqual(pathname, ROUTES.MY_ACCOUNT)) && <MenuFooter />}
+        {(isEqual(pathname, ROUTES.APPROVE_TXN) ||
+          isEqual(pathname, ROUTES.WALLET) ||
+          isEqual(pathname, ROUTES.HISTORY_P) ||
+          isEqual(pathname, ROUTES.MY_ACCOUNT)) && <MenuFooter />}
       </div>
     </div>
   );

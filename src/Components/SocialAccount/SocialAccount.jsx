@@ -7,18 +7,33 @@ import Facebook from "../../Assets/PNG/facebook.png";
 import Instagram from "../../Assets/PNG/instagram.png";
 
 function SocialAccount() {
-
   return (
     <>
       <h1>Social Accounts</h1>
       <div className={style.social}>
+        <img
+          src={Facebook}
+          alt="facebook"
+          name="facebook"
+          onClick={() => openBrowserTab(SOCIAL_LINKS.FACEBOOK)}
+          draggable={false}
+        />
 
-        <img src={Facebook} alt="facebook" name="facebook" onClick={() => openBrowserTab(SOCIAL_LINKS.FACEBOOK)} draggable={false} />
+        <img
+          src={Linkdin}
+          alt="linkdin"
+          name="linkdin"
+          onClick={() => openBrowserTab(SOCIAL_LINKS.LINKDIN)}
+          draggable={false}
+        />
 
-        <img src={Linkdin} alt="linkdin" name="linkdin" onClick={() => openBrowserTab(SOCIAL_LINKS.LINKDIN)} draggable={false} />
-
-        <img src={Instagram} alt="instagram" name="instagram" onClick={() => openBrowserTab(SOCIAL_LINKS.INSTAGRAM)} draggable={false} />
-
+        <img
+          src={Instagram}
+          alt="instagram"
+          name="instagram"
+          onClick={() => openBrowserTab(SOCIAL_LINKS.INSTAGRAM)}
+          draggable={false}
+        />
       </div>
     </>
   );

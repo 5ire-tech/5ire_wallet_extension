@@ -5,9 +5,10 @@ import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 
 function LoginApprove() {
-
   //get the origin for approval connection
-  const { externalControlsState: { activeSession } } = useContext(AuthContext);
+  const {
+    externalControlsState: { activeSession }
+  } = useContext(AuthContext);
 
   return (
     <div className={style.cardWhite}>

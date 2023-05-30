@@ -70,7 +70,6 @@
 //   }
 // }
 
-
 // export const setBalance = (payload) => {
 //   return {
 //     type: ACTIONS.setBalance,
@@ -91,7 +90,6 @@
 //     payload: payload
 //   }
 // }
-
 
 // export const updateTxHistory = (payload) => {
 //   return {

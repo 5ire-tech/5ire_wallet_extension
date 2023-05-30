@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Layout } from "antd";
 import MenuFooter from "../Components/MenuFooter/MenuFooter";
@@ -9,15 +8,13 @@ import MenuFooter from "../Components/MenuFooter/MenuFooter";
 
 function WelcomeLayout({ children }) {
   const { Content } = Layout;
-  
+
   // const getLocation = useLocation();
   // const {pathname} = getLocation;
-
 
   return (
     <div className={"WelcomeLayout"}>
       <div className="WelcomeLayout__container">
-
         {/* {pathname === ROUTES.BEFORE_BEGIN && (
           <div className={style.cardWhite__numberingSec}>
             1

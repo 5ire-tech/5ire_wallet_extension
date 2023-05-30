@@ -2,14 +2,13 @@ const webpack = require("webpack");
 const CopyPlugin = require("copy-webpack-plugin");
 
 //flag checks
-const isChrome = process.env.BUILD_TYPE === 'CHROME' ? true : false;
-const Min = Boolean(Number(process.env.MINI)) ? true : false
-
+const isChrome = process.env.BUILD_TYPE === "CHROME" ? true : false;
+const Min = Boolean(Number(process.env.MINI));
 module.exports = {
   webpack: {
     configure: (webpackConfig, { env, paths }) => {
       const scopePluginIndex = webpackConfig.resolve.plugins.findIndex(
-        ({ constructor }) => constructor && constructor.name === 'ModuleScopePlugin'
+        ({ constructor }) => constructor && constructor.name === "ModuleScopePlugin"
       );
 
       webpackConfig.resolve.plugins.splice(scopePluginIndex, 1);
@@ -18,18 +17,16 @@ module.exports = {
         ...webpackConfig,
         entry: {
           main: [
-            env === "development" &&
-            require.resolve("react-dev-utils/webpackHotDevClient"),
-            paths.appIndexJs,
+            env === "development" && require.resolve("react-dev-utils/webpackHotDevClient"),
+            paths.appIndexJs
           ].filter(Boolean),
           content: "./src/Scripts/content.js",
           background: "./src/Scripts/background.js",
-          injected: "./src/Scripts/injected.js",
-
+          injected: "./src/Scripts/injected.js"
         },
         output: {
           ...webpackConfig.output,
-          filename: "static/js/[name].js",
+          filename: "static/js/[name].js"
         },
         optimization: {
           ...webpackConfig.optimization,
@@ -47,24 +44,26 @@ module.exports = {
             http: require.resolve("stream-http"),
             https: require.resolve("https-browserify"),
             zlib: require.resolve("browserify-zlib")
-          },
+          }
         },
         plugins: [
           ...webpackConfig.plugins,
           new webpack.ProvidePlugin({
-            Buffer: ["buffer", "Buffer"],
+            Buffer: ["buffer", "Buffer"]
           }),
           new CopyPlugin({
             patterns: [
-              { from: isChrome ? "./src/manifest/chrome.json" : "./src/manifest/firefox.json", to: "manifest.json" },
-            ],
+              {
+                from: isChrome ? "./src/manifest/chrome.json" : "./src/manifest/firefox.json",
+                to: "manifest.json"
+              }
+            ]
           }),
           new webpack.ProvidePlugin({
-            process: 'process/browser',
-          }),
-        ],
-
+            process: "process/browser"
+          })
+        ]
       };
-    },
-  },
+    }
+  }
 };

@@ -5,17 +5,11 @@ import SwapIcon from "../../Assets/SwapIcon.svg";
 import { toast } from "react-hot-toast";
 import React, { useState, useContext, useEffect } from "react";
 import { sendMessageOverStream } from "../../Utility/message_helper";
-import {
-  LABELS,
-  COPIED,
-  MESSAGE_TYPE_LABELS,
-  MESSAGE_EVENT_LABELS,
-} from "../../Constants";
+import { LABELS, COPIED, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants";
 
 function ApproveTx() {
   const [activeTab, setActiveTab] = useState("detail");
-  const { estimatedGas, state, externalControlsState, updateLoading } =
-    useContext(AuthContext);
+  const { estimatedGas, state, externalControlsState, updateLoading } = useContext(AuthContext);
   const { activeSession } = externalControlsState;
 
   //current account
@@ -23,16 +17,12 @@ function ApproveTx() {
 
   useEffect(() => {
     updateLoading(true);
-    sendMessageOverStream(
-      MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
-      MESSAGE_EVENT_LABELS.EVM_FEE,
-      {
-        value: activeSession?.message?.value,
-        toAddress: activeSession?.message?.to,
-        data: activeSession?.message?.data,
-        options: { account: state.currentAccount },
-      }
-    );
+    sendMessageOverStream(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {
+      value: activeSession?.message?.value,
+      toAddress: activeSession?.message?.to,
+      data: activeSession?.message?.data,
+      options: { account: state.currentAccount }
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -52,19 +42,15 @@ function ApproveTx() {
             <button
               onClick={activeDetail}
               className={`${style.rejectedSec__sendSwapbtn__buttons} 
-              ${activeTab === "detail" &&
-                style.rejectedSec__sendSwapbtn__buttons__active
-                }
-            `}
-            >
+              ${activeTab === "detail" && style.rejectedSec__sendSwapbtn__buttons__active}
+            `}>
               Details
             </button>
             <button
               onClick={activeData}
-              className={`${style.rejectedSec__sendSwapbtn__buttons}  ${activeTab === "data" &&
-                style.rejectedSec__sendSwapbtn__buttons__active
-                }`}
-            >
+              className={`${style.rejectedSec__sendSwapbtn__buttons}  ${
+                activeTab === "data" && style.rejectedSec__sendSwapbtn__buttons__active
+              }`}>
               HEX Data
             </button>
           </div>
@@ -89,10 +75,7 @@ function ApproveTx() {
                       />
                     </p>
                   </div>
-                  <div
-                    className={style.rejectedSec__icon}
-                    style={{ marginTop: "30px" }}
-                  >
+                  <div className={style.rejectedSec__icon} style={{ marginTop: "30px" }}>
                     <img src={SwapIcon} alt="swapIcon" />
                   </div>
                   <div className={style.rejectedSec__listReject__innerList}>
@@ -100,38 +83,42 @@ function ApproveTx() {
                     <p>
                       <span>
                         {" "}
-                        {activeSession?.message?.to
-                          ? activeSession?.message?.to : LABELS.CONTRACT}
+                        {activeSession?.message?.to ? activeSession?.message?.to : LABELS.CONTRACT}
                       </span>
-                      {activeSession?.message?.to && <img
-                        src={CopyIcon}
-                        alt="copyIcon"
-                        draggable={false}
-                        style={{ cursor: "pointer" }}
-                        onClick={() => {
-                          navigator.clipboard.writeText(activeSession?.message?.to)
-                          toast.success(COPIED);
-                        }} />}
+                      {activeSession?.message?.to && (
+                        <img
+                          src={CopyIcon}
+                          alt="copyIcon"
+                          draggable={false}
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {
+                            navigator.clipboard.writeText(activeSession?.message?.to);
+                            toast.success(COPIED);
+                          }}
+                        />
+                      )}
                     </p>
                   </div>
                 </div>
                 <div className={style.rejectedSec__flexList}>
                   <div className={style.rejectedSec__listReject__innerList}>
                     <h4>Value: </h4>
-                    <p><span>{activeSession?.message?.value || "0"}</span></p>
+                    <p>
+                      <span>{activeSession?.message?.value || "0"}</span>
+                    </p>
                   </div>
 
                   <div className={style.rejectedSec__listReject__innerList}>
                     <h4>Fee: </h4>
-                    <p><span>{estimatedGas ? `${estimatedGas} ` : ""}</span>5ire</p>
+                    <p>
+                      <span>{estimatedGas ? `${estimatedGas} ` : ""}</span>5ire
+                    </p>
                   </div>
                 </div>
               </>
             ) : (
               <div className={style.rejectedSec__listReject__innerDataList}>
-                <h4 style={{ wordBreak: "break-all" }}>
-                  {activeSession?.message?.data || ""}
-                </h4>
+                <h4 style={{ wordBreak: "break-all" }}>{activeSession?.message?.data || ""}</h4>
               </div>
             )}
           </div>

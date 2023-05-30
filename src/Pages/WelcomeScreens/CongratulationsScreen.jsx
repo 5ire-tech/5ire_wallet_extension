@@ -1,9 +1,9 @@
 import React from "react";
 import style from "./style.module.scss";
 import { Player } from "@lottiefiles/react-lottie-player";
-import JsonData from "../../Assets/JsonFiles"
+import JsonData from "../../Assets/JsonFiles";
 
-function CongratulationsScreen({ children, text}) {
+function CongratulationsScreen({ children, text }) {
   return (
     <div className={style.setPassword__secretPharse}>
       <div className={`${style.cardWhite__beginText} ${style.congratScreen}`}>
@@ -14,9 +14,7 @@ function CongratulationsScreen({ children, text}) {
             controls={true}
             src={JsonData}
             //src={"https://assets3.lottiefiles.com/packages/lf20_4chtroo0.json"}
-            style={{ height: "190px", width: "190px" }}
-          >            
-          </Player>
+            style={{ height: "190px", width: "190px" }}></Player>
         </div>
         <h1>Congratulations!</h1>
         <p>{text}</p>
