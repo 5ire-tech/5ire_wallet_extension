@@ -1,51 +1,48 @@
-import { useEffect } from "react";
-import { toast } from "react-toastify";
-import React, { useState } from "react";
-import style from "./style.module.scss";
-import { useSelector } from "react-redux";
-import {COPIED} from "../../Constants/index";
-import useWallet from "../../Hooks/useWallet";
-import CopyIcon from "../../Assets/CopyIcon.svg";
-import ButtonComp from "../ButtonComp/ButtonComp";
-import { decryptor } from "../../Helper/CryptoHelper";
-import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
-
+import { useEffect } from 'react'
+import { toast } from 'react-toastify'
+import React, { useState } from 'react'
+import style from './style.module.scss'
+import { useSelector } from 'react-redux'
+import { COPIED } from '../../Constants/index'
+import useWallet from '../../Hooks/useWallet'
+import CopyIcon from '../../Assets/CopyIcon.svg'
+import ButtonComp from '../ButtonComp/ButtonComp'
+import { decryptor } from '../../Helper/CryptoHelper'
+import MenuRestofHeaders from '../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders'
 
 function PrivateKey() {
-  const { currentAccount, pass } = useSelector((state) => state.auth);
-  const [key, setKey] = useState("");
-  const [seed, setSeed] = useState("");
-  const [show, handleShow] = useState(false);
-  const { getKey } = useWallet();
-  const name = ["seed", "key"];
+  const { currentAccount, pass } = useSelector((state) => state.auth)
+  const [key, setKey] = useState('')
+  const [seed, setSeed] = useState('')
+  const [show, handleShow] = useState(false)
+  const { getKey } = useWallet()
+  const name = ['seed', 'key']
 
   useEffect(() => {
-    setKey(getKey(currentAccount?.temp1m, pass));
-  }, [currentAccount, getKey]);
+    setKey(getKey(currentAccount?.temp1m, pass))
+  }, [currentAccount, getKey])
 
   const handleCopy = (e) => {
-    if (e.target.name === name[0])
-      navigator.clipboard.writeText(seed);
-    else if (e.target.name === name[1])
-      navigator.clipboard.writeText(key);
-    toast.success(COPIED);
-  };
+    if (e.target.name === name[0]) navigator.clipboard.writeText(seed)
+    else if (e.target.name === name[1]) navigator.clipboard.writeText(key)
+    toast.success(COPIED)
+  }
 
   useEffect(() => {
     if (show && !seed) {
-      let seed = (decryptor(currentAccount.temp1m, pass));
+      let seed = decryptor(currentAccount.temp1m, pass)
       setSeed(seed)
     }
-  }, [show]);
+  }, [show])
 
   const handleClick = () => {
-    handleShow(!show);
-  };
+    handleShow(!show)
+  }
 
   return (
     <>
       <div className={`scrollableCont`}>
-        <MenuRestofHeaders backTo={"/wallet"} title={""} />
+        <MenuRestofHeaders backTo={'/wallet'} title={''} />
         <div className={`flexedContent`}>
           <div className={style.enterPassword}>
             <div className={style.commonHeadeing}>
@@ -58,8 +55,8 @@ function PrivateKey() {
                   <img
                     draggable={false}
                     src={CopyIcon}
-                    alt="copyIcon"
-                    name="key"
+                    alt='copyIcon'
+                    name='key'
                     onClick={handleCopy}
                   />
                 </p>
@@ -69,7 +66,8 @@ function PrivateKey() {
             <div className={style.mnemonicsButton}>
               <ButtonComp
                 onClick={handleClick}
-                text={show ? "Hide Mnemonic" : "Reveal Mnemonic"} />
+                text={show ? 'Hide Mnemonic' : 'Reveal Mnemonic'}
+              />
             </div>
             <div className={style.wallet} hidden={!show ? true : false}>
               <div className={style.wallet__addressInput}>
@@ -78,8 +76,8 @@ function PrivateKey() {
                   <img
                     draggable={false}
                     src={CopyIcon}
-                    alt="copyIcon"
-                    name="seed"
+                    alt='copyIcon'
+                    name='seed'
                     onClick={handleCopy}
                   />
                 </p>
@@ -89,7 +87,7 @@ function PrivateKey() {
         </div>
       </div>
     </>
-  );
+  )
 }
 
-export default PrivateKey;
+export default PrivateKey

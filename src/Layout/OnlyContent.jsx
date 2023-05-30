@@ -1,9 +1,9 @@
-import { Layout } from "antd";
-import React from "react";
-import style from "./style.module.scss";
+import { Layout } from 'antd'
+import React from 'react'
+import style from './style.module.scss'
 
 function OnlyContent({ children }) {
-  const { Content } = Layout;
+  const { Content } = Layout
   return (
     <div className={`${style.fixedLayout}`}>
       <div className={style.fixedLayout__inner}>
@@ -14,7 +14,7 @@ function OnlyContent({ children }) {
         </Content>
       </div>
     </div>
-  );
+  )
 }
 
-export default OnlyContent;
+export default OnlyContent

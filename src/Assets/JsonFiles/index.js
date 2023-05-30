@@ -1,22 +1,22 @@
 export const animationConfiguration = {
-  v: "4.8.0",
-  meta: { g: "LottieFiles AE 1.0.0", a: "", k: "", d: "", tc: "" },
+  v: '4.8.0',
+  meta: { g: 'LottieFiles AE 1.0.0', a: '', k: '', d: '', tc: '' },
   fr: 60,
   ip: 0,
   op: 240,
   w: 720,
   h: 720,
-  nm: "success",
+  nm: 'success',
   ddd: 0,
   assets: [
     {
-      id: "comp_0",
+      id: 'comp_0',
       layers: [
         {
           ddd: 0,
           ind: 1,
           ty: 4,
-          nm: "check",
+          nm: 'check',
           sr: 1,
           ks: {
             o: { a: 0, k: 100, ix: 11 },
@@ -28,11 +28,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -56,12 +56,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "tm",
+                  ty: 'tm',
                   s: { a: 0, k: 0, ix: 1 },
                   e: {
                     a: 1,
@@ -79,24 +79,24 @@ export const animationConfiguration = {
                   o: { a: 0, k: 0, ix: 3 },
                   m: 1,
                   ix: 2,
-                  nm: "Trim Paths 1",
-                  mn: "ADBE Vector Filter - Trim",
+                  nm: 'Trim Paths 1',
+                  mn: 'ADBE Vector Filter - Trim',
                   hd: false,
                 },
                 {
-                  ty: "st",
+                  ty: 'st',
                   c: { a: 0, k: [1, 1, 1, 1], ix: 3 },
                   o: { a: 0, k: 100, ix: 4 },
                   w: { a: 0, k: 30, ix: 5 },
                   lc: 2,
                   lj: 2,
                   bm: 0,
-                  nm: "Stroke 1",
-                  mn: "ADBE Vector Graphic - Stroke",
+                  nm: 'Stroke 1',
+                  mn: 'ADBE Vector Graphic - Stroke',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [0, 0], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -104,15 +104,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Shape 1",
+              nm: 'Shape 1',
               np: 3,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -125,7 +125,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 2,
           ty: 4,
-          nm: "Shape Layer 2",
+          nm: 'Shape Layer 2',
           sr: 1,
           ks: {
             o: { a: 0, k: 100, ix: 11 },
@@ -149,19 +149,19 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   d: 1,
-                  ty: "el",
+                  ty: 'el',
                   s: { a: 0, k: [236, 236], ix: 2 },
                   p: { a: 0, k: [0, 0], ix: 3 },
-                  nm: "Ellipse Path 1",
-                  mn: "ADBE Vector Shape - Ellipse",
+                  nm: 'Ellipse Path 1',
+                  mn: 'ADBE Vector Shape - Ellipse',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [
@@ -173,12 +173,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [0, -3], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -186,15 +186,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Ellipse 1",
+              nm: 'Ellipse 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -207,7 +207,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 3,
           ty: 4,
-          nm: "Shape Layer 4",
+          nm: 'Shape Layer 4',
           sr: 1,
           ks: {
             o: {
@@ -261,19 +261,19 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   d: 1,
-                  ty: "el",
+                  ty: 'el',
                   s: { a: 0, k: [236, 236], ix: 2 },
                   p: { a: 0, k: [0, 0], ix: 3 },
-                  nm: "Ellipse Path 1",
-                  mn: "ADBE Vector Shape - Ellipse",
+                  nm: 'Ellipse Path 1',
+                  mn: 'ADBE Vector Shape - Ellipse',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [0.47843137254901963, 0.5215686274509804, 1, 1],
@@ -282,12 +282,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [0, -3], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -295,15 +295,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Ellipse 1",
+              nm: 'Ellipse 1',
               np: 3,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -316,7 +316,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 4,
           ty: 4,
-          nm: "Shape Layer 3",
+          nm: 'Shape Layer 3',
           sr: 1,
           ks: {
             o: {
@@ -370,29 +370,29 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   d: 1,
-                  ty: "el",
+                  ty: 'el',
                   s: { a: 0, k: [236, 236], ix: 2 },
                   p: { a: 0, k: [0, 0], ix: 3 },
-                  nm: "Ellipse Path 1",
-                  mn: "ADBE Vector Shape - Ellipse",
+                  nm: 'Ellipse Path 1',
+                  mn: 'ADBE Vector Shape - Ellipse',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: { a: 0, k: [0.4, 0.4470588235294118, 1, 1], ix: 4 },
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [0, -3], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -400,15 +400,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Ellipse 1",
+              nm: 'Ellipse 1',
               np: 3,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -421,7 +421,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 5,
           ty: 4,
-          nm: "Shape Layer 1",
+          nm: 'Shape Layer 1',
           sr: 1,
           ks: {
             o: {
@@ -475,19 +475,19 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   d: 1,
-                  ty: "el",
+                  ty: 'el',
                   s: { a: 0, k: [236, 236], ix: 2 },
                   p: { a: 0, k: [0, 0], ix: 3 },
-                  nm: "Ellipse Path 1",
-                  mn: "ADBE Vector Shape - Ellipse",
+                  nm: 'Ellipse Path 1',
+                  mn: 'ADBE Vector Shape - Ellipse',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [0.611764705882353, 0.6470588235294118, 1, 1],
@@ -496,12 +496,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [0, -3], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -509,15 +509,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Ellipse 1",
+              nm: 'Ellipse 1',
               np: 3,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -529,14 +529,14 @@ export const animationConfiguration = {
       ],
     },
     {
-      id: "comp_1",
+      id: 'comp_1',
       layers: [
         {
           ddd: 0,
           ind: 1,
           ty: 0,
-          nm: "brillante",
-          refId: "comp_2",
+          nm: 'brillante',
+          refId: 'comp_2',
           sr: 1,
           ks: {
             o: { a: 0, k: 100, ix: 11 },
@@ -557,8 +557,8 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 2,
           ty: 0,
-          nm: "claro",
-          refId: "comp_3",
+          nm: 'claro',
+          refId: 'comp_3',
           sr: 1,
           ks: {
             o: { a: 0, k: 100, ix: 11 },
@@ -578,13 +578,13 @@ export const animationConfiguration = {
       ],
     },
     {
-      id: "comp_2",
+      id: 'comp_2',
       layers: [
         {
           ddd: 0,
           ind: 1,
           ty: 4,
-          nm: "Shape Layer 75",
+          nm: 'Shape Layer 75',
           sr: 1,
           ks: {
             o: {
@@ -620,11 +620,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -654,12 +654,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "st",
+                  ty: 'st',
                   c: {
                     a: 0,
                     k: [
@@ -673,18 +673,18 @@ export const animationConfiguration = {
                     a: 0,
                     k: 23,
                     ix: 5,
-                    x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);",
+                    x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);',
                   },
                   lc: 1,
                   lj: 1,
                   ml: 4,
                   bm: 0,
-                  nm: "Stroke 1",
-                  mn: "ADBE Vector Graphic - Stroke",
+                  nm: 'Stroke 1',
+                  mn: 'ADBE Vector Graphic - Stroke',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [0, 0], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -692,19 +692,19 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Shape 1",
+              nm: 'Shape 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
             {
-              ty: "tm",
+              ty: 'tm',
               s: {
                 a: 1,
                 k: [
@@ -734,8 +734,8 @@ export const animationConfiguration = {
               o: { a: 0, k: 0, ix: 3 },
               m: 1,
               ix: 2,
-              nm: "Trim Paths 1",
-              mn: "ADBE Vector Filter - Trim",
+              nm: 'Trim Paths 1',
+              mn: 'ADBE Vector Filter - Trim',
               hd: false,
             },
           ],
@@ -748,7 +748,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 2,
           ty: 4,
-          nm: "Shape Layer 73",
+          nm: 'Shape Layer 73',
           sr: 1,
           ks: {
             o: {
@@ -784,11 +784,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -818,12 +818,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "st",
+                  ty: 'st',
                   c: {
                     a: 0,
                     k: [
@@ -837,18 +837,18 @@ export const animationConfiguration = {
                     a: 0,
                     k: 28,
                     ix: 5,
-                    x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);",
+                    x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);',
                   },
                   lc: 1,
                   lj: 1,
                   ml: 4,
                   bm: 0,
-                  nm: "Stroke 1",
-                  mn: "ADBE Vector Graphic - Stroke",
+                  nm: 'Stroke 1',
+                  mn: 'ADBE Vector Graphic - Stroke',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [0, 0], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -856,19 +856,19 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Shape 1",
+              nm: 'Shape 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
             {
-              ty: "tm",
+              ty: 'tm',
               s: {
                 a: 1,
                 k: [
@@ -898,8 +898,8 @@ export const animationConfiguration = {
               o: { a: 0, k: 0, ix: 3 },
               m: 1,
               ix: 2,
-              nm: "Trim Paths 1",
-              mn: "ADBE Vector Filter - Trim",
+              nm: 'Trim Paths 1',
+              mn: 'ADBE Vector Filter - Trim',
               hd: false,
             },
           ],
@@ -912,7 +912,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 3,
           ty: 4,
-          nm: "Shape Layer 72",
+          nm: 'Shape Layer 72',
           sr: 1,
           ks: {
             o: {
@@ -948,11 +948,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -982,30 +982,30 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "st",
+                  ty: 'st',
                   c: { a: 0, k: [1, 0.8352941176470589, 0, 1], ix: 3 },
                   o: { a: 0, k: 100, ix: 4 },
                   w: {
                     a: 0,
                     k: 26,
                     ix: 5,
-                    x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);",
+                    x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);',
                   },
                   lc: 1,
                   lj: 1,
                   ml: 4,
                   bm: 0,
-                  nm: "Stroke 1",
-                  mn: "ADBE Vector Graphic - Stroke",
+                  nm: 'Stroke 1',
+                  mn: 'ADBE Vector Graphic - Stroke',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [0, 0], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -1013,19 +1013,19 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Shape 1",
+              nm: 'Shape 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
             {
-              ty: "tm",
+              ty: 'tm',
               s: {
                 a: 1,
                 k: [
@@ -1055,8 +1055,8 @@ export const animationConfiguration = {
               o: { a: 0, k: 0, ix: 3 },
               m: 1,
               ix: 2,
-              nm: "Trim Paths 1",
-              mn: "ADBE Vector Filter - Trim",
+              nm: 'Trim Paths 1',
+              mn: 'ADBE Vector Filter - Trim',
               hd: false,
             },
           ],
@@ -1069,7 +1069,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 4,
           ty: 4,
-          nm: "Shape Layer 71",
+          nm: 'Shape Layer 71',
           sr: 1,
           ks: {
             o: {
@@ -1105,11 +1105,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -1139,12 +1139,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "st",
+                  ty: 'st',
                   c: {
                     a: 0,
                     k: [
@@ -1158,18 +1158,18 @@ export const animationConfiguration = {
                     a: 0,
                     k: 30,
                     ix: 5,
-                    x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);",
+                    x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);',
                   },
                   lc: 1,
                   lj: 1,
                   ml: 4,
                   bm: 0,
-                  nm: "Stroke 1",
-                  mn: "ADBE Vector Graphic - Stroke",
+                  nm: 'Stroke 1',
+                  mn: 'ADBE Vector Graphic - Stroke',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [0, 0], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -1177,19 +1177,19 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Shape 1",
+              nm: 'Shape 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
             {
-              ty: "tm",
+              ty: 'tm',
               s: {
                 a: 1,
                 k: [
@@ -1219,8 +1219,8 @@ export const animationConfiguration = {
               o: { a: 0, k: 0, ix: 3 },
               m: 1,
               ix: 2,
-              nm: "Trim Paths 1",
-              mn: "ADBE Vector Filter - Trim",
+              nm: 'Trim Paths 1',
+              mn: 'ADBE Vector Filter - Trim',
               hd: false,
             },
           ],
@@ -1233,7 +1233,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 5,
           ty: 4,
-          nm: "Shape Layer 70",
+          nm: 'Shape Layer 70',
           sr: 1,
           ks: {
             o: {
@@ -1269,11 +1269,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -1303,30 +1303,30 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "st",
+                  ty: 'st',
                   c: { a: 0, k: [1, 0.7294117647058823, 0, 1], ix: 3 },
                   o: { a: 0, k: 100, ix: 4 },
                   w: {
                     a: 0,
                     k: 12,
                     ix: 5,
-                    x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);",
+                    x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);',
                   },
                   lc: 1,
                   lj: 1,
                   ml: 4,
                   bm: 0,
-                  nm: "Stroke 1",
-                  mn: "ADBE Vector Graphic - Stroke",
+                  nm: 'Stroke 1',
+                  mn: 'ADBE Vector Graphic - Stroke',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [0, 0], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -1334,19 +1334,19 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Shape 1",
+              nm: 'Shape 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
             {
-              ty: "tm",
+              ty: 'tm',
               s: {
                 a: 1,
                 k: [
@@ -1376,8 +1376,8 @@ export const animationConfiguration = {
               o: { a: 0, k: 0, ix: 3 },
               m: 1,
               ix: 2,
-              nm: "Trim Paths 1",
-              mn: "ADBE Vector Filter - Trim",
+              nm: 'Trim Paths 1',
+              mn: 'ADBE Vector Filter - Trim',
               hd: false,
             },
           ],
@@ -1390,7 +1390,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 6,
           ty: 4,
-          nm: "Shape Layer 69",
+          nm: 'Shape Layer 69',
           sr: 1,
           ks: {
             o: {
@@ -1422,7 +1422,7 @@ export const animationConfiguration = {
               a: 0,
               k: 92,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -2185,10 +2185,10 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
-                  ty: "sr",
+                  ty: 'sr',
                   sy: 2,
                   d: 1,
                   pt: { a: 0, k: 3, ix: 3 },
@@ -2197,12 +2197,12 @@ export const animationConfiguration = {
                   or: { a: 0, k: 6.599, ix: 7 },
                   os: { a: 0, k: 0, ix: 9 },
                   ix: 1,
-                  nm: "Polystar Path 1",
-                  mn: "ADBE Vector Shape - Star",
+                  nm: 'Polystar Path 1',
+                  mn: 'ADBE Vector Shape - Star',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [
@@ -2214,12 +2214,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-7.382, -25.677], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -2227,15 +2227,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Polystar 1",
+              nm: 'Polystar 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -2248,7 +2248,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 7,
           ty: 4,
-          nm: "Shape Layer 68",
+          nm: 'Shape Layer 68',
           sr: 1,
           ks: {
             o: {
@@ -2280,7 +2280,7 @@ export const animationConfiguration = {
               a: 0,
               k: 92,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -2973,10 +2973,10 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
-                  ty: "sr",
+                  ty: 'sr',
                   sy: 2,
                   d: 1,
                   pt: { a: 0, k: 3, ix: 3 },
@@ -2985,12 +2985,12 @@ export const animationConfiguration = {
                   or: { a: 0, k: 6.599, ix: 7 },
                   os: { a: 0, k: 0, ix: 9 },
                   ix: 1,
-                  nm: "Polystar Path 1",
-                  mn: "ADBE Vector Shape - Star",
+                  nm: 'Polystar Path 1',
+                  mn: 'ADBE Vector Shape - Star',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [
@@ -3002,12 +3002,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-7.382, -25.677], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -3015,15 +3015,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Polystar 1",
+              nm: 'Polystar 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -3036,7 +3036,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 8,
           ty: 4,
-          nm: "Shape Layer 67",
+          nm: 'Shape Layer 67',
           sr: 1,
           ks: {
             o: {
@@ -3068,7 +3068,7 @@ export const animationConfiguration = {
               a: 0,
               k: 92,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -3817,10 +3817,10 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
-                  ty: "sr",
+                  ty: 'sr',
                   sy: 2,
                   d: 1,
                   pt: { a: 0, k: 3, ix: 3 },
@@ -3829,12 +3829,12 @@ export const animationConfiguration = {
                   or: { a: 0, k: 6.599, ix: 7 },
                   os: { a: 0, k: 0, ix: 9 },
                   ix: 1,
-                  nm: "Polystar Path 1",
-                  mn: "ADBE Vector Shape - Star",
+                  nm: 'Polystar Path 1',
+                  mn: 'ADBE Vector Shape - Star',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [
@@ -3846,12 +3846,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-7.382, -25.677], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -3859,15 +3859,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Polystar 1",
+              nm: 'Polystar 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -3880,7 +3880,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 9,
           ty: 4,
-          nm: "Shape Layer 66",
+          nm: 'Shape Layer 66',
           sr: 1,
           ks: {
             o: {
@@ -3912,7 +3912,7 @@ export const animationConfiguration = {
               a: 0,
               k: 92,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -4633,10 +4633,10 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
-                  ty: "sr",
+                  ty: 'sr',
                   sy: 2,
                   d: 1,
                   pt: { a: 0, k: 3, ix: 3 },
@@ -4645,12 +4645,12 @@ export const animationConfiguration = {
                   or: { a: 0, k: 6.599, ix: 7 },
                   os: { a: 0, k: 0, ix: 9 },
                   ix: 1,
-                  nm: "Polystar Path 1",
-                  mn: "ADBE Vector Shape - Star",
+                  nm: 'Polystar Path 1',
+                  mn: 'ADBE Vector Shape - Star',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [
@@ -4662,12 +4662,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-7.382, -25.677], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -4675,15 +4675,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Polystar 1",
+              nm: 'Polystar 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -4696,7 +4696,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 10,
           ty: 4,
-          nm: "Shape Layer 65",
+          nm: 'Shape Layer 65',
           sr: 1,
           ks: {
             o: {
@@ -4728,7 +4728,7 @@ export const animationConfiguration = {
               a: 0,
               k: 92,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -5505,10 +5505,10 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
-                  ty: "sr",
+                  ty: 'sr',
                   sy: 2,
                   d: 1,
                   pt: { a: 0, k: 3, ix: 3 },
@@ -5517,12 +5517,12 @@ export const animationConfiguration = {
                   or: { a: 0, k: 6.599, ix: 7 },
                   os: { a: 0, k: 0, ix: 9 },
                   ix: 1,
-                  nm: "Polystar Path 1",
-                  mn: "ADBE Vector Shape - Star",
+                  nm: 'Polystar Path 1',
+                  mn: 'ADBE Vector Shape - Star',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [
@@ -5534,12 +5534,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-7.382, -25.677], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -5547,15 +5547,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Polystar 1",
+              nm: 'Polystar 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -5568,7 +5568,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 11,
           ty: 4,
-          nm: "Shape Layer 64",
+          nm: 'Shape Layer 64',
           sr: 1,
           ks: {
             o: {
@@ -5600,7 +5600,7 @@ export const animationConfiguration = {
               a: 0,
               k: 92,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -6433,11 +6433,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -6464,12 +6464,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [
@@ -6481,12 +6481,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-3.421, 4.043], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -6494,15 +6494,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Rectangle 1",
+              nm: 'Rectangle 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -6515,7 +6515,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 12,
           ty: 4,
-          nm: "Shape Layer 63",
+          nm: 'Shape Layer 63',
           sr: 1,
           ks: {
             o: {
@@ -6547,7 +6547,7 @@ export const animationConfiguration = {
               a: 0,
               k: 92,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -7338,11 +7338,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -7369,12 +7369,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [
@@ -7386,12 +7386,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-3.421, 4.043], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -7399,15 +7399,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Rectangle 1",
+              nm: 'Rectangle 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -7420,7 +7420,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 13,
           ty: 4,
-          nm: "Shape Layer 62",
+          nm: 'Shape Layer 62',
           sr: 1,
           ks: {
             o: {
@@ -7452,7 +7452,7 @@ export const animationConfiguration = {
               a: 0,
               k: 92,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -8229,11 +8229,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -8260,12 +8260,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [
@@ -8277,12 +8277,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-3.421, 4.043], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -8290,15 +8290,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Rectangle 1",
+              nm: 'Rectangle 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -8311,7 +8311,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 14,
           ty: 4,
-          nm: "Shape Layer 61",
+          nm: 'Shape Layer 61',
           sr: 1,
           ks: {
             o: {
@@ -9129,19 +9129,19 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   d: 1,
-                  ty: "el",
+                  ty: 'el',
                   s: { a: 0, k: [10, 10], ix: 2 },
                   p: { a: 0, k: [0, 0], ix: 3 },
-                  nm: "Ellipse Path 1",
-                  mn: "ADBE Vector Shape - Ellipse",
+                  nm: 'Ellipse Path 1',
+                  mn: 'ADBE Vector Shape - Ellipse',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [1, 0.6431372549019608, 0.13725490196078433, 1],
@@ -9150,12 +9150,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [0, 0], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -9163,15 +9163,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Ellipse 1",
+              nm: 'Ellipse 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -9184,7 +9184,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 15,
           ty: 4,
-          nm: "Shape Layer 60",
+          nm: 'Shape Layer 60',
           sr: 1,
           ks: {
             o: {
@@ -9216,7 +9216,7 @@ export const animationConfiguration = {
               a: 0,
               k: 0,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -9909,10 +9909,10 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
-                  ty: "sr",
+                  ty: 'sr',
                   sy: 2,
                   d: 1,
                   pt: { a: 0, k: 3, ix: 3 },
@@ -9921,12 +9921,12 @@ export const animationConfiguration = {
                   or: { a: 0, k: 6.599, ix: 7 },
                   os: { a: 0, k: 0, ix: 9 },
                   ix: 1,
-                  nm: "Polystar Path 1",
-                  mn: "ADBE Vector Shape - Star",
+                  nm: 'Polystar Path 1',
+                  mn: 'ADBE Vector Shape - Star',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [1, 0.7058823529411765, 0.13725490196078433, 1],
@@ -9935,12 +9935,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-7.382, -25.677], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -9948,15 +9948,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Polystar 1",
+              nm: 'Polystar 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -9969,7 +9969,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 16,
           ty: 4,
-          nm: "Shape Layer 59",
+          nm: 'Shape Layer 59',
           sr: 1,
           ks: {
             o: {
@@ -10001,7 +10001,7 @@ export const animationConfiguration = {
               a: 0,
               k: 0,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -10680,10 +10680,10 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
-                  ty: "sr",
+                  ty: 'sr',
                   sy: 2,
                   d: 1,
                   pt: { a: 0, k: 3, ix: 3 },
@@ -10692,12 +10692,12 @@ export const animationConfiguration = {
                   or: { a: 0, k: 6.599, ix: 7 },
                   os: { a: 0, k: 0, ix: 9 },
                   ix: 1,
-                  nm: "Polystar Path 1",
-                  mn: "ADBE Vector Shape - Star",
+                  nm: 'Polystar Path 1',
+                  mn: 'ADBE Vector Shape - Star',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [
@@ -10709,12 +10709,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-7.382, -25.677], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -10722,15 +10722,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Polystar 1",
+              nm: 'Polystar 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -10743,7 +10743,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 17,
           ty: 4,
-          nm: "Shape Layer 57",
+          nm: 'Shape Layer 57',
           sr: 1,
           ks: {
             o: {
@@ -10775,7 +10775,7 @@ export const animationConfiguration = {
               a: 0,
               k: 0,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -11524,11 +11524,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -11555,12 +11555,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [
@@ -11572,12 +11572,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-3.421, 4.043], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -11585,15 +11585,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Rectangle 1",
+              nm: 'Rectangle 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -11606,7 +11606,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 18,
           ty: 4,
-          nm: "Shape Layer 56",
+          nm: 'Shape Layer 56',
           sr: 1,
           ks: {
             o: {
@@ -11638,7 +11638,7 @@ export const animationConfiguration = {
               a: 0,
               k: 0,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -12345,11 +12345,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -12376,12 +12376,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [1, 0.611764705882353, 0.13725490196078433, 1],
@@ -12390,12 +12390,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-3.421, 4.043], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -12403,15 +12403,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Rectangle 1",
+              nm: 'Rectangle 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -12424,7 +12424,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 19,
           ty: 4,
-          nm: "Shape Layer 54",
+          nm: 'Shape Layer 54',
           sr: 1,
           ks: {
             o: {
@@ -12456,7 +12456,7 @@ export const animationConfiguration = {
               a: 0,
               k: 0,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -13233,11 +13233,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -13264,12 +13264,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [1, 0.611764705882353, 0.13725490196078433, 1],
@@ -13278,12 +13278,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-3.421, 4.043], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -13291,15 +13291,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Rectangle 1",
+              nm: 'Rectangle 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -13312,7 +13312,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 20,
           ty: 4,
-          nm: "Shape Layer 53",
+          nm: 'Shape Layer 53',
           sr: 1,
           ks: {
             o: {
@@ -13344,7 +13344,7 @@ export const animationConfiguration = {
               a: 0,
               k: 0,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -14079,11 +14079,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -14110,12 +14110,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [
@@ -14127,12 +14127,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-3.421, 4.043], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -14140,15 +14140,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Rectangle 1",
+              nm: 'Rectangle 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -14161,7 +14161,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 21,
           ty: 4,
-          nm: "Shape Layer 52",
+          nm: 'Shape Layer 52',
           sr: 1,
           ks: {
             o: {
@@ -14193,7 +14193,7 @@ export const animationConfiguration = {
               a: 0,
               k: 0,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -14900,11 +14900,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -14931,12 +14931,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [1, 0.6431372549019608, 0.13725490196078433, 1],
@@ -14945,12 +14945,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-3.421, 4.043], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -14958,15 +14958,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Rectangle 1",
+              nm: 'Rectangle 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -14979,7 +14979,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 22,
           ty: 4,
-          nm: "Shape Layer 51",
+          nm: 'Shape Layer 51',
           sr: 1,
           ks: {
             o: {
@@ -15755,19 +15755,19 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   d: 1,
-                  ty: "el",
+                  ty: 'el',
                   s: { a: 0, k: [10, 10], ix: 2 },
                   p: { a: 0, k: [0, 0], ix: 3 },
-                  nm: "Ellipse Path 1",
-                  mn: "ADBE Vector Shape - Ellipse",
+                  nm: 'Ellipse Path 1',
+                  mn: 'ADBE Vector Shape - Ellipse',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [1, 0.6745098039215687, 0.13725490196078433, 1],
@@ -15776,12 +15776,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [0, 0], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -15789,15 +15789,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Ellipse 1",
+              nm: 'Ellipse 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -15809,13 +15809,13 @@ export const animationConfiguration = {
       ],
     },
     {
-      id: "comp_3",
+      id: 'comp_3',
       layers: [
         {
           ddd: 0,
           ind: 1,
           ty: 4,
-          nm: "Shape Layer 50",
+          nm: 'Shape Layer 50',
           sr: 1,
           ks: {
             o: {
@@ -15851,11 +15851,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -15885,12 +15885,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "st",
+                  ty: 'st',
                   c: {
                     a: 0,
                     k: [1, 0.6823529411764706, 0.23137254901960785, 1],
@@ -15901,18 +15901,18 @@ export const animationConfiguration = {
                     a: 0,
                     k: 17,
                     ix: 5,
-                    x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);",
+                    x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);',
                   },
                   lc: 1,
                   lj: 1,
                   ml: 4,
                   bm: 0,
-                  nm: "Stroke 1",
-                  mn: "ADBE Vector Graphic - Stroke",
+                  nm: 'Stroke 1',
+                  mn: 'ADBE Vector Graphic - Stroke',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [0, 0], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -15920,19 +15920,19 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Shape 1",
+              nm: 'Shape 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
             {
-              ty: "tm",
+              ty: 'tm',
               s: {
                 a: 1,
                 k: [
@@ -15962,8 +15962,8 @@ export const animationConfiguration = {
               o: { a: 0, k: 0, ix: 3 },
               m: 1,
               ix: 2,
-              nm: "Trim Paths 1",
-              mn: "ADBE Vector Filter - Trim",
+              nm: 'Trim Paths 1',
+              mn: 'ADBE Vector Filter - Trim',
               hd: false,
             },
           ],
@@ -15976,7 +15976,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 2,
           ty: 4,
-          nm: "Shape Layer 46",
+          nm: 'Shape Layer 46',
           sr: 1,
           ks: {
             o: {
@@ -16012,11 +16012,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -16046,12 +16046,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "st",
+                  ty: 'st',
                   c: {
                     a: 0,
                     k: [
@@ -16065,18 +16065,18 @@ export const animationConfiguration = {
                     a: 0,
                     k: 20,
                     ix: 5,
-                    x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);",
+                    x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);',
                   },
                   lc: 1,
                   lj: 1,
                   ml: 4,
                   bm: 0,
-                  nm: "Stroke 1",
-                  mn: "ADBE Vector Graphic - Stroke",
+                  nm: 'Stroke 1',
+                  mn: 'ADBE Vector Graphic - Stroke',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [0, 0], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -16084,19 +16084,19 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Shape 1",
+              nm: 'Shape 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
             {
-              ty: "tm",
+              ty: 'tm',
               s: {
                 a: 1,
                 k: [
@@ -16126,8 +16126,8 @@ export const animationConfiguration = {
               o: { a: 0, k: 0, ix: 3 },
               m: 1,
               ix: 2,
-              nm: "Trim Paths 1",
-              mn: "ADBE Vector Filter - Trim",
+              nm: 'Trim Paths 1',
+              mn: 'ADBE Vector Filter - Trim',
               hd: false,
             },
           ],
@@ -16140,7 +16140,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 3,
           ty: 4,
-          nm: "Shape Layer 45",
+          nm: 'Shape Layer 45',
           sr: 1,
           ks: {
             o: {
@@ -16176,11 +16176,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -16210,12 +16210,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "st",
+                  ty: 'st',
                   c: {
                     a: 0,
                     k: [1, 0.6823529411764706, 0.23137254901960785, 1],
@@ -16226,18 +16226,18 @@ export const animationConfiguration = {
                     a: 0,
                     k: 5,
                     ix: 5,
-                    x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);",
+                    x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);',
                   },
                   lc: 1,
                   lj: 1,
                   ml: 4,
                   bm: 0,
-                  nm: "Stroke 1",
-                  mn: "ADBE Vector Graphic - Stroke",
+                  nm: 'Stroke 1',
+                  mn: 'ADBE Vector Graphic - Stroke',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [0, 0], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -16245,19 +16245,19 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Shape 1",
+              nm: 'Shape 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
             {
-              ty: "tm",
+              ty: 'tm',
               s: {
                 a: 1,
                 k: [
@@ -16287,8 +16287,8 @@ export const animationConfiguration = {
               o: { a: 0, k: 0, ix: 3 },
               m: 1,
               ix: 2,
-              nm: "Trim Paths 1",
-              mn: "ADBE Vector Filter - Trim",
+              nm: 'Trim Paths 1',
+              mn: 'ADBE Vector Filter - Trim',
               hd: false,
             },
           ],
@@ -16301,7 +16301,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 4,
           ty: 4,
-          nm: "Shape Layer 43",
+          nm: 'Shape Layer 43',
           sr: 1,
           ks: {
             o: {
@@ -16337,11 +16337,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -16371,12 +16371,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "st",
+                  ty: 'st',
                   c: {
                     a: 0,
                     k: [
@@ -16390,18 +16390,18 @@ export const animationConfiguration = {
                     a: 0,
                     k: 15,
                     ix: 5,
-                    x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);",
+                    x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);',
                   },
                   lc: 1,
                   lj: 1,
                   ml: 4,
                   bm: 0,
-                  nm: "Stroke 1",
-                  mn: "ADBE Vector Graphic - Stroke",
+                  nm: 'Stroke 1',
+                  mn: 'ADBE Vector Graphic - Stroke',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [0, 0], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -16409,19 +16409,19 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Shape 1",
+              nm: 'Shape 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
             {
-              ty: "tm",
+              ty: 'tm',
               s: {
                 a: 1,
                 k: [
@@ -16451,8 +16451,8 @@ export const animationConfiguration = {
               o: { a: 0, k: 0, ix: 3 },
               m: 1,
               ix: 2,
-              nm: "Trim Paths 1",
-              mn: "ADBE Vector Filter - Trim",
+              nm: 'Trim Paths 1',
+              mn: 'ADBE Vector Filter - Trim',
               hd: false,
             },
           ],
@@ -16465,7 +16465,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 5,
           ty: 4,
-          nm: "Shape Layer 42",
+          nm: 'Shape Layer 42',
           sr: 1,
           ks: {
             o: {
@@ -16501,11 +16501,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -16535,12 +16535,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "st",
+                  ty: 'st',
                   c: {
                     a: 0,
                     k: [
@@ -16554,18 +16554,18 @@ export const animationConfiguration = {
                     a: 0,
                     k: 25,
                     ix: 5,
-                    x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);",
+                    x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);',
                   },
                   lc: 1,
                   lj: 1,
                   ml: 4,
                   bm: 0,
-                  nm: "Stroke 1",
-                  mn: "ADBE Vector Graphic - Stroke",
+                  nm: 'Stroke 1',
+                  mn: 'ADBE Vector Graphic - Stroke',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [0, 0], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -16573,19 +16573,19 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Shape 1",
+              nm: 'Shape 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
             {
-              ty: "tm",
+              ty: 'tm',
               s: {
                 a: 1,
                 k: [
@@ -16615,8 +16615,8 @@ export const animationConfiguration = {
               o: { a: 0, k: 0, ix: 3 },
               m: 1,
               ix: 2,
-              nm: "Trim Paths 1",
-              mn: "ADBE Vector Filter - Trim",
+              nm: 'Trim Paths 1',
+              mn: 'ADBE Vector Filter - Trim',
               hd: false,
             },
           ],
@@ -16629,7 +16629,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 6,
           ty: 4,
-          nm: "Shape Layer 41",
+          nm: 'Shape Layer 41',
           sr: 1,
           ks: {
             o: {
@@ -16665,11 +16665,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -16699,12 +16699,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "st",
+                  ty: 'st',
                   c: {
                     a: 0,
                     k: [
@@ -16718,18 +16718,18 @@ export const animationConfiguration = {
                     a: 0,
                     k: 17,
                     ix: 5,
-                    x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);",
+                    x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = wiggle(5, 3);',
                   },
                   lc: 1,
                   lj: 1,
                   ml: 4,
                   bm: 0,
-                  nm: "Stroke 1",
-                  mn: "ADBE Vector Graphic - Stroke",
+                  nm: 'Stroke 1',
+                  mn: 'ADBE Vector Graphic - Stroke',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [0, 0], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -16737,19 +16737,19 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Shape 1",
+              nm: 'Shape 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
             {
-              ty: "tm",
+              ty: 'tm',
               s: {
                 a: 1,
                 k: [
@@ -16779,8 +16779,8 @@ export const animationConfiguration = {
               o: { a: 0, k: 0, ix: 3 },
               m: 1,
               ix: 2,
-              nm: "Trim Paths 1",
-              mn: "ADBE Vector Filter - Trim",
+              nm: 'Trim Paths 1',
+              mn: 'ADBE Vector Filter - Trim',
               hd: false,
             },
           ],
@@ -16793,7 +16793,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 7,
           ty: 4,
-          nm: "Shape Layer 40",
+          nm: 'Shape Layer 40',
           sr: 1,
           ks: {
             o: {
@@ -16825,7 +16825,7 @@ export const animationConfiguration = {
               a: 0,
               k: 92,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -17588,10 +17588,10 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
-                  ty: "sr",
+                  ty: 'sr',
                   sy: 2,
                   d: 1,
                   pt: { a: 0, k: 3, ix: 3 },
@@ -17600,12 +17600,12 @@ export const animationConfiguration = {
                   or: { a: 0, k: 6.599, ix: 7 },
                   os: { a: 0, k: 0, ix: 9 },
                   ix: 1,
-                  nm: "Polystar Path 1",
-                  mn: "ADBE Vector Shape - Star",
+                  nm: 'Polystar Path 1',
+                  mn: 'ADBE Vector Shape - Star',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [
@@ -17617,12 +17617,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-7.382, -25.677], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -17630,15 +17630,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Polystar 1",
+              nm: 'Polystar 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -17651,7 +17651,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 8,
           ty: 4,
-          nm: "Shape Layer 39",
+          nm: 'Shape Layer 39',
           sr: 1,
           ks: {
             o: {
@@ -17683,7 +17683,7 @@ export const animationConfiguration = {
               a: 0,
               k: 92,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -18376,10 +18376,10 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
-                  ty: "sr",
+                  ty: 'sr',
                   sy: 2,
                   d: 1,
                   pt: { a: 0, k: 3, ix: 3 },
@@ -18388,12 +18388,12 @@ export const animationConfiguration = {
                   or: { a: 0, k: 6.599, ix: 7 },
                   os: { a: 0, k: 0, ix: 9 },
                   ix: 1,
-                  nm: "Polystar Path 1",
-                  mn: "ADBE Vector Shape - Star",
+                  nm: 'Polystar Path 1',
+                  mn: 'ADBE Vector Shape - Star',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [
@@ -18405,12 +18405,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-7.382, -25.677], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -18418,15 +18418,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Polystar 1",
+              nm: 'Polystar 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -18439,7 +18439,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 9,
           ty: 4,
-          nm: "Shape Layer 38",
+          nm: 'Shape Layer 38',
           sr: 1,
           ks: {
             o: {
@@ -18471,7 +18471,7 @@ export const animationConfiguration = {
               a: 0,
               k: 92,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -19220,10 +19220,10 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
-                  ty: "sr",
+                  ty: 'sr',
                   sy: 2,
                   d: 1,
                   pt: { a: 0, k: 3, ix: 3 },
@@ -19232,12 +19232,12 @@ export const animationConfiguration = {
                   or: { a: 0, k: 6.599, ix: 7 },
                   os: { a: 0, k: 0, ix: 9 },
                   ix: 1,
-                  nm: "Polystar Path 1",
-                  mn: "ADBE Vector Shape - Star",
+                  nm: 'Polystar Path 1',
+                  mn: 'ADBE Vector Shape - Star',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [
@@ -19249,12 +19249,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-7.382, -25.677], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -19262,15 +19262,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Polystar 1",
+              nm: 'Polystar 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -19283,7 +19283,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 10,
           ty: 4,
-          nm: "Shape Layer 37",
+          nm: 'Shape Layer 37',
           sr: 1,
           ks: {
             o: {
@@ -19315,7 +19315,7 @@ export const animationConfiguration = {
               a: 0,
               k: 92,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -20036,10 +20036,10 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
-                  ty: "sr",
+                  ty: 'sr',
                   sy: 2,
                   d: 1,
                   pt: { a: 0, k: 3, ix: 3 },
@@ -20048,12 +20048,12 @@ export const animationConfiguration = {
                   or: { a: 0, k: 6.599, ix: 7 },
                   os: { a: 0, k: 0, ix: 9 },
                   ix: 1,
-                  nm: "Polystar Path 1",
-                  mn: "ADBE Vector Shape - Star",
+                  nm: 'Polystar Path 1',
+                  mn: 'ADBE Vector Shape - Star',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [
@@ -20065,12 +20065,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-7.382, -25.677], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -20078,15 +20078,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Polystar 1",
+              nm: 'Polystar 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -20099,7 +20099,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 11,
           ty: 4,
-          nm: "Shape Layer 36",
+          nm: 'Shape Layer 36',
           sr: 1,
           ks: {
             o: {
@@ -20131,7 +20131,7 @@ export const animationConfiguration = {
               a: 0,
               k: 92,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -20908,10 +20908,10 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
-                  ty: "sr",
+                  ty: 'sr',
                   sy: 2,
                   d: 1,
                   pt: { a: 0, k: 3, ix: 3 },
@@ -20920,12 +20920,12 @@ export const animationConfiguration = {
                   or: { a: 0, k: 6.599, ix: 7 },
                   os: { a: 0, k: 0, ix: 9 },
                   ix: 1,
-                  nm: "Polystar Path 1",
-                  mn: "ADBE Vector Shape - Star",
+                  nm: 'Polystar Path 1',
+                  mn: 'ADBE Vector Shape - Star',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [
@@ -20937,12 +20937,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-7.382, -25.677], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -20950,15 +20950,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Polystar 1",
+              nm: 'Polystar 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -20971,7 +20971,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 12,
           ty: 4,
-          nm: "Shape Layer 32",
+          nm: 'Shape Layer 32',
           sr: 1,
           ks: {
             o: {
@@ -21003,7 +21003,7 @@ export const animationConfiguration = {
               a: 0,
               k: 92,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -21794,11 +21794,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -21825,12 +21825,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [1, 0.792156862745098, 0.23137254901960785, 1],
@@ -21839,12 +21839,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-3.421, 4.043], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -21852,15 +21852,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Rectangle 1",
+              nm: 'Rectangle 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -21873,7 +21873,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 13,
           ty: 4,
-          nm: "Shape Layer 31",
+          nm: 'Shape Layer 31',
           sr: 1,
           ks: {
             o: {
@@ -21905,7 +21905,7 @@ export const animationConfiguration = {
               a: 0,
               k: 92,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -22682,11 +22682,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -22713,12 +22713,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [
@@ -22730,12 +22730,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-3.421, 4.043], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -22743,15 +22743,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Rectangle 1",
+              nm: 'Rectangle 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -22764,7 +22764,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 14,
           ty: 4,
-          nm: "Shape Layer 19",
+          nm: 'Shape Layer 19',
           sr: 1,
           ks: {
             o: {
@@ -22796,7 +22796,7 @@ export const animationConfiguration = {
               a: 0,
               k: 0,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -23489,10 +23489,10 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
-                  ty: "sr",
+                  ty: 'sr',
                   sy: 2,
                   d: 1,
                   pt: { a: 0, k: 3, ix: 3 },
@@ -23501,12 +23501,12 @@ export const animationConfiguration = {
                   or: { a: 0, k: 6.599, ix: 7 },
                   os: { a: 0, k: 0, ix: 9 },
                   ix: 1,
-                  nm: "Polystar Path 1",
-                  mn: "ADBE Vector Shape - Star",
+                  nm: 'Polystar Path 1',
+                  mn: 'ADBE Vector Shape - Star',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [1, 0.43529411764705883, 0.23137254901960785, 1],
@@ -23515,12 +23515,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-7.382, -25.677], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -23528,15 +23528,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Polystar 1",
+              nm: 'Polystar 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -23549,7 +23549,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 15,
           ty: 4,
-          nm: "Shape Layer 18",
+          nm: 'Shape Layer 18',
           sr: 1,
           ks: {
             o: {
@@ -23581,7 +23581,7 @@ export const animationConfiguration = {
               a: 0,
               k: 0,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -24260,10 +24260,10 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
-                  ty: "sr",
+                  ty: 'sr',
                   sy: 2,
                   d: 1,
                   pt: { a: 0, k: 3, ix: 3 },
@@ -24272,12 +24272,12 @@ export const animationConfiguration = {
                   or: { a: 0, k: 6.599, ix: 7 },
                   os: { a: 0, k: 0, ix: 9 },
                   ix: 1,
-                  nm: "Polystar Path 1",
-                  mn: "ADBE Vector Shape - Star",
+                  nm: 'Polystar Path 1',
+                  mn: 'ADBE Vector Shape - Star',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [1, 0.3803921568627451, 0.23137254901960785, 1],
@@ -24286,12 +24286,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-7.382, -25.677], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -24299,15 +24299,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Polystar 1",
+              nm: 'Polystar 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -24320,7 +24320,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 16,
           ty: 4,
-          nm: "Shape Layer 17",
+          nm: 'Shape Layer 17',
           sr: 1,
           ks: {
             o: {
@@ -24352,7 +24352,7 @@ export const animationConfiguration = {
               a: 0,
               k: 0,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -25087,10 +25087,10 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
-                  ty: "sr",
+                  ty: 'sr',
                   sy: 2,
                   d: 1,
                   pt: { a: 0, k: 3, ix: 3 },
@@ -25099,12 +25099,12 @@ export const animationConfiguration = {
                   or: { a: 0, k: 6.599, ix: 7 },
                   os: { a: 0, k: 0, ix: 9 },
                   ix: 1,
-                  nm: "Polystar Path 1",
-                  mn: "ADBE Vector Shape - Star",
+                  nm: 'Polystar Path 1',
+                  mn: 'ADBE Vector Shape - Star',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [1, 0.43529411764705883, 0.23137254901960785, 1],
@@ -25113,12 +25113,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-7.382, -25.677], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -25126,15 +25126,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Polystar 1",
+              nm: 'Polystar 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -25147,7 +25147,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 17,
           ty: 4,
-          nm: "Shape Layer 14",
+          nm: 'Shape Layer 14',
           sr: 1,
           ks: {
             o: {
@@ -25179,7 +25179,7 @@ export const animationConfiguration = {
               a: 0,
               k: 0,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -25928,11 +25928,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -25959,12 +25959,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [1, 0.3254901960784314, 0.23137254901960785, 1],
@@ -25973,12 +25973,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-3.421, 4.043], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -25986,15 +25986,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Rectangle 1",
+              nm: 'Rectangle 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -26007,7 +26007,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 18,
           ty: 4,
-          nm: "Shape Layer 13",
+          nm: 'Shape Layer 13',
           sr: 1,
           ks: {
             o: {
@@ -26039,7 +26039,7 @@ export const animationConfiguration = {
               a: 0,
               k: 0,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -26746,11 +26746,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -26777,12 +26777,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [1, 0.792156862745098, 0.23137254901960785, 1],
@@ -26791,12 +26791,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-3.421, 4.043], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -26804,15 +26804,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Rectangle 1",
+              nm: 'Rectangle 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -26825,7 +26825,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 19,
           ty: 4,
-          nm: "Shape Layer 12",
+          nm: 'Shape Layer 12',
           sr: 1,
           ks: {
             o: {
@@ -26857,7 +26857,7 @@ export const animationConfiguration = {
               a: 0,
               k: 0,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -27550,11 +27550,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -27581,12 +27581,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [1, 0.6823529411764706, 0.23137254901960785, 1],
@@ -27595,12 +27595,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-3.421, 4.043], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -27608,15 +27608,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Rectangle 1",
+              nm: 'Rectangle 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -27629,7 +27629,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 20,
           ty: 4,
-          nm: "Shape Layer 11",
+          nm: 'Shape Layer 11',
           sr: 1,
           ks: {
             o: {
@@ -27661,7 +27661,7 @@ export const animationConfiguration = {
               a: 0,
               k: 0,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -28438,11 +28438,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -28469,12 +28469,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [1, 0.7647058823529411, 0.23137254901960785, 1],
@@ -28483,12 +28483,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-3.421, 4.043], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -28496,15 +28496,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Rectangle 1",
+              nm: 'Rectangle 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -28517,7 +28517,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 21,
           ty: 4,
-          nm: "Shape Layer 10",
+          nm: 'Shape Layer 10',
           sr: 1,
           ks: {
             o: {
@@ -28549,7 +28549,7 @@ export const animationConfiguration = {
               a: 0,
               k: 0,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -29284,11 +29284,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -29315,12 +29315,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [
@@ -29332,12 +29332,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-3.421, 4.043], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -29345,15 +29345,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Rectangle 1",
+              nm: 'Rectangle 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -29366,7 +29366,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 22,
           ty: 4,
-          nm: "Shape Layer 9",
+          nm: 'Shape Layer 9',
           sr: 1,
           ks: {
             o: {
@@ -29398,7 +29398,7 @@ export const animationConfiguration = {
               a: 0,
               k: 0,
               ix: 10,
-              x: "var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);",
+              x: 'var $bm_rt;\nvar $bm_rt;\nvar $bm_rt;\n$bm_rt = $bm_rt = $bm_rt = mul(time, 300);',
             },
             p: {
               a: 1,
@@ -30105,11 +30105,11 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   ind: 0,
-                  ty: "sh",
+                  ty: 'sh',
                   ix: 1,
                   ks: {
                     a: 0,
@@ -30136,12 +30136,12 @@ export const animationConfiguration = {
                     },
                     ix: 2,
                   },
-                  nm: "Path 1",
-                  mn: "ADBE Vector Shape - Group",
+                  nm: 'Path 1',
+                  mn: 'ADBE Vector Shape - Group',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [1, 0.7098039215686275, 0.23137254901960785, 1],
@@ -30150,12 +30150,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [-3.421, 4.043], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -30163,15 +30163,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Rectangle 1",
+              nm: 'Rectangle 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -30184,7 +30184,7 @@ export const animationConfiguration = {
           ddd: 0,
           ind: 23,
           ty: 4,
-          nm: "Shape Layer 3",
+          nm: 'Shape Layer 3',
           sr: 1,
           ks: {
             o: {
@@ -30960,19 +30960,19 @@ export const animationConfiguration = {
           ao: 0,
           shapes: [
             {
-              ty: "gr",
+              ty: 'gr',
               it: [
                 {
                   d: 1,
-                  ty: "el",
+                  ty: 'el',
                   s: { a: 0, k: [10, 10], ix: 2 },
                   p: { a: 0, k: [0, 0], ix: 3 },
-                  nm: "Ellipse Path 1",
-                  mn: "ADBE Vector Shape - Ellipse",
+                  nm: 'Ellipse Path 1',
+                  mn: 'ADBE Vector Shape - Ellipse',
                   hd: false,
                 },
                 {
-                  ty: "fl",
+                  ty: 'fl',
                   c: {
                     a: 0,
                     k: [1, 0.8196078431372549, 0.23137254901960785, 1],
@@ -30981,12 +30981,12 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   bm: 0,
-                  nm: "Fill 1",
-                  mn: "ADBE Vector Graphic - Fill",
+                  nm: 'Fill 1',
+                  mn: 'ADBE Vector Graphic - Fill',
                   hd: false,
                 },
                 {
-                  ty: "tr",
+                  ty: 'tr',
                   p: { a: 0, k: [0, 0], ix: 2 },
                   a: { a: 0, k: [0, 0], ix: 1 },
                   s: { a: 0, k: [100, 100], ix: 3 },
@@ -30994,15 +30994,15 @@ export const animationConfiguration = {
                   o: { a: 0, k: 100, ix: 7 },
                   sk: { a: 0, k: 0, ix: 4 },
                   sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transform",
+                  nm: 'Transform',
                 },
               ],
-              nm: "Ellipse 1",
+              nm: 'Ellipse 1',
               np: 2,
               cix: 2,
               bm: 0,
               ix: 1,
-              mn: "ADBE Vector Group",
+              mn: 'ADBE Vector Group',
               hd: false,
             },
           ],
@@ -31019,8 +31019,8 @@ export const animationConfiguration = {
       ddd: 0,
       ind: 1,
       ty: 0,
-      nm: "check",
-      refId: "comp_0",
+      nm: 'check',
+      refId: 'comp_0',
       sr: 1,
       ks: {
         o: { a: 0, k: 100, ix: 11 },
@@ -31041,8 +31041,8 @@ export const animationConfiguration = {
       ddd: 0,
       ind: 2,
       ty: 0,
-      nm: "confeti",
-      refId: "comp_1",
+      nm: 'confeti',
+      refId: 'comp_1',
       sr: 1,
       ks: {
         o: { a: 0, k: 100, ix: 11 },
@@ -31061,4 +31061,4 @@ export const animationConfiguration = {
     },
   ],
   markers: [],
-};
+}

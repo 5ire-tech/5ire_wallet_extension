@@ -1,28 +1,28 @@
-import { Drawer } from "antd";
-import { toast } from "react-toastify";
-import React, { useState } from "react";
-import style from "./style.module.scss";
-import useAuth from "../../Hooks/useAuth";
-import { TX_TYPE } from "../../Constants/index";
-import Logout from "../../Assets/PNG/logout.png";
-import Import from "../../Assets/PNG/import.png";
-import Wallet from "../../Assets/WalletIcon.svg";
-import Setting from "../../Assets/PNG/setting.png";
-import Sendhistry from "../../Assets/sendhistry.svg";
-import HistoryIcon from "../../Assets/PNG/histry.png";
-import Myaccount from "../../Assets/PNG/myaccount.png";
-import { useSelector, useDispatch } from "react-redux";
-import BackArrow from "../../Assets/PNG/arrowright.png";
+import { Drawer } from 'antd'
+import { toast } from 'react-toastify'
+import React, { useState } from 'react'
+import style from './style.module.scss'
+import useAuth from '../../Hooks/useAuth'
+import { TX_TYPE } from '../../Constants/index'
+import Logout from '../../Assets/PNG/logout.png'
+import Import from '../../Assets/PNG/import.png'
+import Wallet from '../../Assets/WalletIcon.svg'
+import Setting from '../../Assets/PNG/setting.png'
+import Sendhistry from '../../Assets/sendhistry.svg'
+import HistoryIcon from '../../Assets/PNG/histry.png'
+import Myaccount from '../../Assets/PNG/myaccount.png'
+import { useSelector, useDispatch } from 'react-redux'
+import BackArrow from '../../Assets/PNG/arrowright.png'
 // import Walletlogo from "../../Assets/PNG/walletlogo.png";
-import { shortner, formatDate } from "../../Helper/helper";
-import SocialAccount from "../SocialAccount/SocialAccount";
-import ModalCloseIcon from "../../Assets/ModalCloseIcon.svg";
-import ManageCustom from "../ManageCustomtocken/ManageCustom";
-import Createaccount from "../../Assets/PNG/createaccount.png";
-import AccountSetting from "../AccountSetting/AccountSetting.jsx";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import TransectionHistry from "../TransectionHistry/TransectionHistry";
-import { setCurrentAcc } from "../../Utility/redux_helper";
+import { shortner, formatDate } from '../../Helper/helper'
+import SocialAccount from '../SocialAccount/SocialAccount'
+import ModalCloseIcon from '../../Assets/ModalCloseIcon.svg'
+import ManageCustom from '../ManageCustomtocken/ManageCustom'
+import Createaccount from '../../Assets/PNG/createaccount.png'
+import AccountSetting from '../AccountSetting/AccountSetting.jsx'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
+import TransectionHistry from '../TransectionHistry/TransectionHistry'
+import { setCurrentAcc } from '../../Utility/redux_helper'
 // import { Moment } from "moment";
 // import DefiIcon from "../../Assets/DefiIcon.svg";
 // import SettignIcon from "../../Assets/SettignIcon.svg";
@@ -31,92 +31,96 @@ import FooterStepOne, {
   ApproveLogin,
   FooterStepTwo,
   ApproveTx,
-} from "./FooterContinue";
-import Browser from "webextension-polyfill";
-import { ACCOUNT_CHANGED_EVENT } from "../../Scripts/constants";
-import { getCurrentTabUId, getCurrentTabUrl } from "../../Scripts/utils";
+} from './FooterContinue'
+import Browser from 'webextension-polyfill'
+import { ACCOUNT_CHANGED_EVENT } from '../../Scripts/constants'
+import { getCurrentTabUId, getCurrentTabUrl } from '../../Scripts/utils'
 
 function MenuFooter() {
-  const { logout } = useAuth();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const getLocation = useLocation();
-  const [open, setOpen] = useState(false);
-  const [open1, setOpen1] = useState(false);
-  const [open2, setOpen2] = useState(false);
-  const [history, setHistory] = useState([]);
+  const { logout } = useAuth()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const getLocation = useLocation()
+  const [open, setOpen] = useState(false)
+  const [open1, setOpen1] = useState(false)
+  const [open2, setOpen2] = useState(false)
+  const [history, setHistory] = useState([])
   // const [accData, setAccData] = useState([]);
-  const path = getLocation.pathname.replace("/", "");
-  const { accounts,
-    currentAccount,
-    currentNetwork
-  } = useSelector((state) => state.auth);
-
+  const path = getLocation.pathname.replace('/', '')
+  const { accounts, currentAccount, currentNetwork } = useSelector(
+    (state) => state.auth,
+  )
 
   const onClose1 = () => {
-    setOpen1(false);
-  };
+    setOpen1(false)
+  }
   const onClose2 = () => {
-    setOpen2(false);
-  };
+    setOpen2(false)
+  }
   const onClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   const handleMyAccOpen = () => {
-    setOpen(true);
+    setOpen(true)
     // setAccData(accounts);
-  };
+  }
 
   const hanldeCreateNewAcc = () => {
-    navigate("/createNewWallet");
-  };
+    navigate('/createNewWallet')
+  }
 
   const handleImportAcc = () => {
-    navigate("/importWallet");
-  };
+    navigate('/importWallet')
+  }
 
   const handleLogout = async () => {
-    const res = await logout();
+    const res = await logout()
 
     if (!res.error) {
-      navigate("/unlockWallet");
+      navigate('/unlockWallet')
     } else {
-      toast.error("Error while logging out.");
+      toast.error('Error while logging out.')
     }
-  };
+  }
 
   const onSelectAcc = (accId) => {
     // dispatch(resetBalance());
-    let acc = accounts.find(acc => acc.id === accId);
-    dispatch(setCurrentAcc(acc));
+    let acc = accounts.find((acc) => acc.id === accId)
+    dispatch(setCurrentAcc(acc))
 
     //when new keypair created or imported the old key key emit the account change event
     getCurrentTabUId((id) => {
       getCurrentTabUrl((url) => {
-        if (!(url === "chrome://extensions")) {
-          Browser.tabs.sendMessage(id, { id: ACCOUNT_CHANGED_EVENT, method: ACCOUNT_CHANGED_EVENT, response: { evmAddress: acc.evmAddress, nativeAddress: acc.nativeAddress } })
+        if (!(url === 'chrome://extensions')) {
+          Browser.tabs.sendMessage(id, {
+            id: ACCOUNT_CHANGED_EVENT,
+            method: ACCOUNT_CHANGED_EVENT,
+            response: {
+              evmAddress: acc.evmAddress,
+              nativeAddress: acc.nativeAddress,
+            },
+          })
         }
       })
     })
 
-    onClose();
-  };
-
-  const handleHistoryOpen = () => {
-    setOpen1(true);
-    let filterData = currentAccount.txHistory.filter((his) => {
-      return his.chain === currentNetwork.toLowerCase();
-    });
-    let newArr = [];
-    for (let i = filterData.length - 1; i >= 0; i--) {
-      newArr.push(filterData[i]);
-    }
-    setHistory(newArr);
+    onClose()
   }
 
+  const handleHistoryOpen = () => {
+    setOpen1(true)
+    let filterData = currentAccount.txHistory.filter((his) => {
+      return his.chain === currentNetwork.toLowerCase()
+    })
+    let newArr = []
+    for (let i = filterData.length - 1; i >= 0; i--) {
+      newArr.push(filterData[i])
+    }
+    setHistory(newArr)
+  }
 
-  const edited = false;
+  const edited = false
 
   return (
     <div className={`${style.menuItems} welcomeFooter`}>
@@ -133,48 +137,57 @@ function MenuFooter() {
           <span className={style.menuItems__items__title}>Wallet</span>
         </Link>
       )} */}
-      {path === "wallet" && (
+      {path === 'wallet' && (
         <Link
-          to="#"
+          to='#'
           // onClick={() => setOpen1(true)}
           onClick={handleHistoryOpen}
-          className={`${style.menuItems__items} ${path === "history" ? style.menuItems__items__active : ""
-            }`}
+          className={`${style.menuItems__items} ${
+            path === 'history' ? style.menuItems__items__active : ''
+          }`}
         >
           <div className={style.menuItems__items__img}>
-            <img src={HistoryIcon} alt="HistoryIcon" draggable={false} />
+            <img src={HistoryIcon} alt='HistoryIcon' draggable={false} />
           </div>
           <span className={style.menuItems__items__title}>History</span>
         </Link>
       )}
       <Drawer
         title={
-          <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             Transaction History
           </span>
         }
-        placement="bottom"
+        placement='bottom'
         onClose={onClose1}
         open={open1}
-        closeIcon={<img src={ModalCloseIcon} alt="close" draggable={false} />}
+        closeIcon={<img src={ModalCloseIcon} alt='close' draggable={false} />}
       >
         {history?.length > 0 ? (
           history?.map((data, index) => (
             <TransectionHistry
-
               dateTime={formatDate(data.dateTime)}
               type={data?.type}
-              txHash={data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase() ?
-                data.txHash.mainHash : data.txHash}
+              txHash={
+                data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase()
+                  ? data.txHash.mainHash
+                  : data.txHash
+              }
               to={
                 data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase()
                   ? data.to
-                  : `${data?.to ? `To: ` + shortner(data.to) : `Tx Hash: ` + shortner(data?.txHash)}`
+                  : `${
+                      data?.to
+                        ? `To: ` + shortner(data.to)
+                        : `Tx Hash: ` + shortner(data?.txHash)
+                    }`
               }
               amount={`${data?.amount} 5ire`}
-              status={data?.status.charAt(0).toUpperCase() + data?.status.slice(1)}
+              status={
+                data?.status.charAt(0).toUpperCase() + data?.status.slice(1)
+              }
               img={Sendhistry}
-              key={index + data.txHash + "5ire"}
+              key={index + data.txHash + '5ire'}
             />
           ))
         ) : (
@@ -182,33 +195,37 @@ function MenuFooter() {
         )}
       </Drawer>
 
-      {path === "wallet" && (
+      {path === 'wallet' && (
         <Link
           // to="/setting"
           // onClick={() => setOpen(true)}
           onClick={handleMyAccOpen}
-          className={`${style.menuItems__items} ${path === "setting" ? style.menuItems__items__active : ""
-            }`}
+          className={`${style.menuItems__items} ${
+            path === 'setting' ? style.menuItems__items__active : ''
+          }`}
         >
           <div className={style.menuItems__items__img}>
-            <img src={Myaccount} alt="Myaccount" draggable={false} />
+            <img src={Myaccount} alt='Myaccount' draggable={false} />
           </div>
           <span className={style.menuItems__items__title}>My Accounts</span>
         </Link>
       )}
       <Drawer
         title={
-          <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             My Accounts
           </span>
         }
-        placement="bottom"
+        placement='bottom'
         onClose={onClose}
         open={open}
-        closeIcon={<img src={ModalCloseIcon} alt="ModalCloseIcon" draggable={false} />}
+        closeIcon={
+          <img src={ModalCloseIcon} alt='ModalCloseIcon' draggable={false} />
+        }
       >
         {accounts?.map((data, index) => (
           <ManageCustom
+            key={`manage-custom-${index}`}
             img={Sendhistry}
             data={data}
             active={data?.id === currentAccount?.id ? true : false}
@@ -219,45 +236,56 @@ function MenuFooter() {
         ))}
         <AccountSetting
           img={Createaccount}
-          title="Create a New Wallet"
+          title='Create a New Wallet'
           onClick={hanldeCreateNewAcc}
         />
         <AccountSetting
           img={Import}
-          title="Import Wallet"
+          title='Import Wallet'
           onClick={handleImportAcc}
         />
-        <AccountSetting img={Logout} title="Logout" onClick={handleLogout} />
+        <AccountSetting img={Logout} title='Logout' onClick={handleLogout} />
       </Drawer>
 
-      {path === "wallet" && (
+      {path === 'wallet' && (
         <Link
           // to="/setting"
           onClick={() => setOpen2(true)}
-          className={`${style.menuItems__items} ${path === "setting" ? style.menuItems__items__active : ""
-            }`}
+          className={`${style.menuItems__items} ${
+            path === 'setting' ? style.menuItems__items__active : ''
+          }`}
         >
           <div className={style.menuItems__items__img}>
-            <img src={Setting} alt="Setting" draggable={false} />
+            <img src={Setting} alt='Setting' draggable={false} />
           </div>
           <span className={style.menuItems__items__title}>Settings</span>
         </Link>
       )}
       <Drawer
         title={
-          <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             Settings
           </span>
         }
-        placement="bottom"
+        placement='bottom'
         onClose={onClose2}
         open={open2}
-        closeIcon={<img src={ModalCloseIcon} alt="ModalCloseIcon" draggable={false} />}
+        closeIcon={
+          <img src={ModalCloseIcon} alt='ModalCloseIcon' draggable={false} />
+        }
       >
-        <Link to="/manageWallet">
+        <Link to='/manageWallet'>
           <div className={style.sttings}>
             <div className={style.sttings__left}>
-              <div className={style.walletIconBorder}><img draggable={false} src={Wallet} width={30} height={30} alt="walletIcon" /></div>
+              <div className={style.walletIconBorder}>
+                <img
+                  draggable={false}
+                  src={Wallet}
+                  width={30}
+                  height={30}
+                  alt='walletIcon'
+                />
+              </div>
               <div className={style.sttings__left__texts}>
                 <div className={style.sttings__left__textsTop}>
                   Manage Wallet
@@ -266,7 +294,13 @@ function MenuFooter() {
             </div>
 
             <div className={style.sttings__right}>
-              <img src={BackArrow} width={8} height={15} alt="backArrow" draggable={false} />
+              <img
+                src={BackArrow}
+                width={8}
+                height={15}
+                alt='backArrow'
+                draggable={false}
+              />
             </div>
           </div>
         </Link>
@@ -282,13 +316,13 @@ function MenuFooter() {
             </p>
           </div>
         )} */}
-      {path === "beforebegin" && <FooterStepOne />}
-      {path === "createwalletchain" && <FooterStepTwo />}
+      {path === 'beforebegin' && <FooterStepOne />}
+      {path === 'createwalletchain' && <FooterStepTwo />}
       {/* {path === "setPassword" && <FooterStepThree />} */}
-      {path === "loginApprove" && <ApproveLogin />}
-      {path === "approveTx" && <ApproveTx />}
+      {path === 'loginApprove' && <ApproveLogin />}
+      {path === 'approveTx' && <ApproveTx />}
     </div>
-  );
+  )
 }
 
-export default MenuFooter;
+export default MenuFooter

@@ -1,8 +1,8 @@
-import React from "react";
-import { Input } from "antd";
-import style from "./style.module.scss";
-import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
-import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
+import React from 'react'
+import { Input } from 'antd'
+import style from './style.module.scss'
+import EyeOpenIcon from '../../Assets/EyeOpenIcon.svg'
+import EyeCloseIcon from '../../Assets/EyeCloseIcon.svg'
 
 function InputFieldSimple({
   name,
@@ -15,8 +15,9 @@ function InputFieldSimple({
 }) {
   return (
     <Input.Password
-      className={`${style.inputSimple} ${style.inputPassword} ${placeholderBaseColor ? "placeholderBaseColor" : ""
-        } ${coloredBg ? style.inputField__coloredBg : ""}`}
+      className={`${style.inputSimple} ${style.inputPassword} ${
+        placeholderBaseColor ? 'placeholderBaseColor' : ''
+      } ${coloredBg ? style.inputField__coloredBg : ''}`}
       placeholder={placeholder}
       style={{ minHeight: minHeight }}
       onChange={onChange}
@@ -26,16 +27,28 @@ function InputFieldSimple({
       // placeholder={placeholder}
       iconRender={(visible) =>
         visible ? (
-          <img src={EyeOpenIcon} width={19} height={12} draggable={false} alt="eyeOpen" />
+          <img
+            src={EyeOpenIcon}
+            width={19}
+            height={12}
+            draggable={false}
+            alt='eyeOpen'
+          />
         ) : (
-          <img src={EyeCloseIcon} width={19} height={16} draggable={false} alt="eyeClose" />
+          <img
+            src={EyeCloseIcon}
+            width={19}
+            height={16}
+            draggable={false}
+            alt='eyeClose'
+          />
         )
       }
     />
-  );
+  )
 }
 
-export default InputFieldSimple;
+export default InputFieldSimple
 
 export const InputField = ({
   min,
@@ -55,30 +68,32 @@ export const InputField = ({
   placeholderBaseColor,
 }) => {
   return (
-    <div className={`${style.boxStyle} inputField ${mb0 ? style.mb0 : ""}`}>
+    <div className={`${style.boxStyle} inputField ${mb0 ? style.mb0 : ''}`}>
       <label htmlFor={name} className={`${style.boxStyle__label}`}>
         {label}
       </label>
       <Input
         name={name}
-        type={type ? type : "text"}
-        min = {min}
+        type={type ? type : 'text'}
+        min={min}
         // max = {max}
         value={value}
         onChange={onChange}
         onKeyUp={keyUp}
         onKeyDown={keyDown}
         onWheel={(e) => e.target.blur()}
-        className={`${style.inputField__input} ${inputSelect ? style.inputField__inputSelect : ""
-          }  ${placeholderBaseColor ? "placeholderBaseColor" : ""} ${coloredBg ? style.inputField__coloredBg : ""
-          }`}
+        className={`${style.inputField__input} ${
+          inputSelect ? style.inputField__inputSelect : ''
+        }  ${placeholderBaseColor ? 'placeholderBaseColor' : ''} ${
+          coloredBg ? style.inputField__coloredBg : ''
+        }`}
         addonAfter={addonAfter}
         defaultValue={defaultValue}
         placeholder={placeholder}
       />
     </div>
-  );
-};
+  )
+}
 
 export const InputFieldOnly = ({
   name,
@@ -97,9 +112,10 @@ export const InputFieldOnly = ({
       <label className={style.boxStyle__label}>{label}</label>
       <Input
         value={value}
-        type={type ? type : "text"}
-        className={`${style.inputSimple} ${placeholderBaseColor ? "placeholderBaseColor" : ""
-          } ${coloredBg ? style.inputField__coloredBg : ""}`}
+        type={type ? type : 'text'}
+        className={`${style.inputSimple} ${
+          placeholderBaseColor ? 'placeholderBaseColor' : ''
+        } ${coloredBg ? style.inputField__coloredBg : ''}`}
         placeholder={placeholder}
         style={{ minHeight: minHeight }}
         onChange={onChange}
@@ -107,5 +123,5 @@ export const InputFieldOnly = ({
         onKeyUp={keyUp}
       />
     </div>
-  );
-};
+  )
+}

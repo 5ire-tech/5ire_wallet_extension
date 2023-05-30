@@ -1,58 +1,55 @@
-import { toast } from "react-toastify";
-import style from "./style.module.scss";
-import { useSelector } from "react-redux";
-import useWallet from "../../Hooks/useWallet";
-import "react-toastify/dist/ReactToastify.css";
-import CopyIcon from "../../Assets/CopyIcon.svg";
-import React, { useEffect, useState } from "react";
-import { TEMP1M, TEMP2P, NATIVE, EVM, COPIED } from "../../Constants/index.js";
+import { toast } from 'react-toastify'
+import style from './style.module.scss'
+import { useSelector } from 'react-redux'
+import useWallet from '../../Hooks/useWallet'
+import 'react-toastify/dist/ReactToastify.css'
+import CopyIcon from '../../Assets/CopyIcon.svg'
+import { useEffect, useState } from 'react'
+import { TEMP1M, TEMP2P, NATIVE, EVM, COPIED } from '../../Constants/index.js'
 
 function CreateWalletChain() {
-
-  const { walletSignUp, authData } = useWallet();
-  const { isLogin, newAccount } = useSelector((state) => state.auth);
+  const { walletSignUp, authData } = useWallet()
+  const { isLogin, newAccount } = useSelector((state) => state.auth)
 
   const [data, setData] = useState({
-    temp1m: "",
-    temp2p: "",
-    evmAddress: "",
-    nativeAddress: "",
-  });
+    temp1m: '',
+    temp2p: '',
+    evmAddress: '',
+    nativeAddress: '',
+  })
 
   useEffect(() => {
-    let res;
+    let res
     if (((newAccount === null || !newAccount) && !isLogin) || isLogin)
-      res = walletSignUp();
+      res = walletSignUp()
 
-    if (res?.error) toast.error(res.data);
-
-  }, []);
+    if (res?.error) toast.error(res.data)
+  }, [])
 
   useEffect(() => {
-    if (authData.temp1m) setData(authData);
+    if (authData.temp1m) setData(authData)
     else if (newAccount) {
-      setData(newAccount);
+      setData(newAccount)
     }
-  }, [authData, newAccount]);
-
+  }, [authData, newAccount])
 
   const handleCopy = (e) => {
+    if (e.target.name === NATIVE)
+      navigator.clipboard.writeText(data?.nativeAddress)
 
-    if (e.target.name === NATIVE) navigator.clipboard.writeText(data?.nativeAddress);
+    if (e.target.name === EVM) navigator.clipboard.writeText(data?.evmAddress)
 
-    if (e.target.name === EVM) navigator.clipboard.writeText(data?.evmAddress);
+    if (e.target.name === TEMP1M) navigator.clipboard.writeText(data?.temp1m)
 
-    if (e.target.name === TEMP1M) navigator.clipboard.writeText(data?.temp1m);
+    if (e.target.name === TEMP2P) navigator.clipboard.writeText(data?.temp2p)
 
-    if (e.target.name === TEMP2P) navigator.clipboard.writeText(data?.temp2p);
-
-    if (e.target.name === "all") {
-      let string = `Mnemonic: ${data?.temp1m}\nEVM Private key: ${data?.temp2p}\nEVM Address: ${data?.evmAddress}\nNative Address: ${data?.nativeAddress}`;
-      navigator.clipboard.writeText(string);
+    if (e.target.name === 'all') {
+      let string = `Mnemonic: ${data?.temp1m}\nEVM Private key: ${data?.temp2p}\nEVM Address: ${data?.evmAddress}\nNative Address: ${data?.nativeAddress}`
+      navigator.clipboard.writeText(string)
     }
-    
-    toast.success(COPIED);
-  };
+
+    toast.success(COPIED)
+  }
 
   return (
     <div className={style.cardWhite}>
@@ -66,10 +63,10 @@ function CreateWalletChain() {
           <img
             name={TEMP1M}
             src={CopyIcon}
-            alt="copyIcon"
+            alt='copyIcon'
             draggable={false}
             onClick={handleCopy}
-          />{" "}
+          />{' '}
         </p>
       </div>
       <div className={style.cardWhite__addressInput}>
@@ -79,10 +76,10 @@ function CreateWalletChain() {
           <img
             name={TEMP2P}
             src={CopyIcon}
-            alt="copyIcon"
+            alt='copyIcon'
             draggable={false}
             onClick={handleCopy}
-          />{" "}
+          />{' '}
         </p>
       </div>
       <div className={style.cardWhite__addressInput}>
@@ -92,10 +89,10 @@ function CreateWalletChain() {
           <img
             name={EVM}
             src={CopyIcon}
-            alt="copyIcon"
+            alt='copyIcon'
             draggable={false}
             onClick={handleCopy}
-          />{" "}
+          />{' '}
         </p>
       </div>
       <div className={style.cardWhite__addressInput}>
@@ -105,13 +102,21 @@ function CreateWalletChain() {
           <img
             draggable={false}
             src={CopyIcon}
-            alt="copyIcon"
+            alt='copyIcon'
             name={NATIVE}
             onClick={handleCopy}
-          />{" "}
+          />{' '}
         </p>
       </div>
-      <div className={style.copyButton}><button className={style.cardWhite__addressInput__copyAll} name={"all"} onClick={handleCopy}>Copy All</button></div>
+      <div className={style.copyButton}>
+        <button
+          className={style.cardWhite__addressInput__copyAll}
+          name={'all'}
+          onClick={handleCopy}
+        >
+          Copy All
+        </button>
+      </div>
       {/* <div className={style.cardWhite__noteSec}>
         <h4>Note:</h4>
         <ul>
@@ -122,7 +127,7 @@ function CreateWalletChain() {
         </ul>
       </div >*/}
     </div>
-  );
+  )
 }
 
-export default CreateWalletChain;
+export default CreateWalletChain

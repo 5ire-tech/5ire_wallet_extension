@@ -20,22 +20,14 @@
     "storage",
     "tabs"
   ],
-  "host_permissions": [
-    "http://*/",
-    "https://*/"
-  ],
+  "host_permissions": ["http://*/", "https://*/"],
   "background": {
     "service_worker": "static/js/background.js"
   },
   "content_scripts": [
     {
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ],
-      "js": [
-        "static/js/content.js"
-      ],
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["static/js/content.js"],
       "all_frames": false,
       "run_at": "document_end"
     }

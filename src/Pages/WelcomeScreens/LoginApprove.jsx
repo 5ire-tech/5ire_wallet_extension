@@ -1,15 +1,14 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
-import style from "./style.module.scss";
+import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
+import MenuRestofHeaders from '../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders'
+import style from './style.module.scss'
 
 function LoginApprove() {
-  const data = useSelector((state) => state.auth.uiData);
+  const data = useSelector((state) => state.auth.uiData)
 
   return (
     <div className={style.cardWhite}>
-      <MenuRestofHeaders logosilver={true} title="5irechain Wallet" />
+      <MenuRestofHeaders logosilver={true} title='5irechain Wallet' />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Access Request</h1>
@@ -24,7 +23,7 @@ function LoginApprove() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default LoginApprove;
+export default LoginApprove

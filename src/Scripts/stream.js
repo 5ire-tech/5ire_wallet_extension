@@ -1,36 +1,36 @@
-import { Duplex } from "readable-stream";
+import { Duplex } from 'readable-stream'
 
 export function isValidStreamMessage(message) {
   return (
     Object.entries(message).length > 0 &&
     Boolean(message.data) &&
-    (typeof message.data === "number" ||
-      typeof message.data === "object" ||
-      typeof message.data === "string")
-  );
+    (typeof message.data === 'number' ||
+      typeof message.data === 'object' ||
+      typeof message.data === 'string')
+  )
 }
 
-const noop = () => undefined;
+const noop = () => undefined
 
-const SYN = "SYN";
-const ACK = "ACK";
+const SYN = 'SYN'
+const ACK = 'ACK'
 
 /**
  * Abstract base class for postMessage streams.
  */
 export class BasePostMessageStream extends Duplex {
-  _init;
+  _init
 
-  _haveSyn;
+  _haveSyn
 
   constructor() {
     super({
       objectMode: true,
-    });
+    })
 
     // Initialization flags
-    this._init = false;
-    this._haveSyn = false;
+    this._init = false
+    this._haveSyn = false
   }
 
   /**
@@ -39,28 +39,28 @@ export class BasePostMessageStream extends Duplex {
    */
   _handshake() {
     // Send synchronization message
-    this._write(SYN, null, noop);
-    this.cork();
+    this._write(SYN, null, noop)
+    this.cork()
   }
 
   _onData(data) {
     if (this._init) {
       // Forward message
       try {
-        this.push(data);
+        this.push(data)
       } catch (err) {
-        this.emit("error", err);
+        this.emit('error', err)
       }
     } else if (data === SYN) {
       // Listen for handshake
-      this._haveSyn = true;
-      this._write(ACK, null, noop);
+      this._haveSyn = true
+      this._write(ACK, null, noop)
     } else if (data === ACK) {
-      this._init = true;
+      this._init = true
       if (!this._haveSyn) {
-        this._write(ACK, null, noop);
+        this._write(ACK, null, noop)
       }
-      this.uncork();
+      this.uncork()
     }
   }
 
@@ -69,23 +69,23 @@ export class BasePostMessageStream extends Duplex {
    */
 
   _read() {
-    return undefined;
+    return undefined
   }
 
   _write(data, _encoding, cb) {
-    this._postMessage(data);
-    cb();
+    this._postMessage(data)
+    cb()
   }
 }
 
 export class WindowPostMessageStream extends BasePostMessageStream {
-  _name;
+  _name
 
-  _target;
+  _target
 
-  _targetOrigin;
+  _targetOrigin
 
-  _targetWindow;
+  _targetWindow
 
   /**
    * Creates a stream for communicating with other streams across the same or
@@ -106,26 +106,26 @@ export class WindowPostMessageStream extends BasePostMessageStream {
     targetOrigin = window.location.origin,
     targetWindow = window,
   }) {
-    super();
+    super()
 
     if (
-      typeof window === "undefined" ||
-      typeof window.postMessage !== "function"
+      typeof window === 'undefined' ||
+      typeof window.postMessage !== 'function'
     ) {
       throw new Error(
-        "window.postMessage is not a function. This class should only be instantiated in a Window."
-      );
+        'window.postMessage is not a function. This class should only be instantiated in a Window.',
+      )
     }
 
-    this._name = name;
-    this._target = target;
-    this._targetOrigin = targetOrigin;
-    this._targetWindow = targetWindow;
-    this._onMessage = this._onMessage.bind(this);
+    this._name = name
+    this._target = target
+    this._targetOrigin = targetOrigin
+    this._targetWindow = targetWindow
+    this._onMessage = this._onMessage.bind(this)
 
-    window.addEventListener("message", this._onMessage, false);
+    window.addEventListener('message', this._onMessage, false)
 
-    this._handshake();
+    this._handshake()
   }
 
   _postMessage(data) {
@@ -134,26 +134,26 @@ export class WindowPostMessageStream extends BasePostMessageStream {
         target: this._target,
         data,
       },
-      this._targetOrigin
-    );
+      this._targetOrigin,
+    )
   }
 
   _onMessage(event) {
-    const message = event.data;
+    const message = event.data
 
     if (
-      (this._targetOrigin !== "*" && event.origin !== this._targetOrigin) ||
+      (this._targetOrigin !== '*' && event.origin !== this._targetOrigin) ||
       event.source !== this._targetWindow ||
       !isValidStreamMessage(message) ||
       message.target !== this._name
     ) {
-      return;
+      return
     }
 
-    this._onData(message.data);
+    this._onData(message.data)
   }
 
   _destroy() {
-    window.removeEventListener("message", this._onMessage, false);
+    window.removeEventListener('message', this._onMessage, false)
   }
 }

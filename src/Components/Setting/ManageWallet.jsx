@@ -1,28 +1,28 @@
-import React from "react";
-import {toast} from "react-toastify";
-import style from "./style.module.scss";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import CopyIcon from "../../Assets/CopyIcon.svg";
-import ButtonComp from "../ButtonComp/ButtonComp.jsx";
-import { NATIVE, EVM, COPIED } from "../../Constants/index";
-import Exportprivate from "../../Assets/PNG/exportprivate.png";
+import React from 'react'
+import { toast } from 'react-toastify'
+import style from './style.module.scss'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import CopyIcon from '../../Assets/CopyIcon.svg'
+import ButtonComp from '../ButtonComp/ButtonComp.jsx'
+import { NATIVE, EVM, COPIED } from '../../Constants/index'
+import Exportprivate from '../../Assets/PNG/exportprivate.png'
 // import { InputFieldOnly } from "../InputField/InputFieldSimple.jsx";
-import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx";
+import MenuRestofHeaders from '../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx'
 
 function ManageWallet() {
-  const navigate = useNavigate();
-  const { currentAccount } = useSelector(state => state.auth);
+  const navigate = useNavigate()
+  const { currentAccount } = useSelector((state) => state.auth)
 
   const handleCopy = (e) => {
     if (e.target.name === NATIVE) {
-      navigator.clipboard.writeText(currentAccount.nativeAddress);
+      navigator.clipboard.writeText(currentAccount.nativeAddress)
     }
     if (e.target.name === EVM) {
-      navigator.clipboard.writeText(currentAccount.evmAddress);
+      navigator.clipboard.writeText(currentAccount.evmAddress)
     }
-    if (e.target.name === "name") {
-      navigator.clipboard.writeText(currentAccount.accountName);
+    if (e.target.name === 'name') {
+      navigator.clipboard.writeText(currentAccount.accountName)
     }
     toast.success(COPIED)
   }
@@ -30,7 +30,7 @@ function ManageWallet() {
   return (
     <>
       <div className={`scrollableCont`}>
-        <MenuRestofHeaders backTo={"/wallet"} title={"Manage Wallet"} />
+        <MenuRestofHeaders backTo={'/wallet'} title={'Manage Wallet'} />
         <div className={`flexedContent`}>
           {/* <InputFieldOnly
             placeholder={"Type Wallet Name"}
@@ -43,7 +43,13 @@ function ManageWallet() {
               <label>Wallet Name:</label>
               <p className={style.wallet__addressInput__copyText}>
                 <span>{currentAccount?.accountName}</span>
-                <img src={CopyIcon} alt="copyIcon" name="name" onClick={handleCopy} draggable={false}/>{" "}
+                <img
+                  src={CopyIcon}
+                  alt='copyIcon'
+                  name='name'
+                  onClick={handleCopy}
+                  draggable={false}
+                />{' '}
               </p>
             </div>
           </div>
@@ -52,7 +58,13 @@ function ManageWallet() {
               <label>Native Chain Address:</label>
               <p className={style.wallet__addressInput__copyText}>
                 <span>{currentAccount.nativeAddress}</span>
-                <img src={CopyIcon} alt="copyIcon" name={NATIVE} onClick={handleCopy} draggable={false}/>{" "}
+                <img
+                  src={CopyIcon}
+                  alt='copyIcon'
+                  name={NATIVE}
+                  onClick={handleCopy}
+                  draggable={false}
+                />{' '}
               </p>
             </div>
           </div>
@@ -61,21 +73,27 @@ function ManageWallet() {
               <label>Evm Chain Address:</label>
               <p className={style.wallet__addressInput__copyText}>
                 <span>{currentAccount.evmAddress}</span>
-                <img src={CopyIcon} alt="copyIcon" name={EVM} onClick={handleCopy} draggable={false} />{" "}
+                <img
+                  src={CopyIcon}
+                  alt='copyIcon'
+                  name={EVM}
+                  onClick={handleCopy}
+                  draggable={false}
+                />{' '}
               </p>
             </div>
           </div>
           <div className={style.btn_icon}>
             <ButtonComp
-              onClick={() => navigate("/enterPassword")}
-              text="Export Private Key"
+              onClick={() => navigate('/enterPassword')}
+              text='Export Private Key'
               img={Exportprivate}
             ></ButtonComp>
           </div>
         </div>
       </div>
     </>
-  );
+  )
 }
 
-export default ManageWallet;
+export default ManageWallet

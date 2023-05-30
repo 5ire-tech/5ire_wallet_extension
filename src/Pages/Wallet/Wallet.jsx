@@ -1,17 +1,16 @@
-import React, { useState } from "react";
-import Send from "../Send/Send";
-import Swap from "../Swap/Swap.jsx";
-import style from "./style.module.scss";
+import React, { useState } from 'react'
+import Send from '../Send/Send'
+import Swap from '../Swap/Swap.jsx'
+import style from './style.module.scss'
 
 function Wallet() {
-  
-  const [activeTab, setActiveTab] = useState("send");
+  const [activeTab, setActiveTab] = useState('send')
   const activeSend = () => {
-    setActiveTab("send");
-  };
+    setActiveTab('send')
+  }
   const activeSwap = () => {
-    setActiveTab("swap");
-  };
+    setActiveTab('swap')
+  }
   return (
     <div className={style.wallet}>
       <div className={style.wallet__sendSwapSec}>
@@ -21,7 +20,7 @@ function Wallet() {
               onClick={activeSend}
               className={`${style.wallet__sendSwapbtn__buttons} 
               ${
-                activeTab === "send" &&
+                activeTab === 'send' &&
                 style.wallet__sendSwapbtn__buttons__active
               }
             `}
@@ -31,7 +30,7 @@ function Wallet() {
             <button
               onClick={activeSwap}
               className={`${style.wallet__sendSwapbtn__buttons}  ${
-                activeTab === "swap" &&
+                activeTab === 'swap' &&
                 style.wallet__sendSwapbtn__buttons__active
               }`}
             >
@@ -39,19 +38,19 @@ function Wallet() {
             </button>
           </div>
         </div>
-        {activeTab === "send" && (
+        {activeTab === 'send' && (
           <div>
             <Send />
           </div>
         )}
-        {activeTab === "swap" && (
+        {activeTab === 'swap' && (
           <div>
             <Swap />
           </div>
         )}
       </div>
     </div>
-  );
+  )
 }
 
-export default Wallet;
+export default Wallet
