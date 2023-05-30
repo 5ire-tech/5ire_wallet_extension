@@ -54,11 +54,12 @@ function Send() {
 
   useEffect(() => {
     setBalance(allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.nativeBalance,
-    currentAccount?.evmAddress, currentNetwork
+    currentAccount?.evmAddress, currentNetwork, allAccountsBalance
   ]);
 
 

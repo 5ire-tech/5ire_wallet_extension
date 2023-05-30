@@ -1,7 +1,6 @@
 import Browser from "webextension-polyfill";
 import { BigNumber } from "bignumber.js";
 import { isNullorUndef, log } from "../Utility/utility";
-import { getCurrentTabDetails } from "../Scripts/utils";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import { sendMessageToTab } from "../Utility/message_helper";
 import {
@@ -117,16 +116,16 @@ export const generateErrorMessage = (method, origin) => {
 
 //send event to the connected tab
 export const sendEventToTab = async (tabDetails, tabMessagePayload, connectedApps, emitWithoutConnectionCheck = false) => {
-        if (!checkStringInclusionIntoArray(tabDetails.tabDetails.origin, RESTRICTED_URLS) && ((connectedApps && connectedApps[tabDetails.tabDetails.origin]?.isConnected) || emitWithoutConnectionCheck)) {
-            tabDetails.tabDetails.tabId && sendMessageToTab(tabDetails.tabDetails.tabId, tabMessagePayload);
-        }
+    if (!checkStringInclusionIntoArray(tabDetails.tabDetails.origin, RESTRICTED_URLS) && ((connectedApps && connectedApps[tabDetails.tabDetails.origin]?.isConnected) || emitWithoutConnectionCheck)) {
+        tabDetails.tabDetails.tabId && sendMessageToTab(tabDetails.tabDetails.tabId, tabMessagePayload);
+    }
 }
 
 //send event to specfic tab
-export const sendEventUsingTabId = async (tabId, tabEventPayload, connectedApps=null) => {
-    if(connectedApps) {
-    const tabDetails = getTabDetailsUsingTabId(tabId);
-        if(tabDetails) {
+export const sendEventUsingTabId = async (tabId, tabEventPayload, connectedApps = null) => {
+    if (connectedApps) {
+        const tabDetails = getTabDetailsUsingTabId(tabId);
+        if (tabDetails) {
             const isConnected = connectedApps[new URL(tabDetails.url).origin]?.isConnected;
             isConnected && sendMessageToTab(tabId, tabEventPayload);
         }

@@ -1,6 +1,6 @@
 import { BigNumber } from "bignumber.js";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
-import { DECIMALS, ERRCODES, ERROR_MESSAGES, LABELS, STATUS, VALIDATOR_NOMINATOR_METHOD } from "../Constants";
+import { DECIMALS, ERRCODES, ERROR_MESSAGES, LABELS, STATUS } from "../Constants";
 import { HybridKeyring } from "./5ire-keyring";
 import { NetworkHandler } from "./initbackground";
 import { hasProperty, log } from "../Utility/utility";
@@ -26,10 +26,10 @@ export default class ValidatorNominatorHandler {
 
   //pass the request to handler methods
   handleNativeAppsTask = async (state, message, isFee) => {
-    const payload = { data: {}, options: { ...message?.options }};
+    const payload = { data: {}, options: { ...message?.options } };
     const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
-  
-    
+
+
     const externalData = activeSession?.message || message.options.externalTransaction.message;
     const method = activeSession?.method || message.options.externalTransaction.method;
 
