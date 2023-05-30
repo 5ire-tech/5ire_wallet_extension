@@ -221,7 +221,8 @@ function Swap() {
           value: amount ? amount : balance?.nativeBalance,
           options: {
             account: state.currentAccount
-          }
+          },
+          isEd
         });
     } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase() && balance?.evmBalance) {
       loader && updateLoading(true);
@@ -230,7 +231,8 @@ function Swap() {
           value: amount ? amount : balance?.evmBalance,
           options: {
             account: state.currentAccount
-          }
+          },
+          isEd
         }
       );
     }
