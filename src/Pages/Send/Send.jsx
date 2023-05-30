@@ -244,6 +244,7 @@ function Send() {
           value: data?.amount ? data.amount : balance?.nativeBalance,
           toAddress: data.to,
           options: { account: state.currentAccount },
+          isEd
         }
       );
     } else if (activeTab === EVM && Number(balance?.evmBalance) > 0) {
@@ -257,6 +258,7 @@ function Send() {
           value: data?.amount ? data.amount : balance?.evmBalance,
           toAddress: data.to,
           options: { account: state.currentAccount },
+          isEd
         }
       );
     }
@@ -317,6 +319,7 @@ function Send() {
               isEvm: true,
               fee: estimatedGas
             },
+            isEd
           }
         );
         setIsModalOpen(true);
@@ -335,6 +338,7 @@ function Send() {
               isEvm: false,
               fee: estimatedGas
             },
+            isEd
           }
         );
         setIsModalOpen(true);

@@ -985,30 +985,30 @@ export class Services {
   /*************************** Service Helpers ********************************/
 
   //get the transaction details from chain side
-  getBlockInsideDetails = async (network, txHash, blockNumber=null) => {
+  getBlockInsideDetails = async (network, txHash, blockNumber = null) => {
     try {
       log("here is the network: ", network)
-       const signedBlock = await NetworkHandler.api[network].nativeApi.rpc.chain.getBlock();
- 
-       const allRecords = await NetworkHandler.api[network].nativeApi.query.system.events.at(signedBlock.block.header.hash);
-       const date = new Date();
-       const payout = [];
-       const transactionObj = {};
+      const signedBlock = await NetworkHandler.api[network].nativeApi.rpc.chain.getBlock();
 
-       //index handler and filtered event records
-       let index = 0;
+      const allRecords = await NetworkHandler.api[network].nativeApi.query.system.events.at(signedBlock.block.header.hash);
+      const date = new Date();
+      const payout = [];
+      const transactionObj = {};
 
-       const filter = (index) => {return allRecords.filter((e) => e.phase.isApplyExtrinsic && e.phase.asApplyExtrinsic.eq(index))};
+      //index handler and filtered event records
+      let index = 0;
 
-       //traverse the block extrinsics
-      for(const mainData of signedBlock.block.extrinsics) {
+      const filter = (index) => { return allRecords.filter((e) => e.phase.isApplyExtrinsic && e.phase.asApplyExtrinsic.eq(index)) };
+
+      //traverse the block extrinsics
+      for (const mainData of signedBlock.block.extrinsics) {
         const { method: { method, section } } = mainData;
         let eraIndex = null;
 
         const filteredExt = filter(index);
-        
+
         //traverse the event records
-        for(const mainData2 of  filteredExt) {
+        for (const mainData2 of filteredExt) {
           const { event } = mainData2;
           log("here is main: ", event.toHuman());
           let transactionData;
@@ -1019,286 +1019,286 @@ export class Services {
             let errorInfo;
 
             if (dispatchError.isModule) {
-               const decoded = NetworkHandler.api[network].nativeApi.registry.findMetaError(
-                  dispatchError.asModule
-               );
-               errorInfo = `${decoded.section}.${decoded.name}`;
+              const decoded = NetworkHandler.api[network].nativeApi.registry.findMetaError(
+                dispatchError.asModule
+              );
+              errorInfo = `${decoded.section}.${decoded.name}`;
             } else {
-               errorInfo = dispatchError.toString();
+              errorInfo = dispatchError.toString();
             }
 
             const data = JSON.parse(
-               signedBlock.block.extrinsics[index].toString()
+              signedBlock.block.extrinsics[index].toString()
             );
 
             let txFee = transactionObj[
-               `${signedBlock.block.extrinsics[index].hash}`
+              `${signedBlock.block.extrinsics[index].hash}`
             ]?.txFee
-               ? 
-                 transactionObj[
-                    `${signedBlock.block.extrinsics[index].hash}`
-                 ].txFee
-               : 0;
+              ?
+              transactionObj[
+                `${signedBlock.block.extrinsics[index].hash}`
+              ].txFee
+              : 0;
 
             const from = data?.signature?.signer?.id.toString();
             const to = data?.method?.args?.dest?.id.toString();
             const value = Number(data?.method?.args?.value).toString();
 
             transactionData = {
-               from_address: from,
-               to_address: to,
-               value: value,
-               txhash:
-                  signedBlock.block.extrinsics[index].hash.toString(),
-               reason: event.method.toLowerCase(),
-               sectionmethod: errorInfo,
-               status: 'failed',
-               txFee: txFee,
-               timestamp: date.toString(),
-               blocknumber: signedBlock.block.header.number.toString(),
+              from_address: from,
+              to_address: to,
+              value: value,
+              txhash:
+                signedBlock.block.extrinsics[index].hash.toString(),
+              reason: event.method.toLowerCase(),
+              sectionmethod: errorInfo,
+              status: 'failed',
+              txFee: txFee,
+              timestamp: date.toString(),
+              blocknumber: signedBlock.block.header.number.toString(),
             };
 
             transactionObj[
-               signedBlock.block.extrinsics[index].hash.toString()
+              signedBlock.block.extrinsics[index].hash.toString()
             ] = transactionData;
-         } else if (event.method.toLowerCase() === 'withdraw' && event.section === 'balances') {
+          } else if (event.method.toLowerCase() === 'withdraw' && event.section === 'balances') {
             const data = JSON.parse(
-               signedBlock.block.extrinsics[index].toString()
+              signedBlock.block.extrinsics[index].toString()
             );
             const from = data?.signature?.signer?.id.toString();
             const to = data?.method?.args?.dest?.id.toString();
             const value = Number(data?.method?.args?.value).toString();
 
             transactionObj[
-               signedBlock.block.extrinsics[index].hash.toString()
+              signedBlock.block.extrinsics[index].hash.toString()
             ] =
 
 
-               transactionObj[
-                  signedBlock.block.extrinsics[index].hash.toString()
-               ]?.sectionmethod !== 'staking.Bonded'
-                  ? {}
-                  :
-                    transactionObj[
-                       signedBlock.block.extrinsics[
-                          index
-                       ].hash.toString()
-                    ];
+              transactionObj[
+                signedBlock.block.extrinsics[index].hash.toString()
+              ]?.sectionmethod !== 'staking.Bonded'
+                ? {}
+                :
+                transactionObj[
+                signedBlock.block.extrinsics[
+                  index
+                ].hash.toString()
+                ];
 
             transactionObj[
-               signedBlock.block.extrinsics[index].hash.toString()
+              signedBlock.block.extrinsics[index].hash.toString()
             ].txFee = Number(event.data[1]) / Math.pow(10, 18);
 
             if (from === to) {
-               transactionData = {
-                  from_address: from,
-                  to_address: to,
-                  value: value,
-                  txhash:
-                     signedBlock.block.extrinsics[
-                        index
-                     ].hash.toString(),
-                  reason: event.method.toLowerCase(),
-                  sectionmethod: `${section}.${method}`,
-                  status: 'success',
-            
-                  txFee: transactionObj[
-                     signedBlock.block.extrinsics[
-                        index
-                     ].hash.toString()
-                  ].txFee,
-                  timestamp: date.toString(),
-                  blocknumber: signedBlock.block.header.number.toString(),
-               };
+              transactionData = {
+                from_address: from,
+                to_address: to,
+                value: value,
+                txhash:
+                  signedBlock.block.extrinsics[
+                    index
+                  ].hash.toString(),
+                reason: event.method.toLowerCase(),
+                sectionmethod: `${section}.${method}`,
+                status: 'success',
 
-  
-               transactionObj[
-                  signedBlock.block.extrinsics[index].hash.toString()
-               ] = transactionData;
+                txFee: transactionObj[
+                  signedBlock.block.extrinsics[
+                    index
+                  ].hash.toString()
+                ].txFee,
+                timestamp: date.toString(),
+                blocknumber: signedBlock.block.header.number.toString(),
+              };
+
+
+              transactionObj[
+                signedBlock.block.extrinsics[index].hash.toString()
+              ] = transactionData;
 
             }
-         } else {
+          } else {
             if (event.method.toLowerCase() === 'transfer' && event.section === 'balances') {
-               let txFee = transactionObj[signedBlock.block.extrinsics[index].hash.toString()]?.txFee ?
-                    transactionObj[signedBlock.block.extrinsics[index].hash.toString()]?.txFee : 0;
+              let txFee = transactionObj[signedBlock.block.extrinsics[index].hash.toString()]?.txFee ?
+                transactionObj[signedBlock.block.extrinsics[index].hash.toString()]?.txFee : 0;
 
-               transactionData = {
-                  from_address: event.data[0].toString(),
-                  to_address: event.data[1].toString(),
-                  value: event.data[2]
-                     ? event.data[2].toString()
-                     : 'N/A',
-                  txhash:
-                     signedBlock.block.extrinsics[
-                        index
-                     ].hash.toString(),
-                  reason: event.method.toLowerCase(),
-                  sectionmethod: `${section}.${method}`,
-                  status: 'success',
-                  txFee: txFee,
-                  timestamp: date.toString(),
-                  blocknumber: signedBlock.block.header.number.toString(),
-               };
-               /* @ts-ignore */
-               // @ts-nocheck
-               transactionObj[
-                  signedBlock.block.extrinsics[index].hash.toString()
-               ] = transactionData;
+              transactionData = {
+                from_address: event.data[0].toString(),
+                to_address: event.data[1].toString(),
+                value: event.data[2]
+                  ? event.data[2].toString()
+                  : 'N/A',
+                txhash:
+                  signedBlock.block.extrinsics[
+                    index
+                  ].hash.toString(),
+                reason: event.method.toLowerCase(),
+                sectionmethod: `${section}.${method}`,
+                status: 'success',
+                txFee: txFee,
+                timestamp: date.toString(),
+                blocknumber: signedBlock.block.header.number.toString(),
+              };
+              /* @ts-ignore */
+              // @ts-nocheck
+              transactionObj[
+                signedBlock.block.extrinsics[index].hash.toString()
+              ] = transactionData;
 
             } else if (
-               (event.method.toLowerCase() === 'bonded' &&
+              (event.method.toLowerCase() === 'bonded' &&
+                event.section === 'staking') ||
+              (event.method.toLowerCase() === 'unbonded' &&
+                event.section === 'staking') ||
+              (event.method.toLowerCase() === 'chilled' &&
+                event.section === 'staking') ||
+              (event.method.toLowerCase() === 'validatorprefsset' &&
+                event.section === 'staking') ||
+              (event.method.toLowerCase() === 'nominate' &&
+                event.section === 'staking')
+            ) {
+
+              let txFee = transactionObj[
+                signedBlock.block.extrinsics[index].hash.toString()
+              ].txFee ? transactionObj[signedBlock.block.extrinsics[index].hash.toString()].txFee : 0;
+              if (
+                (event.method.toLowerCase() ===
+                  'validatorprefsset' &&
                   event.section === 'staking') ||
-               (event.method.toLowerCase() === 'unbonded' &&
-                  event.section === 'staking') ||
-               (event.method.toLowerCase() === 'chilled' &&
-                  event.section === 'staking') ||
-               (event.method.toLowerCase() === 'validatorprefsset' &&
-                  event.section === 'staking') ||
-                  (event.method.toLowerCase() === 'nominate' &&
+                (event.method.toLowerCase() === 'nominate' &&
                   event.section === 'staking')
-            ) {
-
-               let txFee = transactionObj[
-                  signedBlock.block.extrinsics[index].hash.toString()
-               ].txFee ? transactionObj[signedBlock.block.extrinsics[index].hash.toString()].txFee : 0;
-               if (
-                  (event.method.toLowerCase() ===
-                     'validatorprefsset' &&
-                     event.section === 'staking') ||
-                  (event.method.toLowerCase() === 'nominate' &&
-                     event.section === 'staking')
-               ) {
-                  if (
-                     transactionObj[
-                        signedBlock.block.extrinsics[
-                           index
-                        ].hash.toString()
-                     ]?.sectionmethod !== 'staking.Bonded'
-                  ) {
-                     transactionData = {
-                        from_address: event.data[0].toString(),
-                        to_address: 'N/A',
-                        value: '0',
-                        txhash:
-                           signedBlock.block.extrinsics[
-                              index
-                           ].hash.toString(),
-                        reason: event.method.toLowerCase(),
-                        sectionmethod:
-                           event.method.toLowerCase() ===
-                           'validatorprefsset'
-                              ? 'staking.revalidated'
-                              : 'staking.renominated',
-                        status: 'success',
-                        txFee: txFee,
-                        timestamp: date.toString(),
-                        blocknumber: signedBlock.block.header.number.toString(),
-                     };
-                  }
-               } else {
+              ) {
+                if (
+                  transactionObj[
+                    signedBlock.block.extrinsics[
+                      index
+                    ].hash.toString()
+                  ]?.sectionmethod !== 'staking.Bonded'
+                ) {
                   transactionData = {
-                     from_address: event.data[0].toString(),
-                     to_address: 'N/A',
-                     value: event.data[1]
-                        ? event.data[1].toString()
-                        : 'N/A',
-                     txhash:
-                        signedBlock.block.extrinsics[
-                           index
-                        ].hash.toString(),
-                     reason: event.method.toLowerCase(),
-                     sectionmethod: `${event.section}.${event.method}`,
-                     status: 'success',
-                     txFee: txFee,
-                     timestamp: date.toString(),
-                     blocknumber: signedBlock.block.header.number.toString(),
+                    from_address: event.data[0].toString(),
+                    to_address: 'N/A',
+                    value: '0',
+                    txhash:
+                      signedBlock.block.extrinsics[
+                        index
+                      ].hash.toString(),
+                    reason: event.method.toLowerCase(),
+                    sectionmethod:
+                      event.method.toLowerCase() ===
+                        'validatorprefsset'
+                        ? 'staking.revalidated'
+                        : 'staking.renominated',
+                    status: 'success',
+                    txFee: txFee,
+                    timestamp: date.toString(),
+                    blocknumber: signedBlock.block.header.number.toString(),
                   };
-               }
-
-               transactionObj[
-                  signedBlock.block.extrinsics[index].hash.toString()
-               ] =
-                  transactionData === undefined
-                     ?
-                       transactionObj[
-                          signedBlock.block.extrinsics[
-                             index
-                          ].hash.toString()
-                       ]
-                     : transactionData;
-
-            } else if (
-               event.section === 'staking' &&
-               event.method.toLowerCase() === 'payoutstarted'
-            ) {
-               eraIndex = `${event.data[0]}`;
-            } else if (
-               event.section === 'staking' &&
-               event.method.toLowerCase() === 'rewarded'
-            ) {
-               const data = JSON.parse(
-                  signedBlock.block.extrinsics[index].toString()
-               );
-               let txFee = transactionObj[
-                  signedBlock.block.extrinsics[index].hash.toString()
-               ].txFee
-                  ?
-                    transactionObj[
-                       signedBlock.block.extrinsics[
-                          index
-                       ].hash.toString()
-                    ].txFee
-                  : 0;
-
-               transactionData = {
-                  from_address: data?.signature?.signer?.id.toString(),
+                }
+              } else {
+                transactionData = {
+                  from_address: event.data[0].toString(),
                   to_address: 'N/A',
-                  value: transactionObj[
-                     signedBlock.block.extrinsics[
-                        index
-                     ].hash.toString()
-                  ]?.value
-                     ?
-                       (
-                          Number(
-                             transactionObj[
-                                signedBlock.block.extrinsics[
-                                   index
-                                ].hash.toString()
-                             ]?.value
-                          ) + Number(event.data[1])
-                       ).toString()
-                     : 0 + Number(event.data[1]),
+                  value: event.data[1]
+                    ? event.data[1].toString()
+                    : 'N/A',
                   txhash:
-                     signedBlock.block.extrinsics[
-                        index
-                     ].hash.toString(),
+                    signedBlock.block.extrinsics[
+                      index
+                    ].hash.toString(),
                   reason: event.method.toLowerCase(),
                   sectionmethod: `${event.section}.${event.method}`,
                   status: 'success',
                   txFee: txFee,
                   timestamp: date.toString(),
                   blocknumber: signedBlock.block.header.number.toString(),
-               };
+                };
+              }
 
-               transactionObj[
-                  signedBlock.block.extrinsics[index].hash.toString()
-               ] = transactionData;
-               payout.push({
-                  txhash:
-                     signedBlock.block.extrinsics[
-                        index
-                     ].hash.toString(),
-                  eraindex: `${eraIndex}`,
-                  stashaccount: `${event.data[0]}`,
-                  reward: event.data[1].toString(),
-                  status: 'success',
-                  blocknumber: signedBlock.block.header.number.toString(),
-               });
+              transactionObj[
+                signedBlock.block.extrinsics[index].hash.toString()
+              ] =
+                transactionData === undefined
+                  ?
+                  transactionObj[
+                  signedBlock.block.extrinsics[
+                    index
+                  ].hash.toString()
+                  ]
+                  : transactionData;
+
+            } else if (
+              event.section === 'staking' &&
+              event.method.toLowerCase() === 'payoutstarted'
+            ) {
+              eraIndex = `${event.data[0]}`;
+            } else if (
+              event.section === 'staking' &&
+              event.method.toLowerCase() === 'rewarded'
+            ) {
+              const data = JSON.parse(
+                signedBlock.block.extrinsics[index].toString()
+              );
+              let txFee = transactionObj[
+                signedBlock.block.extrinsics[index].hash.toString()
+              ].txFee
+                ?
+                transactionObj[
+                  signedBlock.block.extrinsics[
+                    index
+                  ].hash.toString()
+                ].txFee
+                : 0;
+
+              transactionData = {
+                from_address: data?.signature?.signer?.id.toString(),
+                to_address: 'N/A',
+                value: transactionObj[
+                  signedBlock.block.extrinsics[
+                    index
+                  ].hash.toString()
+                ]?.value
+                  ?
+                  (
+                    Number(
+                      transactionObj[
+                        signedBlock.block.extrinsics[
+                          index
+                        ].hash.toString()
+                      ]?.value
+                    ) + Number(event.data[1])
+                  ).toString()
+                  : 0 + Number(event.data[1]),
+                txhash:
+                  signedBlock.block.extrinsics[
+                    index
+                  ].hash.toString(),
+                reason: event.method.toLowerCase(),
+                sectionmethod: `${event.section}.${event.method}`,
+                status: 'success',
+                txFee: txFee,
+                timestamp: date.toString(),
+                blocknumber: signedBlock.block.header.number.toString(),
+              };
+
+              transactionObj[
+                signedBlock.block.extrinsics[index].hash.toString()
+              ] = transactionData;
+              payout.push({
+                txhash:
+                  signedBlock.block.extrinsics[
+                    index
+                  ].hash.toString(),
+                eraindex: `${eraIndex}`,
+                stashaccount: `${event.data[0]}`,
+                reward: event.data[1].toString(),
+                status: 'success',
+                blocknumber: signedBlock.block.header.number.toString(),
+              });
             } else {
               log("it can't run man")
             }
-         }
+          }
         }
 
         index++;
@@ -1308,10 +1308,10 @@ export class Services {
       return transactionObj[txHash];
 
     } catch (err) {
-       console.log('Error while getting transaction details: ', err);
-       return null;
+      console.log('Error while getting transaction details: ', err);
+      return null;
     }
- }
+  }
 
   //find the native and evm transaction status
   getTransactionStatus = async (txHash, isEvm, network) => {
@@ -1334,7 +1334,7 @@ export class Services {
       log("here is the txHash: ", txRecipt);
 
       //check the transaction on explorer api if not found in current block
-      if(!txRecipt) {
+      if (!txRecipt) {
         log("api called for searching the tx: ", txHash);
         res = await httpRequest(rpcUrl + txHash, HTTP_METHODS.GET);
         txRecipt = res?.data?.transaction;
@@ -1637,12 +1637,13 @@ export class TransactionsRPC {
     let transactionHistory = { ...message?.transactionHistoryTrack }, payload = null;
 
     try {
+      console.log("Message nativeTransfer : ", message);
       const { data, transactionHistoryTrack } = message;
-      const { options: { account, fee } } = data;
+      const { options: { account, fee }, isEd } = data;
       const network = transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
       const { nativeApi } = NetworkHandler.api[network];
       const balance = state.allAccountsBalance[account?.evmAddress][network];
-
+      console.log("IsEd : ", isEd);
 
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
@@ -1658,8 +1659,12 @@ export class TransactionsRPC {
         let err;
         const amt = new BigNumber(data.value).multipliedBy(DECIMALS).toString();
         const signer = this.hybridKeyring.getNativeSignerByAddress(account.nativeAddress);
+        let transfer;
 
-        const transfer = nativeApi.tx.balances.transfer(data.to, (Number(amt).noExponents()).toString());
+        if (isEd)
+          transfer = nativeApi.tx.balances.transferKeepAlive(data.to, (Number(amt).noExponents()).toString());
+        else
+          transfer = nativeApi.tx.balances.transfer(data.to, (Number(amt).noExponents()).toString());
 
         if (RpcRequestProcessor.isHttp) {
           const txHash = await transfer.signAndSend(signer)
@@ -1994,9 +1999,11 @@ export class GeneralWalletRPC {
   nativeFee = async (message, state) => {
     try {
       const { data } = message;
-      const { options: { account } } = data;
-
+      console.log("Message nativeFee :::: ", message);
+      const { options: { account }, isEd } = data;
       const { nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
+
+      console.log("isEd native fee ::: ",isEd);
 
       if (isNullorUndef(account)) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
@@ -2011,7 +2018,10 @@ export class GeneralWalletRPC {
       }
       else if (toAddress?.startsWith("5")) {
         const amt = new BigNumber(data.value).multipliedBy(DECIMALS).toString();
-        transferTx = nativeApi.tx.balances.transfer(toAddress, (Number(amt).noExponents()).toString());
+        if (isEd)
+          transferTx = nativeApi.tx.balances.transferKeepAlive(toAddress, (Number(amt).noExponents()).toString());
+        else
+          transferTx = nativeApi.tx.balances.transfer(toAddress, (Number(amt).noExponents()).toString());
 
       }
       const info = await transferTx?.paymentInfo(signer);
