@@ -1,9 +1,9 @@
 import Web3 from "web3";
 import { ApiPromise } from "@polkadot/api";
-import { HttpProvider, WsProvider } from "@polkadot/rpc-provider";
-import { ERRCODES, HTTP_END_POINTS, INTERNAL_EVENT_LABELS } from "../Constants";
-import { ExtensionEventHandle } from "../Scripts/initbackground";
 import { ErrorPayload } from "../Utility/error_helper";
+import { HttpProvider, WsProvider } from "@polkadot/rpc-provider";
+import { ExtensionEventHandle } from "../Scripts/initbackground";
+import { ERRCODES, HTTP_END_POINTS, INTERNAL_EVENT_LABELS } from "../Constants";
 
 export class Connection {
 
@@ -95,11 +95,9 @@ export class Connection {
 
             //bind event for failure for reconnect
             web3Provider.on('end', async () => {
-                // console.log("Trying to reconnect with Evm api");
                 web3Provider.connect();
             });
             web3Provider.on('error', async (err) => {
-                // console.log("error while making connection with evm: ", err);
                 web3Provider.connect();
             });
         }

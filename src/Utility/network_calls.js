@@ -1,6 +1,6 @@
-import { HTTP_METHODS, HTTP_CONTENT_TYPE, ERROR_MESSAGES, STATUS } from "../Constants";
 import { getUUID } from "../Scripts/utils";
-import { isString } from "../Utility/utility"
+import { isString } from "../Utility/utility";
+import { HTTP_METHODS, HTTP_CONTENT_TYPE, ERROR_MESSAGES, STATUS } from "../Constants";
 
 export async function httpRequest(url, method, payload, headers = { "Content-Type": HTTP_CONTENT_TYPE.JSON }) {
 

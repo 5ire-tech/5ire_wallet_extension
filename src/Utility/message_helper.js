@@ -1,15 +1,15 @@
 import Browser from "webextension-polyfill";
-import { isNullorUndef, isObject, isString, log } from "./utility";
 import { Error, ErrorPayload } from "./error_helper";
+import { isNullorUndef, isObject, isString, log } from "./utility";
 import { ERRCODES, ERROR_MESSAGES, STREAM_CHANNELS } from "../Constants";
 import ExtensionPortStream from "../Scripts/extension-port-stream-mod/index"
 
 //message passing helper
 export const sendRuntimeMessage = (typeLabel, eventLabel, message) => {
     try {
-        if (!isObject(message) && isNullorUndef(message)) throw new Error("Invalid message, (*Only Objects or Array is valid value)");
-        if (!isString(eventLabel) && eventLabel.trim().length === 0) throw new Error("Invalid event Label")
-        if (!isString(typeLabel) && typeLabel.trim().length === 0) throw new Error("Invalid type Label")
+        if (!isObject(message) && isNullorUndef(message)) throw new Error(ERROR_MESSAGES.INVALID_MSG_ARRAY_AND_OBJECTS_ALLOWED);
+        if (!isString(eventLabel) && eventLabel.trim().length === 0) throw new Error(ERROR_MESSAGES.INVALID_EVENT_LABEL)
+        if (!isString(typeLabel) && typeLabel.trim().length === 0) throw new Error(ERROR_MESSAGES.INVALID_TYPE_LABEL)
         Browser.runtime.sendMessage({ type: typeLabel, event: eventLabel, data: message });
     } catch (err) {
         console.log("Error while sending message to background: ", err.message);
@@ -24,7 +24,7 @@ export class MessageOverStream {
 
     //maintain only single instance at runtime
     static getInstance = () => {
-        if(!MessageOverStream.instance) {
+        if (!MessageOverStream.instance) {
             MessageOverStream.instance = new MessageOverStream();
             delete MessageOverStream.constructor;
         }
@@ -36,18 +36,19 @@ export class MessageOverStream {
         MessageOverStream.portStream = new ExtensionPortStream(Browser.runtime.connect({ name: STREAM_CHANNELS.EXTENSION_UI }))
         return MessageOverStream.getInstance();
     }
- 
+
     sendMessageOverStream = (typeLabel, eventLabel, message) => {
-    try {
-        if(!MessageOverStream.portStream) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw()
-        if (!isObject(message) && isNullorUndef(message)) throw new Error("Invalid message, (*Only Objects or Array is valid value)");
-        if (!isString(eventLabel) && eventLabel.trim().length === 0) throw new Error("Invalid event Label")
-        if (!isString(typeLabel) && typeLabel.trim().length === 0) throw new Error("Invalid type Label")
-        MessageOverStream.portStream.write({ type: typeLabel, event: eventLabel, data: message });
-    } catch (err) {
-        console.log("Error while sending message to background over streams: ", err.message);
+        try {
+            if (!MessageOverStream.portStream) new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw()
+            if (!isObject(message) && isNullorUndef(message)) throw new Error(ERROR_MESSAGES.INVALID_MSG_ARRAY_AND_OBJECTS_ALLOWED);
+            if (!isString(eventLabel) && eventLabel.trim().length === 0) throw new Error(ERROR_MESSAGES.INVALID_EVENT_LABEL)
+            if (!isString(typeLabel) && typeLabel.trim().length === 0) throw new Error(ERROR_MESSAGES.INVALID_TYPE_LABEL)
+            MessageOverStream.portStream.write({ type: typeLabel, event: eventLabel, data: message });
+        } catch (err) {
+            console.log("Error while sending message to background over streams: ", err.message);
+        }
     }
-}}
+}
 
 export const sendMessageOverStream = MessageOverStream.getInstance().sendMessageOverStream;
 

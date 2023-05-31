@@ -9,7 +9,6 @@ import { useContext, useState, useEffect } from "react";
 import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { newAccountInitialState } from "../../Store/initialState";
-import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
 import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx";
@@ -19,8 +18,9 @@ import {
   COPIED,
   PVT_KEY,
   MNEMONIC,
-  MESSAGE_TYPE_LABELS,
-  MESSAGE_EVENT_LABELS,
+  MESSAGES,
+  // MESSAGE_TYPE_LABELS,
+  // MESSAGE_EVENT_LABELS,
 } from "../../Constants/index.js";
 
 function CreateWalletChain() {
@@ -30,10 +30,10 @@ function CreateWalletChain() {
   const [show, setShow] = useState(false);
   const { setNewAccount, newAccount, setDetailsPage, updateLoading } = useContext(AuthContext);
 
-  const handleCancle = async () => {
-    sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT, { address: newAccount?.evmAddress });
-    setDetailsPage(false);
-  };
+  // const handleCancle = async () => {
+  //   sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT, { address: newAccount?.evmAddress });
+  //   setDetailsPage(false);
+  // };
 
   const handleClick = () => {
     setShow(true);
@@ -86,7 +86,7 @@ function CreateWalletChain() {
           &&
           < StepHeaders active={4} />
         }
-        <MenuRestofHeaders title={"New Wallet Details"} />
+        <MenuRestofHeaders title="New Wallet Details" />
         <div className={style.copyButton}>
           <button
             className={style.cardWhite__addressInput__copyAll}
@@ -198,19 +198,19 @@ function CreateWalletChain() {
       </div >
 
       <div className={style.cancleContinueContainer}>
-
+        {/* 
         <ButtonComp
           bordered={true}
           text={"Cancel"}
           maxWidth={"100%"}
           onClick={handleCancle}
-        />
+        /> */}
 
         <ButtonComp onClick={handleClick} text={"Continue"} maxWidth={"100%"} />
       </div>
       {
         show && <div className="loader">
-          <CongratulationsScreen text={"Your wallet has been created"} />
+          <CongratulationsScreen text={MESSAGES.WALLET_CREATED} />
         </div>
       }
     </>

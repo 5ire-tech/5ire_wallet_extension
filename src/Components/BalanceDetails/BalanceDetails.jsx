@@ -5,7 +5,6 @@ import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import Info from "../../Assets/infoIcon.svg";
 import ThreeDot from "../../Assets/dot3.svg";
-// import Browser from "webextension-polyfill";
 import WalletQr from "../../Assets/QRicon.svg";
 import { useLocation } from "react-router-dom";
 import CopyIcon from "../../Assets/CopyIcon.svg";

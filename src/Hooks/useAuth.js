@@ -77,7 +77,7 @@ export default function useAuth() {
         };
       }
     } catch (error) {
-      console.log("Error : ", error);
+      console.log("Error while verifying password : ", error);
       return {
         error: true,
         data: ERROR_MESSAGES.ERR_OCCURED,

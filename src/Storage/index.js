@@ -18,7 +18,6 @@ export const setSessionStorage = data => {
         browser.storage.session.set(data)
             .then(res => {
                 resolve(true)
-                // console.log("Response after setting data in session storage : ", res)
             })
             .catch(err => {
                 console.log("error while setting data to session storage : ", err)
@@ -31,7 +30,6 @@ export const getSessionStorage = key => {
     return new Promise((resolve, reject) => {
         browser.storage.session.get(key)
             .then(res => {
-                // console.log("Response after getting data from session storage : ", res);
                 resolve(res[key] ? res : null);
             })
             .catch(err => {

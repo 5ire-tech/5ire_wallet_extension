@@ -8,7 +8,7 @@ import { hasLength, isEqual, isNullorUndef, isString, isEmpty, hasProperty } fro
 //local storage data null safety check
 export const getDataLocal = async (key) => {
     try {
-        if (!isString(key) && isEmpty(key.trim())) throw new Error("Query key is invalid");
+        if (!isString(key) && isEmpty(key.trim())) throw new Error(ERROR_MESSAGES.INVALID_QUERY);
         const localState = await localStorage.get(key);
 
         if (!localState?.state && isEqual(key, LABELS.STATE)) {
@@ -44,7 +44,7 @@ export const getDataLocal = async (key) => {
 //session storage data null safety check
 export const getDataSession = async (key) => {
     try {
-        if (!isString(key) && isEmpty(key.trim())) throw new Error("Query key is invalid");
+        if (!isString(key) && isEmpty(key.trim())) throw new Error(ERROR_MESSAGES.INVALID_QUERY);
         const sessionState = await sessionStorage.get(key);
         return sessionState ? sessionState : null;
 
@@ -108,21 +108,16 @@ export class ExtensionStorageHandler {
 
     //push the transactions
     addNewTxHistory = async (data, state, options) => {
-
         const newState = { ...state }
         newState.txHistory[options?.account?.evmAddress].push(data);
-        // newState.txHistory[options.account.accountName].push(data);
         const status = await this._updateStorage(newState);
         return status;
-
     }
 
     //update transaction
     updateTxHistory = async (data, state, options) => {
         const newState = { ...state };
         const txHistory = newState.txHistory[options.account?.evmAddress];
-        // const txHistory = newState.txHistory[options.account.accountName];
-
         const txIndex = txHistory.findIndex((item) => {
             return item.id === data.id
         });
@@ -256,10 +251,7 @@ export class ExtensionStorageHandler {
         const allAccountsBalance = this._setAccountBalance(state, newAccount);
         const pendingTransactionBalance = this._setAllAccountPendingBalance(state, newAccount);
         const txHistory = this._txProperty(state, newAccount.evmAddress);
-        // }
         const newState = { ...state, vault, isLogin: true, currentAccount, txHistory, allAccountsBalance, pendingTransactionBalance };
-
-
 
         this._updateSession(LABELS.ISLOGIN, true);
         return await this._updateStorage(newState);
@@ -350,7 +342,7 @@ export class ExtensionStorageHandler {
         return await this._updateStorage(newState);
     }
 
-    
+
     recoverOldStateAccounts = async (message, state) => {
 
         const { vault, currentAccount } = message;

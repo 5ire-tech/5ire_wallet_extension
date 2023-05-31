@@ -420,7 +420,7 @@ export class InitBackground {
   _checkLapsedPendingTransactions = () => {
     return setInterval(() => {
       if (!InitBackground.isStatusCheckerRunning && !TransactionQueue.transactionIntervalId) {
-        console.log("running the service for transaction status check");
+        // console.log("running the service for transaction status check");
         ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.LAPSED_TRANSACTION_CHECK);
       }
     }, LAPSED_TRANSACTION_CHECKER_TIMER)
