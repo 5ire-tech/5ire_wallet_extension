@@ -1,7 +1,7 @@
 import { ErrorPayload, Error } from "../Utility/error_helper";
 import { ERRCODES, ERROR_MESSAGES } from "../Constants/index";
-// const EXPORT_FORMAT = 'jwk';
 const DERIVED_KEY_FORMAT = 'AES-GCM';
+// const EXPORT_FORMAT = 'jwk';
 const STRING_ENCODING = 'utf-8';
 
 /**

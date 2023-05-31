@@ -60,13 +60,13 @@ export class HybridKeyring extends EventEmitter {
      * @param {*} data 
      * @param {*} password 
      */
-    async recoverWalletUsingJson(data, password) {
-        const key = await protector.importKey(data.exportedKeyString)
-        await protector.decryptWithKey(key, JSON.parse(data.vault));
-        HybridKeyring.vault = data.vault;
-        await protector.decryptWithDetail(password, HybridKeyring.vault);
-        await this.loadPersistData(password, HybridKeyring.vault)
-    }
+    // async recoverWalletUsingJson(data, password) {
+    //     const key = await protector.importKey(data.exportedKeyString)
+    //     await protector.decryptWithKey(key, JSON.parse(data.vault));
+    //     HybridKeyring.vault = data.vault;
+    //     await protector.decryptWithDetail(password, HybridKeyring.vault);
+    //     await this.loadPersistData(password, HybridKeyring.vault)
+    // }
 
 
     /**
