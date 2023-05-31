@@ -167,8 +167,10 @@
   position: fixed;
   bottom: 0;
   gap: 10px;
-  width: 100%;
-  // padding: 0 10px;
-  padding-bottom: 30px;
+  // width: 100%;
+  padding: 0 30px;
+  padding-bottom: 30px !important;
   justify-content: space-around;
+  left: 0;
+    right: 0;
 }
