@@ -13,9 +13,8 @@ import {
   PVT_KEY,
   MNEMONIC,
   MESSAGE_TYPE_LABELS,
-  MESSAGE_EVENT_LABELS,
+  MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
-
 
 function PrivateKey() {
   const { state, privateKey, seedPhrase } = useContext(AuthContext);
@@ -42,8 +41,7 @@ function PrivateKey() {
 
   const handleCopy = (e) => {
     if (e.target.name === MNEMONIC) navigator.clipboard.writeText(seedPhrase);
-    else if (e.target.name === PVT_KEY)
-      navigator.clipboard.writeText(privateKey);
+    else if (e.target.name === PVT_KEY) navigator.clipboard.writeText(privateKey);
     toast.success(COPIED);
   };
 
@@ -60,8 +58,7 @@ function PrivateKey() {
               <div className={style.wallet__addressInput}>
                 <label>EVM Private Key:</label>
                 <p
-                  className={`${style.wallet__addressInput__copyText} ${style.wallet__addressInput__privateCopyText}`}
-                >
+                  className={`${style.wallet__addressInput__copyText} ${style.wallet__addressInput__privateCopyText}`}>
                   <span className={isOpen.open1 && "blurContact"}>
                     {privateKey ? privateKey : ""}
                   </span>
@@ -106,8 +103,7 @@ function PrivateKey() {
               <div className={style.wallet__addressInput}>
                 <label>Mnemonic Phrase:</label>
                 <p
-                  className={`${style.wallet__addressInput__copyText} ${style.wallet__addressInput__privateCopyText}`}
-                >
+                  className={`${style.wallet__addressInput__copyText} ${style.wallet__addressInput__privateCopyText}`}>
                   <span className={isOpen.open2 && "blurContact"}>
                     {seedPhrase ? seedPhrase : ""}
                   </span>

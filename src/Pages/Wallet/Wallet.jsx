@@ -12,7 +12,7 @@ function Wallet() {
 
   useEffect(() => {
     updateEstimatedGas(null);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   const activeSend = () => {
@@ -28,32 +28,23 @@ function Wallet() {
           <div className={style.wallet__sendSwapbtn}>
             <button
               onClick={activeSend}
-              className={`${style.firstButton} ${style.wallet__sendSwapbtn__buttons
-                } 
-              ${activeTab === "send" &&
-                style.wallet__sendSwapbtn__buttons__active
-                }
-            `}
-            >
+              className={`${style.firstButton} ${style.wallet__sendSwapbtn__buttons} 
+              ${activeTab === "send" && style.wallet__sendSwapbtn__buttons__active}
+            `}>
               <img src={TransferLogo} alt="transferLogo" />
               Transfer
             </button>
             <button
               onClick={activeSwap}
-              className={`${style.secondtButton} ${style.wallet__sendSwapbtn__buttons
-                }  ${activeTab === "swap" &&
-                style.wallet__sendSwapbtn__buttons__active
-                }`}
-            >
+              className={`${style.secondtButton} ${style.wallet__sendSwapbtn__buttons}  ${
+                activeTab === "swap" && style.wallet__sendSwapbtn__buttons__active
+              }`}>
               <img src={SwapLogo} alt="swapLogo" /> Swap
             </button>
             <div
-              className={`${activeTab === "send" &&
-                style.activeFirst
-                } ${activeTab === "swap" &&
-                style.activeSecond
-                } ${style.animations}`}
-            ></div>
+              className={`${activeTab === "send" && style.activeFirst} ${
+                activeTab === "swap" && style.activeSecond
+              } ${style.animations}`}></div>
           </div>
         </div>
         {activeTab === "send" && (

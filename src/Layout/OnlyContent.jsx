@@ -8,8 +8,7 @@ function OnlyContent({ children }) {
     <div className={`${style.fixedLayout}`}>
       <div className={style.fixedLayout__inner}>
         <Content
-          className={`${style.fixedLayout__content} ${style.fixedLayout__content__paddingX}`}
-        >
+          className={`${style.fixedLayout__content} ${style.fixedLayout__content__paddingX}`}>
           {children}
         </Content>
       </div>

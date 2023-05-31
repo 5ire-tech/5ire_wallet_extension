@@ -19,7 +19,6 @@ function History() {
     setOpen1(false);
   };
 
-
   const handleHistoryOpen = (data) => {
     if (txHistory.hasOwnProperty(currentAccount.evmAddress)) {
       setSelectedTransaction(data);
@@ -34,7 +33,7 @@ function History() {
       </div>
       <div className={style.histryDataScrol}>
         {txHistory[currentAccount?.evmAddress] &&
-          txHistory[currentAccount?.evmAddress].length > 0 ? (
+        txHistory[currentAccount?.evmAddress].length > 0 ? (
           arrayReverser(
             txHistory[currentAccount?.evmAddress].filter(
               (tx) => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()
@@ -65,18 +64,9 @@ function History() {
         onClose={onClose1}
         open={open1}
         closeIcon={
-          <img
-            src={ModalCloseIcon}
-            alt="close"
-            draggable={false}
-            className="closeModalIcon"
-          />
-        }
-      >
-        <TransectionHistry
-          selectedTransaction={selectedTransaction}
-          account={currentAccount}
-        />
+          <img src={ModalCloseIcon} alt="close" draggable={false} className="closeModalIcon" />
+        }>
+        <TransectionHistry selectedTransaction={selectedTransaction} account={currentAccount} />
       </Drawer>
     </div>
   );

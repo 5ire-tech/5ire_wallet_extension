@@ -101,7 +101,6 @@
 //   );
 // };
 
-
 //approve the connection to pass the accounts
 
 // export const ApproveLogin = () => {
@@ -109,7 +108,6 @@
 //   const account = state.currentAccount;
 //   const { activeSession } = externalControlsState;
 //   const navigate = useNavigate();
-
 
 //   //handle the approval and reject click
 //   const handleClick = async (isApproved) => {
@@ -137,7 +135,6 @@
 //     navigate(ROUTES.WALLET);
 //   }
 
-
 //   return (
 //     <>
 //       <div className={`${style.menuItems__cancleContinue} approveBtn`}>
@@ -158,7 +155,6 @@
 //   );
 // };
 
-
 //approve the evm transactions
 
 // export const ApproveTx = () => {
@@ -178,7 +174,6 @@
 //     } else setDisableApproval(!estimatedGas);
 //     // eslint-disable-next-line react-hooks/exhaustive-deps
 //   }, [estimatedGas, activeSession.message?.value, balance?.evmBalance, currentAccount?.evmAddress, currentNetwork]);
-
 
 //   function handleClick(isApproved) {
 //     if (isApproved) {

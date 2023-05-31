@@ -27,18 +27,20 @@ function CreateNewWallet() {
     updateState,
     newWalletName,
     setDetailsPage,
-    setNewWalletName,
+    setNewWalletName
   } = useContext(AuthContext);
 
   const { isLogin } = state;
 
   useEffect(() => {
     if (isLogin)
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.GET_ACCOUNTS, {});
+      sendRuntimeMessage(
+        MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+        MESSAGE_EVENT_LABELS.GET_ACCOUNTS,
+        {}
+      );
 
-    if (newWalletName.trim().length >= 2)
-      setDisable(false);
-
+    if (newWalletName.trim().length >= 2) setDisable(false);
   }, [isLogin, newWalletName]);
 
   const handleChange = (e) => {
@@ -47,68 +49,56 @@ function CreateNewWallet() {
   };
 
   const validateAccName = () => {
-
     if (newWalletName.trim().length === 0) {
       setWarrning(ERROR_MESSAGES.INPUT_REQUIRED);
       setDisable(true);
-    }
-    else if (newWalletName.trim().length < 2 || newWalletName.trim().length >= 19) {
+    } else if (newWalletName.trim().length < 2 || newWalletName.trim().length >= 19) {
       setWarrning(ERROR_MESSAGES.INPUT_BETWEEN_2_TO_18);
       setDisable(true);
-    }
-
-    else if (!REGEX.WALLET_NAME.test(newWalletName)) {
+    } else if (!REGEX.WALLET_NAME.test(newWalletName)) {
       setWarrning(ERROR_MESSAGES.ALPHANUMERIC_CHARACTERS);
       setDisable(true);
-    }
-
-    else {
+    } else {
       setWarrning("");
       setDisable(false);
     }
   };
 
   const handleClick = (e) => {
-    if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
-
+    if (e.key === LABELS.ENTER || e.key === undefined) {
       if (!warrning && newWalletName.trim()) {
-
         if (isLogin) {
           const match = allAccounts?.find((a) => a.accountName === newWalletName.trim());
           if (match) {
             setWarrning(ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS);
           } else {
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.ADD_ACCOUNT, { name: newWalletName.trim() });
+            sendRuntimeMessage(
+              MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+              MESSAGE_EVENT_LABELS.ADD_ACCOUNT,
+              { name: newWalletName.trim() }
+            );
             setDetailsPage(true);
           }
-        }
-        else {
+        } else {
           setAccName(newWalletName.trim());
           navigate(ROUTES.SET_PASS + "/" + LABELS.CREATE);
         }
       }
     }
-  }
-
+  };
 
   const handleCancle = () => {
     updateState(LABELS.ACCOUNT_NAME, null, false);
     if (isLogin) {
       setDetailsPage(false);
       navigate(ROUTES.WALLET);
-    }
-    else navigate(ROUTES.DEFAULT);
+    } else navigate(ROUTES.DEFAULT);
   };
-
 
   return (
     <>
       <div className={style.cardWhite} onKeyDown={handleClick}>
-        {
-          !isLogin &&
-          <StepHeaders active={2} />
-
-        }
+        {!isLogin && <StepHeaders active={2} />}
         <MenuRestofHeaders logosilver={true} title="5ire Wallet" />
         <div className={style.cardWhite__cardInner}>
           <div className={style.cardWhite__cardInner__innercontact}>
@@ -124,7 +114,9 @@ function CreateNewWallet() {
                 onChange={handleChange}
                 keyUp={validateAccName}
                 placeholder={"Enter wallet name"}
-                onDrop={e => { e.preventDefault() }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                }}
               />
               <p className="errorText">{warrning}</p>
             </div>

@@ -16,18 +16,16 @@ import {
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
 
-
 function EnterPassword() {
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [data, setData] = useState("");
   const [isDisable, setDisable] = useState(true);
   const { inputError, setInputError, passVerified, setPassVerified } = useContext(AuthContext);
 
   useEffect(() => {
-    setInputError('');
+    setInputError("");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (inputError || !data) {
@@ -45,29 +43,29 @@ function EnterPassword() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [passVerified]);
 
-
   const handleChange = (e) => {
     setData(e.target.value);
     setInputError("");
-  }
-
+  };
 
   const validateInput = () => {
     if (isEmpty(data)) {
       setInputError(ERROR_MESSAGES.INPUT_REQUIRED);
       setDisable(true);
     }
-  }
+  };
 
   const handleClick = async (e) => {
-
-    if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
+    if (e.key === LABELS.ENTER || e.key === undefined) {
       if (!inputError) {
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.VERIFY_USER_PASSWORD, { password: data });
+        sendRuntimeMessage(
+          MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+          MESSAGE_EVENT_LABELS.VERIFY_USER_PASSWORD,
+          { password: data }
+        );
       }
     }
-
-  }
+  };
 
   return (
     <>
@@ -76,9 +74,7 @@ function EnterPassword() {
         <div className={`flexedContent`}>
           <div className={style.enterPassword}>
             <div className={style.commonHeadeing}>
-              <p>
-                Enter your wallet password to reveal secret keys
-              </p>
+              <p>Enter your wallet password to reveal secret keys</p>
             </div>
             <InputFieldSimple
               value={data}
@@ -89,15 +85,13 @@ function EnterPassword() {
               onChange={handleChange}
               placeholderBaseColor={true}
               placeholder={"Enter Password"}
-              onDrop={e => { e.preventDefault() }}
+              onDrop={(e) => {
+                e.preventDefault();
+              }}
             />
             <p className={style.errorText}>{inputError ? inputError : ""}</p>
             <div>
-              <ButtonComp
-                onClick={handleClick}
-                text="Continue"
-                isDisable={isDisable}
-              ></ButtonComp>
+              <ButtonComp onClick={handleClick} text="Continue" isDisable={isDisable}></ButtonComp>
             </div>
           </div>
           {/* <ModalCustom

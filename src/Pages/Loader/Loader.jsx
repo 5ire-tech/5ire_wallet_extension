@@ -1,5 +1,5 @@
 import { Player } from "@lottiefiles/react-lottie-player";
-import JsonData from "../../Assets/JsonFiles/loader"
+import JsonData from "../../Assets/JsonFiles/loader";
 export default function Loader() {
   return (
     <div className="loader">
@@ -9,9 +9,7 @@ export default function Loader() {
           loop={true}
           controls={true}
           src={JsonData}
-          style={{ height: "190px", width: "190px" }}
-        >
-        </Player>
+          style={{ height: "190px", width: "190px" }}></Player>
       </div>
     </div>
   );

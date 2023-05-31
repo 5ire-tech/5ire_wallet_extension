@@ -15,42 +15,57 @@ import {
   MESSAGE_TYPE_LABELS,
   STATE_CHANGE_ACTIONS,
   EVM_JSON_RPC_METHODS,
-  MESSAGE_EVENT_LABELS,
+  MESSAGE_EVENT_LABELS
 } from "../../Constants/index.js";
 
 function LoginApprove() {
-
   //get the origin for approval connection
-  const { externalControlsState: { activeSession }, state } = useContext(AuthContext);
+  const {
+    externalControlsState: { activeSession },
+    state
+  } = useContext(AuthContext);
   const account = state.currentAccount;
   const navigate = useNavigate();
 
-
   //handle the approval and reject click
   const handleClick = async (isApproved) => {
-
     if (isApproved) {
       //add the app into connected list
-      await ExtensionStorageHandler.updateStorage(STATE_CHANGE_ACTIONS.APP_CONNECTION_UPDATE, { connected: true, origin: activeSession.origin }, { localStateKey: LABELS.EXTERNAL_CONTROLS })
+      await ExtensionStorageHandler.updateStorage(
+        STATE_CHANGE_ACTIONS.APP_CONNECTION_UPDATE,
+        { connected: true, origin: activeSession.origin },
+        { localStateKey: LABELS.EXTERNAL_CONTROLS }
+      );
 
       //check if current connection request is for evm
-      const isEthReq = isEqual(activeSession.method, EVM_JSON_RPC_METHODS.ETH_REQUEST_ACCOUNT) || isEqual(activeSession.method, EVM_JSON_RPC_METHODS.ETH_ACCOUNTS)
+      const isEthReq =
+        isEqual(activeSession.method, EVM_JSON_RPC_METHODS.ETH_REQUEST_ACCOUNT) ||
+        isEqual(activeSession.method, EVM_JSON_RPC_METHODS.ETH_ACCOUNTS);
 
-      const res = isEthReq ? { method: activeSession.method, result: [account?.evmAddress] } : {
-        result: {
-          evmAddress: account?.evmAddress,
-          nativeAddress: account?.nativeAddress,
-        }
-      };
+      const res = isEthReq
+        ? { method: activeSession.method, result: [account?.evmAddress] }
+        : {
+            result: {
+              evmAddress: account?.evmAddress,
+              nativeAddress: account?.nativeAddress
+            }
+          };
 
       //send the message to tab after approve request
-      sendMessageToTab(activeSession.tabId, new TabMessagePayload(activeSession.id, res, activeSession.method))
+      sendMessageToTab(
+        activeSession.tabId,
+        new TabMessagePayload(activeSession.id, res, activeSession.method)
+      );
     }
 
     //send closure message to backend
-    sendMessageOverStream(MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL, MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION, { approve: isApproved });
+    sendMessageOverStream(
+      MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL,
+      MESSAGE_EVENT_LABELS.CLOSE_POPUP_SESSION,
+      { approve: isApproved }
+    );
     navigate(ROUTES.WALLET);
-  }
+  };
 
   return (
     <>
@@ -71,18 +86,13 @@ function LoginApprove() {
         </div>
       </div>
       <div className={`${style.cancleContinueContainer} approveBtn`}>
-        <ButtonComp
-          onClick={() => handleClick(true)}
-          text={"Approve"}
-          maxWidth={"100%"}
-        />
+        <ButtonComp onClick={() => handleClick(true)} text={"Approve"} maxWidth={"100%"} />
         <ButtonComp
           bordered={true}
           text={"Cancel"}
           maxWidth={"100%"}
           onClick={() => handleClick(false)}
         />
-
       </div>
     </>
   );

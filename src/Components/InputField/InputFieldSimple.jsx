@@ -12,14 +12,14 @@ function InputFieldSimple({
   minHeight,
   coloredBg,
   placeholder,
-  placeholderBaseColor,
+  placeholderBaseColor
 }) {
-
   return (
     <Input.Password
       onDrop={onDrop}
-      className={`${style.inputSimple} ${style.inputPassword} ${placeholderBaseColor ? "placeholderBaseColor" : ""
-        } ${coloredBg ? style.inputField__coloredBg : ""}`}
+      className={`${style.inputSimple} ${style.inputPassword} ${
+        placeholderBaseColor ? "placeholderBaseColor" : ""
+      } ${coloredBg ? style.inputField__coloredBg : ""}`}
       placeholder={placeholder}
       style={{ minHeight: minHeight }}
       onChange={onChange}
@@ -56,13 +56,12 @@ export const InputField = ({
   onChange,
   coloredBg,
   addonAfter,
-  suffix = '',
+  suffix = "",
   inputSelect,
   placeholder,
   defaultValue,
-  placeholderBaseColor,
+  placeholderBaseColor
 }) => {
-
   return (
     <div className={`${style.boxStyle} inputField ${mb0 ? style.mb0 : ""}`}>
       <label htmlFor={name} className={`${style.boxStyle__label}`}>
@@ -80,9 +79,11 @@ export const InputField = ({
         onKeyUp={keyUp}
         onKeyDown={keyDown}
         onWheel={(e) => e.target.blur()}
-        className={`${style.inputField__input} ${inputSelect ? style.inputField__inputSelect : ""
-          }  ${placeholderBaseColor ? "placeholderBaseColor" : ""} ${coloredBg ? style.inputField__coloredBg : ""
-          }`}
+        className={`${style.inputField__input} ${
+          inputSelect ? style.inputField__inputSelect : ""
+        }  ${placeholderBaseColor ? "placeholderBaseColor" : ""} ${
+          coloredBg ? style.inputField__coloredBg : ""
+        }`}
         addonAfter={addonAfter}
         defaultValue={defaultValue}
         placeholder={placeholder}
@@ -103,9 +104,8 @@ export const InputFieldOnly = ({
   onDrop,
   coloredBg,
   placeholder,
-  placeholderBaseColor,
+  placeholderBaseColor
 }) => {
-
   return (
     <div className={`${style.boxStyle} inputFieldOnly `}>
       <label className={style.boxStyle__label}>{label}</label>
@@ -114,8 +114,9 @@ export const InputFieldOnly = ({
         autoComplete="off"
         value={value}
         type={type ? type : "text"}
-        className={`${style.inputSimple} ${placeholderBaseColor ? "placeholderBaseColor" : ""
-          } ${coloredBg ? style.inputField__coloredBg : ""}`}
+        className={`${style.inputSimple} ${placeholderBaseColor ? "placeholderBaseColor" : ""} ${
+          coloredBg ? style.inputField__coloredBg : ""
+        }`}
         placeholder={placeholder}
         style={{ minHeight: minHeight }}
         onChange={onChange}

@@ -3,10 +3,10 @@ import App from "./App";
 import React from "react";
 import Context from "./Store";
 import ReactDOM from "react-dom/client";
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
 import { MemoryRouter } from "react-router-dom";
 import { EMTY_STR, LABELS } from "./Constants";
-import { getDataLocal } from "../src/Storage/loadstore"
+import { getDataLocal } from "../src/Storage/loadstore";
 import { sessionStorage } from "../src/Storage/index";
 import { MessageOverStream } from "./Utility/message_helper";
 // import ExtensionPortStream from "./Scripts/extension-port-stream-mod/index";
@@ -32,9 +32,7 @@ Number.prototype.noExponents = function () {
     mag -= str.length;
     while (mag--) z += "0";
     return str + z;
-  } catch (error) {
-
-  }
+  } catch (error) {}
 };
 
 //find the root element for component injection
@@ -67,15 +65,12 @@ const initApp = (data, externalControlsState) => {
     const loginState = await sessionStorage.get(LABELS.ISLOGIN);
     currentLocalState.isLogin = !loginState?.isLogin ? false : currentLocalState?.isLogin;
     initApp(currentLocalState, externalControlsState);
-
   } catch (err) {
     console.log("Error in the initlization of main app: ", err);
     root.render(
       <div className="errPage">
         <center>
-          <h2>
-            Something Bad Happend 😟
-          </h2>
+          <h2>Something Bad Happend 😟</h2>
         </center>
       </div>
     );

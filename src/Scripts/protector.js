@@ -1,8 +1,8 @@
 import { ErrorPayload, Error } from "../Utility/error_helper";
 import { ERRCODES, ERROR_MESSAGES } from "../Constants/index";
-const DERIVED_KEY_FORMAT = 'AES-GCM';
+const DERIVED_KEY_FORMAT = "AES-GCM";
 // const EXPORT_FORMAT = 'jwk';
-const STRING_ENCODING = 'utf-8';
+const STRING_ENCODING = "utf-8";
 
 /**
  * Encrypts a data object that can be any serializable value using
@@ -14,16 +14,11 @@ const STRING_ENCODING = 'utf-8';
  * @param salt - The salt to use to encrypt.
  * @returns The encrypted vault.
  */
-export async function encrypt(
-    password,
-    dataObj,
-    key = null,
-    salt = generateSalt(),
-) {
-    const cryptoKey = key || (await keyFromPassword(password, salt));
-    const payload = await encryptWithKey(cryptoKey, dataObj);
-    payload.salt = salt;
-    return JSON.stringify(payload);
+export async function encrypt(password, dataObj, key = null, salt = generateSalt()) {
+  const cryptoKey = key || (await keyFromPassword(password, salt));
+  const payload = await encryptWithKey(cryptoKey, dataObj);
+  payload.salt = salt;
+  return JSON.stringify(payload);
 }
 
 /**
@@ -35,19 +30,15 @@ export async function encrypt(
  * @param salt - The salt used to encrypt.
  * @returns The vault and exported key string.
  */
-export async function encryptWithDetail(
-    password,
-    dataObj,
-    salt = generateSalt(),
-) {
-    const key = await keyFromPassword(password, salt, true);
-    // const exportedKeyString = await exportKey(key);
-    const vault = await encrypt(password, dataObj, key, salt);
+export async function encryptWithDetail(password, dataObj, salt = generateSalt()) {
+  const key = await keyFromPassword(password, salt, true);
+  // const exportedKeyString = await exportKey(key);
+  const vault = await encrypt(password, dataObj, key, salt);
 
-    return {
-        vault,
-        // exportedKeyString,
-    };
+  return {
+    vault
+    // exportedKeyString,
+  };
 }
 
 /**
@@ -59,30 +50,27 @@ export async function encryptWithDetail(
  * @param dataObj - A serializable JavaScript object to encrypt.
  * @returns The encrypted data.
  */
-export async function encryptWithKey(
+export async function encryptWithKey(key, dataObj) {
+  const data = JSON.stringify(dataObj);
+  const dataBuffer = Buffer.from(data, STRING_ENCODING);
+  const vector = global.crypto.getRandomValues(new Uint8Array(16));
+
+  const buf = await global.crypto.subtle.encrypt(
+    {
+      name: DERIVED_KEY_FORMAT,
+      iv: vector
+    },
     key,
-    dataObj,
-) {
-    const data = JSON.stringify(dataObj);
-    const dataBuffer = Buffer.from(data, STRING_ENCODING);
-    const vector = global.crypto.getRandomValues(new Uint8Array(16));
+    dataBuffer
+  );
 
-    const buf = await global.crypto.subtle.encrypt(
-        {
-            name: DERIVED_KEY_FORMAT,
-            iv: vector,
-        },
-        key,
-        dataBuffer,
-    );
-
-    const buffer = new Uint8Array(buf);
-    const vectorStr = Buffer.from(vector).toString('base64');
-    const vaultStr = Buffer.from(buffer).toString('base64');
-    return {
-        data: vaultStr,
-        iv: vectorStr,
-    };
+  const buffer = new Uint8Array(buf);
+  const vectorStr = Buffer.from(vector).toString("base64");
+  const vaultStr = Buffer.from(buffer).toString("base64");
+  return {
+    data: vaultStr,
+    iv: vectorStr
+  };
 }
 
 /**
@@ -94,18 +82,14 @@ export async function encryptWithKey(
  * @param key - The key to decrypt with.
  * @returns The decrypted data.
  */
-export async function decrypt(
-    password,
-    text,
-    key = null,
-) {
-    const payload = JSON.parse(text);
-    const { salt } = payload;
+export async function decrypt(password, text, key = null) {
+  const payload = JSON.parse(text);
+  const { salt } = payload;
 
-    const cryptoKey = key || (await keyFromPassword(password, salt));
+  const cryptoKey = key || (await keyFromPassword(password, salt));
 
-    const result = await decryptWithKey(cryptoKey, payload);
-    return result;
+  const result = await decryptWithKey(cryptoKey, payload);
+  return result;
 }
 
 /**
@@ -116,21 +100,18 @@ export async function decrypt(
  * @param text - The encrypted vault to decrypt.
  * @returns The decrypted vault along with the salt and exported key.
  */
-export async function decryptWithDetail(
-    password,
-    text,
-) {
-    const payload = JSON.parse(text);
-    const { salt } = payload;
-    const key = await keyFromPassword(password, salt, true);
-    // const exportedKeyString = await exportKey(key);
-    const vault = await decrypt(password, text, key);
+export async function decryptWithDetail(password, text) {
+  const payload = JSON.parse(text);
+  const { salt } = payload;
+  const key = await keyFromPassword(password, salt, true);
+  // const exportedKeyString = await exportKey(key);
+  const vault = await decrypt(password, text, key);
 
-    return {
-        // exportedKeyString,
-        vault,
-        salt,
-    };
+  return {
+    // exportedKeyString,
+    vault,
+    salt
+  };
 }
 
 /**
@@ -141,30 +122,26 @@ export async function decryptWithDetail(
  * @param payload - The payload to decrypt, returned from an encryption method.
  * @returns The decrypted data.
  */
-export async function decryptWithKey(
-    key,
-    payload,
-) {
-    const encryptedData = Buffer.from(payload.data, 'base64');
-    const vector = Buffer.from(payload.iv, 'base64');
+export async function decryptWithKey(key, payload) {
+  const encryptedData = Buffer.from(payload.data, "base64");
+  const vector = Buffer.from(payload.iv, "base64");
 
-    let decryptedObj;
-    try {
-        const result = await crypto.subtle.decrypt(
-            { name: DERIVED_KEY_FORMAT, iv: vector },
-            key,
-            encryptedData,
-        );
+  let decryptedObj;
+  try {
+    const result = await crypto.subtle.decrypt(
+      { name: DERIVED_KEY_FORMAT, iv: vector },
+      key,
+      encryptedData
+    );
 
-        const decryptedData = new Uint8Array(result);
-        const decryptedStr = Buffer.from(decryptedData).toString(STRING_ENCODING);
-        decryptedObj = JSON.parse(decryptedStr);
-    } catch (e) {
-        new Error(new ErrorPayload(ERRCODES.INVALID_INPUT, ERROR_MESSAGES.INCORRECT_PASS)).throw();
-    
-    }
+    const decryptedData = new Uint8Array(result);
+    const decryptedStr = Buffer.from(decryptedData).toString(STRING_ENCODING);
+    decryptedObj = JSON.parse(decryptedStr);
+  } catch (e) {
+    new Error(new ErrorPayload(ERRCODES.INVALID_INPUT, ERROR_MESSAGES.INCORRECT_PASS)).throw();
+  }
 
-    return decryptedObj;
+  return decryptedObj;
 }
 
 /**
@@ -205,36 +182,29 @@ export async function decryptWithKey(
  * @param exportable - Should the derived key be exportable.
  * @returns A CryptoKey for encryption and decryption.
  */
-export async function keyFromPassword(
-    password,
-    salt,
-    exportable = false,
-) {
-    const passBuffer = Buffer.from(password, STRING_ENCODING);
-    const saltBuffer = Buffer.from(salt, 'base64');
+export async function keyFromPassword(password, salt, exportable = false) {
+  const passBuffer = Buffer.from(password, STRING_ENCODING);
+  const saltBuffer = Buffer.from(salt, "base64");
 
-    const key = await global.crypto.subtle.importKey(
-        'raw',
-        passBuffer,
-        { name: 'PBKDF2' },
-        false,
-        ['deriveBits', 'deriveKey'],
-    );
+  const key = await global.crypto.subtle.importKey("raw", passBuffer, { name: "PBKDF2" }, false, [
+    "deriveBits",
+    "deriveKey"
+  ]);
 
-    const derivedKey = await global.crypto.subtle.deriveKey(
-        {
-            name: 'PBKDF2',
-            salt: saltBuffer,
-            iterations: 10000,
-            hash: 'SHA-256',
-        },
-        key,
-        { name: DERIVED_KEY_FORMAT, length: 256 },
-        exportable,
-        ['encrypt', 'decrypt'],
-    );
+  const derivedKey = await global.crypto.subtle.deriveKey(
+    {
+      name: "PBKDF2",
+      salt: saltBuffer,
+      iterations: 10000,
+      hash: "SHA-256"
+    },
+    key,
+    { name: DERIVED_KEY_FORMAT, length: 256 },
+    exportable,
+    ["encrypt", "decrypt"]
+  );
 
-    return derivedKey;
+  return derivedKey;
 }
 
 /**
@@ -244,13 +214,13 @@ export async function keyFromPassword(
  * @returns The string ecoded as a byte array.
  */
 export function serializeBufferFromStorage(str) {
-    const stripStr = str.slice(0, 2) === '0x' ? str.slice(2) : str;
-    const buf = new Uint8Array(stripStr.length / 2);
-    for (let i = 0; i < stripStr.length; i += 2) {
-        const seg = stripStr.substr(i, 2);
-        buf[i / 2] = parseInt(seg, 16);
-    }
-    return buf;
+  const stripStr = str.slice(0, 2) === "0x" ? str.slice(2) : str;
+  const buf = new Uint8Array(stripStr.length / 2);
+  for (let i = 0; i < stripStr.length; i += 2) {
+    const seg = stripStr.substr(i, 2);
+    buf[i / 2] = parseInt(seg, 16);
+  }
+  return buf;
 }
 
 /**
@@ -260,11 +230,11 @@ export function serializeBufferFromStorage(str) {
  * @returns A hex encoded string.
  */
 export function serializeBufferForStorage(buffer) {
-    let result = '0x';
-    buffer.forEach((value) => {
-        result += unprefixedHex(value);
-    });
-    return result;
+  let result = "0x";
+  buffer.forEach((value) => {
+    result += unprefixedHex(value);
+  });
+  return result;
 }
 
 /**
@@ -275,11 +245,11 @@ export function serializeBufferForStorage(buffer) {
  * @returns An unprefixed hex string.
  */
 function unprefixedHex(num) {
-    let hex = num.toString(16);
-    while (hex.length < 2) {
-        hex = `0${hex}`;
-    }
-    return hex;
+  let hex = num.toString(16);
+  while (hex.length < 2) {
+    hex = `0${hex}`;
+  }
+  return hex;
 }
 
 /**
@@ -289,15 +259,13 @@ function unprefixedHex(num) {
  * @returns A randomly generated string.
  */
 export function generateSalt(byteCount = 32) {
-    const view = new Uint8Array(byteCount);
-    global.crypto.getRandomValues(view);
-    // Uint8Array is a fixed length array and thus does not have methods like pop, etc
-    // so TypeScript complains about casting it to an array. Array.from() works here for
-    // getting the proper type, but it results in a functional difference. In order to
-    // cast, you have to first cast view to unknown then cast the unknown value to number[]
-    // TypeScript ftw: double opt in to write potentially type-mismatched code.
-    const b64encoded = btoa(
-        String.fromCharCode.apply(null, view),
-    );
-    return b64encoded;
+  const view = new Uint8Array(byteCount);
+  global.crypto.getRandomValues(view);
+  // Uint8Array is a fixed length array and thus does not have methods like pop, etc
+  // so TypeScript complains about casting it to an array. Array.from() works here for
+  // getting the proper type, but it results in a functional difference. In order to
+  // cast, you have to first cast view to unknown then cast the unknown value to number[]
+  // TypeScript ftw: double opt in to write potentially type-mismatched code.
+  const b64encoded = btoa(String.fromCharCode.apply(null, view));
+  return b64encoded;
 }

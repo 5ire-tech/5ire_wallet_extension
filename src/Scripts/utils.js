@@ -1,4 +1,4 @@
-import { v4 as uuid4 } from 'uuid';
+import { v4 as uuid4 } from "uuid";
 import { EMTY_STR } from "../Constants";
 import Browser from "webextension-polyfill";
 import { isNullorUndef } from "../Utility/utility";
@@ -14,7 +14,6 @@ export const getCurrentTabDetails = async () => {
   if (!tabsDetails[0]?.url) return null;
   return { tabId: tabsDetails[0]?.id, tabUrl: getUrlOrigin(tabsDetails[0]?.url) };
 };
-
 
 //bind the noExponents function with the Number Constructor
 export const bindNoExponentWithNumber = () => {
@@ -36,25 +35,23 @@ export const bindNoExponentWithNumber = () => {
       mag -= str.length;
       while (mag--) z += "0";
       return str + z;
-    } catch (error) {
-
-    }
+    } catch (error) {}
   };
-}
+};
 
 export const isManifestV3 = Browser.runtime.getManifest().manifest_version === 3;
 
 //tx notification message generator
 export const txNotificationStringTemplate = (status, hash, showHashLength = 30) => {
-  return (`Transaction ${status.toLowerCase()} ${hash.slice(0, showHashLength)}...`);
-}
+  return `Transaction ${status.toLowerCase()} ${hash.slice(0, showHashLength)}...`;
+};
 
 //check if app is already is connected
 export const isAlreadyConnected = (connectedApps, origin) => {
   return isNullorUndef(connectedApps[origin]) ? false : connectedApps[origin].isConnected;
-}
+};
 
 //get uuid
 export const getUUID = () => {
   return uuid4();
-}
+};

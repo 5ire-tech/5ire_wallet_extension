@@ -20,7 +20,6 @@ import {
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
 
-
 function ImportWallet() {
   const navigate = useNavigate();
   const [isDisable, setDisable] = useState(true);
@@ -28,103 +27,88 @@ function ImportWallet() {
   const [warrning, setWarrning] = useState({ acc: "", key: "" });
   const { state, userPass, allAccounts, inputError, setInputError } = useContext(AuthContext);
   const { isLogin } = state;
-  const [show, setShow] = useState(false)
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     if (isLogin) {
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.GET_ACCOUNTS, {});
+      sendRuntimeMessage(
+        MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+        MESSAGE_EVENT_LABELS.GET_ACCOUNTS,
+        {}
+      );
     }
   }, [isLogin]);
 
-
   useEffect(() => {
-    if (inputError)
-      setWarrning(p => ({ ...p, key: inputError }));
+    if (inputError) setWarrning((p) => ({ ...p, key: inputError }));
   }, [inputError]);
 
-
   useEffect(() => {
-
-    if ((!data.accName.length || !data.key || data.accName.length < 2))
-      setDisable(true);
-    else
-      if (!warrning.acc && !warrning.key)
-        setDisable(false);
-      else
-        setDisable(true);
-
+    if (!data.accName.length || !data.key || data.accName.length < 2) setDisable(true);
+    else if (!warrning.acc && !warrning.key) setDisable(false);
+    else setDisable(true);
   }, [data.accName, data.key, warrning]);
-
 
   const handleChange = (e) => {
     setData((p) => ({ ...p, [e.target.name]: e.target.value }));
-    if (e.target.name === LABELS.KEY)
-      setInputError("");
-
+    if (e.target.name === LABELS.KEY) setInputError("");
   };
 
-
   const validateAccName = () => {
-
     if (data.accName.trim().length < 2 || data.accName.trim().length >= 16) {
-      setWarrning(p => ({
+      setWarrning((p) => ({
         ...p,
         acc: ERROR_MESSAGES.INPUT_BETWEEN_2_TO_18
       }));
       setDisable(true);
-    }
-    else if (!REGEX.WALLET_NAME.test(data.accName)) {
-      setWarrning(p => ({ ...p, acc: ERROR_MESSAGES.ALPHANUMERIC_CHARACTERS }))
+    } else if (!REGEX.WALLET_NAME.test(data.accName)) {
+      setWarrning((p) => ({ ...p, acc: ERROR_MESSAGES.ALPHANUMERIC_CHARACTERS }));
       setDisable(true);
-    }
-    else
-      setWarrning(p => ({ ...p, acc: "" }));
-
+    } else setWarrning((p) => ({ ...p, acc: "" }));
   };
 
-
   const validateKey = () => {
-
     if (isEmpty(data.key)) {
-      setWarrning(p => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
+      setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
       setDisable(true);
-    }
-    else if (!validateMnemonic(data?.key?.trim())) {
-      setWarrning(p => ({ ...p, key: ERROR_MESSAGES.INVALID_MNEMONIC }));
+    } else if (!validateMnemonic(data?.key?.trim())) {
+      setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INVALID_MNEMONIC }));
       setDisable(true);
-    }
-    else
-      setWarrning(p => ({ ...p, key: EMTY_STR }));
-
+    } else setWarrning((p) => ({ ...p, key: EMTY_STR }));
   };
 
   const handleClick = async (e) => {
-    if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
+    if (e.key === LABELS.ENTER || e.key === undefined) {
       if (!warrning.key && !warrning.acc && data?.accName && data?.key) {
-
         if (userPass && !isLogin) {
-
-          setShow(true)
+          setShow(true);
           setTimeout(() => {
-            setShow(false)
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE, { password: userPass, opts: { mnemonic: data?.key?.trim(), name: data?.accName?.trim() }, type: LABELS.IMPORT });
-          }, 2000)
-
-
+            setShow(false);
+            sendRuntimeMessage(
+              MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+              MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE,
+              {
+                password: userPass,
+                opts: { mnemonic: data?.key?.trim(), name: data?.accName?.trim() },
+                type: LABELS.IMPORT
+              }
+            );
+          }, 2000);
         } else {
           const match = allAccounts?.find((a) => a.accountName === data.accName.trim());
 
           if (match) {
-            setWarrning(p => ({
+            setWarrning((p) => ({
               ...p,
-              acc: ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS,
+              acc: ERROR_MESSAGES.WALLET_NAME_ALREADY_EXISTS
             }));
           } else {
-
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC, { mnemonic: data?.key?.trim(), name: data.accName.trim() });
-
+            sendRuntimeMessage(
+              MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+              MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC,
+              { mnemonic: data?.key?.trim(), name: data.accName.trim() }
+            );
           }
-
         }
       }
     }
@@ -138,9 +122,7 @@ function ImportWallet() {
 
   return (
     <div className={style.cardWhite} onKeyDown={handleClick}>
-      {
-        !isLogin && <StepHeaders active={2} isCreate={false} />
-      }
+      {!isLogin && <StepHeaders active={2} isCreate={false} />}
       <MenuRestofHeaders logosilver={true} title="5ire Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
@@ -155,7 +137,9 @@ function ImportWallet() {
               keyUp={validateAccName}
               placeholderBaseColor={true}
               placeholder={"Enter wallet name"}
-              onDrop={e => { e.preventDefault() }}
+              onDrop={(e) => {
+                e.preventDefault();
+              }}
             />
             <p className="errorText">{warrning.acc}</p>
           </div>
@@ -165,7 +149,9 @@ function ImportWallet() {
               name={LABELS.KEY}
               onKeyUp={validateKey}
               onChange={handleChange}
-              onDrop={e => { e.preventDefault() }}
+              onDrop={(e) => {
+                e.preventDefault();
+              }}
               placeholder={"Enter mnemonic here"}
             />
             <p className="errorText">{warrning.key}</p>
@@ -175,8 +161,11 @@ function ImportWallet() {
           <ButtonComp onClick={handleClick} text={"Import"} isDisable={isDisable} />
           <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancel} />
         </div>
-        {show && !warrning.key && <div className="loader">
-          <CongratulationsScreen text={"Your wallet has been imported"} /></div>}
+        {show && !warrning.key && (
+          <div className="loader">
+            <CongratulationsScreen text={"Your wallet has been imported"} />
+          </div>
+        )}
       </div>
     </div>
   );

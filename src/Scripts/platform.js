@@ -4,25 +4,23 @@ import { Error, ErrorPayload } from "../Utility/error_helper";
 import { hasLength, isString, isNumber } from "../Utility/utility";
 import { WINDOW_HEIGHT, WINDOW_WIDTH, ERRCODES, ERROR_MESSAGES } from "../Constants";
 
-
 //Handle the window and notification creation
 export default class WindowManager {
   static instance = null;
   constructor(windowCloseCallback, windowCreateCallback) {
     this.addOnRemovedListener(windowCloseCallback);
-    this.addOnWindowCreateListner(windowCreateCallback)
+    this.addOnWindowCreateListner(windowCreateCallback);
   }
 
   //Get instance from builder function
-  static getInstance(windowCloseCallback ,windowCreateCallback) {
-    if(!WindowManager.instance) {
+  static getInstance(windowCloseCallback, windowCreateCallback) {
+    if (!WindowManager.instance) {
       WindowManager.instance = new WindowManager(windowCloseCallback, windowCreateCallback);
 
       delete WindowManager.constructor;
     }
-    return WindowManager.instance
+    return WindowManager.instance;
   }
-
 
   /**
    * Mark the notification popup as having been automatically closed.
@@ -32,7 +30,7 @@ export default class WindowManager {
    */
   markAsAutomaticallyClosed = () => {
     this._popupAutomaticallyClosed = true;
-  }
+  };
 
   /**
    * Either brings an existing MetaMask notification window into focus, or creates a new notification window. New
@@ -40,48 +38,46 @@ export default class WindowManager {
    *
    */
   showPopup = async (route = "") => {
+    //position control's
+    let left = 0;
+    let top = 0;
 
-      //position control's
-      let left = 0;
-      let top = 0;
+    if (this.popupId) {
+      this.focusWindow(this.popupId);
+      return;
+    }
 
-      if(this.popupId) {
-        this.focusWindow(this.popupId);
-        return;
-      }
-      
-      try {
-        const lastFocused = await this.getLastFocusedWindow();
+    try {
+      const lastFocused = await this.getLastFocusedWindow();
 
-        // Position window in top right corner of lastFocused window.
-        top = lastFocused.top;
-        left = lastFocused.left + (lastFocused.width - WINDOW_WIDTH);
+      // Position window in top right corner of lastFocused window.
+      top = lastFocused.top;
+      left = lastFocused.left + (lastFocused.width - WINDOW_WIDTH);
+    } catch (e) {
+      // The following properties are more than likely 0, due to being
+      // opened from the background chrome process for the extension that
+      // has no physical dimensions
+      const { screenX, screenY, outerWidth } = window;
+      top = Math.max(screenY, 0);
+      left = Math.max(screenX + (outerWidth - WINDOW_WIDTH), 0);
+    }
 
-      } catch (e) {
-        // The following properties are more than likely 0, due to being
-        // opened from the background chrome process for the extension that
-        // has no physical dimensions
-        const { screenX, screenY, outerWidth } = window;
-        top = Math.max(screenY, 0);
-        left = Math.max(screenX + (outerWidth - WINDOW_WIDTH), 0);
-      }
+    const extensionURL = Browser.runtime.getURL("index.html");
 
-      const extensionURL = Browser.runtime.getURL("index.html");
+    // create new approval window
+    const popupWindow = await this.openWindow({
+      url: extensionURL,
+      type: "popup",
+      width: WINDOW_WIDTH,
+      height: WINDOW_HEIGHT,
+      left,
+      top
+    });
 
-      // create new approval window
-      const popupWindow = await this.openWindow({
-        url: extensionURL,
-        type: "popup",
-        width: WINDOW_WIDTH,
-        height: WINDOW_HEIGHT,
-        left,
-        top
-      });
-
-      // Firefox currently ignores left/top for create, but it works for update
-      if (popupWindow.left !== left && popupWindow.state !== "fullscreen") {
-        await this.updateWindowPosition(popupWindow.id, left, top);
-      }
+    // Firefox currently ignores left/top for create, but it works for update
+    if (popupWindow.left !== left && popupWindow.state !== "fullscreen") {
+      await this.updateWindowPosition(popupWindow.id, left, top);
+    }
 
     // Firefox currently ignores left/top for create, but it works for update
     if (popupWindow.left !== left && popupWindow.state !== "fullscreen") {
@@ -89,8 +85,7 @@ export default class WindowManager {
     }
 
     return popupWindow.id;
-  }
-
+  };
 
   /**
    * get all currently opened window and remove extra windows
@@ -105,16 +100,15 @@ export default class WindowManager {
 
     const otherWindowThanTask = allPopupWindows.filter((item) => item.id !== filterId);
     for (let itemWindow of otherWindowThanTask) await this.closePopup(itemWindow.id);
-  }
+  };
 
   /**
    * close the current active popup
-   * @param {*} popupId 
+   * @param {*} popupId
    */
   closePopup = async (popupId) => {
     await this.closeWindow(popupId);
-  }
-
+  };
 
   /**
    * Checks all open MetaMask windows, and returns the first one it finds that is a notification window (i.e. has the
@@ -125,7 +119,7 @@ export default class WindowManager {
   _getPopup = async () => {
     const windows = await this.getAllWindows();
     return this._getPopupIn(windows);
-  }
+  };
 
   /**
    * Given an array of windows, returns the 'popup' that has been opened by MetaMask, or null if no such window exists.
@@ -135,14 +129,11 @@ export default class WindowManager {
   _getPopupIn = (windows) => {
     return windows
       ? windows.find((win) => {
-        // Returns notification popup
-        return win && win.type === "popup" && win.id === this._popupId;
-      })
+          // Returns notification popup
+          return win && win.type === "popup" && win.id === this._popupId;
+        })
       : null;
-  }
-
-
-
+  };
 
   /************************************ Internal Window Control Methods ************************************/
   //reload the extension
@@ -165,7 +156,6 @@ export default class WindowManager {
   //close window
   async closeWindow(windowId) {
     await Browser.windows.remove(windowId);
-
   }
 
   //get the window using the window id
@@ -178,7 +168,7 @@ export default class WindowManager {
     }
   }
 
-  //focus on window 
+  //focus on window
   async focusWindow(windowId) {
     await Browser.windows.update(windowId, { focused: true });
   }
@@ -190,7 +180,7 @@ export default class WindowManager {
 
   //get all windows
   async getAllPopupWindows() {
-    const allWindows = await Browser.windows.getAll({ windowTypes: ['popup'] });
+    const allWindows = await Browser.windows.getAll({ windowTypes: ["popup"] });
     return allWindows;
   }
 
@@ -208,8 +198,7 @@ export default class WindowManager {
 
   //get the app version
   getVersion() {
-    const { version, version_name: versionName } =
-      Browser.runtime.getManifest();
+    const { version, version_name: versionName } = Browser.runtime.getManifest();
 
     const versionParts = version.split(".");
     if (versionName) {
@@ -256,13 +245,13 @@ export default class WindowManager {
 
   //add the listner for close btn
   addOnRemovedListener(listener) {
-      Browser.windows.onRemoved.addListener(listener);
+    Browser.windows.onRemoved.addListener(listener);
   }
 
   //add the listner for create window event
   addOnWindowCreateListner(windowCreateCallback) {
-      Browser.windows.onCreated.addListener(windowCreateCallback);
-    }
+    Browser.windows.onCreated.addListener(windowCreateCallback);
+  }
 
   //get all windows
   async getAllWindows() {
@@ -304,25 +293,27 @@ export class NotificationAndBedgeManager {
       NotificationAndBedgeManager.instance = new NotificationAndBedgeManager();
       delete NotificationAndBedgeManager.constructor;
     }
-    return NotificationAndBedgeManager.instance
-  }
+    return NotificationAndBedgeManager.instance;
+  };
 
   //show extension notifications
   showNotification(message, title = "5ire", type = "basic") {
-
-    if (!isString(message) && !hasLength(message)) new Error(new ErrorPayload(ERRCODES.CHECK_FAIL, ERROR_MESSAGES.INVALID_TYPE)).throw();
+    if (!isString(message) && !hasLength(message))
+      new Error(new ErrorPayload(ERRCODES.CHECK_FAIL, ERROR_MESSAGES.INVALID_TYPE)).throw();
 
     Browser.notifications.create("", {
       iconUrl: Browser.runtime.getURL("logo192.png"),
       message,
       title,
-      type,
+      type
     });
   }
 
   //show the bedge on extension icon
   showBedge(bedgeMessage) {
     const isNum = isNumber(bedgeMessage);
-    Browser.action.setBadgeText({ text: isNum ? bedgeMessage > 0 ? String(bedgeMessage) : "" : bedgeMessage });
+    Browser.action.setBadgeText({
+      text: isNum ? (bedgeMessage > 0 ? String(bedgeMessage) : "") : bedgeMessage
+    });
   }
 }
