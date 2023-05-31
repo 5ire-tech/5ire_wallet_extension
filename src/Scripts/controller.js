@@ -24,7 +24,13 @@ export class ExternalWindowControl {
   static currentPopup = null;
 
   constructor() {
-    this.windowManager = WindowManager.getInstance(this._handleClose, this._handleCreate);
+    this.windowManager = WindowManager.getInstance(
+      this._handleClose,
+      this._handleCreate,
+      this._handleWindowFocusChange,
+      this._handleTabChange,
+      this._handleTabUpdate
+    );
     this.notificationAndBedgeHandler = NotificationAndBedgeManager.getInstance();
   }
 
@@ -49,6 +55,20 @@ export class ExternalWindowControl {
    */
   newConnectionRequest = async (data, externalControlsState) => {
     const isOriginAlreadyExist = this._checkNewRequestOrigin(externalControlsState, data.origin);
+
+    if (isOriginAlreadyExist) {
+      sendMessageToTab(
+        data.tabId,
+        new TabMessagePayload(
+          data.id,
+          null,
+          null,
+          null,
+          generateErrorMessage(data.method, data.origin)
+        )
+      );
+      return;
+    }
 
     //check if already connected or not
     if (isEqual(data.route, ROUTE_FOR_APPROVAL_WINDOWS.CONNECTION_ROUTE)) {
@@ -175,7 +195,9 @@ export class ExternalWindowControl {
   /**
    * callback for window create event
    */
-  _handleCreate = async (windowId) => {};
+  _handleCreate = async (windowId) => {
+    console.log(windowId);
+  };
 
   /**
    * for sending the reject or close response to user
@@ -318,7 +340,7 @@ export class ExternalConnection {
   }
 
   //handle the validator and nominator related transactions
-  async handleValidatorNominatorTransactions(data, state) {
+  async handleValidatorNominatorTransactions(data) {
     const externalControls = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
     await this.externalWindowController.newConnectionRequest(
       { route: ROUTE_FOR_APPROVAL_WINDOWS.VALIDATOR_NOMINATOR_TXN, ...data },
@@ -327,7 +349,7 @@ export class ExternalConnection {
   }
 
   //handle the signing of native transaction
-  async handleNativeSigner(data, state) {
+  async handleNativeSigner(data) {
     const externalControls = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
     await this.externalWindowController.newConnectionRequest(
       { route: ROUTE_FOR_APPROVAL_WINDOWS.NATIVE_TX, ...data },

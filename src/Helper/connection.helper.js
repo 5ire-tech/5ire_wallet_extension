@@ -98,6 +98,7 @@ export class Connection {
         web3Provider.connect();
       });
       web3Provider.on("error", async (err) => {
+        console.log("error while making connection with evm: ", err);
         web3Provider.connect();
       });
     }

@@ -63,10 +63,12 @@ function ForgotPassword() {
   }, [data?.pass, data?.confirmPass]);
 
   const handleChange = (e) => {
-    setData((p) => ({
-      ...p,
-      [e.target.name]: e.target.value
-    }));
+    setData((p) => {
+      return {
+        ...p,
+        [e.target.name]: e.target.value
+      };
+    });
   };
 
   //validate Password

@@ -52,12 +52,14 @@ function Send() {
 
   useEffect(() => {
     setBalance(allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.nativeBalance,
     currentAccount?.evmAddress,
-    currentNetwork
+    currentNetwork,
+    allAccountsBalance
   ]);
 
   useEffect(() => {
@@ -68,8 +70,8 @@ function Send() {
 
   useEffect(() => {
     if (
-      (activeTab === EVM && Number(balance?.evmBalance) < 1) ||
-      (activeTab === NATIVE && Number(balance?.nativeBalance) < 1) ||
+      (activeTab === EVM && Number(balance?.evmBalance) < 1.1) ||
+      (activeTab === NATIVE && Number(balance?.nativeBalance) < 1.1) ||
       !data.to ||
       err.to
     ) {
@@ -108,7 +110,6 @@ function Send() {
               (isEd ? EXISTENTIAL_DEPOSITE : 0) +
               pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
                 .evm);
-
           !(Number(amount) > 0) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
 
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
@@ -242,7 +243,8 @@ function Send() {
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, {
         value: data?.amount ? data.amount : balance?.nativeBalance,
         toAddress: data.to,
-        options: { account: state.currentAccount }
+        options: { account: state.currentAccount },
+        isEd
       });
     } else if (activeTab === EVM && Number(balance?.evmBalance) > 0) {
       loader && updateLoading(true);
@@ -251,7 +253,8 @@ function Send() {
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {
         value: data?.amount ? data.amount : balance?.evmBalance,
         toAddress: data.to,
-        options: { account: state.currentAccount }
+        options: { account: state.currentAccount },
+        isEd
       });
     }
   };
@@ -296,31 +299,43 @@ function Send() {
   const handleApprove = async () => {
     try {
       if (activeTab === EVM) {
-        //pass the message request for evm transfer
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TX, {
-          to: data.to,
-          value: data.amount,
-          options: {
-            account: state.currentAccount,
-            network: state.currentNetwork,
-            type: TX_TYPE.SEND,
-            isEvm: true
-          }
-        });
-        setIsModalOpen(true);
+        if (balance?.evmBalance < 1.1) {
+          toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+        } else {
+          //pass the message request for evm transfer
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TX, {
+            to: data.to,
+            value: data.amount,
+            options: {
+              account: state.currentAccount,
+              network: state.currentNetwork,
+              type: TX_TYPE.SEND,
+              isEvm: true,
+              fee: estimatedGas
+            },
+            isEd
+          });
+          setIsModalOpen(true);
+        }
       } else if (activeTab === NATIVE) {
-        //pass the message request for native transfer
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TX, {
-          to: data.to,
-          value: data.amount,
-          options: {
-            account: state.currentAccount,
-            network: state.currentNetwork,
-            type: TX_TYPE.SEND,
-            isEvm: false
-          }
-        });
-        setIsModalOpen(true);
+        if (balance?.nativeBalance < 1.1) {
+          toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+        } else {
+          //pass the message request for native transfer
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TX, {
+            to: data.to,
+            value: data.amount,
+            options: {
+              account: state.currentAccount,
+              network: state.currentNetwork,
+              type: TX_TYPE.SEND,
+              isEvm: false,
+              fee: estimatedGas
+            },
+            isEd
+          });
+          setIsModalOpen(true);
+        }
       }
 
       // updateEstimatedGas("");

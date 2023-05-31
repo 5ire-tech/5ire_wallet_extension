@@ -21,7 +21,7 @@ export const ONE_ETH_IN_GWEI = 1000000000;
 export const AUTO_BALANCE_UPDATE_TIMER = 8000;
 export const LAPSED_TRANSACTION_CHECKER_TIMER = 25 * 1000;
 export const WEI_IN_ONE_ETH = 1000000000000000000;
-export const TRANSACTION_STATUS_CHECK_TIMER = 5000;
+export const TRANSACTION_STATUS_CHECK_TIMER = 1500;
 export const VERSION = "0.1.4";
 export const RELOAD_ID = "RELOAD_PAGE";
 
@@ -201,6 +201,7 @@ export const LABELS = {
   STATE: "state",
   EXTERNAL_CONTROLS: "externalControls",
   TRANSACTION_QUEUE: "transactionQueue",
+  WINDOW_AND_TAB_STATE: "windowAndTabState",
 
   VAULT: "vault",
   ISLOGIN: "isLogin",
@@ -326,7 +327,10 @@ export const STATE_CHANGE_ACTIONS = {
   ADD_NEW_TRANSACTION: "addNewTransaction",
   UPDATE_HISTORY_TRACK: "updateHistoryTrack",
   PROCESS_QUEUE_TRANSACTION: "processQueuedTransaction",
-  CLEAR_TRANSACTION_QUEUE: "clearTransactionQueue"
+  CLEAR_TRANSACTION_QUEUE: "clearTransactionQueue",
+
+  //window and tabs state
+  SAVE_TAB_AND_WINDOW_STATE: "saveTabAndWindowState"
 };
 
 export const ERROR_EVENTS_LABELS = {

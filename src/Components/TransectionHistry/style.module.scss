@@ -31,7 +31,7 @@
     text-align: left;
 
     span {
-      justify-content: end;
+      justify-content: flex-end;
     }
   }
 
@@ -135,7 +135,8 @@
       cursor: pointer;
 
     }
-    .disabled{
+
+    .disabled {
       cursor: not-allowed;
       opacity: 0.2;
     }

@@ -13,7 +13,6 @@ import GrayCircle from "../../Assets/graycircle.svg";
 import ModalCustom from "../ModalCustom/ModalCustom";
 import GreenCircle from "../../Assets/greencircle.svg";
 import { Dropdown, Select, Space, Tooltip } from "antd";
-import { getCurrentTabDetails } from "../../Scripts/utils";
 import { sendEventToTab, formatNumUptoSpecificDecimal } from "../../Helper/helper";
 import React, { useEffect, useState, useContext } from "react";
 import DownArrowSuffix from "../../Assets/DownArrowSuffix.svg";
@@ -46,7 +45,7 @@ function BalanceDetails({ mt0 }) {
   const [isConnected, setIsConnected] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHeaderActive, setHeaderActive] = useState(false);
-  const { state, updateState, externalControlsState, allAccounts, updateLoading } =
+  const { state, updateState, externalControlsState, allAccounts, updateLoading, windowAndTab } =
     useContext(AuthContext);
 
   const { connectedApps } = externalControlsState;
@@ -56,14 +55,21 @@ function BalanceDetails({ mt0 }) {
 
   useEffect(() => {
     //check if current app is connected with extension
-    getCurrentTabDetails().then((tabDetails) => {
-      const isConnectionExist = connectedApps[tabDetails.tabUrl];
-      if (isConnectionExist?.isConnected) {
-        setIsConnected(isConnectionExist.isConnected);
-      }
-      setUrl(tabDetails.tabUrl);
-      setNewSite(isNullorUndef(isConnectionExist));
-    });
+    // getCurrentTabDetails().then((tabDetails) => {
+    //   const isConnectionExist = connectedApps[tabDetails.tabUrl];
+    //   if (isConnectionExist?.isConnected) {
+    //     setIsConnected(isConnectionExist.isConnected);
+    //   }
+    //   setUrl(tabDetails.tabUrl);
+    //   setNewSite(isNullorUndef(isConnectionExist));
+    // });
+
+    const isConnectionExist = connectedApps[windowAndTab.tabDetails.origin];
+    if (isConnectionExist?.isConnected) {
+      setIsConnected(isConnectionExist.isConnected);
+    }
+    setUrl(windowAndTab.tabDetails.origin);
+    setNewSite(isNullorUndef(isConnectionExist));
 
     sendRuntimeMessage(
       MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
@@ -93,6 +99,7 @@ function BalanceDetails({ mt0 }) {
 
     //send the network change event to current opned tab if its connected
     sendEventToTab(
+      windowAndTab,
       new TabMessagePayload(
         TABS_EVENT.NETWORK_CHANGE_EVENT,
         { result: { network, url: HTTP_END_POINTS[network.toUpperCase()] } },
@@ -121,6 +128,7 @@ function BalanceDetails({ mt0 }) {
 
     //send account details whenever account is changed
     sendEventToTab(
+      windowAndTab,
       new TabMessagePayload(
         TABS_EVENT.ACCOUNT_CHANGE_EVENT,
         {
@@ -179,6 +187,7 @@ function BalanceDetails({ mt0 }) {
     //send the disconnect event to extension
     !isAnyError &&
       sendEventToTab(
+        windowAndTab,
         new TabMessagePayload(
           TABS_EVENT.WALLET_DISCONNECTED_EVENT,
           { result: null },
@@ -201,6 +210,7 @@ function BalanceDetails({ mt0 }) {
     //send the disconnect event to extension
     !isAnyError &&
       sendEventToTab(
+        windowAndTab,
         new TabMessagePayload(
           TABS_EVENT.WALLET_CONNECTED_EVENT,
           {

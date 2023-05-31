@@ -15,7 +15,7 @@ function SettingList(props) {
               <img src={ticketcheck} draggable={false} alt="ticketCheck" />
               <p>{setinglist}</p>
             </div>
-            <img src={ticketcheck1} heckdraggable={false} alt="ticketCheck" draggable={false} />
+            <img src={ticketcheck1} alt="ticketCheck" draggable={false} />
           </div>
         </Link>
       </div>

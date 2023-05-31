@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import DarkRyt from "../../Assets/darkRyt.svg";
-import { CURRENCY, STATUS, TX_TYPE } from "../../Constants";
+import { CURRENCY, STATUS, SUCCESS_MESSAGES, TX_TYPE } from "../../Constants";
 import {
   shortner,
   fixNumber,
@@ -17,7 +17,7 @@ function TransectionHistry({ selectedTransaction, account }) {
   //for copying the hash to clipboard
   const handleClick = (hash) => {
     navigator.clipboard.writeText(hash);
-    toast.success("Transacion hash copied.");
+    toast.success(SUCCESS_MESSAGES.HASH_COPIED);
   };
 
   //for opening the explorer tab
@@ -44,7 +44,7 @@ function TransectionHistry({ selectedTransaction, account }) {
             <h3>{`From ${isEvm ? "EVM" : "Native"}`}</h3>
             <span>{shortner(isEvm ? account?.evmAddress : account?.nativeAddress)}</span>
           </div>
-          <div className={style.transectionHistry__icon} style={{ marginRight: "29px" }}>
+          <div className={style.transectionHistry__icon} style={{ marginRight: "20px" }}>
             <img src={SwapIcon} alt="swapIcon" draggable={false} />
           </div>
           <div
@@ -125,11 +125,7 @@ function TransectionHistry({ selectedTransaction, account }) {
       </div>
       <div className={style.transectionHistry__viewExplorer}>
         <p
-          className={
-            selectedTransaction?.status.toLowerCase() === STATUS.QUEUED.toLowerCase()
-              ? "viewDisable"
-              : ""
-          }
+          className={selectedTransaction.txHash ? "" : "viewDisable"}
           disabled={selectedTransaction.txHash ? false : true}
           onClick={openExplorerTab}>
           View on Explorer <img src={DarkRyt} alt="view on explorer" />

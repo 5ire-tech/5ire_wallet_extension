@@ -55,11 +55,11 @@ export class HybridKeyring extends EventEmitter {
    * @param {*} password
    */
   // async recoverWalletUsingJson(data, password) {
-  //     const key = await protector.importKey(data.exportedKeyString)
-  //     await protector.decryptWithKey(key, JSON.parse(data.vault));
-  //     HybridKeyring.vault = data.vault;
-  //     await protector.decryptWithDetail(password, HybridKeyring.vault);
-  //     await this.loadPersistData(password, HybridKeyring.vault)
+  //   const key = await protector.importKey(data.exportedKeyString)
+  //   await protector.decryptWithKey(key, JSON.parse(data.vault));
+  //   HybridKeyring.vault = data.vault;
+  //   await protector.decryptWithDetail(password, HybridKeyring.vault);
+  //   await this.loadPersistData(password, HybridKeyring.vault)
   // }
 
   /**
@@ -104,7 +104,7 @@ export class HybridKeyring extends EventEmitter {
           const oldKeys = await HybridKeyring.simpleEthKeyring.serialize();
           for (const k of v.mnemonics) {
             HybridKeyring.polkaKeyring.addFromUri(k);
-            const keyWallet = ethers.Wallet.fromMnemonic(k);
+            const keyWallet = ethers.Wallet.fromPhrase(k);
             oldKeys.push(keyWallet.privateKey);
           }
           await HybridKeyring.simpleEthKeyring.deserialize(oldKeys);
@@ -124,8 +124,7 @@ export class HybridKeyring extends EventEmitter {
    * @returns
    */
   async verifyUserPassword(message) {
-    const { password } = message?.data;
-    const verifiedResponse = await this._verifyPassword(password);
+    const verifiedResponse = await this._verifyPassword(message?.data?.password);
     const verified = verifiedResponse.vault ? true : false;
     return new EventPayload(message.event, message.event, { verified });
   }
@@ -373,11 +372,12 @@ export class HybridKeyring extends EventEmitter {
   async importAccountByMnemonics(message) {
     // try {
 
-    const { mnemonic, name } = message?.data;
-    const keyWallet = ethers.Wallet.fromMnemonic(mnemonic);
+    const { mnemonic, name } = message.data;
+    const keyWallet = ethers.Wallet.fromPhrase(mnemonic);
     const isExist = HybridKeyring.accounts.find((acc) => acc.evmAddress === keyWallet.address);
 
     if (isExist) {
+      // throw new Error({ code: ERRCODES.INVALID_INPUT, message: ERROR_MESSAGES.MNEMONICS_ALREADY_EXISTS });
       return new Error(
         new ErrorPayload(ERRCODES.INVALID_INPUT, ERROR_MESSAGES.MNEMONICS_ALREADY_EXISTS)
       ).throw();
@@ -437,7 +437,7 @@ export class HybridKeyring extends EventEmitter {
    * @param {object} message
    */
   async removeAccount(message) {
-    const { address } = message?.data;
+    const address = message?.data?.address;
     const password = message?.data?.password ? message?.data?.password : HybridKeyring.password;
 
     await this._verifyPassword(password);

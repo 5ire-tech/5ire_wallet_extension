@@ -16,7 +16,8 @@ export const setSessionStorage = (data) => {
     browser.storage.session
       .set(data)
       .then((res) => {
-        resolve(true);
+        resolve(res);
+        // console.log("Response after setting data in session storage : ", res)
       })
       .catch((err) => {
         console.log("error while setting data to session storage : ", err);

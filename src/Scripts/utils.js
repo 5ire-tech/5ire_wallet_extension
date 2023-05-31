@@ -1,6 +1,6 @@
 import { v4 as uuid4 } from "uuid";
-import { EMTY_STR } from "../Constants";
 import Browser from "webextension-polyfill";
+import { EMTY_STR, VALIDATOR_NOMINATOR_METHOD } from "../Constants";
 import { isNullorUndef } from "../Utility/utility";
 
 export const getUrlOrigin = (url) => {
@@ -35,7 +35,9 @@ export const bindNoExponentWithNumber = () => {
       mag -= str.length;
       while (mag--) z += "0";
       return str + z;
-    } catch (error) {}
+    } catch (error) {
+      console.log("Exponent error", error);
+    }
   };
 };
 
@@ -54,4 +56,88 @@ export const isAlreadyConnected = (connectedApps, origin) => {
 //get uuid
 export const getUUID = () => {
   return uuid4();
+};
+
+//get the amount and method
+export const getFormattedMethod = (method, message) => {
+  let methodName = "",
+    amount;
+  switch (method) {
+    case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_NOMINATOR:
+      methodName = "Add Nominator";
+      amount = message?.stakeAmount;
+      break;
+    case VALIDATOR_NOMINATOR_METHOD.NATIVE_RENOMINATE:
+      methodName = "Re-Nominate";
+      break;
+    case VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_PAYOUT:
+      methodName = "Nominator Payout";
+      amount = message?.amount;
+      break;
+    case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_PAYOUT:
+      methodName = "Validator Payout";
+      amount = message?.amount;
+      break;
+    case VALIDATOR_NOMINATOR_METHOD.NATIVE_STOP_VALIDATOR:
+      methodName = "Stop Validator";
+      break;
+
+    case VALIDATOR_NOMINATOR_METHOD.NATIVE_STOP_NOMINATOR:
+      methodName = "Stop Nominator";
+      break;
+    case VALIDATOR_NOMINATOR_METHOD.NATIVE_UNBOND_VALIDATOR:
+      methodName = "Unbond Validator";
+      amount = message?.amount;
+      break;
+
+    case VALIDATOR_NOMINATOR_METHOD.NATIVE_UNBOND_NOMINATOR:
+      methodName = "Unbond Nominator";
+      amount = message?.amount;
+
+      break;
+    case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR:
+      methodName = "Send Funds";
+      amount = message?.amount;
+      break;
+
+    case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR:
+      methodName = "Send Funds";
+      amount = message?.amount;
+
+      break;
+    case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR_UNBONDED:
+      methodName = "Withdraw Nominator Unbonded";
+      amount = message?.value;
+      break;
+
+    case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR_UNBONDED:
+      methodName = "Withdraw Validator Unbonded";
+      amount = message?.value;
+      break;
+
+    case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_VALIDATOR:
+      methodName = "Add Validator";
+      amount = message?.amount;
+      break;
+
+    case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_BONDMORE:
+      methodName = "Bond More Funds";
+      amount = message?.amount;
+
+      break;
+    case VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_BONDMORE:
+      methodName = "Bond More Funds";
+      amount = message?.amount;
+
+      break;
+    case VALIDATOR_NOMINATOR_METHOD.NATIVE_RESTART_VALIDATOR:
+      methodName = "Restart Validator";
+      break;
+    default:
+  }
+
+  //init the balance with zero if balance not found
+  amount = amount || 0;
+
+  return { methodName, amount };
 };

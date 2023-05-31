@@ -1,14 +1,10 @@
 import React from "react";
 import style from "./style.module.scss";
 
-import { Switch, Checkbox, Radio } from "antd";
-
 function ManageCustom({
   active,
-  balance,
   img,
   checkValue,
-  edited,
   onSelectAcc,
   data
   // onSelectByDiv

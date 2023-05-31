@@ -13,7 +13,8 @@ import {
   userState,
   externalControls,
   newAccountInitialState,
-  initialExternalNativeTransaction
+  initialExternalNativeTransaction,
+  windowAndTabState
 } from "./initialState";
 
 //context created
@@ -52,12 +53,15 @@ export default function Context({ children }) {
   const [externalNativeTxDetails, setExternalNativeTxDetails] = useState(
     initialExternalNativeTransaction
   );
+  const [windowAndTab, setWindowAndTab] = useState(windowAndTabState);
 
   Browser.storage.local.onChanged.addListener((changedData) => {
     //change the state whenever the local storage is updated
     !isNullorUndef(changedData?.state) && setState(changedData.state.newValue);
     !isNullorUndef(changedData?.externalControls) &&
       setExternalControlState(changedData.externalControls.newValue);
+    !isNullorUndef(changedData?.windowAndTabState) &&
+      setWindowAndTab(changedData.windowAndTabState.newValue);
   });
 
   //bind the message from background event
@@ -154,7 +158,7 @@ export default function Context({ children }) {
 
   //update the main state (also update into the persistant store)
   const updateState = (name, data, toLocal = true, toSession = false) => {
-    log("state updated by updateState: ", name, data);
+    log("state updated by updateState: ", name, data, toLocal);
 
     if (toSession) {
       if (isManifestV3) {
@@ -289,6 +293,7 @@ export default function Context({ children }) {
     accountName,
     networkError,
     estimatedGas,
+    windowAndTab,
     passVerified,
     isStateLoaded,
     newWalletName,
@@ -310,8 +315,9 @@ export default function Context({ children }) {
     updateLoading,
     setNewAccount,
     setPrivateKey,
-    setStateLoaded,
     setTempBalance,
+    setStateLoaded,
+    setWindowAndTab,
     // removeHistory,
     setNetworkError,
     setPassVerified,

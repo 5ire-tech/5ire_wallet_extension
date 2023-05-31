@@ -9,7 +9,9 @@ const unpack = (str) => {
     const toBytes = Array.from(Buffer.from(str, "utf8"));
     const bytes = toBytes.slice(0, 32);
     return bytes;
-  } catch (error) {}
+  } catch (error) {
+    console.log("Error under unpack", error);
+  }
 };
 
 export function encryptor(text, key) {

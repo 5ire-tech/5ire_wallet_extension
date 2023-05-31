@@ -53,12 +53,14 @@ function Swap() {
 
   useEffect(() => {
     setBalance(allAccountsBalance[currentAccount?.evmAddress][currentNetwork?.toLowerCase()]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.nativeBalance,
     currentAccount?.evmAddress,
-    currentNetwork
+    currentNetwork,
+    allAccountsBalance
   ]);
 
   useEffect(() => {
@@ -191,7 +193,7 @@ function Swap() {
   };
 
   //Perform swap
-  const handleApprove = async (e) => {
+  const handleApprove = async () => {
     try {
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
         sendRuntimeMessage(
@@ -204,7 +206,8 @@ function Swap() {
               network: state.currentNetwork,
               type: TX_TYPE.SWAP,
               isEvm: true,
-              to: LABELS.EVM_TO_NATIVE
+              to: LABELS.EVM_TO_NATIVE,
+              fee: estimatedGas
             }
           }
         );
@@ -221,7 +224,8 @@ function Swap() {
               network: state.currentNetwork,
               type: TX_TYPE.SWAP,
               isEvm: false,
-              to: LABELS.NATIVE_TO_EVM
+              to: LABELS.NATIVE_TO_EVM,
+              fee: estimatedGas
             }
           }
         );
@@ -246,7 +250,8 @@ function Swap() {
         value: amount ? amount : balance?.nativeBalance,
         options: {
           account: state.currentAccount
-        }
+        },
+        isEd
       });
     } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase() && balance?.evmBalance) {
       loader && updateLoading(true);
@@ -254,7 +259,8 @@ function Swap() {
         value: amount ? amount : balance?.evmBalance,
         options: {
           account: state.currentAccount
-        }
+        },
+        isEd
       });
     }
 
@@ -304,8 +310,6 @@ function Swap() {
 
   //Set To and from
   const handleClick = () => {
-    if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
-    }
     setToFrom({ from: NATIVE, to: EVM });
 
     if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) setToFrom({ from: EVM, to: NATIVE });

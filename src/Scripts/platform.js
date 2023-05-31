@@ -3,19 +3,41 @@ import { isNullorUndef } from "../Utility/utility";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import { hasLength, isString, isNumber } from "../Utility/utility";
 import { WINDOW_HEIGHT, WINDOW_WIDTH, ERRCODES, ERROR_MESSAGES } from "../Constants";
+import { isManifestV3 } from "./utils";
 
 //Handle the window and notification creation
 export default class WindowManager {
   static instance = null;
-  constructor(windowCloseCallback, windowCreateCallback) {
+  constructor(
+    windowCloseCallback,
+    windowCreateCallback,
+    windowFocusChangeEvent,
+    tabsChangeEvent,
+    tabUpdateEvent
+  ) {
     this.addOnRemovedListener(windowCloseCallback);
     this.addOnWindowCreateListner(windowCreateCallback);
+    this.addWindowFocusChangeListner(windowFocusChangeEvent);
+    this.addTabChangeListner(tabsChangeEvent);
+    this.addTabUpdateListner(tabUpdateEvent);
   }
 
   //Get instance from builder function
-  static getInstance(windowCloseCallback, windowCreateCallback) {
+  static getInstance(
+    windowCloseCallback,
+    windowCreateCallback,
+    windowFocusChangeEvent,
+    tabsChangeEvent,
+    tabUpdateEvent
+  ) {
     if (!WindowManager.instance) {
-      WindowManager.instance = new WindowManager(windowCloseCallback, windowCreateCallback);
+      WindowManager.instance = new WindowManager(
+        windowCloseCallback,
+        windowCreateCallback,
+        windowFocusChangeEvent,
+        tabsChangeEvent,
+        tabUpdateEvent
+      );
 
       delete WindowManager.constructor;
     }
@@ -38,6 +60,7 @@ export default class WindowManager {
    *
    */
   showPopup = async (route = "") => {
+    console.log("Route", route);
     //position control's
     let left = 0;
     let top = 0;
@@ -244,13 +267,28 @@ export default class WindowManager {
   }
 
   //add the listner for close btn
-  addOnRemovedListener(listener) {
-    Browser.windows.onRemoved.addListener(listener);
+  addOnRemovedListener(cb) {
+    Browser.windows.onRemoved.addListener(cb);
   }
 
   //add the listner for create window event
-  addOnWindowCreateListner(windowCreateCallback) {
-    Browser.windows.onCreated.addListener(windowCreateCallback);
+  addOnWindowCreateListner(cb) {
+    Browser.windows.onCreated.addListener(cb);
+  }
+
+  //add window focus change listner
+  addWindowFocusChangeListner(cb) {
+    Browser.windows.onFocusChanged.addListener(cb);
+  }
+
+  //add Tab change listner
+  addTabChangeListner(cb) {
+    Browser.tabs.onActivated.addListener(cb);
+  }
+
+  //add event for tab update event
+  addTabUpdateListner(cb) {
+    Browser.tabs.onUpdated.addListener(cb);
   }
 
   //get all windows
@@ -312,7 +350,8 @@ export class NotificationAndBedgeManager {
   //show the bedge on extension icon
   showBedge(bedgeMessage) {
     const isNum = isNumber(bedgeMessage);
-    Browser.action.setBadgeText({
+    const actionKey = isManifestV3 ? "action" : "browserAction";
+    Browser[actionKey].setBadgeText({
       text: isNum ? (bedgeMessage > 0 ? String(bedgeMessage) : "") : bedgeMessage
     });
   }

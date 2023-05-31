@@ -1,7 +1,7 @@
 import React from "react";
 import style from "./style.module.scss";
 
-function ButtonComp({ text, bordered, onClick, maxWidth, img, isDisable, name }) {
+function ButtonComp({ text, bordered, onClick, maxWidth, img, isDisable }) {
   return (
     <button
       disabled={isDisable}

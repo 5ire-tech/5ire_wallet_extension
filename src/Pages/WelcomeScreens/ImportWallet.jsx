@@ -19,6 +19,8 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
+import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
+import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
 
 function ImportWallet() {
   const navigate = useNavigate();
@@ -28,6 +30,8 @@ function ImportWallet() {
   const { state, userPass, allAccounts, inputError, setInputError } = useContext(AuthContext);
   const { isLogin } = state;
   const [show, setShow] = useState(false);
+  const [isOpenEye, setEye] = useState(false);
+  const [isMannual, setMannual] = useState(false);
 
   useEffect(() => {
     if (isLogin) {
@@ -44,14 +48,24 @@ function ImportWallet() {
   }, [inputError]);
 
   useEffect(() => {
-    if (!data.accName.length || !data.key || data.accName.length < 2) setDisable(true);
-    else if (!warrning.acc && !warrning.key) setDisable(false);
-    else setDisable(true);
+    if (!data.accName.length || !data.key || data.accName.length < 2) {
+      setDisable(true);
+    } else {
+      if (!warrning.acc && !warrning.key) {
+        setDisable(false);
+      } else {
+        setDisable(true);
+      }
+    }
   }, [data.accName, data.key, warrning]);
 
   const handleChange = (e) => {
     setData((p) => ({ ...p, [e.target.name]: e.target.value }));
-    if (e.target.name === LABELS.KEY) setInputError("");
+    if (e.target.name === LABELS.KEY) {
+      if (e.target.value?.trim() && !isMannual) setEye(true);
+
+      setInputError("");
+    }
   };
 
   const validateAccName = () => {
@@ -153,7 +167,22 @@ function ImportWallet() {
                 e.preventDefault();
               }}
               placeholder={"Enter mnemonic here"}
+              className={isOpenEye && "blurContact"}
             />
+
+            <img
+              className="eyeIcon"
+              width={19}
+              height={16}
+              alt="eyeClose"
+              src={isOpenEye ? EyeCloseIcon : EyeOpenIcon}
+              draggable={false}
+              onClick={() => {
+                setEye((old) => !old);
+                setMannual(true);
+              }}
+            />
+
             <p className="errorText">{warrning.key}</p>
           </div>
         </div>

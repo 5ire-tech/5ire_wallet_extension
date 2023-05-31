@@ -1,7 +1,6 @@
 import { BigNumber } from "bignumber.js";
 import Browser from "webextension-polyfill";
 import { isNullorUndef, log } from "../Utility/utility";
-import { getCurrentTabDetails } from "../Scripts/utils";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import { sendMessageToTab } from "../Utility/message_helper";
 import {
@@ -22,24 +21,16 @@ export const formatDate = (_date) => {
     let minutes = currentDate.getMinutes().toString();
     let month = (currentDate.getMonth() + 1).toString();
 
-    date = date.length === 1 ? "0" + date : date;
-
-    month = month.length === 1 ? "0" + month : month;
-
-    hours = hours.length === 1 ? "0" + hours : hours;
-
-    minutes = minutes.length === 1 ? "0" + minutes : minutes;
-
-    seconds = seconds.length === 1 ? "0" + seconds : seconds;
-
-    const fullDate = date + "-" + month + "-" + fullYear + " | ";
-
+    const fullDate = date.padStart(2, "0") + "-" + month.padStart(2, "0") + "-" + fullYear + " | ";
     let time = hours + ":" + minutes + ":" + seconds;
-
     time = time.split(":");
     time[3] = time[0] < 12 ? " AM" : " PM";
     time[0] = time[0] > 12 ? time[0] % 12 : time[0];
-    const dateTime = fullDate + `${time[0]}:${time[1]}:${time[2]}${time[3]}`;
+    const dateTime =
+      fullDate +
+      `${time[0].toString().padStart(2, "0")}:${time[1].toString().padStart(2, "0")}:${time[2]
+        .toString()
+        .padStart(2, "0")}${time[3]}`;
 
     return dateTime;
   } catch (error) {
@@ -55,6 +46,7 @@ export const formatNumUptoSpecificDecimal = (num, numOfDecimals = 4) => {
     } else {
       num = num.toString();
       const reDot = /[.]/;
+      if (!reDot.test(num)) return Number(num);
       let index = num.search(reDot);
 
       if (numOfDecimals <= 0) return Number(num.slice(0, index));
@@ -62,6 +54,7 @@ export const formatNumUptoSpecificDecimal = (num, numOfDecimals = 4) => {
     }
   } catch (err) {
     // console.log("Error while formatting num : ", err);
+    return 0;
   }
 };
 
@@ -121,19 +114,18 @@ export const generateErrorMessage = (method, origin) => {
 
 //send event to the connected tab
 export const sendEventToTab = async (
+  tabDetails,
   tabMessagePayload,
   connectedApps,
   emitWithoutConnectionCheck = false
 ) => {
-  getCurrentTabDetails().then((tabDetails) => {
-    if (
-      !checkStringInclusionIntoArray(tabDetails.tabUrl, RESTRICTED_URLS) &&
-      ((connectedApps && connectedApps[tabDetails?.tabUrl]?.isConnected) ||
-        emitWithoutConnectionCheck)
-    ) {
-      sendMessageToTab(tabDetails.tabId, tabMessagePayload);
-    }
-  });
+  if (
+    !checkStringInclusionIntoArray(tabDetails.tabDetails.origin, RESTRICTED_URLS) &&
+    ((connectedApps && connectedApps[tabDetails.tabDetails.origin]?.isConnected) ||
+      emitWithoutConnectionCheck)
+  ) {
+    tabDetails.tabDetails.tabId && sendMessageToTab(tabDetails.tabDetails.tabId, tabMessagePayload);
+  }
 };
 
 //send event to specfic tab
@@ -141,7 +133,7 @@ export const sendEventUsingTabId = async (tabId, tabEventPayload, connectedApps 
   if (connectedApps) {
     const tabDetails = getTabDetailsUsingTabId(tabId);
     if (tabDetails) {
-      const isConnected = connectedApps[new URL(tabDetails.url).hostname]?.isConnected;
+      const isConnected = connectedApps[new URL(tabDetails.url).origin]?.isConnected;
       isConnected && sendMessageToTab(tabId, tabEventPayload);
     }
   } else sendMessageToTab(tabId, tabEventPayload);

@@ -31,7 +31,7 @@ function MyAccount() {
   const navigate = useNavigate();
   const [isModalOpen, setModalOpen] = useState(false);
   const [addressToRemove, setAddressToRemove] = useState(null);
-  const { allAccounts, state, updateState, externalControlsState, setNewWalletName } =
+  const { allAccounts, state, updateState, externalControlsState, setNewWalletName, windowAndTab } =
     useContext(AuthContext);
   const { connectedApps } = externalControlsState;
   const { currentAccount, allAccountsBalance, currentNetwork } = state;
@@ -102,6 +102,7 @@ function MyAccount() {
 
     //send account details whenever account is changed
     sendEventToTab(
+      windowAndTab,
       new TabMessagePayload(
         TABS_EVENT.ACCOUNT_CHANGE_EVENT,
         {

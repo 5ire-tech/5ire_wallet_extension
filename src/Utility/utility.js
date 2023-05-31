@@ -126,7 +126,7 @@ export function log(...logs) {
 export const getKey = (str, p) => {
   const seed = decryptor(str, p);
   if (seed) {
-    const { privateKey } = ethers.Wallet.fromMnemonic(seed);
+    const { privateKey } = ethers.Wallet.fromPhrase(seed);
     return privateKey;
   }
 };

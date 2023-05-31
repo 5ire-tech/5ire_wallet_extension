@@ -89,16 +89,19 @@ function CreateWalletChain() {
       <div className={style.cardWhite}>
         {newAccount?.mnemonic && <StepHeaders active={4} />}
         <MenuRestofHeaders title="New Wallet Details" />
-        <div className={style.copyButton}>
-          <button
-            className={style.cardWhite__addressInput__copyAll}
-            name={"all"}
-            onClick={handleCopy}>
-            Copy All
-          </button>
-        </div>
+
         <div className={style.cardWhite__addressInput}>
-          <label>EVM Chain Address:</label>
+          <div style={{ display: "flex" }}>
+            <label>EVM Chain Address:</label>
+            <div className={style.copyButton}>
+              <button
+                className={style.cardWhite__addressInput__copyAll}
+                name={"all"}
+                onClick={handleCopy}>
+                Copy All
+              </button>
+            </div>
+          </div>
           <p className={style.cardWhite__addressInput__copyText}>
             <span>{newAccount?.evmAddress}</span>
             <img

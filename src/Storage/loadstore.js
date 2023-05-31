@@ -1,7 +1,12 @@
 import { localStorage, sessionStorage } from ".";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import { ERRCODES, ERROR_MESSAGES, LABELS, STATUS, NETWORK } from "../Constants";
-import { userState, externalControls, transactionQueue } from "../Store/initialState";
+import {
+  userState,
+  externalControls,
+  transactionQueue,
+  windowAndTabState
+} from "../Store/initialState";
 import {
   hasLength,
   isEqual,
@@ -37,6 +42,9 @@ export const getDataLocal = async (key) => {
     } else if (!localState?.transactionQueue && isEqual(key, LABELS.TRANSACTION_QUEUE)) {
       await localStorage.set({ transactionQueue });
       return transactionQueue;
+    } else if (!localState?.windowAndTabState && isEqual(key, LABELS.WINDOW_AND_TAB_STATE)) {
+      await localStorage.set({ windowAndTabState });
+      return windowAndTabState;
     }
 
     return localState[key];
@@ -220,6 +228,7 @@ export class ExtensionStorageHandler {
   };
 
   //clear the external requests data
+  // eslint-disable-next-line no-unused-vars
   clearAllExternalRequests = async (data, state) => {
     const newState = externalControls;
     return await this._updateStorage(newState, LABELS.EXTERNAL_CONTROLS);
@@ -285,12 +294,20 @@ export class ExtensionStorageHandler {
   };
 
   //clear transaction queue
+  // eslint-disable-next-line no-unused-vars
   clearTransactionQueue = async (data, state) => {
-    const newState = transactionQueue;
+    const newState = { ...transactionQueue };
     return await this._updateStorage(newState, LABELS.TRANSACTION_QUEUE);
   };
 
-  /**************************Keyring Related Tasks***********************************/
+  /************************** Window and Tabs State Tasks ***************************/
+  // eslint-disable-next-line no-unused-vars
+  saveTabAndWindowState = async (data, state) => {
+    const newState = { ...data };
+    return await this._updateStorage(newState, LABELS.WINDOW_AND_TAB_STATE);
+  };
+
+  /************************** Keyring Related Tasks *********************************/
 
   // unlockWallet
   unlock = async (message) => {

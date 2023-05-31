@@ -32,18 +32,24 @@ Number.prototype.noExponents = function () {
     mag -= str.length;
     while (mag--) z += "0";
     return str + z;
-  } catch (error) {}
+  } catch (error) {
+    console.log("Error in no exponent", error);
+  }
 };
 
 //find the root element for component injection
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 //init the main app
-const initApp = (data, externalControlsState) => {
+const initApp = (data, externalControlsState, windowAndTabState) => {
   root.render(
     <MemoryRouter>
       <Context>
-        <App data={data} externalControlsState={externalControlsState} />
+        <App
+          data={data}
+          externalControlsState={externalControlsState}
+          windowAndTabState={windowAndTabState}
+        />
         <Toaster />
       </Context>
     </MemoryRouter>
@@ -58,13 +64,14 @@ const initApp = (data, externalControlsState) => {
     //inject the current state into main app
     const currentLocalState = await getDataLocal(LABELS.STATE);
     const externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+    const windowAndTabState = await getDataLocal(LABELS.WINDOW_AND_TAB_STATE);
 
     //created the transaction queue
     await getDataLocal(LABELS.TRANSACTION_QUEUE);
 
     const loginState = await sessionStorage.get(LABELS.ISLOGIN);
     currentLocalState.isLogin = !loginState?.isLogin ? false : currentLocalState?.isLogin;
-    initApp(currentLocalState, externalControlsState);
+    initApp(currentLocalState, externalControlsState, windowAndTabState);
   } catch (err) {
     console.log("Error in the initlization of main app: ", err);
     root.render(

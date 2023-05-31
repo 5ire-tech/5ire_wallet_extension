@@ -1,5 +1,4 @@
 import Web3 from "web3";
-import { isManifestV3 } from "./utils";
 import { BigNumber } from "bignumber.js";
 import { u8aToHex } from "@polkadot/util";
 import Browser from "webextension-polyfill";
@@ -11,6 +10,7 @@ import ValidatorNominatorHandler from "./nativehelper";
 import { httpRequest } from "../Utility/network_calls";
 import { Connection } from "../Helper/connection.helper";
 import { NotificationAndBedgeManager } from "./platform";
+import { getFormattedMethod, isManifestV3 } from "./utils";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import ExtensionPortStream from "./extension-port-stream-mod/index";
 import { ExternalConnection, ExternalWindowControl } from "./controller";
@@ -25,23 +25,26 @@ import {
   TX_TYPE,
   NETWORK,
   ERRCODES,
+  DECIMALS,
   HTTP_METHODS,
+  WALLET_METHODS,
   ERROR_MESSAGES,
+  SIGNER_METHODS,
   STREAM_CHANNELS,
   HTTP_END_POINTS,
+  ONE_ETH_IN_GWEI,
+  CONNECTION_METHODS,
   ERROR_EVENTS_LABELS,
+  MESSAGE_TYPE_LABELS,
   EVM_JSON_RPC_METHODS,
   STATE_CHANGE_ACTIONS,
   MESSAGE_EVENT_LABELS,
   INTERNAL_EVENT_LABELS,
   AUTO_BALANCE_UPDATE_TIMER,
   VALIDATOR_NOMINATOR_METHOD,
-  DECIMALS,
-  MESSAGE_TYPE_LABELS,
   TRANSACTION_STATUS_CHECK_TIMER,
-  ONE_ETH_IN_GWEI,
-  SIGNER_METHODS,
-  LAPSED_TRANSACTION_CHECKER_TIMER
+  LAPSED_TRANSACTION_CHECKER_TIMER,
+  RESTRICTED_ETHEREUM_METHODS
 } from "../Constants";
 import { log, isEqual, hasLength, isString, hasProperty, isNullorUndef } from "../Utility/utility";
 import {
@@ -51,6 +54,8 @@ import {
   TransactionPayload,
   TransactionProcessingPayload
 } from "../Utility/network_calls";
+
+let tester = 0;
 
 //for initilization of background events
 export class InitBackground {
@@ -157,7 +162,8 @@ export class InitBackground {
         //data for futher proceeding
         const data = {
           ...message,
-          origin: sender.origin,
+          //for firefox and chrome tab origin
+          origin: sender?.origin || new URL(sender?.url).origin,
           tabId: sender.tab?.id
         };
 
@@ -178,23 +184,23 @@ export class InitBackground {
 
         //checks for event from injected script
         switch (data.method) {
-          case "connect":
-          case "eth_requestAccounts":
-          case "eth_accounts":
+          case CONNECTION_METHODS.CONNECT:
+          case CONNECTION_METHODS.ETH_REQUEST_ACCOUNTS:
+          case CONNECTION_METHODS.ETH_ACCOUNTS:
             await this.internalHandler.handleConnect(data, localData);
             break;
-          case "disconnect":
+          case WALLET_METHODS.DISCONNECT:
             await this.internalHandler.handleDisconnect(data, localData);
             break;
-          case "eth_sendTransaction":
+          case RESTRICTED_ETHEREUM_METHODS.ETH_SEND_TRANSACTION:
             await this.internalHandler.handleEthTransaction(data, localData);
             break;
-          case "get_endPoint":
+          case WALLET_METHODS.GET_END_POINT:
             await this.internalHandler.sendEndPoint(data, localData);
             break;
           case SIGNER_METHODS.SIGN_PAYLOAD:
           case SIGNER_METHODS.SIGN_RAW:
-            await this.internalHandler.handleNativeSigner(data, localData);
+            await this.internalHandler.handleNativeSigner(data);
             break;
           case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_NOMINATOR:
           case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_VALIDATOR:
@@ -209,10 +215,10 @@ export class InitBackground {
           case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_BONDMORE:
           case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_PAYOUT:
           case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR:
-          case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR_UNBONDED:
           case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR:
+          case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR_UNBONDED:
           case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR_UNBONDED:
-            await this.internalHandler.handleValidatorNominatorTransactions(data, localData);
+            await this.internalHandler.handleValidatorNominatorTransactions(data);
             break;
           default:
             data?.tabId &&
@@ -228,7 +234,7 @@ export class InitBackground {
               );
         }
       } catch (err) {
-        log("err is here: ", err);
+        log("error in externalEventStream : ", err);
         ExtensionEventHandle.eventEmitter.emit(
           INTERNAL_EVENT_LABELS.ERROR,
           new ErrorPayload(ERRCODES.RUNTIME_MESSAGE_SECTION_ERROR, err.message)
@@ -258,7 +264,7 @@ export class InitBackground {
         this.networkHandler.handleNetworkRelatedTasks(message, localData);
     };
 
-    Browser.runtime.onMessage.addListener(async (message, sender) => {
+    Browser.runtime.onMessage.addListener(async (message) => {
       const localData = await getDataLocal(LABELS.STATE);
       //checks for event from extension ui
       if (
@@ -352,8 +358,7 @@ export class InitBackground {
   when the extension is updated to a new version,
   and when Chrome is updated to a new version. */
   bindInstallandUpdateEvents = async () => {
-    Browser.runtime.onInstalled.addListener(async (details) => {
-      log("here is refresh");
+    Browser.runtime.onInstalled.addListener(async () => {
       const services = new Services();
       const state = await getDataLocal(LABELS.STATE);
       const pendingTxBalance = state.pendingTransactionBalance;
@@ -554,11 +559,14 @@ class TransactionQueue {
     const { data, options } = transactionProcessingPayload;
     transactionProcessingPayload.transactionHistoryTrack = new TransactionPayload(
       data?.to || options?.to,
-      data?.value ? parseFloat(Number(data?.value)).toString() : "",
+      data?.value ? Number(data?.value).toString() : "0",
       options?.isEvm,
       options?.network,
       options?.type
     );
+
+    //check if there is method inside tx payload (only nominator and validator transactions case)
+    transactionProcessingPayload.transactionHistoryTrack.method = options?.method || null;
 
     //insert transaction history with flag "Queued"
     await this.services.updateLocalState(
@@ -581,7 +589,9 @@ class TransactionQueue {
     await this.services.updatePendingTransactionBalance(
       options.network.toLowerCase(),
       options.account.evmAddress,
-      isNaN(Number(data?.value)) ? 0 : Number(data?.value),
+      isNaN(Number(data?.value))
+        ? 0 + Number(options?.fee)
+        : Number(data?.value) + Number(options?.fee),
       options?.isEvm,
       true
     );
@@ -617,8 +627,9 @@ class TransactionQueue {
     const state = await getDataLocal(LABELS.STATE);
     const allQueues = await getDataLocal(LABELS.TRANSACTION_QUEUE);
     const { currentTransaction } = allQueues[network];
+    log("current transaction inside the process transaction: ", currentTransaction);
     try {
-      if (hasProperty(this.transactionRpc, currentTransaction.type)) {
+      if (hasProperty(this.transactionRpc, currentTransaction?.type)) {
         const rpcResponse = await this.transactionRpc[currentTransaction.type](
           currentTransaction,
           state
@@ -643,9 +654,10 @@ class TransactionQueue {
   //parse the response after processing the transaction
   parseTransactionResponse = async (network) => {
     //perform the current active transactions
+    tester++;
     const transactionResponse = await this.processTransaction(network);
 
-    const { txHash } = transactionResponse.payload?.data;
+    const txHash = transactionResponse.payload?.data?.txHash;
 
     //check if there is error payload into response
     if (!transactionResponse.error) {
@@ -723,12 +735,13 @@ class TransactionQueue {
       //if the current transaction is null then it is failed and removed
       if (!transactionQueue.currentTransaction?.transactionHistoryTrack) {
         const { options, data } = transactionQueue.currentTransaction;
-        log("here is options data: ", transactionQueue);
         //update the current transaction pending balance state
         await this.services.updatePendingTransactionBalance(
           network,
           options.account.evmAddress,
-          isNaN(Number(data?.value)) ? 0 : Number(data?.value),
+          isNaN(Number(data?.value))
+            ? 0 + Number(options?.fee)
+            : Number(data?.value) + Number(options?.fee),
           options.isEvm
         );
 
@@ -740,6 +753,7 @@ class TransactionQueue {
             this._setTimeout(this.checkTransactionStatus.bind(null, network))
           );
         } else {
+          await this.processQueuedTransaction(network);
           TransactionQueue.networkTransactionHandler =
             TransactionQueue.networkTransactionHandler.filter((item) => item !== network);
           //reset the timeout id as null so whenever new transaction made the timeout start again
@@ -755,7 +769,8 @@ class TransactionQueue {
       //check if transaction status is pending then only check the status
       if (
         currentTransaction &&
-        isEqual(currentTransaction.transactionHistoryTrack.status, STATUS.PENDING)
+        isEqual(currentTransaction.transactionHistoryTrack.status, STATUS.PENDING) &&
+        currentTransaction.transactionHistoryTrack?.txHash
       ) {
         const {
           transactionHistoryTrack: { txHash, isEvm, chain }
@@ -790,8 +805,6 @@ class TransactionQueue {
             );
           }
 
-          //dequeue the new transaction and set as active for processing
-          await this.processQueuedTransaction(network);
           //update the transaction status and other details after confirmation
           await this.services.updateLocalState(
             STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE,
@@ -812,18 +825,31 @@ class TransactionQueue {
             network,
             currentTransaction.options.account.evmAddress,
             isNaN(Number(currentTransaction.data?.value))
-              ? 0
-              : Number(currentTransaction.data?.value),
+              ? 0 + Number(currentTransaction.options.fee)
+              : Number(currentTransaction.data?.value) + Number(currentTransaction.options.fee),
             currentTransaction.options.isEvm
           );
 
+          /***********************************Test */
+          console.log("length of pending in upper: ", hasPendingTx);
+          console.log("here is tx count: ", tester);
+          const tempTxQueues = await getDataLocal(LABELS.TRANSACTION_QUEUE);
+          const tempQueue = tempTxQueues[network];
+          const tempTxQueueLenght = tempQueue.txQueue.length;
+
+          console.log("here is queue tx: ", tempTxQueueLenght);
+
           //check if there any pending transaction into queue
-          if (!isEqual(hasPendingTx, 0)) {
+          if (!isEqual(tempTxQueueLenght, 0)) {
+            //dequeue the new transaction and set as active for processing
+            await this.processQueuedTransaction(network);
             await this.parseTransactionResponse(network);
             TransactionQueue.setIntervalId(
               this._setTimeout(this.checkTransactionStatus.bind(null, network))
             );
           } else {
+            //dequeue the new transaction and set as active for processing
+            await this.processQueuedTransaction(network);
             TransactionQueue.networkTransactionHandler =
               TransactionQueue.networkTransactionHandler.filter((item) => item !== network);
             //reset the timeout id as null so whenever new transaction made the timeout start again
@@ -836,6 +862,8 @@ class TransactionQueue {
             this._setTimeout(this.checkTransactionStatus.bind(null, network))
           );
         }
+      } else {
+        log("transaction not processed: ", currentTransaction);
       }
     } catch (err) {
       log("error while transaction processing: ", err);
@@ -852,12 +880,6 @@ class TransactionQueue {
   /******************************* Event Callbacks *************************/
   //callback for new transaction inserted into queue event
   newTransactionAddedEventCallback = async (network) => {
-    log(
-      "network here: ",
-      network,
-      !TransactionQueue.networkTransactionHandler.includes(network),
-      TransactionQueue.networkTransactionHandler
-    );
     // isNullorUndef(TransactionQueue.transactionIntervalId)
     if (!TransactionQueue.networkTransactionHandler.includes(network)) {
       TransactionQueue.networkTransactionHandler.push(network);
@@ -1036,7 +1058,6 @@ class ExternalTxTasks {
   constructor() {
     this.transactionQueueHandler = TransactionQueue.getInstance();
     this.nativeSignerhandler = new NativeSigner();
-    this.validatorNominatorHandler = new ValidatorNominatorHandler();
   }
 
   //process and check external task (connection, tx approval)
@@ -1126,20 +1147,29 @@ class ExternalTxTasks {
   };
 
   //handle the nominator and validator transaction
+  // eslint-disable-next-line no-unused-vars
   validatorNominatorTransaction = async (message, state) => {
     if (message.data?.approve) {
       const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+
+      //get the method and amount
+      const methodDetails = getFormattedMethod(activeSession?.method, activeSession?.message);
 
       //process the external evm transactions
       const externalTransactionProcessingPayload = new TransactionProcessingPayload(
         {
           ...activeSession.message,
+          value: methodDetails?.amount,
           options: { ...message?.data.options, externalTransaction: { ...activeSession } }
         },
         message.event,
         null,
         activeSession.message?.data,
-        { ...message?.data.options, externalTransaction: { ...activeSession } }
+        {
+          ...message?.data.options,
+          externalTransaction: { ...activeSession },
+          method: methodDetails?.methodName
+        }
       );
 
       await this.transactionQueueHandler.addNewTransaction(externalTransactionProcessingPayload);
@@ -1165,6 +1195,244 @@ export class Services {
 
   /*************************** Service Helpers ********************************/
 
+  //get the transaction details from chain side
+  getBlockInsideDetails = async (network, txHash) => {
+    try {
+      log("here is the network: ", network);
+      const signedBlock = await NetworkHandler.api[network].nativeApi.rpc.chain.getBlock();
+
+      const allRecords = await NetworkHandler.api[network].nativeApi.query.system.events.at(
+        signedBlock.block.header.hash
+      );
+      const date = new Date();
+      const payout = [];
+      const transactionObj = {};
+
+      //index handler and filtered event records
+      let index = 0;
+
+      const filter = (index) => {
+        return allRecords.filter(
+          (e) => e.phase.isApplyExtrinsic && e.phase.asApplyExtrinsic.eq(index)
+        );
+      };
+
+      //traverse the block extrinsics
+      for (const mainData of signedBlock.block.extrinsics) {
+        const {
+          method: { method, section }
+        } = mainData;
+        let eraIndex = null;
+
+        const filteredExt = filter(index);
+
+        //traverse the event records
+        for (const mainData2 of filteredExt) {
+          const { event } = mainData2;
+          log("here is main: ", event.toHuman());
+          let transactionData;
+
+          if (event.method.toLowerCase() === "extrinsicfailed") {
+            const [dispatchError] = event.data;
+
+            let errorInfo;
+
+            if (dispatchError.isModule) {
+              const decoded = NetworkHandler.api[network].nativeApi.registry.findMetaError(
+                dispatchError.asModule
+              );
+              errorInfo = `${decoded.section}.${decoded.name}`;
+            } else {
+              errorInfo = dispatchError.toString();
+            }
+
+            const data = JSON.parse(signedBlock.block.extrinsics[index].toString());
+
+            let txFee = transactionObj[`${signedBlock.block.extrinsics[index].hash}`]?.txFee
+              ? transactionObj[`${signedBlock.block.extrinsics[index].hash}`].txFee
+              : 0;
+
+            const from = data?.signature?.signer?.id.toString();
+            const to = data?.method?.args?.dest?.id.toString();
+            const value = Number(data?.method?.args?.value).toString();
+
+            transactionData = {
+              from_address: from,
+              to_address: to,
+              value: value,
+              txhash: signedBlock.block.extrinsics[index].hash.toString(),
+              reason: event.method.toLowerCase(),
+              sectionmethod: errorInfo,
+              status: "failed",
+              txFee: txFee,
+              timestamp: date.toString(),
+              blocknumber: signedBlock.block.header.number.toString()
+            };
+
+            transactionObj[signedBlock.block.extrinsics[index].hash.toString()] = transactionData;
+          } else if (event.method.toLowerCase() === "withdraw" && event.section === "balances") {
+            const data = JSON.parse(signedBlock.block.extrinsics[index].toString());
+            const from = data?.signature?.signer?.id.toString();
+            const to = data?.method?.args?.dest?.id.toString();
+            const value = Number(data?.method?.args?.value).toString();
+
+            transactionObj[signedBlock.block.extrinsics[index].hash.toString()] =
+              transactionObj[signedBlock.block.extrinsics[index].hash.toString()]?.sectionmethod !==
+              "staking.Bonded"
+                ? {}
+                : transactionObj[signedBlock.block.extrinsics[index].hash.toString()];
+
+            transactionObj[signedBlock.block.extrinsics[index].hash.toString()].txFee =
+              Number(event.data[1]) / Math.pow(10, 18);
+
+            if (from === to) {
+              transactionData = {
+                from_address: from,
+                to_address: to,
+                value: value,
+                txhash: signedBlock.block.extrinsics[index].hash.toString(),
+                reason: event.method.toLowerCase(),
+                sectionmethod: `${section}.${method}`,
+                status: "success",
+
+                txFee: transactionObj[signedBlock.block.extrinsics[index].hash.toString()].txFee,
+                timestamp: date.toString(),
+                blocknumber: signedBlock.block.header.number.toString()
+              };
+
+              transactionObj[signedBlock.block.extrinsics[index].hash.toString()] = transactionData;
+            }
+          } else {
+            if (event.method.toLowerCase() === "transfer" && event.section === "balances") {
+              let txFee = transactionObj[signedBlock.block.extrinsics[index].hash.toString()]?.txFee
+                ? transactionObj[signedBlock.block.extrinsics[index].hash.toString()]?.txFee
+                : 0;
+
+              transactionData = {
+                from_address: event.data[0].toString(),
+                to_address: event.data[1].toString(),
+                value: event.data[2] ? event.data[2].toString() : "N/A",
+                txhash: signedBlock.block.extrinsics[index].hash.toString(),
+                reason: event.method.toLowerCase(),
+                sectionmethod: `${section}.${method}`,
+                status: "success",
+                txFee: txFee,
+                timestamp: date.toString(),
+                blocknumber: signedBlock.block.header.number.toString()
+              };
+              /* @ts-ignore */
+              // @ts-nocheck
+              transactionObj[signedBlock.block.extrinsics[index].hash.toString()] = transactionData;
+            } else if (
+              (event.method.toLowerCase() === "bonded" && event.section === "staking") ||
+              (event.method.toLowerCase() === "unbonded" && event.section === "staking") ||
+              (event.method.toLowerCase() === "chilled" && event.section === "staking") ||
+              (event.method.toLowerCase() === "validatorprefsset" && event.section === "staking") ||
+              (event.method.toLowerCase() === "nominate" && event.section === "staking")
+            ) {
+              let txFee = transactionObj[signedBlock.block.extrinsics[index].hash.toString()].txFee
+                ? transactionObj[signedBlock.block.extrinsics[index].hash.toString()].txFee
+                : 0;
+              if (
+                (event.method.toLowerCase() === "validatorprefsset" &&
+                  event.section === "staking") ||
+                (event.method.toLowerCase() === "nominate" && event.section === "staking")
+              ) {
+                if (
+                  transactionObj[signedBlock.block.extrinsics[index].hash.toString()]
+                    ?.sectionmethod !== "staking.Bonded"
+                ) {
+                  transactionData = {
+                    from_address: event.data[0].toString(),
+                    to_address: "N/A",
+                    value: "0",
+                    txhash: signedBlock.block.extrinsics[index].hash.toString(),
+                    reason: event.method.toLowerCase(),
+                    sectionmethod:
+                      event.method.toLowerCase() === "validatorprefsset"
+                        ? "staking.revalidated"
+                        : "staking.renominated",
+                    status: "success",
+                    txFee: txFee,
+                    timestamp: date.toString(),
+                    blocknumber: signedBlock.block.header.number.toString()
+                  };
+                }
+              } else {
+                transactionData = {
+                  from_address: event.data[0].toString(),
+                  to_address: "N/A",
+                  value: event.data[1] ? event.data[1].toString() : "N/A",
+                  txhash: signedBlock.block.extrinsics[index].hash.toString(),
+                  reason: event.method.toLowerCase(),
+                  sectionmethod: `${event.section}.${event.method}`,
+                  status: "success",
+                  txFee: txFee,
+                  timestamp: date.toString(),
+                  blocknumber: signedBlock.block.header.number.toString()
+                };
+              }
+
+              transactionObj[signedBlock.block.extrinsics[index].hash.toString()] =
+                transactionData === undefined
+                  ? transactionObj[signedBlock.block.extrinsics[index].hash.toString()]
+                  : transactionData;
+            } else if (
+              event.section === "staking" &&
+              event.method.toLowerCase() === "payoutstarted"
+            ) {
+              eraIndex = `${event.data[0]}`;
+            } else if (event.section === "staking" && event.method.toLowerCase() === "rewarded") {
+              const data = JSON.parse(signedBlock.block.extrinsics[index].toString());
+              let txFee = transactionObj[signedBlock.block.extrinsics[index].hash.toString()].txFee
+                ? transactionObj[signedBlock.block.extrinsics[index].hash.toString()].txFee
+                : 0;
+
+              transactionData = {
+                from_address: data?.signature?.signer?.id.toString(),
+                to_address: "N/A",
+                value: transactionObj[signedBlock.block.extrinsics[index].hash.toString()]?.value
+                  ? (
+                      Number(
+                        transactionObj[signedBlock.block.extrinsics[index].hash.toString()]?.value
+                      ) + Number(event.data[1])
+                    ).toString()
+                  : 0 + Number(event.data[1]),
+                txhash: signedBlock.block.extrinsics[index].hash.toString(),
+                reason: event.method.toLowerCase(),
+                sectionmethod: `${event.section}.${event.method}`,
+                status: "success",
+                txFee: txFee,
+                timestamp: date.toString(),
+                blocknumber: signedBlock.block.header.number.toString()
+              };
+
+              transactionObj[signedBlock.block.extrinsics[index].hash.toString()] = transactionData;
+              payout.push({
+                txhash: signedBlock.block.extrinsics[index].hash.toString(),
+                eraindex: `${eraIndex}`,
+                stashaccount: `${event.data[0]}`,
+                reward: event.data[1].toString(),
+                status: "success",
+                blocknumber: signedBlock.block.header.number.toString()
+              });
+            } else {
+              log("it can't run man");
+            }
+          }
+        }
+
+        index++;
+      }
+
+      log("transaction object: ", transactionObj);
+      return transactionObj[txHash];
+    } catch (err) {
+      console.log("Error while getting transaction details: ", err);
+      return null;
+    }
+  };
+
   //find the native and evm transaction status
   getTransactionStatus = async (txHash, isEvm, network) => {
     //get the url of current network for evm rpc call or native explorer search
@@ -1185,8 +1453,16 @@ export class Services {
       if (!isNullorUndef(txRecipt?.status))
         txRecipt.status = parseInt(txRecipt.status) ? STATUS.SUCCESS : STATUS.FAILED;
     } else {
-      res = await httpRequest(rpcUrl + txHash, HTTP_METHODS.GET);
-      txRecipt = res?.data?.transaction;
+      res = await this.getBlockInsideDetails(network.toLowerCase(), txHash);
+      txRecipt = res;
+      log("here is the txHash: ", txRecipt);
+
+      //check the transaction on explorer api if not found in current block
+      if (!txRecipt) {
+        log("api called for searching the tx: ", txHash);
+        res = await httpRequest(rpcUrl + txHash, HTTP_METHODS.GET);
+        txRecipt = res?.data?.transaction;
+      }
 
       if (!isNullorUndef(txRecipt?.status)) {
         if (isEqual(txRecipt.status.toLowerCase(), STATUS.SUCCESS.toLowerCase()))
@@ -1246,9 +1522,7 @@ export class Services {
       else transactionBalance.native = accountBalance.native - value;
     }
 
-    log(
-      `Here is the Balance: evm: ${transactionBalance.evm} native: ${transactionBalance.native} for acc ${address} and network ${network} or chain is evm (true/false): ${isEvm}`
-    );
+    // log(`Here is the Balance: evm: ${transactionBalance.evm} native: ${transactionBalance.native} for acc ${address} and network ${network} or chain is evm (true/false): ${isEvm}`);
 
     await this.updateLocalState(
       STATE_CHANGE_ACTIONS.UPDATE_PENDING_TRANSACTION_BALANCE,
@@ -1333,7 +1607,7 @@ export class TransactionsRPC {
     try {
       const { data, transactionHistoryTrack, contractBytecode } = message;
       const {
-        options: { account }
+        options: { account, fee }
       } = data;
       const network =
         transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
@@ -1348,11 +1622,12 @@ export class TransactionsRPC {
       const tempAmount = data?.options?.isBig
         ? new BigNumber(data.value).dividedBy(DECIMALS).toString()
         : data.value;
+      const balanceWithFee = Number(tempAmount) + Number(fee);
 
       if (
-        Number(tempAmount) >
+        balanceWithFee >
         Number(balance?.evmBalance) -
-          (state.pendingTransactionBalance[account.evmAddress][network].evm - tempAmount)
+          (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -1443,7 +1718,7 @@ export class TransactionsRPC {
     try {
       const { data, transactionHistoryTrack } = message;
       const {
-        options: { account }
+        options: { account, fee }
       } = data;
       const network =
         transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
@@ -1455,10 +1730,12 @@ export class TransactionsRPC {
 
       // transactionHistory.status = STATUS.PENDING;
 
+      const balanceWithFee = Number(data.value) + Number(fee);
+
       if (
-        Number(data.value) >=
+        balanceWithFee >=
         Number(balance?.evmBalance) -
-          (state.pendingTransactionBalance[account.evmAddress][network].evm - Number(data.value))
+          (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -1530,20 +1807,24 @@ export class TransactionsRPC {
     try {
       const { data, transactionHistoryTrack } = message;
       const {
-        options: { account }
+        options: { account, fee },
+        isEd
       } = data;
       const network =
         transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
       const { nativeApi } = NetworkHandler.api[network];
       const balance = state.allAccountsBalance[account?.evmAddress][network];
+      console.log("IsEd : ", isEd);
 
       if (isNullorUndef(account))
         new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
+      const balanceWithFee = Number(data.value) + Number(fee);
+
       if (
-        Number(data.value) >=
+        balanceWithFee >=
         Number(balance?.nativeBalance) -
-          (state.pendingTransactionBalance[account.evmAddress][network].native - Number(data.value))
+          (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -1555,11 +1836,15 @@ export class TransactionsRPC {
         let err;
         const amt = new BigNumber(data.value).multipliedBy(DECIMALS).toString();
         const signer = this.hybridKeyring.getNativeSignerByAddress(account.nativeAddress);
+        let transfer;
 
-        const transfer = nativeApi.tx.balances.transfer(
-          data.to,
-          Number(amt).noExponents().toString()
-        );
+        if (isEd)
+          transfer = nativeApi.tx.balances.transferKeepAlive(
+            data.to,
+            Number(amt).noExponents().toString()
+          );
+        else
+          transfer = nativeApi.tx.balances.transfer(data.to, Number(amt).noExponents().toString());
 
         if (RpcRequestProcessor.isHttp) {
           const txHash = await transfer.signAndSend(signer);
@@ -1639,7 +1924,7 @@ export class TransactionsRPC {
     try {
       const { data, transactionHistoryTrack } = message;
       const {
-        options: { account }
+        options: { account, fee }
       } = data;
       const network =
         transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
@@ -1649,10 +1934,12 @@ export class TransactionsRPC {
       if (isNullorUndef(account))
         new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
+      const balanceWithFee = Number(data.value) + Number(fee);
+
       if (
-        Number(data?.value) >=
+        balanceWithFee >=
         Number(balance?.nativeBalance) -
-          (state.pendingTransactionBalance[account.evmAddress][network].native - Number(data.value))
+          (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -1915,9 +2202,9 @@ export class GeneralWalletRPC {
     try {
       const { data } = message;
       const {
-        options: { account }
+        options: { account },
+        isEd
       } = data;
-
       const { nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
 
       if (isNullorUndef(account))
@@ -1936,10 +2223,16 @@ export class GeneralWalletRPC {
         );
       } else if (toAddress?.startsWith("5")) {
         const amt = new BigNumber(data.value).multipliedBy(DECIMALS).toString();
-        transferTx = nativeApi.tx.balances.transfer(
-          toAddress,
-          Number(amt).noExponents().toString()
-        );
+        if (isEd)
+          transferTx = nativeApi.tx.balances.transferKeepAlive(
+            toAddress,
+            Number(amt).noExponents().toString()
+          );
+        else
+          transferTx = nativeApi.tx.balances.transfer(
+            toAddress,
+            Number(amt).noExponents().toString()
+          );
       }
       const info = await transferTx?.paymentInfo(signer);
       const fee = new BigNumber(info.partialFee.toString()).div(DECIMALS).toString();
@@ -2203,6 +2496,7 @@ export class NetworkHandler {
   };
 
   //change network handler
+  // eslint-disable-next-line no-unused-vars
   networkChange = async (message, state) => {
     try {
       ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.CONNECTION);

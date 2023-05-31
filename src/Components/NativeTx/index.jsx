@@ -56,9 +56,9 @@ function NativeSigner() {
   }, []);
 
   function RecComponent({ data }) {
-    return Object.keys(data).map((v) => {
+    return Object.keys(data).map((v, index) => {
       if (isObject(data[v])) {
-        return <RecComponent data={data[v]} />;
+        return <RecComponent key={index} data={data[v]} />;
       }
       return (
         <div key={v} className={pageStyle.rejectedSec__listReject__innerList}>

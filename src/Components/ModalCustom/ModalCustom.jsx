@@ -9,8 +9,7 @@ function ModalCustom({
   children,
   customClass,
   title,
-  centered,
-  closeIcon
+  centered
 }) {
   return (
     <div>
