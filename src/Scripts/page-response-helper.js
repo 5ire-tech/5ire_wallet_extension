@@ -9,11 +9,11 @@ export class PageResponseHandler {
     this.handlers[request.id] = request;
   }
 
-    //reject the request
-    reject(data) {
-        this.handlers[data.id]?.reject(data.error);
-        this._deleteHandler(data.id);
-    }
+  //reject the request
+  reject(data) {
+    this.handlers[data.id]?.reject(data.error);
+    this._deleteHandler(data.id);
+  }
 
   //resolve the requets
   resolve(data) {

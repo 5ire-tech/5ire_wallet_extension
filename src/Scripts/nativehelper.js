@@ -32,14 +32,20 @@ export default class ValidatorNominatorHandler {
     const externalData = activeSession?.message || message.options.externalTransaction.message;
     const method = activeSession?.method || message.options.externalTransaction.method;
 
-    const options = {nativeAddress: message?.options?.account.nativeAddress || state.currentAccount.nativeAddress,
+    const options = {
+      nativeAddress: message?.options?.account.nativeAddress || state.currentAccount.nativeAddress,
       network: message?.options?.network || state.currentNetwork.toLowerCase()
-    }
+    };
 
     if (hasProperty(ValidatorNominatorHandler.instance, method)) {
       const methodDetails = getFormattedMethod(method, externalData);
 
-      const res = await ValidatorNominatorHandler.instance[method](state, externalData, isFee, options);
+      const res = await ValidatorNominatorHandler.instance[method](
+        state,
+        externalData,
+        isFee,
+        options
+      );
       //if error occured then throw it
       if (res?.error)
         new Error(new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, res)).throw();
@@ -71,12 +77,11 @@ export default class ValidatorNominatorHandler {
       const signer = this.hybridKeyring.getNativeSignerByAddress(address);
       return signer;
     }
-  }
+  };
 
   //Nominator methods
   native_add_nominator = async (state, payload, isFee = false, options) => {
-
-    const {network, nativeAddress} = options;
+    const { network, nativeAddress } = options;
     const { nativeApi } = NetworkHandler.api[network];
 
     if (!payload?.stakeAmount || !payload.validatorsAccounts) {
@@ -118,8 +123,7 @@ export default class ValidatorNominatorHandler {
   };
 
   native_renominate = async (state, payload, isFee = false, options) => {
-
-    const {network, nativeAddress} = options;
+    const { network, nativeAddress } = options;
     const { nativeApi } = NetworkHandler.api[network];
 
     if (!payload.validatorAccounts) {
@@ -148,18 +152,17 @@ export default class ValidatorNominatorHandler {
   };
 
   native_nominator_payout = async (state, payload, isFee = false, options) => {
-
     if (!payload.validatorIdList) {
       return {
         error: true,
         data: "Invalid Params: Validator Accounts are required"
       };
     }
-    return this.native_validator_payout(state, payload, isFee, options)
-  }
+    return this.native_validator_payout(state, payload, isFee, options);
+  };
 
   native_validator_payout = async (state, payload, isFee = false, options) => {
-    const {network, nativeAddress} = options;
+    const { network, nativeAddress } = options;
     const { nativeApi } = NetworkHandler.api[network];
 
     if (!payload.validatorIdList) {
@@ -203,11 +206,11 @@ export default class ValidatorNominatorHandler {
   };
 
   native_stop_validator = async (state, payload, isFee = false, options) => {
-    return this.native_stop_nominator(state, payload, isFee, options)
-  }
+    return this.native_stop_nominator(state, payload, isFee, options);
+  };
 
   native_stop_nominator = async (state, payload, isFee = false, options) => {
-    const {network, nativeAddress} = options;
+    const { network, nativeAddress } = options;
     const { nativeApi } = NetworkHandler.api[network];
 
     const stopValidator = await nativeApi.tx.staking.chill();
@@ -228,11 +231,10 @@ export default class ValidatorNominatorHandler {
   };
 
   native_unbond_validator = async (state, payload, isFee = false, options) => {
-    return this.native_unbond_nominator(state, payload, isFee, options)
-  }
+    return this.native_unbond_nominator(state, payload, isFee, options);
+  };
 
   native_unbond_nominator = async (state, payload, isFee = false, options) => {
-
     if (!payload.amount) {
       return {
         error: true,
@@ -240,7 +242,7 @@ export default class ValidatorNominatorHandler {
       };
     }
 
-    const {network, nativeAddress} = options;
+    const { network, nativeAddress } = options;
     const { nativeApi } = NetworkHandler.api[network];
 
     const amt = new BigNumber(payload.amount).multipliedBy(DECIMALS).toFixed().toString();
@@ -261,10 +263,8 @@ export default class ValidatorNominatorHandler {
   };
 
   native_withdraw_validator = async (state, payload, isFee = false, options) => {
-
-    return this.native_withdraw_nominator(state, payload, isFee, options)
-  }
-
+    return this.native_withdraw_nominator(state, payload, isFee, options);
+  };
 
   native_withdraw_nominator = async (state, payload, isFee = false, options) => {
     if (!payload.amount || !payload.address) {
@@ -274,7 +274,7 @@ export default class ValidatorNominatorHandler {
       };
     }
 
-    const {network, nativeAddress} = options;
+    const { network, nativeAddress } = options;
     const { nativeApi } = NetworkHandler.api[network];
 
     const { amount, address } = payload;
@@ -298,12 +298,11 @@ export default class ValidatorNominatorHandler {
   };
 
   native_withdraw_validator_unbonded = async (state, payload, isFee = false, options) => {
-    return this.native_withdraw_nominator_unbonded(state, payload, isFee, options)
-  }
+    return this.native_withdraw_nominator_unbonded(state, payload, isFee, options);
+  };
 
   native_withdraw_nominator_unbonded = async (state, payload, isFee = false, options) => {
-
-    const {network, nativeAddress} = options;
+    const { network, nativeAddress } = options;
     const { nativeApi } = NetworkHandler.api[network];
 
     const unbond = await nativeApi.tx.staking.withdrawUnbonded(0);
@@ -325,7 +324,6 @@ export default class ValidatorNominatorHandler {
 
   //validators methods
   native_add_validator = async (state, payload, isFee = false, options) => {
-
     if (!payload?.commission || !payload?.amount || !payload?.rotateKeys) {
       return {
         error: true,
@@ -333,10 +331,10 @@ export default class ValidatorNominatorHandler {
       };
     }
 
-    const {network, nativeAddress} = options;
+    const { network, nativeAddress } = options;
     const { nativeApi } = NetworkHandler.api[network];
 
-    const bondAmt = (new BigNumber(payload.amount).multipliedBy(DECIMALS)).toFixed().toString();
+    const bondAmt = new BigNumber(payload.amount).multipliedBy(DECIMALS).toFixed().toString();
     const stashId = encodeAddress(decodeAddress(nativeAddress));
     const commission = payload.commission === 0 ? 1 : payload.commission * 10 ** 7;
 
@@ -371,8 +369,8 @@ export default class ValidatorNominatorHandler {
   };
 
   native_validator_bondmore = async (state, payload, isFee = false, options) => {
-    return this.native_nominator_bondmore(state, payload, isFee, options)
-  }
+    return this.native_nominator_bondmore(state, payload, isFee, options);
+  };
 
   native_nominator_bondmore = async (state, payload, isFee = false, options) => {
     if (!payload.amount) {
@@ -382,7 +380,7 @@ export default class ValidatorNominatorHandler {
       };
     }
 
-    const {network, nativeAddress} = options;
+    const { network, nativeAddress } = options;
     const { nativeApi } = NetworkHandler.api[network];
 
     const amt = new BigNumber(payload.amount).multipliedBy(DECIMALS).toFixed().toString();
@@ -411,8 +409,7 @@ export default class ValidatorNominatorHandler {
       };
     }
 
-
-    const {network, nativeAddress} = options;
+    const { network, nativeAddress } = options;
     const { nativeApi } = NetworkHandler.api[network];
 
     const commission = payload.commission === 0 ? 1 : payload.commission * 10 ** 7;

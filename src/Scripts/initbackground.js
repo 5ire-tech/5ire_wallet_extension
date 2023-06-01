@@ -536,7 +536,7 @@ class TransactionQueue {
   static instance = null;
   static transactionIntervalId = null;
   static networkTransactionHandler = [];
-  static blockSlots = {}
+  static blockSlots = {};
 
   constructor() {
     this.injectNetworkSlots();
@@ -555,10 +555,10 @@ class TransactionQueue {
 
   //set the block container network slots
   injectNetworkSlots = () => {
-    const tempBlockSlots = {}
-    Object.values(NETWORK).forEach(item => tempBlockSlots[item.toLowerCase()] = 0)
+    const tempBlockSlots = {};
+    Object.values(NETWORK).forEach((item) => (tempBlockSlots[item.toLowerCase()] = 0));
     TransactionQueue.blockSlots = tempBlockSlots;
-  }
+  };
 
   //set the transaction interval id
   static setIntervalId = (transactionIntervalId) => {
@@ -833,8 +833,14 @@ class TransactionQueue {
           );
 
           //update the pending transaction balance
-          await this.services.updatePendingTransactionBalance(network, currentTransaction.options?.account.evmAddress, isNaN(Number(currentTransaction.data?.value)) ? (0 + Number(currentTransaction.options.fee)) : (Number(currentTransaction.data?.value) + Number(currentTransaction.options.fee)), currentTransaction.options.isEvm);
-
+          await this.services.updatePendingTransactionBalance(
+            network,
+            currentTransaction.options?.account.evmAddress,
+            isNaN(Number(currentTransaction.data?.value))
+              ? 0 + Number(currentTransaction.options.fee)
+              : Number(currentTransaction.data?.value) + Number(currentTransaction.options.fee),
+            currentTransaction.options.isEvm
+          );
 
           /***********************************Test */
           console.log("length of pending in upper: ", hasPendingTx);
@@ -872,9 +878,15 @@ class TransactionQueue {
         log("transaction not processed: ", currentTransaction);
       }
     } catch (err) {
-      log("error while transaction processing: ", err)
-      ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.ERROR_WHILE_TRANSACTION_STATUS_CHECK, ERROR_MESSAGES.ERROR_WHILE_TRANSACTION_STATUS_CHECK));
-   
+      log("error while transaction processing: ", err);
+      ExtensionEventHandle.eventEmitter.emit(
+        INTERNAL_EVENT_LABELS.ERROR,
+        new ErrorPayload(
+          ERRCODES.ERROR_WHILE_TRANSACTION_STATUS_CHECK,
+          ERROR_MESSAGES.ERROR_WHILE_TRANSACTION_STATUS_CHECK
+        )
+      );
+
       const tempTxQueues = await getDataLocal(LABELS.TRANSACTION_QUEUE);
       const tempQueue = tempTxQueues[network];
       const tempTxQueueLenght = tempQueue.txQueue.length;
@@ -884,11 +896,14 @@ class TransactionQueue {
         //dequeue the new transaction and set as active for processing
         await this.processQueuedTransaction(network);
         await this.parseTransactionResponse(network);
-        TransactionQueue.setIntervalId(this._setTimeout(this.checkTransactionStatus.bind(null, network)))
+        TransactionQueue.setIntervalId(
+          this._setTimeout(this.checkTransactionStatus.bind(null, network))
+        );
       } else {
         //dequeue the new transaction and set as active for processing
         await this.processQueuedTransaction(network);
-        TransactionQueue.networkTransactionHandler = TransactionQueue.networkTransactionHandler.filter(item => item !== network);
+        TransactionQueue.networkTransactionHandler =
+          TransactionQueue.networkTransactionHandler.filter((item) => item !== network);
         //reset the timeout id as null so whenever new transaction made the timeout start again
         TransactionQueue.setIntervalId(null);
       }
@@ -1224,33 +1239,39 @@ export class Services {
   //get the transaction details from chain side
   getBlockInsideDetails = async (network, txHash) => {
     try {
-      log("here is the network: ", network)
-      const {nativeApi} = NetworkHandler.api[network];
+      log("here is the network: ", network);
+      const { nativeApi } = NetworkHandler.api[network];
       const blockNumber = TransactionQueue.blockSlots[network];
 
-      if(blockNumber === 0) return null;
+      if (blockNumber === 0) return null;
 
       const blockHash = await nativeApi.rpc.chain.getBlockHash(blockNumber);
       const signedBlock = await nativeApi.rpc.chain.getBlock(blockHash);
- 
-       const allRecords = await nativeApi.query.system.events.at(signedBlock.block.header.hash);
-       const date = new Date();
-       const transactionObj = {};
 
-       //index handler and filtered event records
-       let index = 0;
+      const allRecords = await nativeApi.query.system.events.at(signedBlock.block.header.hash);
+      const date = new Date();
+      const transactionObj = {};
 
-       const filter = (index) => {return allRecords.filter((e) => e.phase.isApplyExtrinsic && e.phase.asApplyExtrinsic.eq(index))};
+      //index handler and filtered event records
+      let index = 0;
 
-       //traverse the block extrinsics
-      for(const extrinsics of signedBlock.block.extrinsics) {
-        const { method: { method, section } } = extrinsics;
-        let eraIndex = null;
+      const filter = (index) => {
+        return allRecords.filter(
+          (e) => e.phase.isApplyExtrinsic && e.phase.asApplyExtrinsic.eq(index)
+        );
+      };
+
+      //traverse the block extrinsics
+      for (const extrinsics of signedBlock.block.extrinsics) {
+        const {
+          method: { method, section }
+        } = extrinsics;
+        // let eraIndex = null;
 
         const filteredExt = filter(index);
 
         //traverse the event records
-        for(const storageEvents of  filteredExt) {
+        for (const storageEvents of filteredExt) {
           const { event } = storageEvents;
 
           log("here is main: ", event.toHuman(), "extrinscs: ", method, section);
@@ -1261,8 +1282,10 @@ export class Services {
             let errorInfo;
 
             if (dispatchError.isModule) {
-               const decoded = NetworkHandler.api[network].nativeApi.registry.findMetaError(dispatchError.asModule);
-               errorInfo = `${decoded.section}.${decoded.name}`;
+              const decoded = NetworkHandler.api[network].nativeApi.registry.findMetaError(
+                dispatchError.asModule
+              );
+              errorInfo = `${decoded.section}.${decoded.name}`;
             } else {
               errorInfo = dispatchError.toString();
             }
@@ -1275,47 +1298,45 @@ export class Services {
             const value = Number(data?.method?.args?.value).toString();
 
             transactionData = {
-               from_address: from,
-               to_address: to,
-               value: value,
-               txhash: hash,
-               reason: event.method.toLowerCase(),
-               sectionmethod: errorInfo,
-               status: 'failed',
-               txFee: txFee,
-               timestamp: date.toString(),
-               blocknumber: signedBlock.block.header.number.toString(),
+              from_address: from,
+              to_address: to,
+              value: value,
+              txhash: hash,
+              reason: event.method.toLowerCase(),
+              sectionmethod: errorInfo,
+              status: "failed",
+              txFee: txFee,
+              timestamp: date.toString(),
+              blocknumber: signedBlock.block.header.number.toString()
             };
 
             transactionObj[hash] = transactionData;
-
-         } else if (event.method.toLowerCase() === 'withdraw' && event.section === 'balances') {
-          const hash = signedBlock.block.extrinsics[index].hash.toString()
-          const data = JSON.parse(signedBlock.block.extrinsics[index].toString());
+          } else if (event.method.toLowerCase() === "withdraw" && event.section === "balances") {
+            const hash = signedBlock.block.extrinsics[index].hash.toString();
+            const data = JSON.parse(signedBlock.block.extrinsics[index].toString());
 
             const from = data?.signature?.signer?.id.toString();
             const to = data?.method?.args?.dest?.id.toString();
             const value = Number(data?.method?.args?.value).toString();
-            transactionObj[hash] = transactionObj[hash]?.sectionmethod !== 'staking.Bonded' ? {} : transactionObj[hash];
+            transactionObj[hash] =
+              transactionObj[hash]?.sectionmethod !== "staking.Bonded" ? {} : transactionObj[hash];
             transactionObj[hash].txFee = Number(event.data[1]) / Math.pow(10, 18);
 
             if (from === to) {
-               transactionData = {
-                  from_address: from,
-                  to_address: to,
-                  value: value,
-                  txhash: hash,
-                  reason: event.method.toLowerCase(),
-                  sectionmethod: `${section}.${method}`,
-                  status: 'success',
-                  txFee: transactionObj[hash].txFee,
-                  timestamp: date.toString(),
-                  blocknumber: signedBlock.block.header.number.toString(),
-               };
+              transactionData = {
+                from_address: from,
+                to_address: to,
+                value: value,
+                txhash: hash,
+                reason: event.method.toLowerCase(),
+                sectionmethod: `${section}.${method}`,
+                status: "success",
+                txFee: transactionObj[hash].txFee,
+                timestamp: date.toString(),
+                blocknumber: signedBlock.block.header.number.toString()
+              };
 
-  
-               transactionObj[hash] = transactionData;
-
+              transactionObj[hash] = transactionData;
             }
           } else {
             if (event.method.toLowerCase() === "transfer" && event.section === "balances") {
@@ -1339,78 +1360,83 @@ export class Services {
               // @ts-nocheck
               transactionObj[signedBlock.block.extrinsics[index].hash.toString()] = transactionData;
             } else if (
-              (event.method.toLowerCase() === 'bonded' &&
-                 event.section === 'staking') ||
-              (event.method.toLowerCase() === 'unbonded' &&
-                 event.section === 'staking') ||
-              (event.method.toLowerCase() === 'chilled' &&
-                 event.section === 'staking') ||
-              (event.method.toLowerCase() === 'validatorprefsset' &&
-                 event.section === 'staking') ||
-                 (event.method.toLowerCase() === 'nominatorprefsset' &&
-                 event.section === 'staking')||
-                 (event.method.toLowerCase() === 'withdrawn' &&
-                 event.section === 'staking')
-           ) {
+              (event.method.toLowerCase() === "bonded" && event.section === "staking") ||
+              (event.method.toLowerCase() === "unbonded" && event.section === "staking") ||
+              (event.method.toLowerCase() === "chilled" && event.section === "staking") ||
+              (event.method.toLowerCase() === "validatorprefsset" && event.section === "staking") ||
+              (event.method.toLowerCase() === "nominatorprefsset" && event.section === "staking") ||
+              (event.method.toLowerCase() === "withdrawn" && event.section === "staking")
+            ) {
+              const hash = signedBlock.block.extrinsics[index].hash.toString();
+              let txFee = transactionObj[hash].txFee ? transactionObj[hash].txFee : 0;
 
-            const hash = signedBlock.block.extrinsics[index].hash.toString()
-            let txFee = transactionObj[hash].txFee ? transactionObj[hash].txFee : 0;
-
-            if ((event.method.toLowerCase() === 'validatorprefsset' && event.section === 'staking') ||
-               (event.method.toLowerCase() === 'nominatorprefsset' && event.section === 'staking')) {
-               if (transactionObj[hash]?.sectionmethod !== 'staking.Bonded') {
+              if (
+                (event.method.toLowerCase() === "validatorprefsset" &&
+                  event.section === "staking") ||
+                (event.method.toLowerCase() === "nominatorprefsset" && event.section === "staking")
+              ) {
+                if (transactionObj[hash]?.sectionmethod !== "staking.Bonded") {
                   transactionData = {
-                     from_address: event.data[0].toString(),
-                     to_address: 'N/A',
-                     value: '0',
-                     txhash: hash,
-                     reason: event.method.toLowerCase(),
-                     sectionmethod: event.method.toLowerCase() === 'validatorprefsset' ? 'staking.revalidated' : 'staking.renominated',
-                     status: 'success',
-                     txFee: txFee,
-                     timestamp: date.toString(),
-                     blocknumber:  signedBlock.block.header.number.toString(),
+                    from_address: event.data[0].toString(),
+                    to_address: "N/A",
+                    value: "0",
+                    txhash: hash,
+                    reason: event.method.toLowerCase(),
+                    sectionmethod:
+                      event.method.toLowerCase() === "validatorprefsset"
+                        ? "staking.revalidated"
+                        : "staking.renominated",
+                    status: "success",
+                    txFee: txFee,
+                    timestamp: date.toString(),
+                    blocknumber: signedBlock.block.header.number.toString()
                   };
-               }
-            } else {
-               transactionData = {
+                }
+              } else {
+                transactionData = {
                   from_address: event.data[0].toString(),
-                  to_address: 'N/A',
-                  value: event.data[1] ? event.data[1].toString() : 'N/A',
-                  txhash: hash,
-                  reason: event.method.toLowerCase(),
-                  sectionmethod: `${event.section}.${event.method}`,
-                  status: 'success',
-                  txFee: txFee,
-                  timestamp: date.toString(),
-                  blocknumber: signedBlock.block.header.number.toString(),
-               };
-            }
-
-            transactionObj[hash] = transactionData === undefined ? transactionObj[hash] : transactionData;
-
-           }
-             else if (event.section === 'staking' && event.method.toLowerCase() === 'payoutstarted') {
-               eraIndex = `${event.data[0]}`;
-            } else if (event.section === 'staking' && event.method.toLowerCase() === 'rewarded') {
-               const data = JSON.parse(signedBlock.block.extrinsics[index].toString());
-               const hash = signedBlock.block.extrinsics[index].hash.toString()
-               let txFee = transactionObj[hash]?.txFee ? transactionObj[hash].txFee : 0;
-
-               transactionData = {
-                  from_address: data?.signature?.signer?.id.toString(),
-                  to_address: 'N/A',
-                  value: transactionObj[hash]?.value ? (Number(transactionObj[hash].value) + Number(event.data[1])).toString() : 0 + Number(event.data[1]),
+                  to_address: "N/A",
+                  value: event.data[1] ? event.data[1].toString() : "N/A",
                   txhash: hash,
                   reason: event.method.toLowerCase(),
                   sectionmethod: `${event.section}.${event.method}`,
                   status: "success",
                   txFee: txFee,
                   timestamp: date.toString(),
-                  blocknumber: signedBlock.block.header.number.toString(),
-               };
+                  blocknumber: signedBlock.block.header.number.toString()
+                };
+              }
 
-               transactionObj[hash] = transactionData;
+              transactionObj[hash] =
+                transactionData === undefined ? transactionObj[hash] : transactionData;
+            }
+            // else if (
+            //   event.section === "staking" &&
+            //   event.method.toLowerCase() === "payoutstarted"
+            // ) {
+            //   eraIndex = `${event.data[0]}`;
+            // }
+            else if (event.section === "staking" && event.method.toLowerCase() === "rewarded") {
+              const data = JSON.parse(signedBlock.block.extrinsics[index].toString());
+              const hash = signedBlock.block.extrinsics[index].hash.toString();
+              let txFee = transactionObj[hash]?.txFee ? transactionObj[hash].txFee : 0;
+
+              transactionData = {
+                from_address: data?.signature?.signer?.id.toString(),
+                to_address: "N/A",
+                value: transactionObj[hash]?.value
+                  ? (Number(transactionObj[hash].value) + Number(event.data[1])).toString()
+                  : 0 + Number(event.data[1]),
+                txhash: hash,
+                reason: event.method.toLowerCase(),
+                sectionmethod: `${event.section}.${event.method}`,
+                status: "success",
+                txFee: txFee,
+                timestamp: date.toString(),
+                blocknumber: signedBlock.block.header.number.toString()
+              };
+
+              transactionObj[hash] = transactionData;
             } else {
               log("it can't run man");
             }
@@ -1418,7 +1444,7 @@ export class Services {
         }
 
         index++;
-        TransactionQueue.blockSlots[network] = (blockNumber + 1);
+        TransactionQueue.blockSlots[network] = blockNumber + 1;
       }
 
       log("transaction object: ", transactionObj);
@@ -1482,14 +1508,14 @@ export class Services {
   //assign the latest block to blockSlots
   getCurrentBlockNumber = async (network) => {
     try {
-      const {nativeApi} = NetworkHandler.api[network];
+      const { nativeApi } = NetworkHandler.api[network];
       const blockHeader = await nativeApi.rpc.chain.getHeader();
       TransactionQueue.blockSlots[network] = Number(blockHeader?.number) || 0;
       log("blockheader: ", TransactionQueue.blockSlots[network]);
     } catch (err) {
-      log("error while saving the latest block: ", err)
+      log("error while saving the latest block: ", err);
     }
-  }
+  };
 
   //create rpc handler
   createConnection = async (currentNetwork) => {
@@ -1966,7 +1992,7 @@ export class TransactionsRPC {
           account?.evmAddress,
           Number(amt).noExponents().toString()
         );
-        
+
         //save the current block number
         await this.services.getCurrentBlockNumber(network);
         evmDepositeHash = deposit.hash.toHex();
@@ -2042,7 +2068,11 @@ export class TransactionsRPC {
     try {
       //save the current block
       await this.services.getCurrentBlockNumber(message.options.network);
-      const eventPayload = await this.nominatorValidatorHandler.handleNativeAppsTask(state, message, false);
+      const eventPayload = await this.nominatorValidatorHandler.handleNativeAppsTask(
+        state,
+        message,
+        false
+      );
       return eventPayload;
     } catch (err) {
       const payload = { options: message?.options, data: message?.transactionHistoryTrack };
@@ -2392,7 +2422,7 @@ export class GeneralWalletRPC {
         )
       );
     }
-  }
+  };
 }
 
 //keyring handler
