@@ -313,14 +313,14 @@ function Swap() {
   };
 
   //handle Ok and cancel button of popup
-  const handle_OK_Cancel = useCallback(() => {
+  const handle_OK_Cancel = () => {
     setAmount("");
     setDisable(true);
     setIsFaildOpen(false);
     setIsModalOpen(false);
     updateEstimatedGas(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  };
 
   //Set To and from
   const handleClick = () => {

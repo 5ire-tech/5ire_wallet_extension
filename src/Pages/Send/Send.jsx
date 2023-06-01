@@ -382,13 +382,13 @@ function Send() {
   };
 
   //handle Ok and cancel button of popup
-  const handle_OK_Cancel = useCallback(() => {
+  const handle_OK_Cancel = () => {
     setIsFaildOpen(false);
     updateEstimatedGas(null);
     setData({ to: "", amount: "" });
     setIsModalOpen(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  };
 
   //performs action when user click on max button
   const handleMaxClick = () => {
