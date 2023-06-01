@@ -9,8 +9,8 @@ import {
   ERROR_MESSAGES,
   MESSAGE_EVENT_LABELS,
   MESSAGE_TYPE_LABELS,
-  TX_TYPE,
-  VALIDATION_METHODS_VD_NM
+  TX_TYPE
+  // VALIDATION_METHODS_VD_NM
 } from "../../Constants";
 import { shortLongAddress } from "../../Utility/utility";
 import { AuthContext } from "../../Store";
@@ -37,7 +37,7 @@ function ValidatorNominatorTxns() {
   const navigate = useNavigate();
   const { Content } = Layout;
 
-  const { pendingTransactionBalance, balance, currentAccount, currentNetwork } = state;
+  const { pendingTransactionBalance, allAccountsBalance, currentAccount, currentNetwork } = state;
 
   const {
     state,
@@ -48,13 +48,14 @@ function ValidatorNominatorTxns() {
   } = useContext(AuthContext);
 
   const [disableApproval, setDisableApproval] = useState(false);
+  const balance = allAccountsBalance[currentAccount?.evmAddress][currentNetwork?.toLowerCase()];
 
   //check if user has sufficent balance to make trnsaction
   useEffect(() => {
     if (
       valdatorNominatorFee?.fee &&
       Number(activeSession.message?.value) + Number(valdatorNominatorFee?.fee) >=
-        Number(balance?.evmBalance) -
+        Number(balance?.nativeBalance) -
           pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native
     ) {
       toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
@@ -79,20 +80,15 @@ function ValidatorNominatorTxns() {
 
   //process the transaction
   function handleClick(isApproved) {
-    const balance =
-      state.allAccountsBalance[state.currentAccount?.evmAddress][
-        state.currentNetwork.toLowerCase()
-      ];
-
-    if (VALIDATION_METHODS_VD_NM.includes(activeSession?.method)) {
-      const totalAmount =
-        +valdatorNominatorFee?.fee +
-        +activeSession.message?.amount +
-        pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native;
-      if (+balance?.nativeBalance < totalAmount) {
-        return toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE_VD_NM);
-      }
-    }
+    // if (VALIDATION_METHODS_VD_NM.includes(activeSession?.method)) {
+    //   const totalAmount =
+    //     +valdatorNominatorFee?.fee +
+    //     +activeSession.message?.amount +
+    //     pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native;
+    //   if (+balance?.nativeBalance < totalAmount) {
+    //     return toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE_VD_NM);
+    //   }
+    // }
 
     // updateLoading(true);
     sendMessageOverStream(

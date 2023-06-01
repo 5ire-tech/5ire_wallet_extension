@@ -1670,8 +1670,8 @@ export class TransactionsRPC {
 
       if (
         balanceWithFee >
-        Number(balance?.evmBalance) -
-          (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
+        Number(balance.evmBalance) -
+          state.pendingTransactionBalance[account.evmAddress][network].evm
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -1779,7 +1779,7 @@ export class TransactionsRPC {
       if (
         balanceWithFee >=
         Number(balance?.evmBalance) -
-          (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
+          state.pendingTransactionBalance[account.evmAddress][network].evm
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -1868,7 +1868,7 @@ export class TransactionsRPC {
       if (
         balanceWithFee >=
         Number(balance?.nativeBalance) -
-          (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)
+          state.pendingTransactionBalance[account.evmAddress][network].native
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -1986,7 +1986,7 @@ export class TransactionsRPC {
       if (
         balanceWithFee >=
         Number(balance?.nativeBalance) -
-          (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)
+          state.pendingTransactionBalance[account.evmAddress][network].native
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -2109,6 +2109,7 @@ export class TransactionsRPC {
     };
 
     if (data) tx.data = data;
+    log("here is address: ", tx);
     const { evmApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
     const gasLimit = await evmApi.eth.estimateGas(tx);
     const gasPrice = await evmApi.eth.getGasPrice();
@@ -2211,18 +2212,16 @@ export class GeneralWalletRPC {
       if (isNullorUndef(account))
         new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
-      let toAddress = data.toAddress
-        ? data.toAddress
-        : data?.data
-        ? account.evmAddress
-        : account.nativeAddress;
+      let toAddress = data.toAddress ? data.toAddress : data?.data ? null : account.nativeAddress;
       let amount = data?.value;
 
-      if (toAddress?.startsWith("5")) toAddress = u8aToHex(toAddress).slice(0, 42);
+      if (toAddress?.startsWith("5")) {
+        toAddress = u8aToHex(toAddress).slice(0, 42);
+      }
 
       if (toAddress?.startsWith("0x")) {
         amount = Math.round(Number(amount));
-        Web3.utils.toChecksumAddress(toAddress);
+        toAddress && Web3.utils.toChecksumAddress(toAddress);
       }
 
       const tx = {
@@ -2235,9 +2234,11 @@ export class GeneralWalletRPC {
         tx.data = data.data;
       }
 
+      log("here is address: ", tx);
+
       const gasAmount = await evmApi.eth.estimateGas(tx);
       const gasPrice = await evmApi.eth.getGasPrice();
-      let fee = new BigNumber(gasPrice * gasAmount).dividedBy(DECIMALS).toString();
+      const fee = new BigNumber(gasPrice * gasAmount).dividedBy(DECIMALS).toString();
 
       const payload = {
         data: { fee }
