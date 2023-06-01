@@ -11,7 +11,7 @@ export class PageResponseHandler {
 
   //reject the request
   reject(data) {
-    this.handlers[data.id].reject(data.error);
+    this.handlers[data.id]?.reject(data.error);
     this._deleteHandler(data.id);
   }
 
