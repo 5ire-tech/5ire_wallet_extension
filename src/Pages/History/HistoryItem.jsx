@@ -78,7 +78,8 @@ export default function HistoryItem({ historyItem, handleHistoryOpen }) {
             Status :{" "}
             <span
               className={
-                historyItem.txHash
+                historyItem.status.toLowerCase() === STATUS.PENDING.toLowerCase() ||
+                historyItem.status.toLowerCase() === STATUS.QUEUED.toLowerCase()
                   ? style.historySec__pending
                   : historyItem.status.toLowerCase() === STATUS.SUCCESS.toLowerCase()
                   ? style.historySec__success
