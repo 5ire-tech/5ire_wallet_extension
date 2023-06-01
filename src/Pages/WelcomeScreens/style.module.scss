@@ -523,11 +523,13 @@
 }
 
 .copyButton {
-  padding: 0 0 6px 6px;
+  padding: 0 18px 0;
   // position: absolute;
-  right: 0;
+  // right: 0;
   // top: 11%;
   // z-index: 99999;
+  display: flex;
+  justify-content: end;
 
   button {
     border-radius: 4px;
@@ -535,6 +537,7 @@
     font-size: 10px;
   }
 }
+
 
 .errorText {
   text-align: left;
