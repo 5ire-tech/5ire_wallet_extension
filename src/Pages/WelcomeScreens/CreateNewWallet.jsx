@@ -2,7 +2,7 @@ import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import { useNavigate } from "react-router-dom";
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useCallback } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
@@ -43,12 +43,13 @@ function CreateNewWallet() {
     if (newWalletName.trim().length >= 2) setDisable(false);
   }, [isLogin, newWalletName]);
 
-  const handleChange = (e) => {
+  const handleChange = useCallback((e) => {
     setNewWalletName(e.target.value);
     setWarrning("");
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const validateAccName = () => {
+  const validateAccName = useCallback(() => {
     if (newWalletName.trim().length === 0) {
       setWarrning(ERROR_MESSAGES.INPUT_REQUIRED);
       setDisable(true);
@@ -65,7 +66,7 @@ function CreateNewWallet() {
       setWarrning("");
       setDisable(false);
     }
-  };
+  }, [newWalletName]);
 
   const handleClick = (e) => {
     if (e.key === LABELS.ENTER || e.key === undefined) {
@@ -92,13 +93,14 @@ function CreateNewWallet() {
     }
   };
 
-  const handleCancle = () => {
+  const handleCancle = useCallback(() => {
     updateState(LABELS.ACCOUNT_NAME, null, false);
     if (isLogin) {
       setDetailsPage(false);
       navigate(ROUTES.WALLET);
     } else navigate(ROUTES.DEFAULT);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLogin]);
 
   return (
     <>

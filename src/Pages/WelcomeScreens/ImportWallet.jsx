@@ -4,7 +4,7 @@ import { AuthContext } from "../../Store";
 import TextArea from "antd/es/input/TextArea";
 import { useNavigate } from "react-router-dom";
 import CongratulationsScreen from "./CongratulationsScreen";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { isEmpty, validateMnemonic } from "../../Utility/utility";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
@@ -60,16 +60,20 @@ function ImportWallet() {
     }
   }, [data.accName, data.key, warrning]);
 
-  const handleChange = (e) => {
-    setData((p) => ({ ...p, [e.target.name]: e.target.value }));
-    if (e.target.name === LABELS.KEY) {
-      if (e.target.value?.trim() && !isMannual) setEye(true);
+  const handleChange = useCallback(
+    (e) => {
+      setData((p) => ({ ...p, [e.target.name]: e.target.value }));
+      if (e.target.name === LABELS.KEY) {
+        if (e.target.value?.trim() && !isMannual) setEye(true);
 
-      setInputError("");
-    }
-  };
+        setInputError("");
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isMannual]
+  );
 
-  const validateAccName = () => {
+  const validateAccName = useCallback(() => {
     if (data.accName.trim().length < 2 || data.accName.trim().length >= 16) {
       setWarrning((p) => ({
         ...p,
@@ -83,7 +87,7 @@ function ImportWallet() {
       }));
       setDisable(true);
     } else setWarrning((p) => ({ ...p, acc: "" }));
-  };
+  }, [data.accName]);
 
   const validateKey = () => {
     if (isEmpty(data.key)) {
@@ -137,11 +141,12 @@ function ImportWallet() {
     }
   };
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setInputError("");
     if (isLogin) navigate(ROUTES.WALLET);
     else navigate(ROUTES.DEFAULT);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLogin]);
 
   return (
     <div className={style.cardWhite} onKeyDown={handleClick}>

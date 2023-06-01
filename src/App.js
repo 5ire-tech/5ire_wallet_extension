@@ -23,7 +23,6 @@ import SwapApprove from "./Pages/Swap/SwapApprove/SwapApprove";
 import ImportWallet from "./Pages/WelcomeScreens/ImportWallet";
 import UnlockWelcome from "./Pages/WelcomeScreens/UnlockWelcome";
 import ManageWallet from "./Components/Setting/ManageWallet.jsx";
-import WelcomeScreen from "./Pages/WelcomeScreens/WelcomeScreen";
 import ForgotPassword from "./Pages/WelcomeScreens/ForgotPassword";
 import CreateNewWallet from "./Pages/WelcomeScreens/CreateNewWallet";
 import ApproveTx from "./Pages/RejectNotification/RejectNotification";
@@ -32,6 +31,8 @@ import SetPasswordScreen from "./Pages/WelcomeScreens/SetPasswordScreen";
 import MainPrivacyPolicy from "./Pages/WelcomeScreens/MainPrivacyPolicy";
 import ValidatorNominatorTxns from "./Components/ValidatorNominatorTxns";
 import CongratulationsScreen from "./Pages/WelcomeScreens/CongratulationsScreen";
+
+import WelcomeScreen from "./Pages/WelcomeScreens/WelcomeScreen";
 
 function App(props) {
   const {
@@ -99,21 +100,35 @@ function App(props) {
             <Route
               index
               path={ROUTES.DEFAULT}
-              element={<WelcomeLayout children={<WelcomeScreen />} />}
+              element={
+                <WelcomeLayout>
+                  <WelcomeScreen />
+                </WelcomeLayout>
+              }
             />
-
             <Route
               path={ROUTES.SET_PASS + "/:id"}
-              element={<WelcomeLayout children={<SetPasswordScreen />} />}
+              element={
+                <WelcomeLayout>
+                  <SetPasswordScreen />
+                </WelcomeLayout>
+              }
             />
-
             <Route
               path={ROUTES.UNLOACK_WALLET}
-              element={<WelcomeLayout children={<UnlockWelcome />} />}
+              element={
+                <WelcomeLayout>
+                  <UnlockWelcome />
+                </WelcomeLayout>
+              }
             />
             <Route
               path={ROUTES.FORGOT_PASSWORD}
-              element={<WelcomeLayout children={<ForgotPassword />} />}
+              element={
+                <WelcomeLayout>
+                  <ForgotPassword />
+                </WelcomeLayout>
+              }
             />
           </>
         ) : (
@@ -121,57 +136,95 @@ function App(props) {
             <Route
               index
               path={ROUTES.WALLET}
-              element={<FixWidthLayout children={<Wallet />} />}
+              element={
+                <FixWidthLayout>
+                  <Wallet />
+                </FixWidthLayout>
+              }
             />
             <Route
               index
               path={ROUTES.HISTORY_P}
-              element={<FixWidthLayout children={<History />} />}
+              element={
+                <FixWidthLayout>
+                  <History />
+                </FixWidthLayout>
+              }
             />
             <Route
               index
               path={ROUTES.MY_ACCOUNT}
-              element={<FixWidthLayout children={<MyAccount />} />}
+              element={
+                <FixWidthLayout>
+                  <MyAccount />
+                </FixWidthLayout>
+              }
             />
             <Route
               index
               path={ROUTES.SWAP_APPROVE}
-              element={<FixWidthLayout children={<SwapApprove />} />}
+              element={
+                <FixWidthLayout>
+                  <SwapApprove />
+                </FixWidthLayout>
+              }
             />
             <Route
               index
               // path={ROUTES.ENTER_PASS + "/:id"}
               path={ROUTES.ENTER_PASS}
-              element={<OnlyContent children={<EnterPassword />} />}
+              element={
+                <OnlyContent>
+                  <EnterPassword />
+                </OnlyContent>
+              }
             />
             <Route
               index
               path={ROUTES.SEND}
-              element={<OnlyContent children={<Send />} />}
+              element={
+                <OnlyContent>
+                  <Send />
+                </OnlyContent>
+              }
             />
             <Route
               index
               path={ROUTES.SWAP}
-              element={<OnlyContent children={<Swap />} />}
+              element={
+                <OnlyContent>
+                  <Swap />
+                </OnlyContent>
+              }
             />
             <Route
               index
               path={ROUTES.MANAGE_WALLET}
-              element={<OnlyContent children={<ManageWallet />} />}
+              element={
+                <OnlyContent>
+                  <ManageWallet />
+                </OnlyContent>
+              }
             />
             <Route
               index
               path={ROUTES.PVT_KEY}
-              element={<OnlyContent children={<PrivateKey />} />}
+              element={
+                <OnlyContent>
+                  <PrivateKey />
+                </OnlyContent>
+              }
             />
-
             <Route
               index
               path={ROUTES.APPROVE_TXN}
-              element={<FixWidthLayout children={<ApproveTx />} />}
+              element={
+                <FixWidthLayout>
+                  <ApproveTx />
+                </FixWidthLayout>
+              }
             />
             <Route index path={ROUTES.NATIVE_TXN} element={<NativeTx />} />
-
             <Route
               index
               path={ROUTES.VALIDATOR_NOMINATOR_TXN}
@@ -179,32 +232,53 @@ function App(props) {
             />
             <Route
               path={ROUTES.LOGIN_APPROVE}
-              element={<WelcomeLayout children={<LoginApprove />} />}
+              element={
+                <WelcomeLayout>
+                  <LoginApprove />
+                </WelcomeLayout>
+              }
             />
           </>
         )}
-
         <Route
           path={ROUTES.IMPORT_WALLET}
-          element={<WelcomeLayout children={<ImportWallet />} />}
+          element={
+            <WelcomeLayout>
+              <ImportWallet />
+            </WelcomeLayout>
+          }
         />
-
         <Route
           path={ROUTES.NEW_WALLET_DETAILS}
-          element={<WelcomeLayout children={<CreateWalletChain />} />}
+          element={
+            <WelcomeLayout>
+              <CreateWalletChain />
+            </WelcomeLayout>
+          }
         />
         <Route
           path={ROUTES.BEFORE_BEGIN}
-          element={<WelcomeLayout children={<Beforebegin />} />}
+          element={
+            <WelcomeLayout>
+              <Beforebegin />
+            </WelcomeLayout>
+          }
         />
-
         <Route
           path={ROUTES.CREATE_WALLET}
-          element={<WelcomeLayout children={<CreateNewWallet />} />}
+          element={
+            <WelcomeLayout>
+              <CreateNewWallet />
+            </WelcomeLayout>
+          }
         />
         <Route
           path={ROUTES.PRIVACY_POLICY}
-          element={<WelcomeLayout children={<MainPrivacyPolicy />} />}
+          element={
+            <WelcomeLayout>
+              <MainPrivacyPolicy />
+            </WelcomeLayout>
+          }
         />
       </Routes>
 
