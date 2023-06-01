@@ -92,14 +92,21 @@ export const EVM_JSON_RPC_METHODS = {
 
 export const ERROR_MESSAGES = {
   ERR_OCCURED: "Error occured.",
+  PASS_REQUIRED: "Password required.",
+  INVALID_AMOUNT: "Amount is invalid.",
+  NO_ROOT_ACC: "No root account exists",
+  INVALID_QUERY: "Query key is invalid",
   LOGOUT_ERR: "Error while logging out",
   INVALID_MNEMONIC: "Invalid mnemonic.",
   INCORRECT_PASS: "Incorrect password.",
   INCORRECT_ADDRESS: "Invalid address.",
+  INCORRECT_KEYRING: "Invalid keyring.",
+  ACCOUNT_EXISTS: "Account already exist",
   INPUT_REQUIRED: "This field is required.",
   PASS_DONT_MATCH: "Password do not match.",
+  INVALID_EVENT_LABEL: "Invalid event Label",
+  INVALID_TYPE_LABEL: "Invalid type Label",
   INSUFFICENT_BALANCE: "Insufficient Balance.",
-  INSUFFICENT_BALANCE_VD_NM: "Insufficient Funds: Fee + Amount is more than available balance.",
   UNDEF_PROPERTY: "Object not has given property",
   AMOUNT_CANT_BE_0: "Amount can't be 0 or less than 0",
   SINGER_ERROR: "Error while signing the the raw/payload",
@@ -108,22 +115,25 @@ export const ERROR_MESSAGES = {
   NOT_VALID_JSON_RPC_METHOD: "JSON-RPC method is not valid.",
   INTERNAL_ERROR: "Something wrong happend, please try again",
   PASS_CREATED_SUCCESS: "Successfully created password for user.",
+  AMOUNT_DATA_CHECK: "To or Data is fields is missing from request",
+  NO_ACC_EXISTS_WITH_THIS_ADDR: "No account exist with this address.",
   AMOUNT_CANT_LESS_THEN_ONE: "Swap amount can't be less than 1 5ire",
   ALPHANUMERIC_CHARACTERS: "Please enter alphanumeric characters only.",
   MNEMONICS_ALREADY_EXISTS: "Wallet with this mnemonic already exists.",
   NOT_YOUR_OWN_ADDRESS: "Recipient address should not be your own address.",
   EXTERNAL_NATIVE_TRANSACTION_ERROR: "Error while external native transaction.",
   ACCESS_NOT_GRANTED: "The requested method has not been authorized by the user",
+  ERROR_WHILE_TRANSACTION_STATUS_CHECK: "Error while fething the transaction recipt.",
   ACCOUNT_ACCESS_NOT_GRANTED: "The requested account has not been authorized by the user",
   ERROR_WHILE_TRANSACTION: "Transaction failed, error occured during transaction processing",
-  ERROR_WHILE_TRANSACTION_STATUS_CHECK: "Error while fething the transaction recipt.",
+  INSUFFICENT_BALANCE_VD_NM: "Insufficient Funds: Fee + Amount is more than available balance.",
   ERROR_WHILE_GAS_ESTIMATION: "Gas Estimation Failed, something wrong happend while gas estimation",
-  CREATE_PASS_MSG:
-    "Password must have at least 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
+  INVALID_MSG_ARRAY_AND_OBJECTS_ALLOWED:
+    "Invalid message, (*Only Objects or Arrays are valid value)",
   ERROR_WHILE_NETWORK_CONNECTION:
     "Network Connection Error, please change network or try again later",
-  INVALID_AMOUNT: "Amount is invalid.",
-  AMOUNT_DATA_CHECK: "To or Data is fields is missing from request",
+  CREATE_PASS_MSG:
+    "Password must have at least 8 characters, combination of Mixed case, 1 Special Character and 1 Number.",
 
   INVALID_PROPERTY: "Invalid property.",
   UNDEF_DATA: "Value is null or undefined.",
@@ -144,8 +154,13 @@ export const SUCCESS_MESSAGES = {
   DISCONNECTED: "Disconnected.",
   LOGIN_SUCCESS: "Login successfully.",
   LOGOUT_SUCCESS: "Logout successfully",
-  HASH_COPIED: "Transaction hash copied!",
+  HASH_COPIED: "Transacion hash copied.",
   PASS_CREATED_SUCCESS: "Successfully created password for user."
+};
+
+export const MESSAGES = {
+  ED: "5ireChain requires a minimum of 1 5ire to keep your wallet active",
+  WALLET_CREATED: "Your wallet has been created"
 };
 
 export const ERRCODES = {

@@ -67,76 +67,75 @@ export default function Context({ children }) {
   //bind the message from background event
   bindRuntimeMessageListener((message) => {
     if (message.type === MESSAGE_TYPE_LABELS.EXTENSION_BACKGROUND) {
-      if (
-        message.event === MESSAGE_EVENT_LABELS.EVM_FEE ||
-        message.event === MESSAGE_EVENT_LABELS.NATIVE_FEE
-      ) {
-        !estimatedGas && updateEstimatedGas(message.data.fee);
-        setTimer(updateLoading.bind(null, false));
-      } else if (message.event === MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS) {
-        setExternalNativeTxDetails(message.data);
-        setTimer(updateLoading.bind(null, false));
-      } else if (message.event === MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE) {
-        createOrRestore(message.data);
-      } else if (message.event === MESSAGE_EVENT_LABELS.UNLOCK) {
-        unlock(message.data);
-      } else if (message.event === MESSAGE_EVENT_LABELS.ADD_ACCOUNT) {
-        addAccount(message.data);
-        //send account details whenever account is changed
-        sendEventToTab(
-          windowAndTab,
-          new TabMessagePayload(
-            TABS_EVENT.ACCOUNT_CHANGE_EVENT,
-            {
-              result: {
-                evmAddress: state.currentAccount.evmAddress,
-                nativeAddress: state.currentAccount.nativeAddress
-              }
-            },
-            null,
-            TABS_EVENT.ACCOUNT_CHANGE_EVENT
-          ),
-          externalControlsState.connectedApps
-        );
-      } else if (message.event === MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC) {
-        importAccountByMnemonics(message.data);
-        //send account details whenever account is changed
-        sendEventToTab(
-          windowAndTab,
-          new TabMessagePayload(
-            TABS_EVENT.ACCOUNT_CHANGE_EVENT,
-            {
-              result: {
-                evmAddress: state.currentAccount.evmAddress,
-                nativeAddress: state.currentAccount.nativeAddress
-              }
-            },
-            null,
-            TABS_EVENT.ACCOUNT_CHANGE_EVENT
-          ),
-          externalControlsState.connectedApps
-        );
-      } else if (message.event === MESSAGE_EVENT_LABELS.GET_ACCOUNTS) {
-        getAccounts(message.data);
-      } else if (message.event === MESSAGE_EVENT_LABELS.VERIFY_USER_PASSWORD) {
-        verifyUserPassword(message.data);
-      } else if (message.event === MESSAGE_EVENT_LABELS.EXPORT_PRIVATE_KEY) {
-        exportPrivatekey(message.data);
-      } else if (message.event === MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE) {
-        exportSeedPhrase(message.data);
-      } else if (message.event === MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT) {
-        removeAccount(message.data);
-      } else if (message.event === MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE) {
-        setValdatorNominatorFee(message.data);
-        setTimer(updateLoading.bind(null, false));
-      } else if (message.event === MESSAGE_EVENT_LABELS.BACKGROUND_ERROR) {
-        setBackgroundError(message.data);
-        setTimer(updateLoading.bind(null, false));
-      } else if (message.event === MESSAGE_EVENT_LABELS.NETWORK_CONNECTION_ERROR) {
-        setNetworkError(message.data);
-        setTimer(updateLoading.bind(null, false));
-      } else if (message.event === MESSAGE_EVENT_LABELS.NETWORK_CHECK) {
-        setTimer(updateLoading.bind(null, false));
+      switch (message.event) {
+        case MESSAGE_EVENT_LABELS.EVM_FEE:
+        case MESSAGE_EVENT_LABELS.NATIVE_FEE:
+          !estimatedGas && updateEstimatedGas(message.data.fee);
+          setTimer(updateLoading.bind(null, false));
+          break;
+
+        case MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS:
+          setExternalNativeTxDetails(message.data);
+          setTimer(updateLoading.bind(null, false));
+          break;
+
+        case MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE:
+          createOrRestore(message.data);
+          break;
+
+        case MESSAGE_EVENT_LABELS.UNLOCK:
+          unlock(message.data);
+          break;
+
+        case MESSAGE_EVENT_LABELS.ADD_ACCOUNT:
+          addAccount(message.data);
+          break;
+
+        case MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC:
+          importAccountByMnemonics(message.data);
+          break;
+
+        case MESSAGE_EVENT_LABELS.GET_ACCOUNTS:
+          getAccounts(message.data);
+          break;
+
+        case MESSAGE_EVENT_LABELS.VERIFY_USER_PASSWORD:
+          verifyUserPassword(message.data);
+          break;
+
+        case MESSAGE_EVENT_LABELS.EXPORT_PRIVATE_KEY:
+          exportPrivatekey(message.data);
+          break;
+
+        case MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE:
+          exportSeedPhrase(message.data);
+          break;
+
+        case MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT:
+          removeAccount(message.data);
+          break;
+
+        case MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE:
+          setValdatorNominatorFee(message.data);
+          setTimer(updateLoading.bind(null, false));
+          break;
+
+        case MESSAGE_EVENT_LABELS.BACKGROUND_ERROR:
+          setBackgroundError(message.data);
+          setTimer(updateLoading.bind(null, false));
+          break;
+
+        case MESSAGE_EVENT_LABELS.NETWORK_CONNECTION_ERROR:
+          setNetworkError(message.data);
+          setTimer(updateLoading.bind(null, false));
+          break;
+
+        case MESSAGE_EVENT_LABELS.NETWORK_CHECK:
+          setTimer(updateLoading.bind(null, false));
+          break;
+
+        default:
+          break;
       }
     }
   });
@@ -196,6 +195,20 @@ export default function Context({ children }) {
         navigate(ROUTES.WALLET);
         setShowCongratLoader(false);
       }, 2000);
+      sendEventToTab(
+        new TabMessagePayload(
+          TABS_EVENT.ACCOUNT_CHANGE_EVENT,
+          {
+            result: {
+              evmAddress: data?.newAccount?.evmAddress,
+              nativeAddress: data?.newAccount?.nativeAddress
+            }
+          },
+          null,
+          TABS_EVENT.ACCOUNT_CHANGE_EVENT
+        ),
+        externalControlsState.connectedApps
+      );
     } else if (data?.errCode === 3) {
       setInputError(data?.errMessage ? data.errMessage : "");
       setShowCongratLoader(false);
@@ -213,7 +226,21 @@ export default function Context({ children }) {
 
   const addAccount = (data) => {
     setNewAccount(data?.newAccount);
-    // navigate(ROUTES.NEW_WALLET_DETAILS);
+    //send account details whenever account is changed
+    sendEventToTab(
+      new TabMessagePayload(
+        TABS_EVENT.ACCOUNT_CHANGE_EVENT,
+        {
+          result: {
+            evmAddress: data?.newAccount?.evmAddress,
+            nativeAddress: data?.newAccount?.nativeAddress
+          }
+        },
+        null,
+        TABS_EVENT.ACCOUNT_CHANGE_EVENT
+      ),
+      externalControlsState.connectedApps
+    );
   };
 
   const getAccounts = (data) => {

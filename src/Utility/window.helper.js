@@ -1,5 +1,5 @@
-import Browser from "webextension-polyfill";
 import { isUndef } from "./utility";
+import Browser from "webextension-polyfill";
 
 //close the currently opened poup and tab window
 export const closeBoth = (onlyPopupClose = false) => {

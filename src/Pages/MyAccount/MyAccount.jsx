@@ -29,28 +29,18 @@ import {
 
 function MyAccount() {
   const navigate = useNavigate();
-  // const [accounts, setAccounts] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [addressToRemove, setAddressToRemove] = useState(null);
-  const {
-    allAccounts,
-    state,
-    updateState,
-    // removeHistory,
-    externalControlsState,
-    setNewWalletName,
-    windowAndTab
-  } = useContext(AuthContext);
+  const { allAccounts, state, updateState, externalControlsState, setNewWalletName, windowAndTab } =
+    useContext(AuthContext);
   const { connectedApps } = externalControlsState;
   const { currentAccount, allAccountsBalance, currentNetwork } = state;
 
   //remove Account
   const handleRemoveAcc = () => {
-    // console.log("addressToRemove : ", addressToRemove);
     if (!addressToRemove) {
       toast.error(ERROR_MESSAGES.UNABLE_TO_REMOVE_ACC);
     } else {
-      //Remove account
       sendRuntimeMessage(
         MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
         MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT,
@@ -154,7 +144,6 @@ function MyAccount() {
                       <h2>
                         {" "}
                         <img src={GreenCircle} alt="connectionLogo" draggable={false} />
-                        {/* {LABELS.ACTIVE} */}
                       </h2>
                     </>
                   )}
@@ -195,12 +184,7 @@ function MyAccount() {
                     items: [
                       {
                         key: i,
-                        label: (
-                          <span onClick={() => handleModalOpen(e.evmAddress)}>
-                            Remove
-                            {/* <img src={fillArow} /> */}
-                          </span>
-                        )
+                        label: <span onClick={() => handleModalOpen(e.evmAddress)}>Remove</span>
                       }
                     ]
                   }}

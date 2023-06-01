@@ -18,6 +18,7 @@ import {
   LABELS,
   NATIVE,
   TX_TYPE,
+  MESSAGES,
   EXTRA_FEE,
   ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
@@ -29,10 +30,10 @@ function Send() {
   const [isEd, setEd] = useState(true);
   const [disableBtn, setDisable] = useState(true);
   const [activeTab, setActiveTab] = useState(NATIVE);
-  const [isMaxDisabled, setMaxDisabled] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [err, setErr] = useState({ to: "", amount: "" });
+  const [isMaxDisabled, setMaxDisabled] = useState(true);
   const [data, setData] = useState({ to: "", amount: "" });
   const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
 
@@ -135,15 +136,6 @@ function Send() {
               (isEd ? EXISTENTIAL_DEPOSITE : 0) +
               pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
                 .native);
-          // log(
-          //   "here is the balance low: ",
-          //   Number(balance?.nativeBalance),
-          //   Number(estimatedGas),
-          //   EXTRA_FEE,
-          //   isEd ? EXISTENTIAL_DEPOSITE : 0,
-          //   pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
-          //     .native
-          // );
 
           !(Number(amount) > 0) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
@@ -470,7 +462,7 @@ function Send() {
           <h2>{estimatedGas ? `TX Fee : ${estimatedGas} 5IRE` : ""}</h2>
         </div>
         <div className={style.sendSec__inFoAccount}>
-          <Tooltip title="5ireChain requires a minimum of 1 5ire to keep your wallet active">
+          <Tooltip title={MESSAGES.ED}>
             <img src={Info} style={{ cursor: "pointer" }} alt="infoIcon" />
           </Tooltip>
           <h3>Transfer with account keep alive checks </h3>

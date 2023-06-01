@@ -19,7 +19,7 @@ import {
 //local storage data null safety check
 export const getDataLocal = async (key) => {
   try {
-    if (!isString(key) && isEmpty(key.trim())) throw new Error("Query key is invalid");
+    if (!isString(key) && isEmpty(key.trim())) throw new Error(ERROR_MESSAGES.INVALID_QUERY);
     const localState = await localStorage.get(key);
 
     if (!localState?.state && isEqual(key, LABELS.STATE)) {
@@ -57,7 +57,7 @@ export const getDataLocal = async (key) => {
 //session storage data null safety check
 export const getDataSession = async (key) => {
   try {
-    if (!isString(key) && isEmpty(key.trim())) throw new Error("Query key is invalid");
+    if (!isString(key) && isEmpty(key.trim())) throw new Error(ERROR_MESSAGES.INVALID_QUERY);
     const sessionState = await sessionStorage.get(key);
     return sessionState ? sessionState : null;
   } catch (err) {
@@ -146,7 +146,6 @@ export class ExtensionStorageHandler {
   addNewTxHistory = async (data, state, options) => {
     const newState = { ...state };
     newState.txHistory[options?.account?.evmAddress].push(data);
-    // newState.txHistory[options.account.accountName].push(data);
     const status = await this._updateStorage(newState);
     return status;
   };
@@ -155,8 +154,6 @@ export class ExtensionStorageHandler {
   updateTxHistory = async (data, state, options) => {
     const newState = { ...state };
     const txHistory = newState.txHistory[options.account?.evmAddress];
-    // const txHistory = newState.txHistory[options.account.accountName];
-
     const txIndex = txHistory.findIndex((item) => {
       return item.id === data.id;
     });
@@ -330,7 +327,6 @@ export class ExtensionStorageHandler {
     const allAccountsBalance = this._setAccountBalance(state, newAccount);
     const pendingTransactionBalance = this._setAllAccountPendingBalance(state, newAccount);
     const txHistory = this._txProperty(state, newAccount.evmAddress);
-    // }
     const newState = {
       ...state,
       vault,
@@ -435,11 +431,6 @@ export class ExtensionStorageHandler {
     if (newState?.allAccountsBalance.hasOwnProperty(removedAccountAddress)) {
       delete newState.allAccountsBalance[removedAccountAddress];
     }
-    console.log(
-      "newState?.pendingTransactionBalance.hasOwnProperty(removedAccountAddress)",
-      newState?.pendingTransactionBalance.hasOwnProperty(removedAccountAddress)
-    );
-
     if (newState?.pendingTransactionBalance.hasOwnProperty(removedAccountAddress)) {
       delete newState.pendingTransactionBalance[removedAccountAddress];
     }

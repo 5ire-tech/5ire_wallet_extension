@@ -161,3 +161,18 @@
     }
   }
 }
+
+.cancleContinueContainer {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  gap: 10px;
+  // width: 100%;
+  padding: 0 30px;
+  padding-bottom: 30px !important;
+  justify-content: space-around;
+  left: 0;
+  right: 0;
+  max-width: 345px;
+  margin: 0 auto;
+}

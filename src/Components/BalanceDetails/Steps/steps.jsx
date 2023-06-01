@@ -6,7 +6,6 @@ export function StepHeaders({ active, isCreate = true }) {
     <>
       {isCreate ? (
         <div className={style.steps} style={{ color: "white" }}>
-          {/* <p>{active}</p> */}
           <div className={`${style.innerStep} ${style.innerStepLast}`}>
             <div className={`${style.stepsItems} ${active === 1 && style.active}`}>1</div>
           </div>
@@ -19,11 +18,9 @@ export function StepHeaders({ active, isCreate = true }) {
           <div className={`${style.innerStep}`}>
             <div className={`${style.stepsItems} ${active === 4 && style.active}`}>4</div>
           </div>
-          {/* <div className={active === 4 && style.active}>3</div> */}
         </div>
       ) : (
         <div className={`${style.steps} ${style.importSteps}`} style={{ color: "white" }}>
-          {/* <p>style.active</p> */}
           <div className={`${style.innerStep} ${style.innerStepLast}`}>
             <div className={`${style.stepsItems} ${active === 1 && style.active}`}>1</div>
           </div>

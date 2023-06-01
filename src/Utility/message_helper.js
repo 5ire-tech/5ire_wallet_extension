@@ -1,6 +1,6 @@
 import Browser from "webextension-polyfill";
-import { isNullorUndef, isObject, isString, log } from "./utility";
 import { Error, ErrorPayload } from "./error_helper";
+import { isNullorUndef, isObject, isString, log } from "./utility";
 import { ERRCODES, ERROR_MESSAGES, STREAM_CHANNELS } from "../Constants";
 import ExtensionPortStream from "../Scripts/extension-port-stream-mod/index";
 
@@ -8,11 +8,11 @@ import ExtensionPortStream from "../Scripts/extension-port-stream-mod/index";
 export const sendRuntimeMessage = (typeLabel, eventLabel, message) => {
   try {
     if (!isObject(message) && isNullorUndef(message))
-      throw new Error("Invalid message, (*Only Objects or Array is valid value)");
+      throw new Error(ERROR_MESSAGES.INVALID_MSG_ARRAY_AND_OBJECTS_ALLOWED);
     if (!isString(eventLabel) && eventLabel.trim().length === 0)
-      throw new Error("Invalid event Label");
+      throw new Error(ERROR_MESSAGES.INVALID_EVENT_LABEL);
     if (!isString(typeLabel) && typeLabel.trim().length === 0)
-      throw new Error("Invalid type Label");
+      throw new Error(ERROR_MESSAGES.INVALID_TYPE_LABEL);
     Browser.runtime.sendMessage({ type: typeLabel, event: eventLabel, data: message });
   } catch (err) {
     console.log("Error while sending message to background: ", err.message);
@@ -46,11 +46,11 @@ export class MessageOverStream {
       if (!MessageOverStream.portStream)
         new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
       if (!isObject(message) && isNullorUndef(message))
-        throw new Error("Invalid message, (*Only Objects or Array is valid value)");
+        throw new Error(ERROR_MESSAGES.INVALID_MSG_ARRAY_AND_OBJECTS_ALLOWED);
       if (!isString(eventLabel) && eventLabel.trim().length === 0)
-        throw new Error("Invalid event Label");
+        throw new Error(ERROR_MESSAGES.INVALID_EVENT_LABEL);
       if (!isString(typeLabel) && typeLabel.trim().length === 0)
-        throw new Error("Invalid type Label");
+        throw new Error(ERROR_MESSAGES.INVALID_TYPE_LABEL);
       MessageOverStream.portStream.write({ type: typeLabel, event: eventLabel, data: message });
     } catch (err) {
       console.log("Error while sending message to background over streams: ", err.message);

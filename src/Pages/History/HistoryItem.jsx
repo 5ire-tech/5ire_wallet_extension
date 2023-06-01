@@ -62,7 +62,6 @@ export default function HistoryItem({ historyItem, handleHistoryOpen }) {
                 ? historyItem?.method
                 : historyItem.type}
             </h3>
-            {/* <p>{historyItem.to && historyItem.to.length > 40 ? shortner(historyItem.to) : historyItem.to}</p> */}
             <p>
               {historyItem?.to && historyItem?.to?.length > 40
                 ? historyItem?.to?.startsWith(5)

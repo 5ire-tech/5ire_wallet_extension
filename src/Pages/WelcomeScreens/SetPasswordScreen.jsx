@@ -76,7 +76,6 @@ export default function SetPasswordScreen() {
 
   const handleCancel = () => {
     updateState(LABELS.NEW_ACCOUNT, null, false);
-    // updateState(LABELS.ACCOUNT_NAME, null, false);
     navigate(ROUTES.DEFAULT);
   };
 
@@ -99,9 +98,9 @@ export default function SetPasswordScreen() {
   };
 
   const handleChange = (e) => {
-    setPass((prev) => {
+    setPass((p) => {
       return {
-        ...prev,
+        ...p,
         [e.target.name]: e.target.value.trim()
       };
     });

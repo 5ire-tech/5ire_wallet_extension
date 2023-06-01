@@ -15,7 +15,6 @@ import SocialAccount from "../SocialAccount/SocialAccount";
 import ModalCloseIcon from "../../Assets/ModalCloseIcon.svg";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { SOCIAL_LINKS, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
-import FooterStepOne, { ApproveTx, ApproveLogin, FooterStepTwo } from "./FooterContinue";
 
 function MenuFooter() {
   const getLocation = useLocation();
@@ -90,54 +89,6 @@ function MenuFooter() {
         </>
       )}
 
-      {/* <Drawer
-        title={
-          <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            Transaction History
-          </span>
-        }
-        placement="bottom"
-        onClose={onClose1}
-        open={open1}
-        closeIcon={<img src={ModalCloseIcon} alt="close" draggable={false} />}
-      >
-        {(txHistory[currentAccount?.accountName]
-          ? txHistory[currentAccount?.accountName]
-          : []
-        ).filter(
-          (tx) => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()
-        ).length > 0 ? (
-          arrayReverser(
-            txHistory[currentAccount.accountName].filter(
-              (tx) => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()
-            )
-          ).map((data, index) => (
-            <TransectionHistry
-              dateTime={formatDate(data.dateTime)}
-              type={data?.type}
-              txHash={
-                data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase()
-                  ? data.txHash.mainHash
-                  : data.txHash
-              }
-              to={
-                data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase()
-                  ? data.to
-                  : `${data?.to ? `To: ` + shortner(data.to) : EMTY_STR}`
-              }
-              amount={data?.amount}
-              status={
-                data?.status.charAt(0).toUpperCase() + data?.status.slice(1)
-              }
-              img={Sendhistry}
-              key={index + CURRENCY}
-            />
-          ))
-        ) : (
-          <h4 className={style.noTxn}>No Transaction Found!</h4>
-        )}
-      </Drawer> */}
-
       <Drawer
         height={404}
         title={<span style={{ display: "flex", alignItems: "center", gap: "8px" }}>Settings</span>}
@@ -191,10 +142,6 @@ function MenuFooter() {
         <SocialAccount />
       </Drawer>
 
-      {pathname === ROUTES.BEFORE_BEGIN && <FooterStepOne />}
-      {pathname === ROUTES.NEW_WALLET_DETAILS && <FooterStepTwo />}
-      {pathname === ROUTES.LOGIN_APPROVE && <ApproveLogin />}
-      {pathname === ROUTES.APPROVE_TXN && <ApproveTx />}
       {(pathname === ROUTES.CREATE_WALLET ||
         pathname === ROUTES.UNLOACK_WALLET ||
         pathname === ROUTES.FORGOT_PASSWORD ||

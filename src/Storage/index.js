@@ -31,7 +31,6 @@ export const getSessionStorage = (key) => {
     browser.storage.session
       .get(key)
       .then((res) => {
-        // console.log("Response after getting data from session storage : ", res);
         resolve(res[key] ? res : null);
       })
       .catch((err) => {

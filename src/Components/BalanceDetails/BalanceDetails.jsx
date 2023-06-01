@@ -18,7 +18,7 @@ import React, { useEffect, useState, useContext } from "react";
 import DownArrowSuffix from "../../Assets/DownArrowSuffix.svg";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
-import { isEqual, isNullorUndef, log } from "../../Utility/utility";
+import { isEqual, isNullorUndef } from "../../Utility/utility";
 import { TabMessagePayload } from "../../Utility/network_calls";
 
 import {
@@ -42,7 +42,6 @@ function BalanceDetails({ mt0 }) {
   const [url, setUrl] = useState("");
   const [isNewSite, setNewSite] = useState(false);
   const [isEvmModal, setIsEvmModal] = useState(false);
-  // const [balan, setBalance] = useState();
   const [isConnected, setIsConnected] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHeaderActive, setHeaderActive] = useState(false);
@@ -64,13 +63,6 @@ function BalanceDetails({ mt0 }) {
     //   setUrl(tabDetails.tabUrl);
     //   setNewSite(isNullorUndef(isConnectionExist));
     // });
-
-    log(
-      "here is the main: ",
-      windowAndTab,
-      connectedApps,
-      connectedApps[windowAndTab.tabDetails.origin]
-    );
 
     const isConnectionExist = connectedApps[windowAndTab.tabDetails.origin];
     if (isConnectionExist?.isConnected) {
@@ -521,7 +513,6 @@ function BalanceDetails({ mt0 }) {
                           : ""
                       }>
                       <h3>
-                        {/* <img src={WalletCardLogo} draggable={false} alt="balanceLogo" /> */}
                         {allAccountsBalance[currentAccount?.evmAddress][
                           currentNetwork.toLowerCase()
                         ]?.evmBalance
@@ -569,9 +560,6 @@ function BalanceDetails({ mt0 }) {
                 <div className={style.balanceDetails__nativemodal__modalOr}>
                   <p>or</p>
                 </div>
-                {/* <p className={style.balanceDetails__nativemodal__addressText}>
-                    Your 5ire Native Address
-                  </p> */}
                 <div className={style.balanceDetails__nativemodal__wrapedText}>
                   <p>
                     {currentAccount?.nativeAddress ? currentAccount?.nativeAddress : ""}

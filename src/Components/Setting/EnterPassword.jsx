@@ -17,11 +17,9 @@ import {
 } from "../../Constants/index";
 
 function EnterPassword() {
-  // const params = useParams();
   const navigate = useNavigate();
   const [data, setData] = useState("");
   const [isDisable, setDisable] = useState(true);
-  // const [isModalOpen, setModalOpen] = useState(false);
   const { inputError, setInputError, passVerified, setPassVerified } = useContext(AuthContext);
 
   useEffect(() => {
@@ -39,7 +37,6 @@ function EnterPassword() {
 
   useEffect(() => {
     if (passVerified) {
-      // setModalOpen(true);
       setPassVerified(false);
       navigate(ROUTES.PVT_KEY);
     }
@@ -94,11 +91,7 @@ function EnterPassword() {
             />
             <p className={style.errorText}>{inputError ? inputError : ""}</p>
             <div>
-              <ButtonComp
-                onClick={handleClick}
-                // onClick={() => handleModalOpen}
-                text="Continue"
-                isDisable={isDisable}></ButtonComp>
+              <ButtonComp onClick={handleClick} text="Continue" isDisable={isDisable}></ButtonComp>
             </div>
           </div>
           {/* <ModalCustom

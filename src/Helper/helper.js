@@ -1,5 +1,5 @@
-import Browser from "webextension-polyfill";
 import { BigNumber } from "bignumber.js";
+import Browser from "webextension-polyfill";
 import { isNullorUndef, log } from "../Utility/utility";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import { sendMessageToTab } from "../Utility/message_helper";

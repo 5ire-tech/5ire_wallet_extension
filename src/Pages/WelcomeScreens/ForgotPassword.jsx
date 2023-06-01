@@ -18,7 +18,6 @@ import {
 
 function ForgotPassword() {
   const [isDisable, setDisable] = useState(true);
-
   const [data, setData] = useState({
     pass: EMTY_STR,
     confirmPass: EMTY_STR,
@@ -101,34 +100,24 @@ function ForgotPassword() {
 
   //check Mnemonic
   const validateKey = () => {
-    if (isEmpty(data.key)) {
-      setError((p) => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
-      // setDisable(true);
-    } else if (!validateMnemonic(data.key.trim())) {
+    if (isEmpty(data.key)) setError((p) => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
+    else if (!validateMnemonic(data.key.trim()))
       setError((p) => ({ ...p, key: ERROR_MESSAGES.INVALID_MNEMONIC }));
-      // setDisable(true);
-    } else {
-      setError((p) => ({ ...p, key: EMTY_STR }));
-    }
+    else setError((p) => ({ ...p, key: EMTY_STR }));
   };
 
   const validateAccName = () => {
-    if (data.accName.trim().length < 2 || data.accName.trim().length >= 16) {
+    if (data.accName.trim().length < 2 || data.accName.trim().length >= 16)
       setError((p) => ({
         ...p,
         accName: ERROR_MESSAGES.INPUT_BETWEEN_2_TO_18
       }));
-      // setDisable(true);
-    } else if (!REGEX.WALLET_NAME.test(data.accName)) {
+    else if (!REGEX.WALLET_NAME.test(data.accName))
       setError((p) => ({
         ...p,
         accName: ERROR_MESSAGES.ALPHANUMERIC_CHARACTERS
       }));
-      // setDisable(true);
-    } else {
-      setError((p) => ({ ...p, accName: "" }));
-      // setDisable(false);
-    }
+    else setError((p) => ({ ...p, accName: "" }));
   };
 
   const handleSubmit = (e) => {

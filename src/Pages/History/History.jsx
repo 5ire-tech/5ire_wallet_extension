@@ -11,7 +11,6 @@ import noTransaction from "../../Assets/NoTransaction.svg";
 
 function History() {
   const [open1, setOpen1] = useState(false);
-  // const [open2, setOpen2] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const { state } = useContext(AuthContext);
   const { currentNetwork, txHistory, currentAccount } = state;
@@ -19,10 +18,6 @@ function History() {
   const onClose1 = () => {
     setOpen1(false);
   };
-
-  // const onClose2 = () => {
-  //   setOpen2(false);
-  // };
 
   const handleHistoryOpen = (data) => {
     if (txHistory.hasOwnProperty(currentAccount.evmAddress)) {

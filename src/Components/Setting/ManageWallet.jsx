@@ -87,7 +87,6 @@ function ManageWallet() {
           <div className={style.btn_icon}>
             <ButtonComp
               onClick={() => navigate(ROUTES.ENTER_PASS)}
-              // onClick={() => navigate(ROUTES.ENTER_PASS + "/" + PVT_KEY)}
               text="Reveal Secret Keys"></ButtonComp>
             {/* <ButtonComp
               bordered={true}

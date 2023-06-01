@@ -38,7 +38,6 @@ export class FireProvider extends SafeEventEmitter {
 
   //requesting some data from chain
   async request(method, payload) {
-    // console.log("here it is inside injected script: ", method, payload);
     return await this.passReq(method, payload);
   }
 

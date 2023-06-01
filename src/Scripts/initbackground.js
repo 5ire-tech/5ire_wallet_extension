@@ -42,9 +42,9 @@ import {
   INTERNAL_EVENT_LABELS,
   AUTO_BALANCE_UPDATE_TIMER,
   VALIDATOR_NOMINATOR_METHOD,
-  RESTRICTED_ETHEREUM_METHODS,
   TRANSACTION_STATUS_CHECK_TIMER,
-  LAPSED_TRANSACTION_CHECKER_TIMER
+  LAPSED_TRANSACTION_CHECKER_TIMER,
+  RESTRICTED_ETHEREUM_METHODS
 } from "../Constants";
 import { log, isEqual, hasLength, isString, hasProperty, isNullorUndef } from "../Utility/utility";
 import {
@@ -438,6 +438,7 @@ export class InitBackground {
   _checkLapsedPendingTransactions = () => {
     return setInterval(() => {
       if (!InitBackground.isStatusCheckerRunning && !TransactionQueue.transactionIntervalId) {
+        // console.log("running the service for transaction status check");
         ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.LAPSED_TRANSACTION_CHECK);
       }
     }, LAPSED_TRANSACTION_CHECKER_TIMER);
@@ -879,14 +880,6 @@ class TransactionQueue {
   /******************************* Event Callbacks *************************/
   //callback for new transaction inserted into queue event
   newTransactionAddedEventCallback = async (network) => {
-    log(
-      "network here: ",
-      network,
-      !TransactionQueue.networkTransactionHandler.includes(network),
-      TransactionQueue.networkTransactionHandler,
-      tester
-    );
-    log("new transaction added");
     // isNullorUndef(TransactionQueue.transactionIntervalId)
     if (!TransactionQueue.networkTransactionHandler.includes(network)) {
       TransactionQueue.networkTransactionHandler.push(network);

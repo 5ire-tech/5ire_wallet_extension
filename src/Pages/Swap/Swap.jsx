@@ -23,7 +23,8 @@ import {
   ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
   EXISTENTIAL_DEPOSITE,
-  MESSAGE_EVENT_LABELS
+  MESSAGE_EVENT_LABELS,
+  MESSAGES
 } from "../../Constants/index";
 
 function Swap() {
@@ -309,8 +310,6 @@ function Swap() {
 
   //Set To and from
   const handleClick = () => {
-    // if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
-    // }
     setToFrom({ from: NATIVE, to: EVM });
 
     if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) setToFrom({ from: EVM, to: NATIVE });
@@ -391,7 +390,7 @@ function Swap() {
           <h2>{estimatedGas ? `TX Fee : ${estimatedGas} 5IRE` : ""}</h2>
         </div>
         <div className={style.swap__inFoAccount}>
-          <Tooltip title="5ireChain requires a minimum of 1 5ire to keep your wallet active">
+          <Tooltip title={MESSAGES.ED}>
             <img src={Info} alt="infoImage" />
           </Tooltip>
           <h3>Transfer with account keep alive checks </h3>
