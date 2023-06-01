@@ -7,7 +7,7 @@ import Info from "../../Assets/infoIcon.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import SmallLogo from "../../Assets/smallLogo.svg";
 import ComplSwap from "../../Assets/succeslogo.svg";
-import { log, validateAddress } from "../../Utility/utility";
+import { validateAddress } from "../../Utility/utility";
 import React, { useState, useEffect, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
@@ -90,8 +90,8 @@ function Send() {
 
   useEffect(() => {
     if (
-      (activeTab === EVM && Number(balance?.evmBalance) < 1) ||
-      (activeTab === NATIVE && Number(balance?.nativeBalance) < 1) ||
+      (activeTab === EVM && Number(balance?.evmBalance) < 1.1) ||
+      (activeTab === NATIVE && Number(balance?.nativeBalance) < 1.1) ||
       !data.to ||
       err.to
     ) {
@@ -172,16 +172,6 @@ function Send() {
               pendingTransactionBalance[currentAccount.evmAddress][
                 currentNetwork.toLowerCase()
               ].native);
-          log(
-            "here is the balance low: ",
-            Number(balance?.nativeBalance),
-            Number(estimatedGas),
-            EXTRA_FEE,
-            isEd ? EXISTENTIAL_DEPOSITE : 0,
-            pendingTransactionBalance[currentAccount.evmAddress][
-              currentNetwork.toLowerCase()
-            ].native
-          );
 
           !(Number(amount) > 0) &&
             toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
@@ -365,43 +355,51 @@ function Send() {
   const handleApprove = async () => {
     try {
       if (activeTab === EVM) {
-        //pass the message request for evm transfer
-        sendRuntimeMessage(
-          MESSAGE_TYPE_LABELS.INTERNAL_TX,
-          MESSAGE_EVENT_LABELS.EVM_TX,
-          {
-            to: data.to,
-            value: data.amount,
-            options: {
-              account: state.currentAccount,
-              network: state.currentNetwork,
-              type: TX_TYPE.SEND,
-              isEvm: true,
-              fee: estimatedGas
-            },
-            isEd
-          }
-        );
-        setIsModalOpen(true);
+        if (balance?.evmBalance < 1.1) {
+          toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+        } else {
+          //pass the message request for evm transfer
+          sendRuntimeMessage(
+            MESSAGE_TYPE_LABELS.INTERNAL_TX,
+            MESSAGE_EVENT_LABELS.EVM_TX,
+            {
+              to: data.to,
+              value: data.amount,
+              options: {
+                account: state.currentAccount,
+                network: state.currentNetwork,
+                type: TX_TYPE.SEND,
+                isEvm: true,
+                fee: estimatedGas
+              },
+              isEd
+            }
+          );
+          setIsModalOpen(true);
+        }
       } else if (activeTab === NATIVE) {
-        //pass the message request for native transfer
-        sendRuntimeMessage(
-          MESSAGE_TYPE_LABELS.INTERNAL_TX,
-          MESSAGE_EVENT_LABELS.NATIVE_TX,
-          {
-            to: data.to,
-            value: data.amount,
-            options: {
-              account: state.currentAccount,
-              network: state.currentNetwork,
-              type: TX_TYPE.SEND,
-              isEvm: false,
-              fee: estimatedGas
-            },
-            isEd
-          }
-        );
-        setIsModalOpen(true);
+        if (balance?.nativeBalance < 1.1) {
+          toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+        } else {
+          //pass the message request for native transfer
+          sendRuntimeMessage(
+            MESSAGE_TYPE_LABELS.INTERNAL_TX,
+            MESSAGE_EVENT_LABELS.NATIVE_TX,
+            {
+              to: data.to,
+              value: data.amount,
+              options: {
+                account: state.currentAccount,
+                network: state.currentNetwork,
+                type: TX_TYPE.SEND,
+                isEvm: false,
+                fee: estimatedGas
+              },
+              isEd
+            }
+          );
+          setIsModalOpen(true);
+        }
       }
 
       // updateEstimatedGas("");

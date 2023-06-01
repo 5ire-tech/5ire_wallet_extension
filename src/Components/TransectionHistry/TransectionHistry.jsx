@@ -12,7 +12,6 @@ import {
   openBrowserTab,
   generateTransactionUrl
 } from "../../Helper/helper";
-import { isEqual } from "lodash";
 
 function TransectionHistry({ selectedTransaction, account }) {
   //for copying the hash to clipboard
@@ -143,18 +142,7 @@ function TransectionHistry({ selectedTransaction, account }) {
       </div>
       <div className={style.transectionHistry__viewExplorer}>
         <p
-          className={
-            isEqual(
-              selectedTransaction?.status.toLowerCase(),
-              STATUS.QUEUED.toLowerCase()
-            ) ||
-            isEqual(
-              selectedTransaction?.status.toLowerCase(),
-              STATUS.FAILED.toLowerCase()
-            )
-              ? "viewDisable"
-              : ""
-          }
+          className={selectedTransaction.txHash ? "" : "viewDisable"}
           disabled={selectedTransaction.txHash ? false : true}
           onClick={openExplorerTab}>
           View on Explorer <img src={DarkRyt} alt="view on explorer" />
