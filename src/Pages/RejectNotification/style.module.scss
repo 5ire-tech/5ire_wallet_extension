@@ -114,6 +114,9 @@
     }
 
     &__innerDataList {
+      overflow: auto;
+      height: calc(100vh - 286px);
+
       h4 {
         color: $white;
         font-size: 14px;
