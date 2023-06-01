@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 import { isAlreadyConnected } from "./utils";
 import { getDataLocal } from "../Storage/loadstore";
 import { generateErrorMessage } from "../Helper/helper";
-import { isEqual, isNullorUndef } from "../Utility/utility";
+import { isEqual, isNullorUndef, log } from "../Utility/utility";
 import { sendMessageToTab } from "../Utility/message_helper";
 import { ExtensionStorageHandler } from "../Storage/loadstore";
 import WindowManager, { NotificationAndBedgeManager } from "./platform";
@@ -16,6 +16,7 @@ import {
   STATE_CHANGE_ACTIONS,
   ROUTE_FOR_APPROVAL_WINDOWS
 } from "../Constants";
+import Browser from "webextension-polyfill";
 
 //control the external connections and window popup creation
 export class ExternalWindowControl {
@@ -74,20 +75,6 @@ export class ExternalWindowControl {
     if (isEqual(data.route, ROUTE_FOR_APPROVAL_WINDOWS.CONNECTION_ROUTE)) {
       const isAlreadyConnected = this._checkAlreadyConnected(externalControlsState, data.origin);
       if (isAlreadyConnected) return;
-    }
-
-    if (isOriginAlreadyExist) {
-      sendMessageToTab(
-        data.tabId,
-        new TabMessagePayload(
-          data.id,
-          null,
-          null,
-          null,
-          generateErrorMessage(data.method, data.origin)
-        )
-      );
-      return;
     }
 
     const newConnectionRequest = new ExternalAppsRequest(
@@ -200,6 +187,106 @@ export class ExternalWindowControl {
   };
 
   /**
+   * callback for window focus change
+   */
+  _handleWindowFocusChange = async (windowId) => {
+    try {
+      if (windowId !== -1) {
+        const windowAndTabState = await getDataLocal(LABELS.WINDOW_AND_TAB_STATE);
+        if (windowAndTabState.windowId !== windowId) {
+          log("window id: ", windowId);
+
+          const tab = await Browser.tabs.query({ active: true, windowId: windowId });
+          const windowAndTabDetails = {
+            windowId: windowId,
+            tabDetails: {
+              tabId: tab[0].id,
+              url: tab[0]?.pendingUrl || tab[0].url,
+              origin: new URL(tab[0]?.pendingUrl || tab[0].url).origin
+            }
+          };
+
+          //save the tab details into local store
+          await ExtensionStorageHandler.updateStorage(
+            STATE_CHANGE_ACTIONS.SAVE_TAB_AND_WINDOW_STATE,
+            windowAndTabDetails,
+            { localStateKey: LABELS.WINDOW_AND_TAB_STATE }
+          );
+        }
+      }
+    } catch (err) {
+      log("error while window focus change: ", err);
+    }
+  };
+
+  /**
+   * callback for tab change
+   */
+  _handleTabChange = async (changePayload) => {
+    try {
+      const windowAndTabState = await getDataLocal(LABELS.WINDOW_AND_TAB_STATE);
+      if (
+        windowAndTabState.tabDetails.tabId !== changePayload.tabId &&
+        changePayload.tabId !== -1
+      ) {
+        log("change payload: ", changePayload);
+
+        const tab = await Browser.tabs.get(changePayload.tabId);
+        log("tab payload: ", tab);
+        const windowAndTabDetails = {
+          windowId: changePayload.windowId,
+          tabDetails: {
+            tabId: changePayload.tabId,
+            url: tab?.pendingUrl || tab.url,
+            origin: new URL(tab?.pendingUrl || tab.url).origin
+          }
+        };
+
+        //save the tab details into local store
+        await ExtensionStorageHandler.updateStorage(
+          STATE_CHANGE_ACTIONS.SAVE_TAB_AND_WINDOW_STATE,
+          windowAndTabDetails,
+          { localStateKey: LABELS.WINDOW_AND_TAB_STATE }
+        );
+      }
+    } catch (err) {
+      log("error while tab changing: ", err.message);
+    }
+  };
+
+  /**
+   * callback for tab updation
+   */
+  _handleTabUpdate = async (tabId) => {
+    try {
+      const windowAndTabState = await getDataLocal(LABELS.WINDOW_AND_TAB_STATE);
+      if (windowAndTabState.tabDetails.tabId === tabId) {
+        const tab = await Browser.tabs.get(tabId);
+        if (windowAndTabState.tabDetails.origin !== new URL(tab?.pendingUrl || tab.url).origin) {
+          log("changed the url details: ");
+          const windowAndTabDetails = {
+            windowId: windowAndTabState.windowId,
+            tabDetails: {
+              tabId: tabId,
+              url: tab?.pendingUrl || tab.url,
+              origin: new URL(tab?.pendingUrl || tab.url).origin
+            }
+          };
+
+          //save the tab details into local store
+          await ExtensionStorageHandler.updateStorage(
+            STATE_CHANGE_ACTIONS.SAVE_TAB_AND_WINDOW_STATE,
+            windowAndTabDetails,
+            { localStateKey: LABELS.WINDOW_AND_TAB_STATE }
+          );
+        }
+      }
+    } catch (err) {
+      log("error while tab status updation: ", err.message);
+    }
+  };
+
+  /**
    * for sending the reject or close response to user
    * @param {*} activeSession
    */
@@ -237,7 +324,6 @@ export class ExternalWindowControl {
   _showPendingTaskBedge = async (externalControlsState = null) => {
     if (!externalControlsState)
       externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
-    // log("here is pending task: ", externalControlsState.activeSession)
 
     //check if there is any pending task if found then show the pending task count in bedge
     let pendingTaskCount = externalControlsState.connectionQueue.length;
