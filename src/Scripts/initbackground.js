@@ -1671,7 +1671,7 @@ export class TransactionsRPC {
       if (
         balanceWithFee >
         Number(balance.evmBalance) -
-          state.pendingTransactionBalance[account.evmAddress][network].evm
+          (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -1779,7 +1779,7 @@ export class TransactionsRPC {
       if (
         balanceWithFee >=
         Number(balance?.evmBalance) -
-          state.pendingTransactionBalance[account.evmAddress][network].evm
+          (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -1858,7 +1858,6 @@ export class TransactionsRPC {
         transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
       const { nativeApi } = NetworkHandler.api[network];
       const balance = state.allAccountsBalance[account?.evmAddress][network];
-      console.log("IsEd : ", isEd);
 
       if (isNullorUndef(account))
         new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
@@ -1868,7 +1867,7 @@ export class TransactionsRPC {
       if (
         balanceWithFee >=
         Number(balance?.nativeBalance) -
-          state.pendingTransactionBalance[account.evmAddress][network].native
+          (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -1986,7 +1985,7 @@ export class TransactionsRPC {
       if (
         balanceWithFee >=
         Number(balance?.nativeBalance) -
-          state.pendingTransactionBalance[account.evmAddress][network].native
+          (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
