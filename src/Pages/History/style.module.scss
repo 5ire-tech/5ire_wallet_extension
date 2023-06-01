@@ -86,12 +86,13 @@
   text-align: center;
 }
 
-.histryDataScrol{
+.histryDataScrol {
   overflow: auto;
   // height: 420px;
-  height: calc(100vh - 223px);
+  height: calc(100vh - 180px);
 }
-.noTransaction{
+
+.noTransaction {
   display: flex;
   flex-direction: column;
   align-items: center;
