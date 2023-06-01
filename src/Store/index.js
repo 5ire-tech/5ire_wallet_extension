@@ -158,9 +158,7 @@ export default function Context({ children }) {
   };
 
   //update the main state (also update into the persistant store)
-  const updateState = (name, data, toLocal = true, toSession = false) => {
-    log("state updated by updateState: ", name, data, toLocal);
-
+  const updateState = (name, data, _, toSession = false) => {
     if (toSession) {
       if (isManifestV3) {
         sessionStorage.set({ [name]: data });

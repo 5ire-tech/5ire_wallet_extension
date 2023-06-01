@@ -39,12 +39,8 @@ function Swap() {
   const [toFrom, setToFrom] = useState({ from: NATIVE, to: EVM });
 
   const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
-
   const { allAccountsBalance, pendingTransactionBalance, currentNetwork, currentAccount } = state;
-
-  const [balance, setBalance] = useState(
-    allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
-  );
+  const balance = allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()];
 
   //Reset the amount and error when to and from changes
   useEffect(() => {
@@ -54,17 +50,17 @@ function Swap() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toFrom?.to, currentNetwork]);
 
-  useEffect(() => {
-    setBalance(allAccountsBalance[currentAccount?.evmAddress][currentNetwork?.toLowerCase()]);
-  }, [
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.nativeBalance,
-    currentAccount?.evmAddress,
-    currentNetwork,
-    allAccountsBalance
-  ]);
+  // useEffect(() => {
+  //   setBalance(allAccountsBalance[currentAccount?.evmAddress][currentNetwork?.toLowerCase()]);
+  // }, [
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance,
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.nativeBalance,
+  //   currentAccount?.evmAddress,
+  //   currentNetwork,
+  //   allAccountsBalance
+  // ]);
 
   useEffect(() => {
     if (!amount && !estimatedGas) {
