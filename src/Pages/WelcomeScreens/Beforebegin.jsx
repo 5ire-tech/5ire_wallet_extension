@@ -24,7 +24,6 @@ function Beforebegin() {
   return (
     <div>
       <div className={style.cardWhite}>
-        {/* <Steps current={current} items={items} direction="horizontal" /> */}
         <StepHeaders active={1} />
         <div className={style.cardWhite__beginText}>
           <h1>Before we begin!</h1>

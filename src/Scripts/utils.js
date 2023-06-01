@@ -12,7 +12,10 @@ export const getCurrentTabDetails = async () => {
   const queryInfo = { active: true };
   const tabsDetails = await Browser.tabs.query(queryInfo);
   if (!tabsDetails[0]?.url) return null;
-  return { tabId: tabsDetails[0]?.id, tabUrl: getUrlOrigin(tabsDetails[0]?.url) };
+  return {
+    tabId: tabsDetails[0]?.id,
+    tabUrl: getUrlOrigin(tabsDetails[0]?.url)
+  };
 };
 
 //bind the noExponents function with the Number Constructor

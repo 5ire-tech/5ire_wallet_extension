@@ -86,7 +86,12 @@ export class FireProvider extends SafeEventEmitter {
               Accept: "application/json",
               "Content-Type": "application/json"
             },
-            body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params: message })
+            body: JSON.stringify({
+              jsonrpc: "2.0",
+              id: 1,
+              method,
+              params: message
+            })
           });
 
           const content = await rawResponse.json();

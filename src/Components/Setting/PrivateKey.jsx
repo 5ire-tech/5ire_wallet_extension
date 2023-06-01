@@ -94,11 +94,6 @@ function PrivateKey() {
               </div>
             </div>
 
-            {/* <div className={style.mnemonicsButton}>
-              <ButtonComp
-                onClick={handleClick}
-                text={show ? "Hide Mnemonic" : "Reveal Mnemonic"} />
-            </div> */}
             <div className={style.wallet}>
               <div className={style.wallet__addressInput}>
                 <label>Mnemonic Phrase:</label>

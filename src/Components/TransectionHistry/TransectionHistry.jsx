@@ -32,7 +32,6 @@ function TransectionHistry({ selectedTransaction, account }) {
       );
   };
 
-  // const isSwap = !!selectedTransaction?.intermidateHash;
   const isSwap = selectedTransaction?.type?.toLowerCase() === TX_TYPE.SWAP.toLowerCase();
   const isEvm = !!selectedTransaction?.isEvm;
 

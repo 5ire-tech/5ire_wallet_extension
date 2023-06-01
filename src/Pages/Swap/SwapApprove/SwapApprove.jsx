@@ -2,6 +2,7 @@ import React from "react";
 import style from "./style.module.scss";
 import SwapIcon from "../../../Assets/ArrowRightIcon.svg";
 import Approve from "../../Approve/Approve";
+
 function SwapApprove() {
   return (
     <>

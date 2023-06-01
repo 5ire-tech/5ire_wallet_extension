@@ -1,6 +1,6 @@
 import React from "react";
 import style from "./style.module.scss";
-// import TickIcon from "../../Assets/TickIcon.svg";
+
 function DefiList(props) {
   const { stakingHead, desc, bordered, tickIcon } = props;
 

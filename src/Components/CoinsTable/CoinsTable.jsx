@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import style from "./style.module.scss";
+
 function CoinsTable({ dataArray }) {
   const navigate = useNavigate();
+
   const [openModal, setOpenModal] = useState(false);
+
   const handleClick = (ele) => {
     let routes = Object.keys(ele).includes("routeTo");
     if (routes) {
@@ -13,6 +16,7 @@ function CoinsTable({ dataArray }) {
       console.log(openModal);
     }
   };
+
   return (
     <>
       {dataArray.map((ele, index) => (

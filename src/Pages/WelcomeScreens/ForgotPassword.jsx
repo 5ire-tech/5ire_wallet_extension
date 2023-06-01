@@ -1,7 +1,7 @@
 import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
 import TextArea from "antd/es/input/TextArea";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { isEmpty, validateMnemonic } from "../../Utility/utility";
@@ -62,17 +62,17 @@ function ForgotPassword() {
       setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }));
   }, [data?.pass, data?.confirmPass]);
 
-  const handleChange = (e) => {
+  const handleChange = useCallback((e) => {
     setData((p) => {
       return {
         ...p,
         [e.target.name]: e.target.value
       };
     });
-  };
+  }, []);
 
   //validate Password
-  const validatePass = () => {
+  const validatePass = useCallback(() => {
     let errMsg = EMTY_STR;
 
     if (isEmpty(data.pass)) errMsg = ERROR_MESSAGES.INPUT_REQUIRED;
@@ -87,16 +87,16 @@ function ForgotPassword() {
     else errMsg = EMTY_STR;
 
     setError((p) => ({ ...p, pass: errMsg }));
-  };
+  }, [data.pass]);
 
   //validate Confirm Password
-  const validateConfirmPass = () => {
+  const validateConfirmPass = useCallback(() => {
     if (isEmpty(data.confirmPass))
       setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.INPUT_REQUIRED }));
     else if (data?.confirmPass !== data?.pass)
       setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }));
     else setError((p) => ({ ...p, confirmPass: EMTY_STR }));
-  };
+  }, [data.confirmPass, data?.pass]);
 
   //check Mnemonic
   const validateKey = () => {

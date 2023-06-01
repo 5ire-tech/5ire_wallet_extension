@@ -1,5 +1,6 @@
 import { Layout } from "antd";
 import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import style from "../../Layout/style.module.scss";
 import footerstyle from "../MenuFooter/style.module.scss";
 import pageStyle from "../../Pages/RejectNotification/style.module.scss";
@@ -14,14 +15,15 @@ import {
 import { shortLongAddress } from "../../Utility/utility";
 import { AuthContext } from "../../Store";
 import { sendMessageOverStream } from "../../Utility/message_helper";
-// import { toast } from "react-toastify";
 import { toast } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../Routes";
 
 function ValidatorNominatorTxns() {
   const navigate = useNavigate();
-  const [disableApproval, setDisableApproval] = useState(false);
+  const { Content } = Layout;
+
+  const { pendingTransactionBalance, balance, currentAccount, currentNetwork } = state;
+
   const {
     state,
     externalControlsState: { activeSession },
@@ -29,8 +31,8 @@ function ValidatorNominatorTxns() {
     updateLoading,
     setValdatorNominatorFee
   } = useContext(AuthContext);
-  const { pendingTransactionBalance, balance, currentAccount, currentNetwork } = state;
-  const { Content } = Layout;
+
+  const [disableApproval, setDisableApproval] = useState(false);
 
   //check if user has sufficent balance to make trnsaction
   useEffect(() => {

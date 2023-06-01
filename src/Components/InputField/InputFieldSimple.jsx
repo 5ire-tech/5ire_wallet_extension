@@ -3,6 +3,7 @@ import { Input } from "antd";
 import style from "./style.module.scss";
 import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
 import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
+
 function InputFieldSimple({
   name,
   keyUp,
@@ -27,8 +28,6 @@ function InputFieldSimple({
       name={name}
       value={value}
       autoComplete="off"
-      // className={style.inputSimple}
-      // placeholder={placeholder}
       iconRender={(visible) =>
         visible ? (
           <img src={EyeOpenIcon} width={19} height={12} draggable={false} alt="eyeOpen" />

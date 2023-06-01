@@ -40,7 +40,6 @@ export default function Context({ children }) {
   const [showCongratLoader, setShowCongratLoader] = useState(false);
 
   //transaction queue
-  // const [transactionQueues, setTransactionQueues] = useState(transactionQueue);
   const [pendingBalance, setPendingBalance] = useState(0);
 
   const [isStateLoaded, setStateLoaded] = useState(false);
@@ -49,7 +48,10 @@ export default function Context({ children }) {
   const [backgroundError, setBackgroundError] = useState(null);
   const [networkError, setNetworkError] = useState(null);
   const [valdatorNominatorFee, setValdatorNominatorFee] = useState(null);
-  const [tempBalance, setTempBalance] = useState({ evmBalance: 0, nativeBalance: 0 });
+  const [tempBalance, setTempBalance] = useState({
+    evmBalance: 0,
+    nativeBalance: 0
+  });
   const [externalNativeTxDetails, setExternalNativeTxDetails] = useState(
     initialExternalNativeTransaction
   );
@@ -262,13 +264,6 @@ export default function Context({ children }) {
     setSeedPhrase(data?.seedPhrase);
   };
 
-  // remove entries of history of specific account from TxHistory
-  // const removeHistory = (accName) => {
-  //   const newTx = { ...state.txHistory };
-  //   delete newTx[accName];
-  //   updateState(LABELS.TX_HISTORY, newTx)
-  // }
-
   const removeAccount = (data) => {
     const { accounts, isInitialAccount } = data;
     setNewAccount(newAccountInitialState);
@@ -279,7 +274,6 @@ export default function Context({ children }) {
   };
 
   const values = {
-    //data
     state,
     userPass,
     isLoading,
@@ -299,7 +293,6 @@ export default function Context({ children }) {
     newWalletName,
     pendingBalance,
     backgroundError,
-    // transactionQueues,
     showCongratLoader,
     valdatorNominatorFee,
     externalControlsState,
@@ -318,14 +311,12 @@ export default function Context({ children }) {
     setTempBalance,
     setStateLoaded,
     setWindowAndTab,
-    // removeHistory,
     setNetworkError,
     setPassVerified,
     setNewWalletName,
     setPendingBalance,
     setBackgroundError,
     updateEstimatedGas,
-    // setTransactionQueues,
     setShowCongratLoader,
     setValdatorNominatorFee,
     setExternalControlState,

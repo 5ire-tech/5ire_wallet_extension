@@ -17,7 +17,9 @@ import { SIGNER_METHODS, MESSAGE_EVENT_LABELS, MESSAGE_TYPE_LABELS } from "../..
 function NativeSigner() {
   const { Content } = Layout;
   const navigate = useNavigate();
+
   const [formattedMethod, setFormattedMethod] = useState("");
+
   const {
     externalControlsState: { activeSession },
     state,
@@ -49,7 +51,12 @@ function NativeSigner() {
       sendMessageOverStream(
         MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
         MESSAGE_EVENT_LABELS.EXTERNAL_NATIVE_TRANSACTION_ARGS_AND_GAS,
-        { options: { account: state.currentAccount, network: state.currentNetwork } }
+        {
+          options: {
+            account: state.currentAccount,
+            network: state.currentNetwork
+          }
+        }
       );
     } else setFormattedMethod(SIGNER_METHODS.SIGN_RAW);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -99,7 +106,7 @@ function NativeSigner() {
                       <img src={CopyIcon} alt="copyIcon" name="name" draggable={false} />
                     </h4>
                   </div>
-                  {/* {externalNativeTxDetails?.txHash && */}
+
                   <div className={pageStyle.rejectedSec__listReject__innerList}>
                     <h4>Tx Hash: </h4>
                     <h4>
@@ -107,11 +114,7 @@ function NativeSigner() {
                       <img src={CopyIcon} alt="copyIcon" name="name" draggable={false} />
                     </h4>
                   </div>
-                  {/* } */}
-                  {/* 
-                                    {
-                                        externalNativeTxDetails?.args && 
-                                    } */}
+
                   <RecComponent data={externalNativeTxDetails?.args || {}} />
 
                   {externalNativeTxDetails?.estimatedGas && (

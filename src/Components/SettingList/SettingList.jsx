@@ -1,4 +1,3 @@
-// import Link from 'antd/es/typography/Link';
 import { Link } from "react-router-dom";
 import React from "react";
 import ticketcheck1 from "../../Assets/ArrowRightIcon.svg";
@@ -6,6 +5,7 @@ import style from "./style.module.scss";
 
 function SettingList(props) {
   const { setinglist, to, ticketcheck, onClick } = props;
+
   return (
     <>
       <div className={style.listItems}>

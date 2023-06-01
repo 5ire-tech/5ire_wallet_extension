@@ -18,6 +18,7 @@ import {
 
 function EnterPassword() {
   const navigate = useNavigate();
+
   const [data, setData] = useState("");
   const [isDisable, setDisable] = useState(true);
   const { inputError, setInputError, passVerified, setPassVerified } = useContext(AuthContext);
@@ -94,13 +95,6 @@ function EnterPassword() {
               <ButtonComp onClick={handleClick} text="Continue" isDisable={isDisable}></ButtonComp>
             </div>
           </div>
-          {/* <ModalCustom
-            isModalOpen={isModalOpen}
-            handleOk={handle_OK_Cancel}
-            handleCancel={handle_OK_Cancel}
-          > */}
-          {/* <PrivateKey id={params?.id} /> */}
-          {/* </ModalCustom> */}
         </div>
       </div>
     </>

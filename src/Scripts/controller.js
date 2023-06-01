@@ -196,7 +196,10 @@ export class ExternalWindowControl {
         if (windowAndTabState.windowId !== windowId) {
           log("window id: ", windowId);
 
-          const tab = await Browser.tabs.query({ active: true, windowId: windowId });
+          const tab = await Browser.tabs.query({
+            active: true,
+            windowId: windowId
+          });
           const windowAndTabDetails = {
             windowId: windowId,
             tabDetails: {

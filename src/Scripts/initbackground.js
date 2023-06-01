@@ -764,7 +764,9 @@ class TransactionQueue {
       }
 
       const { currentTransaction } = transactionQueue;
-      const transactionHistoryTrack = { ...currentTransaction.transactionHistoryTrack };
+      const transactionHistoryTrack = {
+        ...currentTransaction.transactionHistoryTrack
+      };
 
       //check if transaction status is pending then only check the status
       if (
@@ -1080,7 +1082,10 @@ class ExternalTxTasks {
     const externalTransactionProcessingPayload = new TransactionProcessingPayload(
       {
         ...activeSession.message,
-        options: { ...message?.data.options, externalTransaction: { ...activeSession } }
+        options: {
+          ...message?.data.options,
+          externalTransaction: { ...activeSession }
+        }
       },
       message.event,
       null,
@@ -1105,7 +1110,9 @@ class ExternalTxTasks {
         if (!signerRes.error) {
           sendMessageToTab(
             activeSession.tabId,
-            new TabMessagePayload(activeSession.id, { result: signerRes.payload.data })
+            new TabMessagePayload(activeSession.id, {
+              result: signerRes.payload.data
+            })
           );
 
           // const network = message.data.options?.network || state.currentNetwork;
@@ -1160,7 +1167,10 @@ class ExternalTxTasks {
         {
           ...activeSession.message,
           value: methodDetails?.amount,
-          options: { ...message?.data.options, externalTransaction: { ...activeSession } }
+          options: {
+            ...message?.data.options,
+            externalTransaction: { ...activeSession }
+          }
         },
         message.event,
         null,
@@ -2033,7 +2043,10 @@ export class TransactionsRPC {
       );
       return eventPayload;
     } catch (err) {
-      const payload = { options: message?.options, data: message?.transactionHistoryTrack };
+      const payload = {
+        options: message?.options,
+        data: message?.transactionHistoryTrack
+      };
 
       return new EventPayload(
         null,
@@ -2084,7 +2097,9 @@ export class GeneralWalletRPC {
         ];
 
       if (!NetworkHandler.api[state.currentNetwork.toLowerCase()]?.evmApi)
-        return new EventPayload(STATE_CHANGE_ACTIONS.BALANCE, null, { data: balance });
+        return new EventPayload(STATE_CHANGE_ACTIONS.BALANCE, null, {
+          data: balance
+        });
 
       let nbalance = 0;
       const { evmApi, nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
@@ -2527,7 +2542,9 @@ export class NetworkHandler {
       //send only if the extension opened
       ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.BALANCE_FETCH);
       InitBackground.uiStream &&
-        this.services.messageToUI(MESSAGE_EVENT_LABELS.NETWORK_CHECK, { chainId });
+        this.services.messageToUI(MESSAGE_EVENT_LABELS.NETWORK_CHECK, {
+          chainId
+        });
     } catch (err) {
       ExtensionEventHandle.eventEmitter.emit(
         INTERNAL_EVENT_LABELS.ERROR,

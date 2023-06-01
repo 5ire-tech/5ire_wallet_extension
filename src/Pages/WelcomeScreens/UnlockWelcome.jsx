@@ -1,12 +1,12 @@
+import React, { useEffect, useState, useContext, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
-import { Link } from "react-router-dom";
 import useAuth from "../../Hooks/useAuth";
 import { AuthContext } from "../../Store";
 import { isEmpty } from "../../Utility/utility";
 import PlaceLogo from "../../Assets/PlaceLog.svg";
 import { decryptor } from "../../Helper/CryptoHelper";
-import React, { useEffect, useState, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
@@ -33,17 +33,19 @@ function UnlockWelcome() {
     }
   }, [inputError, pass]);
 
-  const handleChange = (e) => {
+  const handleChange = useCallback((e) => {
     setPass(e.target.value);
     setInputError("");
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const validateInput = () => {
+  const validateInput = useCallback(() => {
     if (isEmpty(pass)) {
       setInputError(ERROR_MESSAGES.INPUT_REQUIRED);
       setDisable(true);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pass]);
 
   const handleClick = async (e) => {
     if (e.key === LABELS.ENTER || e.key === undefined) {
@@ -93,7 +95,6 @@ function UnlockWelcome() {
         <div className={style.cardWhite__importWalletlinkOuter}>
           <div>
             <InputFieldSimple
-              // type="password"
               name={"key"}
               coloredBg={true}
               keyUp={validateInput}

@@ -41,7 +41,7 @@ function MenuFooter() {
         <>
           <Link
             draggable={false}
-            to={ROUTES.WALLET} // onClick={handleHistoryOpen}
+            to={ROUTES.WALLET}
             className={`${style.menuItems__items} ${
               pathname === ROUTES.WALLET ? style.menuItems__items__active : ""
             }`}>
@@ -52,7 +52,7 @@ function MenuFooter() {
           </Link>
           <Link
             draggable={false}
-            to={ROUTES.HISTORY_P} // onClick={handleHistoryOpen}
+            to={ROUTES.HISTORY_P}
             className={`${style.menuItems__items} ${
               pathname === ROUTES.HISTORY_P ? style.menuItems__items__active : ""
             }`}>
@@ -119,7 +119,7 @@ function MenuFooter() {
             </div>
           </div>
         </Link>
-        {/* <Link to={ROUTES.PRIVACY_POLICY}> */}
+
         <div
           className={style.sttings}
           style={{ marginTop: "14px" }}
@@ -137,7 +137,6 @@ function MenuFooter() {
             <img src={BackArrow} width={8} height={15} alt="backArrow" draggable={false} />
           </div>
         </div>
-        {/* </Link> */}
 
         <SocialAccount />
       </Drawer>

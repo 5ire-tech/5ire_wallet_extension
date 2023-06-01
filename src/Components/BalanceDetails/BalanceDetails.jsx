@@ -153,24 +153,31 @@ function BalanceDetails({ mt0 }) {
   const showModal = () => {
     setIsModalOpen(true);
   };
+
   const handleOk = () => {
     setIsModalOpen(false);
   };
+
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
   const evmModal = () => {
     setIsEvmModal(true);
   };
+
   const evmOk = () => {
     setIsEvmModal(false);
   };
+
   const evmCancel = () => {
     setIsEvmModal(false);
   };
+
   const headerActive = () => {
     setHeaderActive(true);
   };
+
   const handle_OK_Cancel = () => {
     setHeaderActive(false);
   };
@@ -273,22 +280,6 @@ function BalanceDetails({ mt0 }) {
                         </Tooltip>
                         {currentAccount?.accountName ? currentAccount?.accountName : ""}
                       </p>
-                      {/* <Dropdown
-                            placement="bottom"
-                            menu={{
-                              items: [
-                                {
-                                  key: 1,
-                                  label: <span>View Connected Details</span>,
-                                },
-                              ],
-                            }}
-                            trigger="hover"
-                          >
-                            <Space style={{ cursor: "pointer" }}>
-                              <img src={Info} />
-                            </Space>
-                          </Dropdown> */}
                     </>
                   )}
                 </div>

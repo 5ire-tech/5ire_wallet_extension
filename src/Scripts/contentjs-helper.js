@@ -40,7 +40,9 @@ export class ContentJS {
 
   //connet the port stream to background worker
   connectPortStream() {
-    const portConnection = Browser.runtime.connect({ name: STREAM_CHANNELS.CONTENTSCRIPT });
+    const portConnection = Browser.runtime.connect({
+      name: STREAM_CHANNELS.CONTENTSCRIPT
+    });
     ContentJS.postStreamForBackground = new ExtensionPostStream(portConnection);
   }
 

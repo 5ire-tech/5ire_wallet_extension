@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { Switch, Tooltip } from "antd";
 import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
@@ -37,8 +37,11 @@ function Swap() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [toFrom, setToFrom] = useState({ from: NATIVE, to: EVM });
+
   const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
+
   const { allAccountsBalance, pendingTransactionBalance, currentNetwork, currentAccount } = state;
+
   const [balance, setBalance] = useState(
     allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
   );
@@ -141,9 +144,6 @@ function Swap() {
           !(Number(value) >= 1) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
           setMaxClicked(false);
 
-          // Number(amount) < 1 && setError(ERROR_MESSAGES.AMOUNT_CANT_LESS_THEN_ONE);
-
-          // setError(amount > 0 ? "" : ERROR_MESSAGES.INSUFFICENT_BALANCE);
           return;
         }
         if (
@@ -164,15 +164,16 @@ function Swap() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [estimatedGas, amount, balance?.nativeBalance, isEd, toFrom.from, balance?.evmBalance]);
 
-  const blockInvalidChar = (e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
+  const blockInvalidChar = useCallback(
+    (e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault(),
+    []
+  );
 
   //validate amount
-  const validateAmount = () => {
+  const validateAmount = useCallback(() => {
     if (amount.length === 0) setError(ERROR_MESSAGES.INPUT_REQUIRED);
     else if (isNaN(amount)) setError(ERROR_MESSAGES.ENTER_AMOUNT_CORRECTLY);
     else if (Number(amount) < 1) setError(ERROR_MESSAGES.AMOUNT_CANT_LESS_THEN_ONE);
-    // else if (Number(amount) <= 0)
-    //   setError(ERROR_MESSAGES.AMOUNT_CANT_BE_0);
     else if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
       if (
         Number(amount) >=
@@ -190,10 +191,18 @@ function Swap() {
         setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       else setError("");
     }
-  };
+  }, [
+    amount,
+    balance?.evmBalance,
+    balance?.nativeBalance,
+    currentAccount.evmAddress,
+    currentNetwork,
+    pendingTransactionBalance,
+    toFrom.from
+  ]);
 
   //Perform swap
-  const handleApprove = async () => {
+  const handleApprove = useCallback(async () => {
     try {
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
         sendRuntimeMessage(
@@ -212,7 +221,6 @@ function Swap() {
           }
         );
         setIsModalOpen(true);
-        // updateEstimatedGas(null)
       } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.INTERNAL_TX,
@@ -230,65 +238,70 @@ function Swap() {
           }
         );
         setIsModalOpen(true);
-        // updateEstimatedGas(null);
       }
-
-      // updateEstimatedGas("");
     } catch (error) {
       toast.error("Error occured.");
     }
-  };
+  }, [amount, estimatedGas, state.currentAccount, state.currentNetwork, toFrom.from]);
 
   //for getting the fee details
-  const getFee = async (loader = true) => {
-    if (
-      toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase() &&
-      Number(balance?.nativeBalance) > 0
-    ) {
-      loader && updateLoading(true);
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, {
-        value: amount ? amount : balance?.nativeBalance,
-        options: {
-          account: state.currentAccount
-        },
-        isEd
-      });
-    } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase() && balance?.evmBalance) {
-      loader && updateLoading(true);
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {
-        value: amount ? amount : balance?.evmBalance,
-        options: {
-          account: state.currentAccount
-        },
-        isEd
-      });
-    }
+  const getFee = useCallback(
+    async (loader = true) => {
+      if (
+        toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase() &&
+        Number(balance?.nativeBalance) > 0
+      ) {
+        loader && updateLoading(true);
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, {
+          value: amount ? amount : balance?.nativeBalance,
+          options: {
+            account: state.currentAccount
+          },
+          isEd
+        });
+      } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase() && balance?.evmBalance) {
+        loader && updateLoading(true);
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {
+          value: amount ? amount : balance?.evmBalance,
+          options: {
+            account: state.currentAccount
+          },
+          isEd
+        });
+      }
 
-    updateEstimatedGas(null);
-  };
+      updateEstimatedGas(null);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [amount, balance?.evmBalance, balance?.nativeBalance, isEd, state.currentAccount, toFrom.from]
+  );
 
   //handle the changed value of inputs
-  const handleChange = (e) => {
-    const val = e.target.value;
-    const arr = val.split(".");
+  const handleChange = useCallback(
+    (e) => {
+      const val = e.target.value;
+      const arr = val.split(".");
 
-    if (arr.length > 1) {
-      if (arr[1].length > 18) {
-        let slice = arr[1].slice(0, 18);
-        setAmount(arr[0] + "." + slice);
+      if (arr.length > 1) {
+        if (arr[1].length > 18) {
+          let slice = arr[1].slice(0, 18);
+          setAmount(arr[0] + "." + slice);
+        } else {
+          if (amount !== val) {
+            setAmount(val);
+            updateEstimatedGas(null);
+          }
+        }
       } else {
         if (amount !== val) {
           setAmount(val);
           updateEstimatedGas(null);
         }
       }
-    } else {
-      if (amount !== val) {
-        setAmount(val);
-        updateEstimatedGas(null);
-      }
-    }
-  };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [amount]
+  );
 
   //Perform action on click of Enter
   const handleEnter = (e) => {
@@ -300,13 +313,14 @@ function Swap() {
   };
 
   //handle Ok and cancel button of popup
-  const handle_OK_Cancel = () => {
+  const handle_OK_Cancel = useCallback(() => {
     setAmount("");
     setDisable(true);
     setIsFaildOpen(false);
     setIsModalOpen(false);
     updateEstimatedGas(null);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   //Set To and from
   const handleClick = () => {
@@ -396,9 +410,6 @@ function Swap() {
           <h3>Transfer with account keep alive checks </h3>
           <Switch defaultChecked onChange={onChangeToggler} />
         </div>
-        {/* <div className={style.swap__transactionFee}>
-          <p>{estimatedGas ? `Estimated fee : ${estimatedGas} 5ire` : ""}</p>
-        </div> */}
       </div>
       <Approve onClick={handleApprove} text="Swap" isDisable={disableBtn} />
 

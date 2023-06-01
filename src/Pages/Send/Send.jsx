@@ -8,7 +8,7 @@ import FaildSwap from "../../Assets/DarkLogo.svg";
 import SmallLogo from "../../Assets/smallLogo.svg";
 import ComplSwap from "../../Assets/succeslogo.svg";
 import { validateAddress } from "../../Utility/utility";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
@@ -35,9 +35,11 @@ function Send() {
   const [err, setErr] = useState({ to: "", amount: "" });
   const [isMaxDisabled, setMaxDisabled] = useState(true);
   const [data, setData] = useState({ to: "", amount: "" });
+
   const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
 
   const { currentAccount, pendingTransactionBalance, currentNetwork, allAccountsBalance } = state;
+
   const [balance, setBalance] = useState(
     allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
   );
@@ -122,7 +124,10 @@ function Send() {
               pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
           ) {
             updateEstimatedGas(null);
-            setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
+            setErr((p) => ({
+              ...p,
+              amount: ERROR_MESSAGES.INSUFFICENT_BALANCE
+            }));
           } else {
             setErr((p) => ({ ...p, amount: "" }));
           }
@@ -165,7 +170,10 @@ function Send() {
     isEd
   ]);
 
-  const blockInvalidChar = (e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
+  const blockInvalidChar = useCallback(
+    (e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault(),
+    []
+  );
 
   //set the ED toggler state
   const onChangeToggler = (checked) => {
@@ -176,7 +184,7 @@ function Send() {
   };
 
   //validate amount
-  const validateAmount = () => {
+  const validateAmount = useCallback(() => {
     if (!data.amount) setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INPUT_REQUIRED }));
     else if (isNaN(data.amount))
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.ENTER_AMOUNT_CORRECTLY }));
@@ -199,10 +207,18 @@ function Send() {
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
       else setErr((p) => ({ ...p, amount: "" }));
     }
-  };
+  }, [
+    activeTab,
+    balance?.evmBalance,
+    balance?.nativeBalance,
+    currentAccount.evmAddress,
+    currentNetwork,
+    data.amount,
+    pendingTransactionBalance
+  ]);
 
   //validate to address
-  const validateToAddress = async () => {
+  const validateToAddress = useCallback(async () => {
     if (activeTab === EVM) {
       if (!data.to) setErr((p) => ({ ...p, to: ERROR_MESSAGES.INPUT_REQUIRED }));
       else if (!data.to?.startsWith("0x"))
@@ -232,7 +248,7 @@ function Send() {
         }
       }
     }
-  };
+  }, [activeTab, currentAccount.evmAddress, currentAccount.nativeAddress, data.to]);
 
   //for getting the fee details
   const getFee = async (loader = true) => {
@@ -260,31 +276,35 @@ function Send() {
   };
 
   //handle the changed value of inputs
-  const handleChange = (e) => {
-    if (e.target.name === LABELS.AMOUNT) {
-      const arr = e.target.value.split(".");
-      if (arr.length > 1) {
-        if (arr[1].length > 18) {
-          const slice = arr[1].slice(0, 18);
-          setData((p) => ({ ...p, amount: arr[0] + "." + slice }));
+  const handleChange = useCallback(
+    (e) => {
+      if (e.target.name === LABELS.AMOUNT) {
+        const arr = e.target.value.split(".");
+        if (arr.length > 1) {
+          if (arr[1].length > 18) {
+            const slice = arr[1].slice(0, 18);
+            setData((p) => ({ ...p, amount: arr[0] + "." + slice }));
+          } else {
+            setData((p) => ({ ...p, amount: e.target.value }));
+            updateEstimatedGas(null);
+          }
         } else {
           setData((p) => ({ ...p, amount: e.target.value }));
           updateEstimatedGas(null);
         }
       } else {
-        setData((p) => ({ ...p, amount: e.target.value }));
-        updateEstimatedGas(null);
+        if (data.to !== e.target.value.trim()) {
+          setData((p) => ({
+            ...p,
+            [e.target.name]: e.target.value.trim()
+          }));
+          updateEstimatedGas(null);
+        }
       }
-    } else {
-      if (data.to !== e.target.value.trim()) {
-        setData((p) => ({
-          ...p,
-          [e.target.name]: e.target.value.trim()
-        }));
-        updateEstimatedGas(null);
-      }
-    }
-  };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data.to]
+  );
 
   //Perform action on click of Enter
   const handleEnter = (e) => {
@@ -296,7 +316,7 @@ function Send() {
   };
 
   //Perform Transfer
-  const handleApprove = async () => {
+  const handleApprove = useCallback(async () => {
     try {
       if (activeTab === EVM) {
         if (balance?.evmBalance < 1.1) {
@@ -342,7 +362,17 @@ function Send() {
     } catch (error) {
       toast.error(ERROR_MESSAGES.ERR_OCCURED);
     }
-  };
+  }, [
+    activeTab,
+    balance?.evmBalance,
+    balance?.nativeBalance,
+    data.amount,
+    data.to,
+    estimatedGas,
+    isEd,
+    state.currentAccount,
+    state.currentNetwork
+  ]);
 
   const activeSend = (e) => {
     updateEstimatedGas(null);
@@ -352,12 +382,13 @@ function Send() {
   };
 
   //handle Ok and cancel button of popup
-  const handle_OK_Cancel = () => {
+  const handle_OK_Cancel = useCallback(() => {
     setIsFaildOpen(false);
     updateEstimatedGas(null);
     setData({ to: "", amount: "" });
     setIsModalOpen(false);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   //performs action when user click on max button
   const handleMaxClick = () => {
@@ -373,19 +404,6 @@ function Send() {
       Max
     </button>
   );
-
-  // const handleCopy = (e) => {
-  //   if (e.target.name.toLowerCase() === NATIVE.toLowerCase())
-  //     navigator.clipboard.writeText(currentAccount?.nativeAddress);
-
-  //   if (e.target.name.toLowerCase() === EVM.toLowerCase())
-  //     navigator.clipboard.writeText(currentAccount?.evmAddress);
-
-  //   // if (e.target.name.toLowerCase() === "hash")
-  //   //   navigator.clipboard.writeText(txHash);
-
-  //   toast.success(COPIED);
-  // };
 
   return (
     <>
@@ -496,7 +514,6 @@ function Send() {
           <div className="innerContact">
             <img src={FaildSwap} alt="swapFaild" width={127} height={127} draggable={false} />
             <h2 className="title">Transfer Failed!</h2>
-            {/* <p className="transId">{sendError}</p> */}
 
             <div className="footerbuttons">
               <ButtonComp text={"Try Again"} onClick={handle_OK_Cancel} />

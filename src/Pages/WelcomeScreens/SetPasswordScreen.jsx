@@ -1,12 +1,9 @@
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
-// import { toast } from "react-hot-toast";
-// import useAuth from "../../Hooks/useAuth";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import { isEmpty } from "../../Utility/utility";
-import React, { useContext, useEffect, useState } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
@@ -49,7 +46,7 @@ export default function SetPasswordScreen() {
     else setDisable(true);
   }, [pass.confirmPass, pass.pass, error.pass, error.confirmPass]);
 
-  const validatePass = () => {
+  const validatePass = useCallback(() => {
     let errMsg = EMTY_STR;
 
     if (isEmpty(pass.pass)) errMsg = ERROR_MESSAGES.INPUT_REQUIRED;
@@ -64,20 +61,21 @@ export default function SetPasswordScreen() {
     else errMsg = EMTY_STR;
 
     setError((p) => ({ ...p, pass: errMsg }));
-  };
+  }, [pass.pass]);
 
-  const validateConfirmPass = () => {
+  const validateConfirmPass = useCallback(() => {
     if (isEmpty(pass.confirmPass))
       setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.INPUT_REQUIRED }));
     else if (pass.confirmPass !== pass.pass)
       setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }));
     else setError((p) => ({ ...p, confirmPass: EMTY_STR }));
-  };
+  }, [pass.confirmPass, pass.pass]);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     updateState(LABELS.NEW_ACCOUNT, null, false);
     navigate(ROUTES.DEFAULT);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async (e) => {
     if (e.key === LABELS.ENTER || e.key === undefined) {
@@ -97,14 +95,14 @@ export default function SetPasswordScreen() {
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = useCallback((e) => {
     setPass((p) => {
       return {
         ...p,
         [e.target.name]: e.target.value.trim()
       };
     });
-  };
+  }, []);
 
   return (
     <>

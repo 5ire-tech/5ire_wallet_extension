@@ -179,7 +179,10 @@ export class HybridKeyring extends EventEmitter {
 
       if (i === 0) {
         keyResponse = await this.createOrRestore({
-          data: { password, opts: { mnemonic: acc.mnemonic, name: acc.accountName } }
+          data: {
+            password,
+            opts: { mnemonic: acc.mnemonic, name: acc.accountName }
+          }
         });
       } else {
         keyResponse = await this.importAccountByMnemonics({
@@ -237,7 +240,9 @@ export class HybridKeyring extends EventEmitter {
       data.accounts.push(acc);
     }
 
-    const newAcc = { ...HybridKeyring.accounts[HybridKeyring.accounts.length - 1] };
+    const newAcc = {
+      ...HybridKeyring.accounts[HybridKeyring.accounts.length - 1]
+    };
 
     const key = await this._persistData(password);
     const keyResponse = await this._exportEthAccountByAddress(

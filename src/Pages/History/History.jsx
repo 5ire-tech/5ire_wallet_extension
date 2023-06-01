@@ -1,9 +1,9 @@
+import React, { useContext, useState, useCallback } from "react";
 import { Drawer } from "antd";
 import HistoryItem from "./HistoryItem";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import { CURRENCY } from "../../Constants/index";
-import React, { useContext, useState } from "react";
 import { arrayReverser } from "../../Utility/utility";
 import ModalCloseIcon from "../../Assets/ModalCloseIcon.svg";
 import TransectionHistry from "../../Components/TransectionHistry/TransectionHistry";
@@ -19,12 +19,15 @@ function History() {
     setOpen1(false);
   };
 
-  const handleHistoryOpen = (data) => {
-    if (txHistory.hasOwnProperty(currentAccount.evmAddress)) {
-      setSelectedTransaction(data);
-      setOpen1(true);
-    }
-  };
+  const handleHistoryOpen = useCallback(
+    (data) => {
+      if (txHistory.hasOwnProperty(currentAccount.evmAddress)) {
+        setSelectedTransaction(data);
+        setOpen1(true);
+      }
+    },
+    [currentAccount.evmAddress, txHistory]
+  );
 
   return (
     <div className={style.historySec}>

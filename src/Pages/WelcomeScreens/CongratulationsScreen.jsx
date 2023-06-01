@@ -13,8 +13,8 @@ function CongratulationsScreen({ children, text }) {
             loop={true}
             controls={true}
             src={JsonData}
-            //src={"https://assets3.lottiefiles.com/packages/lf20_4chtroo0.json"}
-            style={{ height: "190px", width: "190px" }}></Player>
+            style={{ height: "190px", width: "190px" }}
+          />
         </div>
         <h1>Congratulations!</h1>
         <p>{text}</p>

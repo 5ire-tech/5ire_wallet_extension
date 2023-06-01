@@ -1,14 +1,14 @@
-import { ROUTES } from "../../Routes";
-import { Dropdown, Space } from "antd";
-import style from "./style.module.scss";
+import React, { useContext, useState, useCallback } from "react";
 import { toast } from "react-hot-toast";
+import { Dropdown, Space } from "antd";
+import { ROUTES } from "../../Routes";
+import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import ThreeDot from "../../Assets/dot3.svg";
 import { useNavigate } from "react-router-dom";
 import Import from "../../Assets/PNG/import.png";
 import Logout from "../../Assets/PNG/logout.png";
 import DarkLogo from "../../Assets/DarkLogo.svg";
-import React, { useContext, useState } from "react";
 import GreenCircle from "../../Assets/greencircle.svg";
 import Createaccount from "../../Assets/PNG/createaccount.png";
 import { TabMessagePayload } from "../../Utility/network_calls";
@@ -57,17 +57,20 @@ function MyAccount() {
     handle_OK_Cancel();
   };
 
-  const hanldeCreateNewAcc = () => {
+  const hanldeCreateNewAcc = useCallback(() => {
     setNewWalletName("");
     navigate(ROUTES.CREATE_WALLET);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const handleImportAcc = () => {
+  const handleImportAcc = useCallback(() => {
     navigate(ROUTES.IMPORT_WALLET);
-  };
-  const handleLogout = async () => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleLogout = useCallback(async () => {
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.LOCK, {});
-  };
+  }, []);
 
   const handleModalOpen = (address) => {
     if (address) {
@@ -76,9 +79,9 @@ function MyAccount() {
     }
   };
 
-  const handle_OK_Cancel = () => {
+  const handle_OK_Cancel = useCallback(() => {
     setModalOpen(false);
-  };
+  }, []);
 
   const onSelectAcc = (name) => {
     const acc = allAccounts.find((acc) => acc.accountName === name);
