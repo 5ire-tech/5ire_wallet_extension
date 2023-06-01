@@ -14,6 +14,9 @@ export class FireProvider extends SafeEventEmitter {
     this.chainId = "";
     this.version = VERSION;
     this.connected = false;
+
+    //only max 10 listner is attached with particular event
+    this.setMaxListeners(10);
   }
 
   connect() {

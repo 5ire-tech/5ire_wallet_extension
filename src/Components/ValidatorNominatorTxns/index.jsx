@@ -18,6 +18,21 @@ import { sendMessageOverStream } from "../../Utility/message_helper";
 import { toast } from "react-hot-toast";
 import { ROUTES } from "../../Routes";
 
+function formatParams(messageInfo) {
+  try {
+    const obj = JSON.parse(JSON.stringify(messageInfo));
+    const d = Object.keys(obj).map((k) => {
+      return {
+        key: k.charAt(0).toUpperCase() + k.slice(1),
+        value: obj[k]
+      };
+    });
+    return d;
+  } catch (er) {
+    return [];
+  }
+}
+
 function ValidatorNominatorTxns() {
   const navigate = useNavigate();
   const { Content } = Layout;
@@ -70,11 +85,15 @@ function ValidatorNominatorTxns() {
       ];
 
     if (VALIDATION_METHODS_VD_NM.includes(activeSession?.method)) {
-      const totalAmount = +valdatorNominatorFee?.fee + +activeSession.message?.amount;
+      const totalAmount =
+        +valdatorNominatorFee?.fee +
+        +activeSession.message?.amount +
+        pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native;
       if (+balance?.nativeBalance < totalAmount) {
         return toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE_VD_NM);
       }
     }
+
     // updateLoading(true);
     sendMessageOverStream(
       MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL,
@@ -84,7 +103,7 @@ function ValidatorNominatorTxns() {
         options: {
           account: currentAccount,
           isEvm: false,
-          network: currentNetwork,
+          network: currentNetwork.toLowerCase(),
           type: TX_TYPE.NATIVE_APP,
           fee: valdatorNominatorFee
         }
@@ -92,21 +111,6 @@ function ValidatorNominatorTxns() {
     );
     setValdatorNominatorFee(null);
     navigate(ROUTES.WALLET);
-  }
-
-  function formatParams(messageInfo) {
-    try {
-      const obj = JSON.parse(JSON.stringify(messageInfo));
-      const d = Object.keys(obj).map((k) => {
-        return {
-          key: k.charAt(0).toUpperCase() + k.slice(1),
-          value: obj[k]
-        };
-      });
-      return d;
-    } catch (er) {
-      return [];
-    }
   }
 
   return (
