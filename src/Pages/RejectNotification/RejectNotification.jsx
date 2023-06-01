@@ -22,8 +22,9 @@ function ApproveTx() {
   const [activeTab, setActiveTab] = useState("detail");
   const [disableApproval, setDisableApproval] = useState(true);
   const { estimatedGas, state, externalControlsState, updateLoading } = useContext(AuthContext);
-  const { pendingTransactionBalance, balance, currentAccount, currentNetwork } = state;
+  const { pendingTransactionBalance, allAccountsBalance, currentAccount, currentNetwork } = state;
   const { activeSession } = externalControlsState;
+  const balance = allAccountsBalance[currentAccount?.evmAddress][currentNetwork?.toLowerCase()];
 
   //current account
   const account = currentAccount;
@@ -52,13 +53,7 @@ function ApproveTx() {
       return;
     } else setDisableApproval(!estimatedGas);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    estimatedGas,
-    activeSession.message?.value,
-    balance?.evmBalance,
-    currentAccount?.evmAddress,
-    currentNetwork
-  ]);
+  }, [estimatedGas, balance?.evmBalance]);
 
   function handleClick(isApproved) {
     if (isApproved) {
