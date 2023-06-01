@@ -37,8 +37,6 @@ function ValidatorNominatorTxns() {
   const navigate = useNavigate();
   const { Content } = Layout;
 
-  const { pendingTransactionBalance, allAccountsBalance, currentAccount, currentNetwork } = state;
-
   const {
     state,
     externalControlsState: { activeSession },
@@ -46,6 +44,8 @@ function ValidatorNominatorTxns() {
     updateLoading,
     setValdatorNominatorFee
   } = useContext(AuthContext);
+
+  const { pendingTransactionBalance, allAccountsBalance, currentAccount, currentNetwork } = state;
 
   const [disableApproval, setDisableApproval] = useState(false);
   const balance = allAccountsBalance[currentAccount?.evmAddress][currentNetwork?.toLowerCase()];
