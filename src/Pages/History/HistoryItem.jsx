@@ -53,7 +53,7 @@ export default function HistoryItem({ historyItem, handleHistoryOpen }) {
         <div className={style.historySec__historyMarketSwap__rytSide}>
           <h3>{historyItem?.amount ? numFormatter(fixNumber(historyItem.amount)) : "0"} 5ire</h3>
           <p>
-            Status : <span className={(historyItem.status.toLowerCase() === STATUS.PENDING.toLowerCase() || historyItem.status.toLowerCase() === STATUS.QUEUED.toLowerCase()) ? style.historySec__pending : (historyItem.status.toLowerCase() === STATUS.SUCCESS.toLowerCase() ? style.historySec__success : style.historySec__failed)}>{historyItem.status}</span>
+            Status : <span className={(historyItem.txHash) ? style.historySec__pending : (historyItem.status.toLowerCase() === STATUS.SUCCESS.toLowerCase() ? style.historySec__success : style.historySec__failed)}>{historyItem.status}</span>
           </p>
         </div>
       </div>

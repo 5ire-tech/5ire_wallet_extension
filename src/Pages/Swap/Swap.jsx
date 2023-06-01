@@ -27,6 +27,7 @@ import {
   EXISTENTIAL_DEPOSITE,
   MESSAGE_EVENT_LABELS,
 } from "../../Constants/index";
+import { log } from "../../Utility/utility";
 
 
 function Swap() {
@@ -127,6 +128,7 @@ function Swap() {
         if (estimatedGas && !amount && maxClicked) {
 
           const value = Number(balance?.nativeBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0) + pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native);
+          
 
           setAmount(Number(value) >= 1 ? value : "");
           updateEstimatedGas(Number(value) >= 1 ? estimatedGas : null);
