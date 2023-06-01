@@ -154,7 +154,7 @@ export const SUCCESS_MESSAGES = {
   DISCONNECTED: "Disconnected.",
   LOGIN_SUCCESS: "Login successfully.",
   LOGOUT_SUCCESS: "Logout successfully",
-  HASH_COPIED: "Transacion hash copied.",
+  HASH_COPIED: "Transaction hash copied!",
   PASS_CREATED_SUCCESS: "Successfully created password for user."
 };
 
