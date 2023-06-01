@@ -44,17 +44,28 @@ function ManageWallet() {
               <label>Wallet Name:</label>
               <p className={style.wallet__addressInput__copyText}>
                 <span>{currentAccount?.accountName}</span>
-                <img src={CopyIcon} alt="copyIcon" name="name" onClick={handleCopy} draggable={false} />{" "}
+                <img
+                  src={CopyIcon}
+                  alt="copyIcon"
+                  name="name"
+                  onClick={handleCopy}
+                  draggable={false}
+                />{" "}
               </p>
             </div>
           </div>
           <div className={style.wallet}>
             <div className={style.wallet__addressInput}>
-
               <label>Native Chain Address:</label>
               <p className={style.wallet__addressInput__copyText}>
                 <span>{shortner(currentAccount?.nativeAddress, 15, 15)}</span>
-                <img src={CopyIcon} alt="copyIcon" name={NATIVE} onClick={handleCopy} draggable={false} />{" "}
+                <img
+                  src={CopyIcon}
+                  alt="copyIcon"
+                  name={NATIVE}
+                  onClick={handleCopy}
+                  draggable={false}
+                />{" "}
               </p>
             </div>
           </div>
@@ -63,17 +74,20 @@ function ManageWallet() {
               <label>EVM Chain Address:</label>
               <p className={style.wallet__addressInput__copyText}>
                 <span>{shortner(currentAccount?.evmAddress, 15, 15)}</span>
-                <img src={CopyIcon} alt="copyIcon" name={EVM} onClick={handleCopy} draggable={false} />{" "}
+                <img
+                  src={CopyIcon}
+                  alt="copyIcon"
+                  name={EVM}
+                  onClick={handleCopy}
+                  draggable={false}
+                />{" "}
               </p>
             </div>
           </div>
           <div className={style.btn_icon}>
             <ButtonComp
               onClick={() => navigate(ROUTES.ENTER_PASS)}
-              // onClick={() => navigate(ROUTES.ENTER_PASS + "/" + PVT_KEY)}
-              text="Reveal Secret Keys"
-            >
-            </ButtonComp>
+              text="Reveal Secret Keys"></ButtonComp>
             {/* <ButtonComp
               bordered={true}
               onClick={() => navigate(ROUTES.ENTER_PASS + "/" + MNEMONIC)}

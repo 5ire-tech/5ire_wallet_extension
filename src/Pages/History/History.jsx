@@ -11,7 +11,6 @@ import noTransaction from "../../Assets/NoTransaction.svg";
 
 function History() {
   const [open1, setOpen1] = useState(false);
-  // const [open2, setOpen2] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const { state } = useContext(AuthContext);
   const { currentNetwork, txHistory, currentAccount } = state;
@@ -19,10 +18,6 @@ function History() {
   const onClose1 = () => {
     setOpen1(false);
   };
-
-  // const onClose2 = () => {
-  //   setOpen2(false);
-  // };
 
   const handleHistoryOpen = (data) => {
     if (txHistory.hasOwnProperty(currentAccount.evmAddress)) {
@@ -38,7 +33,7 @@ function History() {
       </div>
       <div className={style.histryDataScrol}>
         {txHistory[currentAccount?.evmAddress] &&
-          txHistory[currentAccount?.evmAddress].length > 0 ? (
+        txHistory[currentAccount?.evmAddress].length > 0 ? (
           arrayReverser(
             txHistory[currentAccount?.evmAddress].filter(
               (tx) => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()
@@ -69,18 +64,9 @@ function History() {
         onClose={onClose1}
         open={open1}
         closeIcon={
-          <img
-            src={ModalCloseIcon}
-            alt="close"
-            draggable={false}
-            className="closeModalIcon"
-          />
-        }
-      >
-        <TransectionHistry
-          selectedTransaction={selectedTransaction}
-          account={currentAccount}
-        />
+          <img src={ModalCloseIcon} alt="close" draggable={false} className="closeModalIcon" />
+        }>
+        <TransectionHistry selectedTransaction={selectedTransaction} account={currentAccount} />
       </Drawer>
     </div>
   );

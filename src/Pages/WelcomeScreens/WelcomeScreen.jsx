@@ -4,11 +4,9 @@ import style from "./style.module.scss";
 import { Link } from "react-router-dom";
 import PlaceLogo from "../../Assets/PlaceLog.svg";
 
-
 function WelcomeScreen() {
   return (
     <div className={`${style.cardWhite} ${style.cardWhiteCenterd}`}>
-      {/* <MenuRestofHeaders logosilver={true} title="5ire Non-Custodial Wallet" /> */}
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__centerLogo}>
           <div className={style.cardWhite__cardInner__innerLogocontact}>

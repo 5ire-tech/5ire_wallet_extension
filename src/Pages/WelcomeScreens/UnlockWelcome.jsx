@@ -18,9 +18,8 @@ import {
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
 
-
 function UnlockWelcome() {
-  const { verifyPass } = useAuth()
+  const { verifyPass } = useAuth();
   const [pass, setPass] = useState("");
   const [isDisable, setDisable] = useState(true);
   const { state, inputError, setInputError } = useContext(AuthContext);
@@ -47,36 +46,34 @@ function UnlockWelcome() {
   };
 
   const handleClick = async (e) => {
-    if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
-
+    if (e.key === LABELS.ENTER || e.key === undefined) {
       if (state?.pass && state?.oldAccounts && pass && !inputError) {
-
         const passRes = await verifyPass(pass, state.pass);
 
         if (!passRes.error) {
-
           if (state?.oldAccounts.length > 0) {
-
             const oldAccDetails = [];
 
             for (let i = 0; i < state.oldAccounts.length; i++) {
-
               oldAccDetails.push({
                 mnemonic: decryptor(state?.oldAccounts[i].temp1m, state?.pass),
                 accountName: state?.oldAccounts[i]?.accountName
               });
-
             }
-            sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.RECOVER_OLD_ACCOUNTS, { password: pass, oldAccDetails, opts: {} });
+            sendRuntimeMessage(
+              MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+              MESSAGE_EVENT_LABELS.RECOVER_OLD_ACCOUNTS,
+              { password: pass, oldAccDetails, opts: {} }
+            );
           }
-
-        }
-        else {
+        } else {
           setInputError(passRes.data);
         }
-
       } else if (pass && !inputError) {
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.UNLOCK, { password: pass, vault: vault });
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.UNLOCK, {
+          password: pass,
+          vault: vault
+        });
       }
     }
   };
@@ -103,7 +100,9 @@ function UnlockWelcome() {
               onChange={handleChange}
               placeholderBaseColor={true}
               placeholder={"Enter Password"}
-              onDrop={e => { e.preventDefault() }}
+              onDrop={(e) => {
+                e.preventDefault();
+              }}
             />
             <p className={style.errorText}>{inputError ? inputError : ""}</p>
           </div>
@@ -112,11 +111,7 @@ function UnlockWelcome() {
           </div>
         </div>
         <div className={style.setPassword__footerbuttons}>
-          <ButtonComp
-            onClick={handleClick}
-            text={"Unlock"}
-            isDisable={isDisable}
-          />
+          <ButtonComp onClick={handleClick} text={"Unlock"} isDisable={isDisable} />
         </div>
       </div>
     </div>

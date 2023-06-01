@@ -1,27 +1,30 @@
-import { HTTP_METHODS, HTTP_CONTENT_TYPE, ERROR_MESSAGES, STATUS } from "../Constants";
 import { getUUID } from "../Scripts/utils";
-import { isString } from "../Utility/utility"
+import { isString } from "../Utility/utility";
+import { HTTP_METHODS, HTTP_CONTENT_TYPE, ERROR_MESSAGES, STATUS } from "../Constants";
 
-export async function httpRequest(url, method, payload, headers = { "Content-Type": HTTP_CONTENT_TYPE.JSON }) {
-
+export async function httpRequest(
+  url,
+  method,
+  payload,
+  headers = { "Content-Type": HTTP_CONTENT_TYPE.JSON }
+) {
   try {
     const reqHeader = {
       method,
       headers: headers
-    }
+    };
 
-    if (method === HTTP_METHODS.POST) reqHeader.body = isString(payload) ? payload : JSON.stringify(payload)
+    if (method === HTTP_METHODS.POST)
+      reqHeader.body = isString(payload) ? payload : JSON.stringify(payload);
 
     const res = await fetch(url, reqHeader);
     if (res.status >= 500) return { internalServer: true };
     const data = await res.json();
     return data;
-
   } catch (err) {
-    return { err: err }
+    return { err: err };
   }
 }
-
 
 //rpc payload construction class
 export class EVMRPCPayload {
@@ -30,23 +33,19 @@ export class EVMRPCPayload {
     this.method = method;
     this.jsonrpc = jsonrpc;
     this.params = params;
-    this.id = id
+    this.id = id;
   }
 }
-
 
 //paylod for rpc response from rpc operations
 export class EventPayload {
-
-  constructor(stateChangeKey=null, eventForEmitting=null, payload=null, error = null) {
-      this.stateChangeKey = stateChangeKey
-      this.eventEmit = eventForEmitting
-      this.payload = payload
-      this.error = error
+  constructor(stateChangeKey = null, eventForEmitting = null, payload = null, error = null) {
+    this.stateChangeKey = stateChangeKey;
+    this.eventEmit = eventForEmitting;
+    this.payload = payload;
+    this.error = error;
   }
-
 }
-
 
 //payload creator for tab messages
 export class TabMessagePayload {
@@ -54,7 +53,7 @@ export class TabMessagePayload {
     this.id = id;
     this.response = response;
     this.event = event;
-    this.method = method
+    this.method = method;
     this.error = error;
   }
 }
@@ -85,7 +84,19 @@ export class TransactionProcessingPayload {
 
 //for main transaction payload
 export class TransactionPayload {
-  constructor(to = "", amount = 0, isEvm = null, chain = "QA", type = "", txHash = "", status = STATUS.QUEUED, intermidateHash = null, gasUsed = null, args = null, method = null) {
+  constructor(
+    to = "",
+    amount = 0,
+    isEvm = null,
+    chain = "QA",
+    type = "",
+    txHash = "",
+    status = STATUS.QUEUED,
+    intermidateHash = null,
+    gasUsed = null,
+    args = null,
+    method = null
+  ) {
     this.to = to;
     this.amount = amount;
     this.isEvm = isEvm;
@@ -97,7 +108,7 @@ export class TransactionPayload {
     this.gasUsed = gasUsed;
     this.id = getUUID();
     this.timeStamp = new Date().toString();
-    this.method = method
+    this.method = method;
     this.args = args;
   }
 }

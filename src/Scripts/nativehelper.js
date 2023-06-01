@@ -1,6 +1,6 @@
 import { BigNumber } from "bignumber.js";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
-import { DECIMALS, ERRCODES, ERROR_MESSAGES, LABELS, STATUS, VALIDATOR_NOMINATOR_METHOD } from "../Constants";
+import { DECIMALS, ERRCODES, ERROR_MESSAGES, LABELS, STATUS } from "../Constants";
 import { HybridKeyring } from "./5ire-keyring";
 import { NetworkHandler } from "./initbackground";
 import { hasProperty, log } from "../Utility/utility";
@@ -22,14 +22,13 @@ export default class ValidatorNominatorHandler {
       delete ValidatorNominatorHandler.constructor;
     }
     return ValidatorNominatorHandler.instance;
-  }
+  };
 
   //pass the request to handler methods
   handleNativeAppsTask = async (state, message, isFee) => {
-    const payload = { data: {}, options: { ...message?.options }};
+    const payload = { data: {}, options: { ...message?.options } };
     const { activeSession } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
-  
-    
+
     const externalData = activeSession?.message || message.options.externalTransaction.message;
     const method = activeSession?.method || message.options.externalTransaction.method;
 
@@ -42,26 +41,34 @@ export default class ValidatorNominatorHandler {
 
       const res = await ValidatorNominatorHandler.instance[method](state, externalData, isFee, options);
       //if error occured then throw it
-      if (res?.error) new Error(new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, res)).throw();
+      if (res?.error)
+        new Error(new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE, res)).throw();
 
-      //check if request is for fee-estimation or transaction 
+      //check if request is for fee-estimation or transaction
       if (isFee) payload.data = { fee: res.data, ...methodDetails };
       else {
-        const transactionHistory = { ...message?.transactionHistoryTrack, status: STATUS.PENDING, txHash: res.data?.txHash, method: methodDetails.methodName, amount: methodDetails.amount };
+        const transactionHistory = {
+          ...message?.transactionHistoryTrack,
+          status: STATUS.PENDING,
+          txHash: res.data?.txHash,
+          method: methodDetails.methodName,
+          amount: methodDetails.amount
+        };
         payload.data = transactionHistory;
       }
 
       return new EventPayload(null, message.event, payload);
-    } else new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.INVALID_PROPERTY)).throw();
-  }
+    } else
+      new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.INVALID_PROPERTY)).throw();
+  };
 
   getKeyring = (address) => {
     try {
-      const signer = this.hybridKeyring.getNativeSignerByAddress(address)
+      const signer = this.hybridKeyring.getNativeSignerByAddress(address);
       return signer;
     } catch (err) {
       log("err:", err);
-      const signer = this.hybridKeyring.getNativeSignerByAddress(address)
+      const signer = this.hybridKeyring.getNativeSignerByAddress(address);
       return signer;
     }
   }
@@ -76,11 +83,11 @@ export default class ValidatorNominatorHandler {
       return {
         error: true,
         data: "Invalid Params: Stake Amount and Validator Accounts are required"
-      }
+      };
     }
     const { stakeAmount, validatorsAccounts } = payload;
 
-    const bondedAmount = (new BigNumber(stakeAmount).multipliedBy(DECIMALS)).toFixed().toString()
+    const bondedAmount = new BigNumber(stakeAmount).multipliedBy(DECIMALS).toFixed().toString();
 
     const stashId = encodeAddress(nativeAddress);
     const nominateTx = nativeApi.tx.staking.nominate(validatorsAccounts);
@@ -90,25 +97,25 @@ export default class ValidatorNominatorHandler {
 
     if (isFee) {
       const info = await batchAll?.paymentInfo(this.getKeyring(nativeAddress));
-      const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
+      const fee = new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8).toString();
       return {
         error: false,
         data: fee
-      }
+      };
     }
 
-    const txHash = await batchAll.signAndSend(this.getKeyring(nativeAddress))
+    const txHash = await batchAll.signAndSend(this.getKeyring(nativeAddress));
 
     const data = {
       txHash: txHash.toHex(),
       stakeAmount,
-      points,
+      points
     };
     return {
       error: false,
       data
-    }
-  }
+    };
+  };
 
   native_renominate = async (state, payload, isFee = false, options) => {
 
@@ -119,24 +126,24 @@ export default class ValidatorNominatorHandler {
       return {
         error: true,
         data: "Invalid Params: Validator Accounts are required"
-      }
+      };
     }
-    const { validatorAccounts } = payload
+    const { validatorAccounts } = payload;
     const nominateTx = nativeApi.tx.staking.nominate(validatorAccounts);
     const points = await nativeApi.derive.staking?.currentPoints(); //find points
     const batchAll = await nativeApi.tx.utility.batchAll([nominateTx]);
     if (isFee) {
       const info = await batchAll?.paymentInfo(this.getKeyring(nativeAddress));
-      const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
+      const fee = new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8).toString();
       return {
         error: false,
         data: fee
-      }
+      };
     }
-    const txHash = await batchAll.signAndSend(this.getKeyring(nativeAddress))
+    const txHash = await batchAll.signAndSend(this.getKeyring(nativeAddress));
     return {
       error: false,
-      data: { txHash: txHash.toHex(), points },
+      data: { txHash: txHash.toHex(), points }
     };
   };
 
@@ -146,7 +153,7 @@ export default class ValidatorNominatorHandler {
       return {
         error: true,
         data: "Invalid Params: Validator Accounts are required"
-      }
+      };
     }
     return this.native_validator_payout(state, payload, isFee, options)
   }
@@ -159,7 +166,7 @@ export default class ValidatorNominatorHandler {
       return {
         error: true,
         data: "Invalid Params: Validator Accounts are required"
-      }
+      };
     }
 
     const { validatorIdList } = payload;
@@ -177,23 +184,22 @@ export default class ValidatorNominatorHandler {
         };
       }
       eraIndex = era[0][0]?.era;
-
     }
     const payout = await nativeApi?.tx?.staking?.payoutStakers(validators[0], eraIndex);
 
     if (isFee) {
       const info = await payout?.paymentInfo(this.getKeyring(nativeAddress));
-      const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
+      const fee = new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8).toString();
       return {
         error: false,
         data: fee
-      }
+      };
     }
-    const txHash = await payout.signAndSend(this.getKeyring(nativeAddress))
+    const txHash = await payout.signAndSend(this.getKeyring(nativeAddress));
     return {
       error: false,
       data: { txHash: txHash.toHex() }
-    }
+    };
   };
 
   native_stop_validator = async (state, payload, isFee = false, options) => {
@@ -208,17 +214,17 @@ export default class ValidatorNominatorHandler {
 
     if (isFee) {
       const info = await stopValidator?.paymentInfo(this.getKeyring(nativeAddress));
-      const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
+      const fee = new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8).toString();
       return {
         error: false,
         data: fee
-      }
+      };
     }
-    const txHash = await stopValidator.signAndSend(this.getKeyring(nativeAddress))
+    const txHash = await stopValidator.signAndSend(this.getKeyring(nativeAddress));
     return {
       error: false,
       data: { txHash: txHash.toHex() }
-    }
+    };
   };
 
   native_unbond_validator = async (state, payload, isFee = false, options) => {
@@ -231,29 +237,27 @@ export default class ValidatorNominatorHandler {
       return {
         error: true,
         data: "Invalid Params: Amount is required"
-      }
-
+      };
     }
 
     const {network, nativeAddress} = options;
     const { nativeApi } = NetworkHandler.api[network];
 
-
-    const amt = (new BigNumber(payload.amount).multipliedBy(DECIMALS)).toFixed().toString()
+    const amt = new BigNumber(payload.amount).multipliedBy(DECIMALS).toFixed().toString();
     const unbound = await nativeApi.tx.staking.unbond(amt);
     if (isFee) {
       const info = await unbound?.paymentInfo(this.getKeyring(nativeAddress));
-      const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
+      const fee = new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8).toString();
       return {
         error: false,
         data: fee
-      }
+      };
     }
-    const txHash = await unbound.signAndSend(this.getKeyring(nativeAddress))
+    const txHash = await unbound.signAndSend(this.getKeyring(nativeAddress));
     return {
       error: false,
       data: { txHash: txHash.toHex() }
-    }
+    };
   };
 
   native_withdraw_validator = async (state, payload, isFee = false, options) => {
@@ -267,31 +271,30 @@ export default class ValidatorNominatorHandler {
       return {
         error: true,
         data: "Invalid Params: Amount and Address are required"
-      }
+      };
     }
 
     const {network, nativeAddress} = options;
     const { nativeApi } = NetworkHandler.api[network];
 
-
-    const { amount, address } = payload
-    const sendAmounts = (new BigNumber(amount).multipliedBy(DECIMALS)).toFixed().toString()
+    const { amount, address } = payload;
+    const sendAmounts = new BigNumber(amount).multipliedBy(DECIMALS).toFixed().toString();
     // const sendAmt = nativeApi.tx.balances.transferKeepAlive(address, sendAmounts);
     const sendAmt = nativeApi.tx.balances.transfer(address, sendAmounts);
 
     if (isFee) {
       const info = await sendAmt?.paymentInfo(this.getKeyring(nativeAddress));
-      const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
+      const fee = new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8).toString();
       return {
         error: false,
         data: fee
-      }
+      };
     }
-    const txHash = await sendAmt.signAndSend(this.getKeyring(nativeAddress))
+    const txHash = await sendAmt.signAndSend(this.getKeyring(nativeAddress));
     return {
       error: false,
       data: { txHash: txHash.toHex() }
-    }
+    };
   };
 
   native_withdraw_validator_unbonded = async (state, payload, isFee = false, options) => {
@@ -307,17 +310,17 @@ export default class ValidatorNominatorHandler {
 
     if (isFee) {
       const info = await unbond?.paymentInfo(this.getKeyring(nativeAddress));
-      const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
+      const fee = new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8).toString();
       return {
         error: false,
         data: fee
-      }
+      };
     }
-    const txHash = await unbond.signAndSend(this.getKeyring(nativeAddress))
+    const txHash = await unbond.signAndSend(this.getKeyring(nativeAddress));
     return {
       error: false,
       data: { txHash: txHash.toHex() }
-    }
+    };
   };
 
   //validators methods
@@ -327,7 +330,7 @@ export default class ValidatorNominatorHandler {
       return {
         error: true,
         data: "Invalid Params: commission, rotateKeys and  amount are required"
-      }
+      };
     }
 
     const {network, nativeAddress} = options;
@@ -338,35 +341,33 @@ export default class ValidatorNominatorHandler {
     const commission = payload.commission === 0 ? 1 : payload.commission * 10 ** 7;
 
     const validatorInfo = {
-      bondTx: nativeApi.tx.staking.bond(stashId, bondAmt, 'Staked'),
+      bondTx: nativeApi.tx.staking.bond(stashId, bondAmt, "Staked"),
       sessionTx: nativeApi.tx.session.setKeys(payload?.rotateKeys, new Uint8Array()),
       validateTx: nativeApi.tx.staking.validate({
         blocked: false,
-        commission,
-      }),
+        commission
+      })
     };
     const validationTransfer = await nativeApi.tx.utility.batchAll([
       validatorInfo.bondTx,
       validatorInfo.sessionTx,
-      validatorInfo.validateTx,
+      validatorInfo.validateTx
     ]);
-
 
     if (isFee) {
       const info = await validationTransfer?.paymentInfo(this.getKeyring(nativeAddress));
-      const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
+      const fee = new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8).toString();
       return {
         error: false,
         data: fee
-      }
+      };
     }
 
-    const txHash = await validationTransfer.signAndSend(this.getKeyring(nativeAddress))
+    const txHash = await validationTransfer.signAndSend(this.getKeyring(nativeAddress));
     return {
       error: false,
       data: { txHash: txHash.toHex() }
-    }
-
+    };
   };
 
   native_validator_bondmore = async (state, payload, isFee = false, options) => {
@@ -378,28 +379,28 @@ export default class ValidatorNominatorHandler {
       return {
         error: true,
         data: "Invalid Params: Amount is required"
-      }
+      };
     }
 
     const {network, nativeAddress} = options;
     const { nativeApi } = NetworkHandler.api[network];
 
-    const amt = (new BigNumber(payload.amount).multipliedBy(DECIMALS)).toFixed().toString()
+    const amt = new BigNumber(payload.amount).multipliedBy(DECIMALS).toFixed().toString();
     const bondExtraTx = await nativeApi.tx.staking.bondExtra(amt);
 
     if (isFee) {
       const info = await bondExtraTx?.paymentInfo(this.getKeyring(nativeAddress));
-      const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
+      const fee = new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8).toString();
       return {
         error: false,
         data: fee
-      }
+      };
     }
-    const txHash = await bondExtraTx.signAndSend(this.getKeyring(nativeAddress))
+    const txHash = await bondExtraTx.signAndSend(this.getKeyring(nativeAddress));
     return {
       error: false,
       data: { txHash: txHash.toHex() }
-    }
+    };
   };
 
   native_restart_validator = async (state, payload, isFee = false, options) => {
@@ -407,7 +408,7 @@ export default class ValidatorNominatorHandler {
       return {
         error: true,
         data: "Invalid Params: Commission is required"
-      }
+      };
     }
 
 
@@ -418,25 +419,24 @@ export default class ValidatorNominatorHandler {
     const validatorInfo = {
       validateTx: nativeApi.tx.staking.validate({
         blocked: false,
-        commission,
-      }),
+        commission
+      })
     };
 
     const validationTransfer = await nativeApi.tx.utility.batchAll([validatorInfo.validateTx]);
 
     if (isFee) {
       const info = await validationTransfer?.paymentInfo(this.getKeyring(nativeAddress));
-      const fee = (new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8)).toString();
+      const fee = new BigNumber(info.partialFee.toString()).div(DECIMALS).toFixed(6, 8).toString();
       return {
         error: false,
         data: fee
-      }
+      };
     }
-    const txHash = await validationTransfer.signAndSend(this.getKeyring(nativeAddress))
+    const txHash = await validationTransfer.signAndSend(this.getKeyring(nativeAddress));
     return {
       error: false,
       data: { txHash: txHash.toHex() }
-    }
+    };
   };
-
 }

@@ -5,9 +5,11 @@
     padding: 30px 37px;
     padding-bottom: 0;
   }
-&__transactionDetailMain{
-  padding: 30px 24px;
-}
+
+  &__transactionDetailMain {
+    padding: 30px 24px;
+  }
+
   &__flexList {
     display: flex;
     justify-content: space-between;
@@ -102,7 +104,7 @@
 
         span {
           max-width: 90px;
-          white-space: nowrap;
+          // white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
           // display: inline-flex;
@@ -146,7 +148,8 @@
         // border-radius: 0px 12px 12px 0px;
       }
     }
-    &__txnDetailHeading{
+
+    &__txnDetailHeading {
       background: linear-gradient(91.26deg, #0071ff 0%, #54f0d1 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -157,4 +160,19 @@
       text-align: left;
     }
   }
+}
+
+.cancleContinueContainer {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  gap: 10px;
+  // width: 100%;
+  padding: 0 30px;
+  padding-bottom: 30px !important;
+  justify-content: space-around;
+  left: 0;
+  right: 0;
+  max-width: 345px;
+  margin: 0 auto;
 }

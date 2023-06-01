@@ -24,13 +24,13 @@ export default function useAuth() {
             const dataToDispatch = {
               ...newAccount,
               temp1m,
-              temp2p: null,
+              temp2p: null
             };
 
             const currentAccountDetails = {
               index: allAccounts.length,
-              accountName: newAccount.accountName,
-            }
+              accountName: newAccount.accountName
+            };
 
             updateState(LABELS.PASS, hash);
             updateState(LABELS.NEW_ACCOUNT, null);
@@ -41,7 +41,7 @@ export default function useAuth() {
 
             resolve({
               error: false,
-              data: SUCCESS_MESSAGES.PASS_CREATED_SUCCESS,
+              data: SUCCESS_MESSAGES.PASS_CREATED_SUCCESS
             });
           } else throw new Error();
         } else throw new Error();
@@ -49,7 +49,7 @@ export default function useAuth() {
         console.log("Error while settig user Pass : ", error);
         resolve({
           error: true,
-          data: ERROR_MESSAGES.ERR_OCCURED,
+          data: ERROR_MESSAGES.ERR_OCCURED
         });
       }
     });
@@ -68,37 +68,36 @@ export default function useAuth() {
 
         return {
           error: false,
-          data: SUCCESS_MESSAGES.LOGIN_SUCCESS,
+          data: SUCCESS_MESSAGES.LOGIN_SUCCESS
         };
       } else {
         return {
           error: true,
-          data: ERROR_MESSAGES.INCORRECT_PASS,
+          data: ERROR_MESSAGES.INCORRECT_PASS
         };
       }
     } catch (error) {
-      console.log("Error : ", error);
+      console.log("Error while verifying password : ", error);
       return {
         error: true,
-        data: ERROR_MESSAGES.ERR_OCCURED,
+        data: ERROR_MESSAGES.ERR_OCCURED
       };
     }
   };
 
   const logout = async () => {
     try {
-
       updateState(LABELS.ISLOGIN, false, true, true);
 
       return {
         error: false,
-        data: SUCCESS_MESSAGES.LOGOUT_SUCCESS,
+        data: SUCCESS_MESSAGES.LOGOUT_SUCCESS
       };
     } catch (error) {
       console.log("Error  while logging out: ", error);
       return {
         error: false,
-        data: ERROR_MESSAGES.LOGOUT_ERR,
+        data: ERROR_MESSAGES.LOGOUT_ERR
       };
     }
   };
@@ -106,6 +105,6 @@ export default function useAuth() {
   return {
     verifyPass,
     setUserPass,
-    logout,
+    logout
   };
 }

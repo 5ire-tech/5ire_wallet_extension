@@ -14,16 +14,7 @@ import BackArrow from "../../Assets/PNG/arrowright.png";
 import SocialAccount from "../SocialAccount/SocialAccount";
 import ModalCloseIcon from "../../Assets/ModalCloseIcon.svg";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
-import {
-  SOCIAL_LINKS,
-  MESSAGE_TYPE_LABELS,
-  MESSAGE_EVENT_LABELS,
-} from "../../Constants/index";
-import FooterStepOne, {
-  ApproveTx,
-  ApproveLogin,
-  FooterStepTwo,
-} from "./FooterContinue";
+import { SOCIAL_LINKS, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
 
 function MenuFooter() {
   const getLocation = useLocation();
@@ -47,152 +38,84 @@ function MenuFooter() {
       {(pathname === ROUTES.WALLET ||
         pathname === ROUTES.HISTORY_P ||
         pathname === ROUTES.MY_ACCOUNT) && (
-          <>
-            <Link
-              draggable={false}
-              to={ROUTES.WALLET} // onClick={handleHistoryOpen}
-              className={`${style.menuItems__items} ${pathname === ROUTES.WALLET ? style.menuItems__items__active : ""
-                }`}
-            >
-              <div className={style.menuItems__items__img}>
-                <img src={Wallet} alt="HistoryIcon" draggable={false} />
-              </div>
-              <span className={style.menuItems__items__title}>Wallet</span>
-            </Link>
-            <Link
-              draggable={false}
-              to={ROUTES.HISTORY_P} // onClick={handleHistoryOpen}
-              className={`${style.menuItems__items} ${pathname === ROUTES.HISTORY_P
-                ? style.menuItems__items__active
-                : ""
-                }`}
-            >
-              <div className={style.menuItems__items__img}>
-                <img src={HistoryIcon} alt="HistoryIcon" draggable={false} />
-              </div>
-              <span className={style.menuItems__items__title}>History</span>
-            </Link>
+        <>
+          <Link
+            draggable={false}
+            to={ROUTES.WALLET} // onClick={handleHistoryOpen}
+            className={`${style.menuItems__items} ${
+              pathname === ROUTES.WALLET ? style.menuItems__items__active : ""
+            }`}>
+            <div className={style.menuItems__items__img}>
+              <img src={Wallet} alt="HistoryIcon" draggable={false} />
+            </div>
+            <span className={style.menuItems__items__title}>Wallet</span>
+          </Link>
+          <Link
+            draggable={false}
+            to={ROUTES.HISTORY_P} // onClick={handleHistoryOpen}
+            className={`${style.menuItems__items} ${
+              pathname === ROUTES.HISTORY_P ? style.menuItems__items__active : ""
+            }`}>
+            <div className={style.menuItems__items__img}>
+              <img src={HistoryIcon} alt="HistoryIcon" draggable={false} />
+            </div>
+            <span className={style.menuItems__items__title}>History</span>
+          </Link>
 
-            <Link
-              draggable={false}
-              to={ROUTES.MY_ACCOUNT}
-              onClick={handleMyAccOpen}
-              className={`${style.menuItems__items} ${pathname === ROUTES.MY_ACCOUNT
-                ? style.menuItems__items__active
-                : ""
-                }`}
-            >
-              <div className={style.menuItems__items__img}>
-                <img src={Myaccount} alt="Myaccount" draggable={false} />
-              </div>
-              <span className={style.menuItems__items__title}>My Accounts</span>
-            </Link>
+          <Link
+            draggable={false}
+            to={ROUTES.MY_ACCOUNT}
+            onClick={handleMyAccOpen}
+            className={`${style.menuItems__items} ${
+              pathname === ROUTES.MY_ACCOUNT ? style.menuItems__items__active : ""
+            }`}>
+            <div className={style.menuItems__items__img}>
+              <img src={Myaccount} alt="Myaccount" draggable={false} />
+            </div>
+            <span className={style.menuItems__items__title}>My Accounts</span>
+          </Link>
 
-            <Link
-              draggable={false}
-              onClick={() => setOpen2(true)}
-              className={`${style.menuItems__items} ${pathname === ROUTES.MANAGE_WALLET
-                ? style.menuItems__items__active
-                : ""
-                }`}
-            >
-              <div className={style.menuItems__items__img}>
-                <img src={Setting} alt="Setting" draggable={false} />
-              </div>
-              <span className={style.menuItems__items__title}>Settings</span>
-            </Link>
-          </>
-        )}
-
-      {/* <Drawer
-        title={
-          <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            Transaction History
-          </span>
-        }
-        placement="bottom"
-        onClose={onClose1}
-        open={open1}
-        closeIcon={<img src={ModalCloseIcon} alt="close" draggable={false} />}
-      >
-        {(txHistory[currentAccount?.accountName]
-          ? txHistory[currentAccount?.accountName]
-          : []
-        ).filter(
-          (tx) => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()
-        ).length > 0 ? (
-          arrayReverser(
-            txHistory[currentAccount.accountName].filter(
-              (tx) => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()
-            )
-          ).map((data, index) => (
-            <TransectionHistry
-              dateTime={formatDate(data.dateTime)}
-              type={data?.type}
-              txHash={
-                data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase()
-                  ? data.txHash.mainHash
-                  : data.txHash
-              }
-              to={
-                data.type.toLowerCase() === TX_TYPE?.SWAP.toLowerCase()
-                  ? data.to
-                  : `${data?.to ? `To: ` + shortner(data.to) : EMTY_STR}`
-              }
-              amount={data?.amount}
-              status={
-                data?.status.charAt(0).toUpperCase() + data?.status.slice(1)
-              }
-              img={Sendhistry}
-              key={index + CURRENCY}
-            />
-          ))
-        ) : (
-          <h4 className={style.noTxn}>No Transaction Found!</h4>
-        )}
-      </Drawer> */}
+          <Link
+            draggable={false}
+            onClick={() => setOpen2(true)}
+            className={`${style.menuItems__items} ${
+              pathname === ROUTES.MANAGE_WALLET ? style.menuItems__items__active : ""
+            }`}>
+            <div className={style.menuItems__items__img}>
+              <img src={Setting} alt="Setting" draggable={false} />
+            </div>
+            <span className={style.menuItems__items__title}>Settings</span>
+          </Link>
+        </>
+      )}
 
       <Drawer
         height={404}
-        title={
-          <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            Settings
-          </span>
-        }
+        title={<span style={{ display: "flex", alignItems: "center", gap: "8px" }}>Settings</span>}
         placement="bottom"
         onClose={onClose2}
         open={open2}
         closeIcon={
-          <img src={ModalCloseIcon} alt="ModalCloseIcon" draggable={false} className="closeModalIcon" />
-        }
-      >
+          <img
+            src={ModalCloseIcon}
+            alt="ModalCloseIcon"
+            draggable={false}
+            className="closeModalIcon"
+          />
+        }>
         <Link to={ROUTES.MANAGE_WALLET} draggable={false}>
           <div className={style.sttings}>
             <div className={style.sttings__left}>
               <div className={style.walletIconBorder}>
-                <img
-                  draggable={false}
-                  src={Wallet}
-                  width={30}
-                  height={30}
-                  alt="walletIcon"
-                />
+                <img draggable={false} src={Wallet} width={30} height={30} alt="walletIcon" />
               </div>
               <div className={style.sttings__left__texts}>
-                <div className={style.sttings__left__textsTop}>
-                  Manage Wallet
-                </div>
+                <div className={style.sttings__left__textsTop}>Manage Wallet</div>
               </div>
             </div>
 
             <div className={style.sttings__right}>
-              <img
-                src={BackArrow}
-                width={8}
-                height={15}
-                alt="backArrow"
-                draggable={false}
-              />
+              <img src={BackArrow} width={8} height={15} alt="backArrow" draggable={false} />
             </div>
           </div>
         </Link>
@@ -200,33 +123,18 @@ function MenuFooter() {
         <div
           className={style.sttings}
           style={{ marginTop: "14px" }}
-          onClick={() => openBrowserTab(SOCIAL_LINKS.POLICY)}
-        >
+          onClick={() => openBrowserTab(SOCIAL_LINKS.POLICY)}>
           <div className={style.sttings__left}>
             <div className={style.walletIconBorder}>
-              <img
-                draggable={false}
-                src={PrivacyPo}
-                width={30}
-                height={30}
-                alt="walletIcon"
-              />
+              <img draggable={false} src={PrivacyPo} width={30} height={30} alt="walletIcon" />
             </div>
             <div className={style.sttings__left__texts}>
-              <div className={style.sttings__left__textsTop}>
-                Privacy Policy
-              </div>
+              <div className={style.sttings__left__textsTop}>Privacy Policy</div>
             </div>
           </div>
 
           <div className={style.sttings__right}>
-            <img
-              src={BackArrow}
-              width={8}
-              height={15}
-              alt="backArrow"
-              draggable={false}
-            />
+            <img src={BackArrow} width={8} height={15} alt="backArrow" draggable={false} />
           </div>
         </div>
         {/* </Link> */}
@@ -234,10 +142,6 @@ function MenuFooter() {
         <SocialAccount />
       </Drawer>
 
-      {pathname === ROUTES.BEFORE_BEGIN && <FooterStepOne />}
-      {(pathname === ROUTES.NEW_WALLET_DETAILS) && <FooterStepTwo />}
-      {pathname === ROUTES.LOGIN_APPROVE && <ApproveLogin />}
-      {pathname === ROUTES.APPROVE_TXN && <ApproveTx />}
       {(pathname === ROUTES.CREATE_WALLET ||
         pathname === ROUTES.UNLOACK_WALLET ||
         pathname === ROUTES.FORGOT_PASSWORD ||

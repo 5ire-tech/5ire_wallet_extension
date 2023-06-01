@@ -18,7 +18,7 @@ import {
   EMTY_STR,
   ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
-  MESSAGE_EVENT_LABELS,
+  MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
 
 export default function SetPasswordScreen() {
@@ -49,7 +49,6 @@ export default function SetPasswordScreen() {
     else setDisable(true);
   }, [pass.confirmPass, pass.pass, error.pass, error.confirmPass]);
 
-
   const validatePass = () => {
     let errMsg = EMTY_STR;
 
@@ -77,7 +76,6 @@ export default function SetPasswordScreen() {
 
   const handleCancel = () => {
     updateState(LABELS.NEW_ACCOUNT, null, false);
-    // updateState(LABELS.ACCOUNT_NAME, null, false);
     navigate(ROUTES.DEFAULT);
   };
 
@@ -91,7 +89,6 @@ export default function SetPasswordScreen() {
             { password: pass.pass, opts: { name: accountName }, type: "create" }
           );
           setDetailsPage(true);
-
         } else {
           setUserPass(pass.pass);
           navigate(ROUTES.IMPORT_WALLET);
@@ -101,10 +98,10 @@ export default function SetPasswordScreen() {
   };
 
   const handleChange = (e) => {
-    setPass((prev) => {
+    setPass((p) => {
       return {
-        ...prev,
-        [e.target.name]: e.target.value.trim(),
+        ...p,
+        [e.target.name]: e.target.value.trim()
       };
     });
   };
@@ -112,31 +109,21 @@ export default function SetPasswordScreen() {
   return (
     <>
       <div onKeyDown={handleSubmit} className={`${style.cardWhite}`}>
-        {
-          params.id === LABELS.CREATE ?
-            < StepHeaders active={3} />
-            :
-            <StepHeaders active={1} isCreate={false} />
-
-        }
+        {params.id === LABELS.CREATE ? (
+          <StepHeaders active={3} />
+        ) : (
+          <StepHeaders active={1} isCreate={false} />
+        )}
         <MenuRestofHeaders
-          backTo={
-            params.id === LABELS.CREATE ? ROUTES.CREATE_WALLET : ROUTES.DEFAULT
-          }
+          backTo={params.id === LABELS.CREATE ? ROUTES.CREATE_WALLET : ROUTES.DEFAULT}
           title={"Create Password"}
         />
-        <div
-          className={`${style.cardWhite__beginText} ${style.cardWhite__createPassText}`}
-        >
+        <div className={`${style.cardWhite__beginText} ${style.cardWhite__createPassText}`}>
           <p>
-            Your password is used to unlock your wallet and is stored securely
-            on your device. We recommend 12 characters, with uppercase and
-            lowercase letters, symbols and numbers.
+            Your password is used to unlock your wallet and is stored securely on your device. We
+            recommend 12 characters, with uppercase and lowercase letters, symbols and numbers.
           </p>
-          <div
-            className={style.cardWhite__beginText__passInputSec}
-            style={{ marginTop: "20px" }}
-          >
+          <div className={style.cardWhite__beginText__passInputSec} style={{ marginTop: "20px" }}>
             <InputFieldSimple
               coloredBg={true}
               value={pass?.pass}
@@ -145,14 +132,13 @@ export default function SetPasswordScreen() {
               onChange={handleChange}
               placeholderBaseColor={true}
               placeholder={"Enter Password"}
-              onDrop={e => { e.preventDefault() }}
+              onDrop={(e) => {
+                e.preventDefault();
+              }}
             />
           </div>
           <p className={style.errorText}>{error.pass ? error.pass : ""}</p>
-          <div
-            className={style.cardWhite__beginText__passInputSec}
-            style={{ marginTop: "34px" }}
-          >
+          <div className={style.cardWhite__beginText__passInputSec} style={{ marginTop: "34px" }}>
             <InputFieldSimple
               coloredBg={true}
               name="confirmPass"
@@ -161,11 +147,11 @@ export default function SetPasswordScreen() {
               placeholderBaseColor={true}
               keyUp={validateConfirmPass}
               placeholder={"Confirm Password"}
-              onDrop={e => { e.preventDefault() }}
+              onDrop={(e) => {
+                e.preventDefault();
+              }}
             />
-            <p className={style.errorText}>
-              {error.confirmPass ? error.confirmPass : ""}
-            </p>
+            <p className={style.errorText}>{error.confirmPass ? error.confirmPass : ""}</p>
           </div>
 
           <div style={{ marginTop: "50px" }} className={style.contBtn}>
@@ -175,12 +161,7 @@ export default function SetPasswordScreen() {
               text={"Continue"}
               maxWidth={"100%"}
             />
-            <ButtonComp
-              bordered={true}
-              onClick={handleCancel}
-              text={"Cancel"}
-              maxWidth={"100%"}
-            />
+            <ButtonComp bordered={true} onClick={handleCancel} text={"Cancel"} maxWidth={"100%"} />
           </div>
         </div>
       </div>

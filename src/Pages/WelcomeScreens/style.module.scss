@@ -109,9 +109,9 @@
       color: $white;
       opacity: 0.8;
       font-size: 12px;
-      width: 100%;
+      width: 80%;
       text-align: left;
-      display: inline-flex;
+      display: flex;
       margin-bottom: 8px;
     }
 
@@ -524,10 +524,12 @@
 
 .copyButton {
   padding: 0 18px 0;
-  position: absolute;
-  right: 0;
-  top: 11%;
+  // position: absolute;
+  // right: 0;
+  // top: 11%;
   // z-index: 99999;
+  display: flex;
+  justify-content: end;
 
   button {
     border-radius: 4px;
@@ -535,6 +537,7 @@
     font-size: 10px;
   }
 }
+
 
 .errorText {
   text-align: left;
@@ -556,4 +559,19 @@
   display: flex;
   flex-direction: column;
   gap: 23px;
+}
+
+.cancleContinueContainer {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  gap: 10px;
+  // width: 100%;
+  padding: 0 30px;
+  padding-bottom: 30px !important;
+  justify-content: space-around;
+  left: 0;
+  right: 0;
+  max-width: 345px;
+  margin: 0 auto;
 }

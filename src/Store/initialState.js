@@ -1,71 +1,69 @@
-import { NETWORK } from "../Constants"
+import { NETWORK } from "../Constants";
 
 export const userState = {
+  vault: null,
 
-    vault: null,
+  txHistory: {},
 
-    txHistory: {},
+  isLogin: false,
 
-    isLogin: false,
+  eth_accounts: "",
 
-    eth_accounts: '',
+  currentNetwork: "Testnet",
 
-    currentNetwork: "Testnet",
+  allAccountsBalance: {},
 
-    allAccountsBalance: {},
-
-    currentAccount: {
-        evmAddress: "",
-        accountName: "",
-        accountIndex: "",
-        nativeAddress: "",
-    },
-
-    pendingTransactionBalance: {}
-}
-
-export const externalControls = {
-    connectedApps: {},
-    activeSession: null,
-    connectionQueue: []
-}
-
-
-export const newAccountInitialState = {
-    mnemonic: "",
+  currentAccount: {
     evmAddress: "",
     accountName: "",
     accountIndex: "",
-    nativeAddress: "",
-    evmPrivateKey: "",
-}
+    nativeAddress: ""
+  },
+
+  pendingTransactionBalance: {}
+};
+
+export const externalControls = {
+  connectedApps: {},
+  activeSession: null,
+  connectionQueue: []
+};
+
+export const newAccountInitialState = {
+  mnemonic: "",
+  evmAddress: "",
+  accountName: "",
+  accountIndex: "",
+  nativeAddress: "",
+  evmPrivateKey: ""
+};
 
 //initial state for external native transaction
 export const initialExternalNativeTransaction = {
-    method: "",
-    fee: "",
-    args: "",
-    txHash: ""
-}
+  method: "",
+  fee: "",
+  args: "",
+  txHash: ""
+};
 
 //initial state for current active window and active tab
 export const windowAndTabState = {
-    windowId: 0,
-    tabDetails: {
-        origin: "",
-        url: "",
-        tabId: 0,
-    }
-}
+  windowId: 0,
+  tabDetails: {
+    origin: "",
+    url: "",
+    tabId: 0
+  }
+};
 
 // initial state for transaction queue
 export const transactionQueue = (() => {
-    const queues = {};
-    Object.values(NETWORK).forEach((item) => {
-        queues[item.toLowerCase()] = {
-            txQueue: [],
-            currentTransaction: null
-        }
-    });
-    return queues;
+  const queues = {};
+  Object.values(NETWORK).forEach((item) => {
+    queues[item.toLowerCase()] = {
+      txQueue: [],
+      currentTransaction: null
+    };
+  });
+  return queues;
 })();

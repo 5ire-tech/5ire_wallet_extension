@@ -8,10 +8,8 @@ import Info from "../../Assets/infoIcon.svg";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import SmallLogo from "../../Assets/smallLogo.svg";
-// import { isEmpty } from "../../Utility/utility";
 import ComplSwap from "../../Assets/succeslogo.svg";
 import React, { useState, useContext } from "react";
-// import WalletCardLogo from "../../Assets/walletcardLogo.svg";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
@@ -26,9 +24,9 @@ import {
   MESSAGE_TYPE_LABELS,
   EXISTENTIAL_DEPOSITE,
   MESSAGE_EVENT_LABELS,
+  MESSAGES
 } from "../../Constants/index";
 import { log } from "../../Utility/utility";
-
 
 function Swap() {
   const [isEd, setEd] = useState(true);
@@ -42,7 +40,9 @@ function Swap() {
   const [toFrom, setToFrom] = useState({ from: NATIVE, to: EVM });
   const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
   const { allAccountsBalance, pendingTransactionBalance, currentNetwork, currentAccount } = state;
-  const [balance, setBalance] = useState(allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]);
+  const [balance, setBalance] = useState(
+    allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
+  );
 
   //Reset the amount and error when to and from changes
   useEffect(() => {
@@ -54,11 +54,14 @@ function Swap() {
 
   useEffect(() => {
     setBalance(allAccountsBalance[currentAccount?.evmAddress][currentNetwork?.toLowerCase()]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.nativeBalance,
-    currentAccount?.evmAddress, currentNetwork
+    currentAccount?.evmAddress,
+    currentNetwork,
+    allAccountsBalance
   ]);
 
   useEffect(() => {
@@ -66,7 +69,6 @@ function Swap() {
       setError("");
     }
   }, [amount, estimatedGas]);
-
 
   useEffect(() => {
     if (
@@ -77,14 +79,11 @@ function Swap() {
     } else {
       setMaxDisabled(false);
     }
-
   }, [balance?.evmBalance, balance?.nativeBalance, toFrom?.from]);
-
 
   //Get fee if to and amount is present
   useEffect(() => {
-
-    if ((amount && !error && !estimatedGas)) {
+    if (amount && !error && !estimatedGas) {
       const getData = setTimeout(() => {
         getFee();
       }, 1000);
@@ -95,14 +94,19 @@ function Swap() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amount, error, isEd, toFrom?.from, estimatedGas]);
 
-
   //Check for Insufficent balance
   useEffect(() => {
     if (!estimatedGas) setDisable(true);
     else {
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
         if (estimatedGas && !amount && maxClicked) {
-          const value = Number(balance?.evmBalance) - (Number(estimatedGas) + EXTRA_FEE + (isEd ? EXISTENTIAL_DEPOSITE : 0) + pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm);
+          const value =
+            Number(balance?.evmBalance) -
+            (Number(estimatedGas) +
+              EXTRA_FEE +
+              (isEd ? EXISTENTIAL_DEPOSITE : 0) +
+              pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
+                .evm);
 
           setAmount(Number(value) >= 1 ? value : "");
           updateEstimatedGas(Number(value) >= 1 ? estimatedGas : null);
@@ -111,19 +115,18 @@ function Swap() {
           setMaxClicked(false);
 
           return;
-
-        }
-        else if ((Number(amount) + (Number(estimatedGas)) + (isEd ? EXISTENTIAL_DEPOSITE : 0)) > (Number(balance?.evmBalance) - pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm)) {
-
+        } else if (
+          Number(amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0) >
+          Number(balance?.evmBalance) -
+            pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
+        ) {
           setDisable(true);
           updateEstimatedGas(null);
           setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
-
         } else {
           setDisable(false);
           setError("");
         }
-
       } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
         if (estimatedGas && !amount && maxClicked) {
 
@@ -139,70 +142,90 @@ function Swap() {
 
           // setError(amount > 0 ? "" : ERROR_MESSAGES.INSUFFICENT_BALANCE);
           return;
-
         }
-        if ((Number(amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0)) > (Number(balance?.nativeBalance) - pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native)) {
+        if (
+          Number(amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0) >
+          Number(balance?.nativeBalance) -
+            pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
+              .native
+        ) {
           setDisable(true);
           updateEstimatedGas(null);
           setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
-
         } else {
           setDisable(false);
           setError("");
         }
-
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [estimatedGas, amount, balance?.nativeBalance, isEd, toFrom.from, balance?.evmBalance]);
 
-  const blockInvalidChar = e => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
-
+  const blockInvalidChar = (e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
 
   //validate amount
   const validateAmount = () => {
-
-    if (amount.length === 0)
-      setError(ERROR_MESSAGES.INPUT_REQUIRED);
-
-    else if (isNaN(amount))
-      setError(ERROR_MESSAGES.ENTER_AMOUNT_CORRECTLY);
-
-    else if (Number(amount) < 1)
-      setError(ERROR_MESSAGES.AMOUNT_CANT_LESS_THEN_ONE);
-
+    if (amount.length === 0) setError(ERROR_MESSAGES.INPUT_REQUIRED);
+    else if (isNaN(amount)) setError(ERROR_MESSAGES.ENTER_AMOUNT_CORRECTLY);
+    else if (Number(amount) < 1) setError(ERROR_MESSAGES.AMOUNT_CANT_LESS_THEN_ONE);
     // else if (Number(amount) <= 0)
     //   setError(ERROR_MESSAGES.AMOUNT_CANT_BE_0);
-
     else if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
-
-      if (Number(amount) >= (Number(balance?.evmBalance) - pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm))
+      if (
+        Number(amount) >=
+        Number(balance?.evmBalance) -
+          pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
+      )
         setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
-
-      else
-        setError("");
-    }
-
-    else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
-
-      if (Number(amount) >= (Number(balance?.nativeBalance) - pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native))
+      else setError("");
+    } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
+      if (
+        Number(amount) >=
+        Number(balance?.nativeBalance) -
+          pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native
+      )
         setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
-
-      else
-        setError("");
+      else setError("");
     }
   };
 
   //Perform swap
-  const handleApprove = async (e) => {
+  const handleApprove = async () => {
     try {
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP, { value: amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SWAP, isEvm: true, to: LABELS.EVM_TO_NATIVE, fee: estimatedGas} });
+        sendRuntimeMessage(
+          MESSAGE_TYPE_LABELS.INTERNAL_TX,
+          MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP,
+          {
+            value: amount,
+            options: {
+              account: state.currentAccount,
+              network: state.currentNetwork,
+              type: TX_TYPE.SWAP,
+              isEvm: true,
+              to: LABELS.EVM_TO_NATIVE,
+              fee: estimatedGas
+            }
+          }
+        );
         setIsModalOpen(true);
         // updateEstimatedGas(null)
-
       } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP, { value: amount, options: { account: state.currentAccount, network: state.currentNetwork, type: TX_TYPE.SWAP, isEvm: false, to: LABELS.NATIVE_TO_EVM, fee: estimatedGas} });
+        sendRuntimeMessage(
+          MESSAGE_TYPE_LABELS.INTERNAL_TX,
+          MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP,
+          {
+            value: amount,
+            options: {
+              account: state.currentAccount,
+              network: state.currentNetwork,
+              type: TX_TYPE.SWAP,
+              isEvm: false,
+              to: LABELS.NATIVE_TO_EVM,
+              fee: estimatedGas
+            }
+          }
+        );
         setIsModalOpen(true);
         // updateEstimatedGas(null);
       }
@@ -215,25 +238,27 @@ function Swap() {
 
   //for getting the fee details
   const getFee = async (loader = true) => {
-    if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase() && Number(balance?.nativeBalance) > 0) {
+    if (
+      toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase() &&
+      Number(balance?.nativeBalance) > 0
+    ) {
       loader && updateLoading(true);
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE,
-        {
-          value: amount ? amount : balance?.nativeBalance,
-          options: {
-            account: state.currentAccount
-          }
-        });
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, {
+        value: amount ? amount : balance?.nativeBalance,
+        options: {
+          account: state.currentAccount
+        },
+        isEd
+      });
     } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase() && balance?.evmBalance) {
       loader && updateLoading(true);
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE,
-        {
-          value: amount ? amount : balance?.evmBalance,
-          options: {
-            account: state.currentAccount
-          }
-        }
-      );
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {
+        value: amount ? amount : balance?.evmBalance,
+        options: {
+          account: state.currentAccount
+        },
+        isEd
+      });
     }
 
     updateEstimatedGas(null);
@@ -245,7 +270,6 @@ function Swap() {
     const arr = val.split(".");
 
     if (arr.length > 1) {
-
       if (arr[1].length > 18) {
         let slice = arr[1].slice(0, 18);
         setAmount(arr[0] + "." + slice);
@@ -255,8 +279,7 @@ function Swap() {
           updateEstimatedGas(null);
         }
       }
-    }
-    else {
+    } else {
       if (amount !== val) {
         setAmount(val);
         updateEstimatedGas(null);
@@ -266,7 +289,7 @@ function Swap() {
 
   //Perform action on click of Enter
   const handleEnter = (e) => {
-    if ((e.key === LABELS.ENTER)) {
+    if (e.key === LABELS.ENTER) {
       if (!disableBtn) {
         handleApprove();
       }
@@ -282,19 +305,14 @@ function Swap() {
     updateEstimatedGas(null);
   };
 
-
   //Set To and from
   const handleClick = () => {
-
-    if (toFrom.from.toLowerCase() === EVM.toLowerCase()) { }
     setToFrom({ from: NATIVE, to: EVM });
 
-    if (toFrom.from.toLowerCase() === NATIVE.toLowerCase())
-      setToFrom({ from: EVM, to: NATIVE });
+    if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) setToFrom({ from: EVM, to: NATIVE });
 
     setAmount("");
     updateEstimatedGas(null);
-
   };
 
   //set the ED toggler state
@@ -307,19 +325,21 @@ function Swap() {
 
   //performs action when user click on max button
   const handleMaxClick = () => {
-    setMaxClicked(true)
+    setMaxClicked(true);
     setAmount("");
     setError("");
     getFee();
-  }
+  };
 
   const suffix = (
-    <button disabled={isMaxDisabled} className="maxBtn" onClick={handleMaxClick}>Max</button>
+    <button disabled={isMaxDisabled} className="maxBtn" onClick={handleMaxClick}>
+      Max
+    </button>
   );
 
   return (
     <>
-      <div className={style.swap} onKeyDown={handleEnter} >
+      <div className={style.swap} onKeyDown={handleEnter}>
         <div className={style.swap__swapCopy}>
           <div className={style.swap__swapSec}>
             <h3>From {toFrom.from}</h3>
@@ -346,14 +366,15 @@ function Swap() {
               keyDown={blockInvalidChar}
               placeholderBaseColor={true}
               placeholder={"Enter Amount"}
-              onDrop={e => { e.preventDefault() }}
+              onDrop={(e) => {
+                e.preventDefault();
+              }}
               addonAfter={
                 <span className={style.swap__pasteText}>
                   <img src={SmallLogo} alt="walletLogo" draggable={false} />
                   5ire
                 </span>
               }
-
             />
             <p className="errorText">{error}</p>
 
@@ -364,10 +385,9 @@ function Swap() {
         </div>
         <div className={style.swap__txFeeBalance}>
           <h2>{estimatedGas ? `TX Fee : ${estimatedGas} 5IRE` : ""}</h2>
-
         </div>
         <div className={style.swap__inFoAccount}>
-          <Tooltip title="5ireChain requires a minimum of 1 5ire to keep your wallet active">
+          <Tooltip title={MESSAGES.ED}>
             <img src={Info} alt="infoImage" />
           </Tooltip>
           <h3>Transfer with account keep alive checks </h3>
@@ -379,13 +399,11 @@ function Swap() {
       </div>
       <Approve onClick={handleApprove} text="Swap" isDisable={disableBtn} />
 
-
       <ModalCustom
         isModalOpen={isModalOpen}
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
-        centered
-      >
+        centered>
         <div className="swapsendModel">
           <div className="innerContact">
             <img src={ComplSwap} alt="swapIcon" width={127} height={127} draggable={false} />
@@ -401,8 +419,7 @@ function Swap() {
         isModalOpen={isFaildOpen}
         handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
-        centered
-      >
+        centered>
         <div className="swapsendModel">
           <div className="innerContact">
             <img src={FaildSwap} alt="swapFaild" width={127} height={127} draggable={false} />

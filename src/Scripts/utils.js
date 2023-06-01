@@ -1,7 +1,7 @@
+import { v4 as uuid4 } from "uuid";
 import Browser from "webextension-polyfill";
 import { EMTY_STR, VALIDATOR_NOMINATOR_METHOD } from "../Constants";
 import { isNullorUndef } from "../Utility/utility";
-import { v4 as uuid4 } from 'uuid';
 
 export const getUrlOrigin = (url) => {
   return new URL(url).origin;
@@ -14,7 +14,6 @@ export const getCurrentTabDetails = async () => {
   if (!tabsDetails[0]?.url) return null;
   return { tabId: tabsDetails[0]?.id, tabUrl: getUrlOrigin(tabsDetails[0]?.url) };
 };
-
 
 //bind the noExponents function with the Number Constructor
 export const bindNoExponentWithNumber = () => {
@@ -37,31 +36,32 @@ export const bindNoExponentWithNumber = () => {
       while (mag--) z += "0";
       return str + z;
     } catch (error) {
-
+      console.log("Exponent error", error);
     }
   };
-}
+};
 
 export const isManifestV3 = Browser.runtime.getManifest().manifest_version === 3;
 
 //tx notification message generator
 export const txNotificationStringTemplate = (status, hash, showHashLength = 30) => {
-  return (`Transaction ${status.toLowerCase()} ${hash.slice(0, showHashLength)}...`);
-}
+  return `Transaction ${status.toLowerCase()} ${hash.slice(0, showHashLength)}...`;
+};
 
 //check if app is already is connected
 export const isAlreadyConnected = (connectedApps, origin) => {
   return isNullorUndef(connectedApps[origin]) ? false : connectedApps[origin].isConnected;
-}
+};
 
 //get uuid
 export const getUUID = () => {
   return uuid4();
-}
+};
 
 //get the amount and method
 export const getFormattedMethod = (method, message) => {
-  let methodName = "", amount;
+  let methodName = "",
+    amount;
   switch (method) {
     case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_NOMINATOR:
       methodName = "Add Nominator";
@@ -134,11 +134,10 @@ export const getFormattedMethod = (method, message) => {
       methodName = "Restart Validator";
       break;
     default:
-
   }
 
   //init the balance with zero if balance not found
   amount = amount || 0;
 
-  return { methodName, amount }
-}
+  return { methodName, amount };
+};

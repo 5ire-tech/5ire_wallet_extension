@@ -13,24 +13,22 @@ import {
   EMTY_STR,
   ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
-  MESSAGE_EVENT_LABELS,
+  MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
 
 function ForgotPassword() {
-
   const [isDisable, setDisable] = useState(true);
-
   const [data, setData] = useState({
     pass: EMTY_STR,
     confirmPass: EMTY_STR,
     key: EMTY_STR,
-    accName: EMTY_STR,
+    accName: EMTY_STR
   });
   const [error, setError] = useState({
     pass: EMTY_STR,
     confirmPass: EMTY_STR,
     key: EMTY_STR,
-    accName: EMTY_STR,
+    accName: EMTY_STR
   });
 
   useEffect(() => {
@@ -46,8 +44,16 @@ function ForgotPassword() {
     )
       setDisable(false);
     else setDisable(true);
-
-  }, [error.key, error.pass, error.confirmPass, error.accName, data.key, data.pass, data.confirmPass, data.accName]);
+  }, [
+    error.key,
+    error.pass,
+    error.confirmPass,
+    error.accName,
+    data.key,
+    data.pass,
+    data.confirmPass,
+    data.accName
+  ]);
 
   useEffect(() => {
     if (data.confirmPass === data.pass || data.pass === EMTY_STR)
@@ -60,7 +66,7 @@ function ForgotPassword() {
     setData((p) => {
       return {
         ...p,
-        [e.target.name]: e.target.value,
+        [e.target.name]: e.target.value
       };
     });
   };
@@ -94,38 +100,28 @@ function ForgotPassword() {
 
   //check Mnemonic
   const validateKey = () => {
-    if (isEmpty(data.key)) {
-      setError((p) => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
-      // setDisable(true);
-    } else if (!validateMnemonic(data.key.trim())) {
+    if (isEmpty(data.key)) setError((p) => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
+    else if (!validateMnemonic(data.key.trim()))
       setError((p) => ({ ...p, key: ERROR_MESSAGES.INVALID_MNEMONIC }));
-      // setDisable(true);
-    } else {
-      setError((p) => ({ ...p, key: EMTY_STR }));
-    }
+    else setError((p) => ({ ...p, key: EMTY_STR }));
   };
 
   const validateAccName = () => {
-    if (data.accName.trim().length < 2 || data.accName.trim().length >= 16) {
+    if (data.accName.trim().length < 2 || data.accName.trim().length >= 16)
       setError((p) => ({
         ...p,
-        accName: ERROR_MESSAGES.INPUT_BETWEEN_2_TO_18,
+        accName: ERROR_MESSAGES.INPUT_BETWEEN_2_TO_18
       }));
-      // setDisable(true);
-    } else if (!REGEX.WALLET_NAME.test(data.accName)) {
+    else if (!REGEX.WALLET_NAME.test(data.accName))
       setError((p) => ({
         ...p,
-        accName: ERROR_MESSAGES.ALPHANUMERIC_CHARACTERS,
+        accName: ERROR_MESSAGES.ALPHANUMERIC_CHARACTERS
       }));
-      // setDisable(true);
-    } else {
-      setError((p) => ({ ...p, accName: "" }));
-      // setDisable(false);
-    }
+    else setError((p) => ({ ...p, accName: "" }));
   };
 
   const handleSubmit = (e) => {
-    if ((e.key === LABELS.ENTER) || (e.key === undefined)) {
+    if (e.key === LABELS.ENTER || e.key === undefined) {
       if (
         !error.key &&
         !error.pass &&
@@ -142,7 +138,7 @@ function ForgotPassword() {
           {
             password: data.pass,
             opts: { mnemonic: data.key.trim(), name: data.accName.trim() },
-            type: "forgot",
+            type: "forgot"
           }
         );
 
@@ -152,14 +148,14 @@ function ForgotPassword() {
   };
 
   return (
-
     <div className={style.cardWhite} onKeyDown={handleSubmit}>
       <MenuRestofHeaders logosilver={true} title="5ire Wallet" backTo={ROUTES.UNLOACK_WALLET} />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Forgot password</h1>
         </div>
-        <div className={`${style.cardWhite__importWalletlinkOuter} ${style.cardWhite__forgotPassword}`}>
+        <div
+          className={`${style.cardWhite__importWalletlinkOuter} ${style.cardWhite__forgotPassword}`}>
           <div>
             <InputFieldOnly
               name="accName"
@@ -168,11 +164,11 @@ function ForgotPassword() {
               keyUp={validateAccName}
               placeholderBaseColor={true}
               placeholder={"Enter wallet name"}
-              onDrop={e => { e.preventDefault() }}
+              onDrop={(e) => {
+                e.preventDefault();
+              }}
             />
-            <p className={style.errorText}>
-              {error?.accName ? error.accName : ""}
-            </p>
+            <p className={style.errorText}>{error?.accName ? error.accName : ""}</p>
           </div>
           <div className="inputFieldOnly">
             <TextArea
@@ -193,7 +189,9 @@ function ForgotPassword() {
               onChange={handleChange}
               placeholderBaseColor={true}
               placeholder={"Enter New Password"}
-              onDrop={e => { e.preventDefault() }}
+              onDrop={(e) => {
+                e.preventDefault();
+              }}
             />
             <p className={style.errorText}>{error?.pass ? error.pass : ""}</p>
           </div>
@@ -205,11 +203,11 @@ function ForgotPassword() {
               placeholderBaseColor={true}
               keyUp={validateConfirmPass}
               placeholder={"Confirm Password"}
-              onDrop={e => { e.preventDefault() }}
+              onDrop={(e) => {
+                e.preventDefault();
+              }}
             />
-            <p className={style.errorText}>
-              {error?.confirmPass ? error.confirmPass : ""}
-            </p>
+            <p className={style.errorText}>{error?.confirmPass ? error.confirmPass : ""}</p>
           </div>
           <div className={`${style.setPassword__footerbuttons}${style.setPassword__forGotBtn}`}>
             <ButtonComp text={"Change"} onClick={handleSubmit} isDisable={isDisable} />

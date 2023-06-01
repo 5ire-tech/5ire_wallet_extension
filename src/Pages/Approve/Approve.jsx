@@ -7,9 +7,7 @@ function Approve({ onClick, text = "Approve", isDisable }) {
     <div>
       {" "}
       <div className={style.approveBtn}>
-        {/* <ButtonComp bordered={true} text={"Cancel"} maxWidth={"100%"} /> */}
-
-        <ButtonComp onClick={onClick} text={text} maxWidth={"100%"} isDisable={isDisable}/>
+        <ButtonComp onClick={onClick} text={text} maxWidth={"100%"} isDisable={isDisable} />
       </div>
     </div>
   );
