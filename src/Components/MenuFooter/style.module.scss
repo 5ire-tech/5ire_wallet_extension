@@ -1,7 +1,7 @@
 @import "../../styles/__vars.scss";
 
 .menuItems {
-  padding: 24px 28px;
+  padding: 14px 28px;
   box-shadow: 0px 3px 8px #223f7017;
   //   border: 1px solid #c4d7f8;
   background-color: #0f2046;
@@ -9,6 +9,10 @@
   align-items: center;
   justify-content: space-around;
   gap: 20px;
+  position: fixed;
+  bottom: 0;
+  max-width: 347px;
+  width: 100%;
 
   &__items {
     display: flex;
@@ -22,6 +26,7 @@
     color: $gray;
     text-decoration: none;
     transition: 0.3s all;
+    opacity: 50%;
 
     &__active,
     &:hover {
@@ -29,17 +34,22 @@
         filter: none;
       }
 
-      span {
-        color: $baseText-00AEEF;
-      }
+      // span {
+      //   color: $baseText-00AEEF;
+      // }
     }
 
     &__img {
       // filter: grayscale(1);
     }
 
+    &__active {
+      opacity: 100%;
+    }
+
     span {
-      color: #00aeef;
+      color: #ECF4FF;
+      font-size: 11px;
     }
   }
 
@@ -64,20 +74,30 @@
     display: flex;
     justify-content: space-between;
     width: 100%;
-    gap: 67px;
-    border-top: 1px solid #404058;
-    padding: 16px 37px;
+    gap: 18px;
+    // border-top: 1px solid #404058;
+    padding: 16px 23px;
+    padding-bottom: 30px;
   }
 
   &__cancleContinue1 {
     display: flex;
     justify-content: space-between;
-
-    gap: 67px;
-    border-top: 1px solid #404058;
+flex-direction: column;
+    gap: 23px;
     padding: 16px 37px;
+    position: fixed;
+    bottom: 0;
+    max-width: 336px;
+    width: 100%;
   }
 }
+
+// .aproveBtn{
+//   flex-direction: column;
+//   width: 100%;
+//   gap: 23;
+// }
 
 .sttings {
   display: flex;
@@ -86,6 +106,7 @@
   padding: 14px 16px;
   align-items: center;
   border-radius: 10px;
+  cursor: pointer;
 
   &__left {
     display: flex;
@@ -108,7 +129,7 @@
 }
 
 .noTxn {
-  color: white;
+  color: rgb(255, 255, 255);
   text-align: center;
 }
 
@@ -125,7 +146,23 @@
   justify-content: center;
 
   img {
-    width: 16px;
-    height: 14px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.beginStyle {
+  flex-direction: column;
+  gap: 23px;
+}
+
+.footerPrivacy {
+  padding-bottom: 32px;
+  cursor: pointer;
+
+  a {
+    color: $gray-8FA2B7;
+    font-size: 14px;
+    text-decoration: none;
   }
 }

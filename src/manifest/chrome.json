@@ -1,7 +1,7 @@
 {
-  "name": "5irechain Wallet",
-  "description": "5irechain wallet in your browser compatible with both Native and EVM chains.",
-  "version": "0.1.3",
+  "name": "5ire Wallet",
+  "description": "5ire Wallet in your browser compatible with both Native and EVM chains.",
+  "version": "0.1.4",
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html",
@@ -12,30 +12,15 @@
     "48": "logo192.png",
     "128": "logo192.png"
   },
-  "permissions": [
-    "activeTab",
-    "clipboardWrite",
-    "notifications",
-    "scripting",
-    "storage",
-    "tabs"
-  ],
-  "host_permissions": [
-    "http://*/",
-    "https://*/"
-  ],
+  "permissions": ["activeTab", "clipboardWrite", "notifications", "scripting", "storage", "tabs"],
+  "host_permissions": ["http://*/", "https://*/"],
   "background": {
     "service_worker": "static/js/background.js"
   },
   "content_scripts": [
     {
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ],
-      "js": [
-        "static/js/content.js"
-      ],
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["static/js/content.js"],
       "all_frames": false,
       "run_at": "document_end"
     }
@@ -46,7 +31,7 @@
         "default": "Ctrl+Shift+K",
         "mac": "MacCtrl+Shift+K"
       },
-      "description": "Opens hello.html"
+      "description": "Opens popup.html"
     }
   },
   "content_security_policy": {

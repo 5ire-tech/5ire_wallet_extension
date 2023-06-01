@@ -1,99 +1,119 @@
+import React, { useEffect, useState, useContext, useCallback } from "react";
+import { Link } from "react-router-dom";
+import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
 import useAuth from "../../Hooks/useAuth";
-import { INPUT } from "../../Constants/index";
+import { AuthContext } from "../../Store";
+import { isEmpty } from "../../Utility/utility";
 import PlaceLogo from "../../Assets/PlaceLog.svg";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { decryptor } from "../../Helper/CryptoHelper";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import { setLogin, toggleLoader } from "../../Utility/redux_helper";
+import { sendRuntimeMessage } from "../../Utility/message_helper";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+import {
+  LABELS,
+  ERROR_MESSAGES,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS
+} from "../../Constants/index";
 
 function UnlockWelcome() {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const location = useLocation();
   const { verifyPass } = useAuth();
-  const [data, setData] = useState("");
-  const [errMsg, setErrorMsg] = useState("");
+  const [pass, setPass] = useState("");
   const [isDisable, setDisable] = useState(true);
-  const { isLogin } = useSelector(state => state.auth);
-
+  const { state, inputError, setInputError } = useContext(AuthContext);
+  const { vault } = state;
 
   useEffect(() => {
-    if (errMsg || !data) {
+    if (inputError || !pass) {
       setDisable(true);
     } else {
       setDisable(false);
     }
-  }, [errMsg, data]);
+  }, [inputError, pass]);
 
-  const handleChange = (e) => {
-    setData(e.target.value);
-    setErrorMsg("");
-  };
+  const handleChange = useCallback((e) => {
+    setPass(e.target.value);
+    setInputError("");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const validateInput = () => {
-    if (data.length === 0) {
-      setErrorMsg(INPUT.REQUIRED);
+  const validateInput = useCallback(() => {
+    if (isEmpty(pass)) {
+      setInputError(ERROR_MESSAGES.INPUT_REQUIRED);
       setDisable(true);
     }
-
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pass]);
 
   const handleClick = async (e) => {
+    if (e.key === LABELS.ENTER || e.key === undefined) {
+      if (state?.pass && state?.oldAccounts && pass && !inputError) {
+        const passRes = await verifyPass(pass, state.pass);
 
-    if ((e.key === "Enter") || (e.key === undefined)) {
-      dispatch(toggleLoader(true));
+        if (!passRes.error) {
+          if (state?.oldAccounts.length > 0) {
+            const oldAccDetails = [];
 
-      let res = await verifyPass(data);
-      dispatch(toggleLoader(false));
-
-      if (!res.error) {
-        if (isLogin !== true)
-          dispatch(setLogin(true));
-        navigate(location.state?.redirectRoute || "/wallet");
-      }
-
-      else {
-        setErrorMsg(res.data);
-        setDisable(true);
+            for (let i = 0; i < state.oldAccounts.length; i++) {
+              oldAccDetails.push({
+                mnemonic: decryptor(state?.oldAccounts[i].temp1m, state?.pass),
+                accountName: state?.oldAccounts[i]?.accountName
+              });
+            }
+            sendRuntimeMessage(
+              MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+              MESSAGE_EVENT_LABELS.RECOVER_OLD_ACCOUNTS,
+              { password: pass, oldAccDetails, opts: {} }
+            );
+          }
+        } else {
+          setInputError(passRes.data);
+        }
+      } else if (pass && !inputError) {
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.UNLOCK, {
+          password: pass,
+          vault: vault
+        });
       }
     }
   };
 
   return (
     <div className={style.cardWhite} onKeyDown={handleClick}>
-      <MenuRestofHeaders logosilver={false} title="5irechain Wallet" />
+      <MenuRestofHeaders logosilver={false} title="5ire Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__centerLogo}>
           <div className={style.cardWhite__cardInner__innerLogocontact}>
             <img src={PlaceLogo} alt="placeLogo" draggable={false} />
             <div className={style.cardWhite__cardInner__innercontact}>
               <h1>Welcome Back!</h1>
-              {/* <span>The Decentralized Web Awaits</span> */}
             </div>
           </div>
         </div>
-        <div className={style.cardWhite__linkOuter}>
-          <InputFieldSimple
-            // type="password"
-            name={"key"}
-            onChange={handleChange}
-            placeholder={"Enter Password"}
-            placeholderBaseColor={true}
-            keyUp={validateInput}
-            coloredBg={true}
-          />
-          <p className={style.errorText}>{errMsg ? errMsg : ""}</p>
+        <div className={style.cardWhite__importWalletlinkOuter}>
+          <div>
+            <InputFieldSimple
+              name={"key"}
+              coloredBg={true}
+              keyUp={validateInput}
+              onChange={handleChange}
+              placeholderBaseColor={true}
+              placeholder={"Enter Password"}
+              onDrop={(e) => {
+                e.preventDefault();
+              }}
+            />
+            <p className={style.errorText}>{inputError ? inputError : ""}</p>
+          </div>
+          <div className={style.forgotLink}>
+            <Link to={ROUTES.FORGOT_PASSWORD}>Forgot password?</Link>
+          </div>
         </div>
         <div className={style.setPassword__footerbuttons}>
           <ButtonComp onClick={handleClick} text={"Unlock"} isDisable={isDisable} />
         </div>
-        {/* <div className={style.forgotLink}>
-          <Link to="">Forgot password?</Link>
-        </div> */}
       </div>
     </div>
   );

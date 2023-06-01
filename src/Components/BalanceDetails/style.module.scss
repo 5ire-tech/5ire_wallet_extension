@@ -1,10 +1,13 @@
 @import "../../styles/__vars.scss";
+
 .balanceDetails {
   // margin-bottom: 18px;
   text-align: center;
+
   &__cardCurrencyDetails {
     background: transparent;
   }
+
   &__addTokensBTn {
     display: flex;
     align-items: center;
@@ -21,88 +24,118 @@
     text-decoration: none;
     white-space: nowrap;
   }
+
   &__selectStyle {
     display: flex;
     align-items: center;
     justify-content: center;
   }
+
   &__innerBalance {
     background-image: url("../../Assets/PNG/WalletBg.png");
     background-position: center;
     background-size: cover;
-    padding: 20px 24px;
+    padding: 12px 24px;
+
     &__totalBalnce {
       p {
         color: $white;
-        font-size: 18px;
+        font-size: 14px;
         font-weight: 600;
         display: flex;
         align-items: center;
         gap: 8px;
+        cursor: pointer;
+
         span {
-          font-size: 24px;
+          font-size: 22px;
+          display: flex;
         }
       }
     }
+
     &__chainBalance {
       display: flex;
       gap: 20px;
       padding-top: 8px;
     }
+
     &__walletQa {
       img {
         cursor: pointer;
       }
     }
+
     &__balanceName {
       display: flex;
       flex-direction: column;
       text-align: left;
       gap: 8px;
+      cursor: pointer;
+
       p {
         color: #f7faff;
         font-size: 10px;
         white-space: nowrap;
       }
+
       h3 {
         color: #f7faff;
-        display: flex;
-        gap: 8px;
-        font-size: 18px;
+        font-size: 16px;
+        display: inline-block;
+        width: 112px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
+
     &__balanceCard {
       background-image: url("../../Assets/PNG/walletInnerCard.png");
       background-position: center;
       background-size: cover;
       padding: 10px;
-      gap: 8px;
+      // gap: 8px;
       display: flex;
-      align-items: flex-end;
+      // align-items: flex-end;
       border-radius: 6px;
+      width: 100%;
+      max-width: 163px;
     }
   }
+
   &__nativemodal {
     padding: 25px 14px;
+
     &__scanner {
       background: $white;
       padding: 15px;
       border-radius: 8px;
     }
+
+    &__logoFlex {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+
     &__innerContact {
       display: flex;
       flex-direction: column;
       gap: 10px;
       align-items: center;
     }
+
     &__title {
       background: linear-gradient(91.26deg, #0071ff 0%, #54f0d1 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       text-fill-color: transparent;
-      font-size: 24px;
+      font-size: 20px;
     }
+
     &__modalOr {
       background-color: #dfe2e4;
       height: 1px;
@@ -110,6 +143,7 @@
       width: 100%;
       position: relative;
       margin-top: 8px;
+
       p {
         color: $white;
         font-size: 12px;
@@ -120,70 +154,87 @@
         padding: 3px;
       }
     }
+
     &__addressText {
       color: $white;
       font-size: 14px;
       padding-top: 12px;
     }
+
     &__wrapedText {
+      margin-top: 8px;
+
       p {
         color: $white;
         font-size: 14px;
         display: flex;
         gap: 6px;
         word-break: break-all;
+        text-align: center;
+        align-items: center;
+
         img {
           cursor: pointer;
         }
       }
     }
+
     &__footerbuttons {
       width: 100%;
       padding-top: 20px;
     }
   }
+
   &__conectedSec {
     padding: 15px 37px;
     box-shadow: inset 0px -1px 0px #707070;
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     &__connectedField {
       color: $white;
       font-size: 12px;
       display: flex;
       gap: 8px;
     }
+
     &__textConatct {
       p {
         color: $white;
         font-size: 15px;
       }
+
       span {
         color: $white;
         font-size: 14px;
       }
     }
   }
+
   &__multiSwapBtn {
-    padding: 30px 37px;
+    padding: 18px 80px;
     padding-bottom: 0;
   }
+
   &__sendSwapbtn {
     display: flex;
     border-radius: 12px;
     background: #0e1e41;
     border: 1px solid #102658;
+    padding: 3px;
+
     &__buttons {
       background: #0e1e41;
       // border-radius: 12px 0 0px 12px;
       width: 100%;
-      border-radius: 12px;
+      border-radius: 7px;
       cursor: pointer;
       color: $white;
       border: 0;
       font-size: 15px;
-      padding: 14px;
+      padding: 8px;
+
       &__active {
         background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
         // border: 1px solid rgba(255, 255, 255, 0.5);
@@ -192,32 +243,70 @@
       }
     }
   }
+
   &__accountName {
     text-align: left;
+
+    &:hover {
+      padding: 10px;
+      border-radius: 22px;
+      background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
+      transition: 0.3s all;
+    }
+
     p {
       color: $white;
       font-size: 15px;
       // text-transform: capitalize;
       display: flex;
       gap: 6px;
+      cursor: pointer;
     }
+
     span {
       color: $white;
       font-size: 14px;
     }
   }
+
+  &__accountName1 {
+    text-align: left;
+
+    p {
+      color: $white;
+      font-size: 15px;
+      // text-transform: capitalize;
+      display: inline-block;
+      max-width: 180px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      img{
+        padding-right: 5px;
+      }
+    }
+
+    span {
+      color: $white;
+      font-size: 14px;
+    }
+  }
+
   &__decoratedSec {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 10px 24px;
+    background-color: $baseColor-Text2;
   }
+
   &__title {
     font-size: 24px;
     color: $white;
     font-weight: 900;
     margin-bottom: 16px;
   }
+
   &__itemsOuter {
     display: flex;
     align-items: center;
@@ -225,6 +314,7 @@
     gap: 10px;
     padding: 0 28px;
   }
+
   &__items {
     display: flex;
     flex-direction: column;
@@ -236,6 +326,7 @@
     font-weight: bold;
     text-decoration: none;
     cursor: pointer;
+
     &__whiteText {
       min-width: 40px;
       text-decoration: none;
@@ -247,16 +338,19 @@
       color: $white;
       font-weight: bold;
       cursor: pointer;
+
       span {
         color: $white;
       }
     }
   }
+
   &__modal {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
     &__title {
       color: $baseColor-Text;
       font-size: 20px;
@@ -264,25 +358,27 @@
       margin-top: 7px;
       margin-bottom: 16px;
     }
+
     &__scanner {
       border-radius: 30px;
       background-color: $white;
       padding: 26px 31px;
       margin-bottom: 50px;
+
       img {
         width: 100%;
         max-width: 208px;
         height: 208px;
       }
     }
+
     &__wrapedText {
       max-width: 176px;
       padding: 12px 21px;
-      background: transparent
-        linear-gradient(180deg, #00aeef1a 0%, #367cc71a 100%) 0% 0% no-repeat
-        padding-box;
+      background: transparent linear-gradient(180deg, #00aeef1a 0%, #367cc71a 100%) 0% 0% no-repeat padding-box;
       border: 1px solid #00aeef;
       border-radius: 30px;
+
       span {
         margin-left: 7px;
         max-width: 112px;
@@ -298,6 +394,114 @@
     }
   }
 }
+
+.activeDis_Modal {
+  &__modalHeading {
+    border-bottom: 1px solid #202a41;
+    padding-bottom: 10px;
+
+    h3 {
+      font-size: 15px;
+      color: $white;
+    }
+
+    p {
+      font-size: 14px;
+      color: $white;
+      opacity: 0.7;
+    }
+  }
+
+  &__accountActive {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 0;
+    border-bottom: 1px solid #202a41;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  &__leftSec {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+
+    &__spanContact {
+      // max-width: 42px;
+      white-space: nowrap;
+      overflow: hidden;
+      // text-overflow: ellipsis;
+      display: inline-block;
+      // width: 100%;
+      -webkit-text-fill-color: unset !important;
+      background: initial !important;
+    }
+
+    &__accountConatct {
+      text-align: left;
+
+      h2 {
+        text-transform: capitalize;
+        font-size: 15px;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+      }
+
+      p {
+        color: #ffffff;
+        font-size: 14px;
+        opacity: 0.6;
+        cursor: pointer;
+        display: flex;
+      }
+
+      span {
+        background: -webkit-linear-gradient(#0071ff, #54f0d1);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-fill-color: transparent;
+        font-size: 14px;
+      }
+    }
+  }
+
+  &__rytSec {
+    display: flex;
+    gap: 13px;
+    max-width: 80px;
+    align-items: center;
+    // width: 100%;
+    padding-right: 10px;
+
+    h5 {
+      border: 1px solid #fff;
+      border-radius: 12px;
+      padding: 2px 5px;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 600;
+
+    }
+
+    h2 {
+      font-size: 13px;
+      color: #ffffff;
+    }
+  }
+}
+
 // .abc {
 //   background-color: red;
 // }
+.headerInfo {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}

@@ -1,69 +1,99 @@
 @import "../../styles/__vars.scss";
+
 .enterPassword {
-    .commonHeadeing {
-        margin-bottom: 30px;
-        h1 {
-            background: linear-gradient(91.26deg, #0071ff 0%, #54f0d1 100%);
-            background-clip: border-box;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-fill-color: transparent;
-            font-weight: 600;
-            font-size: 24px;
-            line-height: 28px;
-            margin: 0;
-          }
-          p{
-            color: #ffffff;
-        font-size: 16px;
-        line-height: 24px;
-        padding-top: 32px;
-          }
-    }
-    button{
-        margin-top: 100px;
+  .commonHeadeing {
+    margin-bottom: 30px;
+
+    h1 {
+      background: linear-gradient(91.26deg, #0071ff 0%, #54f0d1 100%);
+      background-clip: border-box;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
+      font-weight: 600;
+      font-size: 24px;
+      line-height: 28px;
+      margin: 0;
     }
 
+    p {
+      color: #ffffff;
+      font-size: 16px;
+      line-height: 24px;
+      padding-top: 32px;
+    }
+  }
+
+  button {
+    margin-top: 100px;
+  }
 }
+
 // manage Wallet
 .wallet {
   //   padding: 0 18px;
   margin-bottom: 16px;
- 
+
   &__addressInput {
     label {
-        color: #ffffff;
-        opacity: 0.6;
-        font-size: 12px;
-        width: 100%;
-        text-align: left;
-        display: inline-flex;
-        margin-bottom: 8px;
+      color: #ffffff;
+      opacity: 0.8;
+      font-size: 12px;
+      width: 100%;
+      text-align: left;
+      display: inline-flex;
+      margin-bottom: 8px;
+    }
+
+    &__privateCopyText {
+      span {
+        white-space: initial !important;
+        width: auto !important;
+        word-break: break-word !important;
       }
+    }
+
+    &__nativeChain {
+      span {
+        width: 300px !important;
+      }
+    }
+
     &__copyText {
-      background: $baseColor-Text2;
-      border-radius: 8px;
+      border: 1px solid #404058;
+      border-radius: 12px;
       padding: 16px 8px;
       display: flex;
       justify-content: space-between;
       gap: 15px;
       align-items: center;
+
       span {
-        color: #6a84a0;
+        color: #ffffff;
         font-size: 14px;
         word-break: break-all;
         text-align: left;
+        overflow: hidden;
+        white-space: nowrap;
+        // width: 150px;
       }
-      img{
+
+      img {
         cursor: pointer;
+        width: 13px;
       }
     }
   }
 }
-.btn_icon{
-  margin-top: 100px;
+
+.btn_icon {
+  margin-top: 85px;
+  display: flex;
+  flex-direction: column;
+  gap: 23px;
 }
+
 .mnemonicsButton {
   margin-bottom: 15px;
 }
@@ -71,5 +101,7 @@
 .errorText {
   text-align: left;
   color: $red;
-  margin-top: 10px;
+  position: absolute;
+  font-size: 12px;
+
 }

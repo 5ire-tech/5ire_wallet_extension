@@ -1,11 +1,11 @@
-// import Link from 'antd/es/typography/Link';
 import { Link } from "react-router-dom";
 import React from "react";
 import ticketcheck1 from "../../Assets/ArrowRightIcon.svg";
 import style from "./style.module.scss";
 
 function SettingList(props) {
-  const { setinglist, to,ticketcheck,onClick } = props;
+  const { setinglist, to, ticketcheck, onClick } = props;
+
   return (
     <>
       <div className={style.listItems}>
@@ -15,7 +15,7 @@ function SettingList(props) {
               <img src={ticketcheck} draggable={false} alt="ticketCheck" />
               <p>{setinglist}</p>
             </div>
-            <img src={ticketcheck1} heckdraggable={false} alt="ticketCheck" draggable={false}/>
+            <img src={ticketcheck1} alt="ticketCheck" draggable={false} />
           </div>
         </Link>
       </div>

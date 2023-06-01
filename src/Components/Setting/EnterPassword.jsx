@@ -1,88 +1,98 @@
+import { useContext } from "react";
+import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
-import useAuth from "../../Hooks/useAuth";
-import { useState, useEffect} from "react";
-import {INPUT} from "../../Constants/index";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../Store/index";
 import ButtonComp from "../ButtonComp/ButtonComp";
+import { isEmpty } from "../../Utility/utility.js";
 import InputFieldSimple from "../InputField/InputFieldSimple.jsx";
+import { sendRuntimeMessage } from "../../Utility/message_helper.js";
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
-
+import {
+  LABELS,
+  ERROR_MESSAGES,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS
+} from "../../Constants/index";
 
 function EnterPassword() {
-
   const navigate = useNavigate();
-  const { verifyPass } = useAuth();
-  const [data, setData] = useState("");
-  const [errMsg, setErrorMsg] = useState("");
-  const [isDisable, setDisable] = useState(true);
 
-  useEffect(()=>{
-    if (errMsg || !data) {
+  const [data, setData] = useState("");
+  const [isDisable, setDisable] = useState(true);
+  const { inputError, setInputError, passVerified, setPassVerified } = useContext(AuthContext);
+
+  useEffect(() => {
+    setInputError("");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (inputError || !data) {
       setDisable(true);
-    }else{
+    } else {
       setDisable(false);
     }
-  },[errMsg, data]);
+  }, [inputError, data]);
+
+  useEffect(() => {
+    if (passVerified) {
+      setPassVerified(false);
+      navigate(ROUTES.PVT_KEY);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [passVerified]);
 
   const handleChange = (e) => {
     setData(e.target.value);
-    setErrorMsg("");
-  }
+    setInputError("");
+  };
 
   const validateInput = () => {
-    if (data.length === 0) {
-      setErrorMsg(INPUT.REQUIRED);
+    if (isEmpty(data)) {
+      setInputError(ERROR_MESSAGES.INPUT_REQUIRED);
       setDisable(true);
     }
-  }
+  };
 
   const handleClick = async (e) => {
-  
-    if ((e.key === "Enter") || (e.key === undefined)) {
-
-      let res = await verifyPass(data);
-
-      if (!res.error) {
-        // navigate(location.state?.redirectRoute || "/wallet");
-        navigate("/privateKey");
-
-      } else {
-        setErrorMsg(res.data);
-        setDisable(true);
+    if (e.key === LABELS.ENTER || e.key === undefined) {
+      if (!inputError) {
+        sendRuntimeMessage(
+          MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+          MESSAGE_EVENT_LABELS.VERIFY_USER_PASSWORD,
+          { password: data }
+        );
       }
     }
-
-  }
+  };
 
   return (
     <>
       <div className={`scrollableCont`} onKeyDown={handleClick}>
-        <MenuRestofHeaders backTo={"/manageWallet"} title={""} />
+        <MenuRestofHeaders backTo={ROUTES.MANAGE_WALLET} title={"Enter Password"} />
         <div className={`flexedContent`}>
           <div className={style.enterPassword}>
             <div className={style.commonHeadeing}>
-              <h1>Enter Password</h1>
-              <p>
-                Your password is used to unlock your wallet and will allow
-                wallet to export your Private Key
-              </p>
+              <p>Enter your wallet password to reveal secret keys</p>
             </div>
             <InputFieldSimple
-              placeholder={"Enter Password"}
-              placeholderBaseColor={true}
-              onChange={handleChange}
-              keyUp={validateInput}
-              coloredBg={true}
+              value={data}
               type="password"
-              name="pass"
+              coloredBg={true}
+              name={LABELS.PASS}
+              keyUp={validateInput}
+              onChange={handleChange}
+              placeholderBaseColor={true}
+              placeholder={"Enter Password"}
+              onDrop={(e) => {
+                e.preventDefault();
+              }}
             />
-            <p className={style.errorText}>{errMsg ? errMsg : ""}</p>
+            <p className={style.errorText}>{inputError ? inputError : ""}</p>
             <div>
-              <ButtonComp
-                onClick={handleClick}
-                text="Continue"
-                isDisable={isDisable}
-              ></ButtonComp>
+              <ButtonComp onClick={handleClick} text="Continue" isDisable={isDisable}></ButtonComp>
             </div>
           </div>
         </div>

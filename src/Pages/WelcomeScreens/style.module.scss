@@ -2,13 +2,14 @@
 
 .cardWhite {
   background-color: $blue-08132C;
+
   // padding: 36px 24px 26px;
   &.cardWhiteCenterd {
     min-height: 100vh;
-    display: flex;
-    width: 100%;
-    flex-direction: column;
-    justify-content: center;
+    // display: flex;
+    // width: 100%;
+    // flex-direction: column;
+    // justify-content: center;
   }
 
   // Welcome Screen Css Starts here//
@@ -39,7 +40,7 @@
   }
 
   &__beginText {
-    padding: 30px;
+    padding: 24px;
 
     h1 {
       background: linear-gradient(91.26deg, #0071ff 0%, #54f0d1 100%);
@@ -62,13 +63,23 @@
       &.errorText {
         color: #ff0000;
         text-align: left;
-        padding-top: 8px;
-        font-size: 12px;
+        font-size: 11px;
+        position: absolute;
+        padding-top: 0;
+        word-break: break-word;
+        line-height: 14px;
       }
     }
 
     &__passInputSec {
-      padding-top: 32px;
+      // padding-top: 32px;
+      position: relative;
+    }
+  }
+
+  &__createPassText {
+    p {
+      padding-top: 0;
     }
   }
 
@@ -92,21 +103,21 @@
 
   &__addressInput {
     padding: 0 18px;
-    margin-bottom: 16px;
+    margin-top: 12px;
 
     label {
       color: $white;
-      opacity: 0.6;
+      opacity: 0.8;
       font-size: 12px;
-      width: 100%;
+      width: 80%;
       text-align: left;
-      display: inline-flex;
+      display: flex;
       margin-bottom: 8px;
     }
 
     &__copyText {
-      background: $baseColor-Text2;
-      border-radius: 8px;
+      border: 1px solid #404058;
+      border-radius: 12px;
       padding: 12px 8px;
       display: flex;
       justify-content: space-between;
@@ -114,7 +125,7 @@
       align-items: center;
 
       span {
-        color: #6a84a0;
+        color: #fff;
         font-size: 14px;
         word-break: break-all;
         text-align: left;
@@ -122,11 +133,15 @@
 
       img {
         cursor: pointer;
+        width: 13px;
       }
     }
 
     &__copyAll {
-      background: linear-gradient(114.15deg, #0DA6C2 20.67%, #0E39C6 89.64%, #0E39C6 89.64%);
+      background: linear-gradient(114.15deg,
+          #0da6c2 20.67%,
+          #0e39c6 89.64%,
+          #0e39c6 89.64%);
       border: 1px solid rgba(255, 255, 255, 0.5);
       border-radius: 12px;
       color: $white;
@@ -148,13 +163,14 @@
   }
 
   &__cardInner {
-    padding: 35px;
+    padding: 23px;
 
     &__innerLogocontact {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 32px;
+      padding-top: 48px;
     }
 
     &__innercontact {
@@ -164,7 +180,7 @@
         -webkit-text-fill-color: transparent;
         background-clip: text;
         text-fill-color: transparent;
-        font-size: 24px;
+        font-size: 22px;
         margin: 0;
         transform: rotate(0.01deg);
         font-weight: 700;
@@ -172,8 +188,27 @@
 
       p {
         color: $white;
-        font-size: 24px;
+        font-size: 18px;
         padding-top: 10px;
+      }
+
+      span {
+        color: #8fa2b7;
+        font-size: 18px;
+        padding-top: 10px;
+        display: flex;
+      }
+    }
+
+    &__accessConatct {
+      padding-top: 60px;
+
+      h1 {
+        font-size: 18px;
+        color: $white;
+        margin: 0;
+        transform: rotate(0.01deg);
+        font-weight: 500;
       }
 
       span {
@@ -199,7 +234,7 @@
       }
 
       a {
-        color: #1098FC;
+        color: #1098fc;
         font-size: 18px;
         word-break: break-all;
       }
@@ -207,11 +242,24 @@
   }
 
   &__linkOuter {
-    padding-top: 25px;
+    padding-top: 100px;
     display: flex;
     flex-direction: column;
     gap: 25px;
     display: flex;
+  }
+
+  &__importWalletlinkOuter {
+    padding-top: 33px;
+    display: flex;
+    flex-direction: column;
+    display: flex;
+    gap: 20px;
+  }
+
+  &__forgotPassword {
+    padding-top: 12px;
+    gap: 30px;
   }
 
   // Welcome Screen Css ends here //
@@ -279,6 +327,11 @@
       justify-content: space-between;
       gap: 20px;
       margin: 36px 0 10px;
+      flex-direction: column;
+    }
+
+    &__forGotBtn {
+      margin-top: 0;
     }
 
     &__secretPharse {
@@ -394,12 +447,19 @@
 }
 
 .forgotLink {
-  padding-top: 40px;
+  text-align: right;
 
   a {
-    color: #1098fc;
+    color: $white;
     font-size: 14px;
   }
+}
+
+.privacyPolicyText {
+  color: $white;
+  transform: rotate(0.21deg);
+  font-size: 16px;
+  line-height: 24px;
 }
 
 .congratScreen {
@@ -410,7 +470,7 @@
 }
 
 .currentItem {
-  background-color: $inputBg  !important;
+  background-color: $inputBg !important;
 }
 
 .token {
@@ -461,18 +521,57 @@
   font-weight: bold;
   line-height: 16px;
 }
+
 .copyButton {
+  padding: 0 18px 0;
+  // position: absolute;
+  // right: 0;
+  // top: 11%;
+  // z-index: 99999;
   display: flex;
   justify-content: flex-end;
-  padding: 0 18px 16px;
+
   button {
-    min-width: 90px;
-    font-size: 12px;
+    border-radius: 4px;
+    min-width: 60px;
+    font-size: 10px;
   }
 }
+
 
 .errorText {
   text-align: left;
   color: $red;
-  margin-top: 10px;
+  position: absolute;
+  font-size: 12px !important;
+}
+
+.textElips {
+  span {
+    width: 240px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.contBtn {
+  display: flex;
+  flex-direction: column;
+  gap: 23px;
+}
+
+.cancleContinueContainer {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  gap: 10px;
+  // width: 100%;
+  padding: 0 30px;
+  padding-bottom: 30px !important;
+  justify-content: space-around;
+  left: 0;
+  right: 0;
+  max-width: 345px;
+  margin: 0 auto;
 }

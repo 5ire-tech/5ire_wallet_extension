@@ -1,179 +1,167 @@
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
-import { toast } from "react-toastify";
-import useAuth from "../../Hooks/useAuth";
-import { useParams } from "react-router-dom";
-import { INPUT } from "../../Constants/index";
-import { useNavigate } from "react-router-dom";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { AuthContext } from "../../Store";
+import { isEmpty } from "../../Utility/utility";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import { toggleLoader, setLogin } from "../../Utility/redux_helper";
+import { sendRuntimeMessage } from "../../Utility/message_helper";
+import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
-import CongratulationsScreen from "../../Pages/WelcomeScreens/CongratulationsScreen";
-
-
+import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+import {
+  REGEX,
+  LABELS,
+  EMTY_STR,
+  ERROR_MESSAGES,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS
+} from "../../Constants/index";
 
 export default function SetPasswordScreen() {
-  const navigate = useNavigate();
   const params = useParams();
-  const dispatch = useDispatch();
-  const { setUserPass } = useAuth();
-  const [error, setError] = useState("");
-  const [show, setShow] = useState(false);
-  const [confirmError, setconfirmError] = useState("");
-  const { isLogin } = useSelector((state) => state.auth);
-  const [pass, setPass] = useState({ pass: "", confirmPass: "" });
-
+  const navigate = useNavigate();
+  const [isDisable, setDisable] = useState(true);
+  const { setUserPass, accountName, setDetailsPage } = useContext(AuthContext);
+  const { updateState } = useContext(AuthContext);
+  const [error, setError] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
+  const [pass, setPass] = useState({ pass: EMTY_STR, confirmPass: EMTY_STR });
 
   useEffect(() => {
+    if (pass.confirmPass === pass.pass || pass.pass === EMTY_STR)
+      setError((p) => ({ ...p, confirmPass: EMTY_STR }));
+    else if (pass.confirmPass !== EMTY_STR)
+      setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }));
+  }, [pass.pass, pass.confirmPass]);
 
-    if (pass.confirmPass === pass.pass || pass.pass === "") {
-      setconfirmError("");
-    } else {
-      if (pass.confirmPass !== "")
-        setconfirmError("Passwords do not match.")
-    }
-  }, [pass.pass, pass.confirmPass])
+  useEffect(() => {
+    if (
+      pass.confirmPass === pass.pass &&
+      !error.pass &&
+      !error.confirmPass &&
+      pass.pass &&
+      pass.confirmPass
+    )
+      setDisable(false);
+    else setDisable(true);
+  }, [pass.confirmPass, pass.pass, error.pass, error.confirmPass]);
 
-  const validatePass = () => {
-    const uppercaseRegExp = /(?=.*?[A-Z])/;
-    const lowercaseRegExp = /(?=.*?[a-z])/;
-    const digitsRegExp = /(?=.*?[0-9])/;
-    const specialCharRegExp = /(?=.*?[#?!@$%^&*-])/;
-    const minLengthRegExp = /.{8,}/;
-    let errMsg = "";
+  const validatePass = useCallback(() => {
+    let errMsg = EMTY_STR;
 
-
-    if (pass.pass.length === 0) {
-      errMsg = INPUT.REQUIRED;
-    }
-
+    if (isEmpty(pass.pass)) errMsg = ERROR_MESSAGES.INPUT_REQUIRED;
     else if (
-      !uppercaseRegExp.test(pass.pass) ||
-      !lowercaseRegExp.test(pass.pass) ||
-      !digitsRegExp.test(pass.pass) ||
-      !specialCharRegExp.test(pass.pass) ||
-      !minLengthRegExp.test(pass.pass)
-    ) {
-      errMsg = "Password must have at least 8 characters, combination of Mixed case, 1 Special Character and 1 Number.";
-    }
+      !REGEX.UPPERCASE.test(pass.pass) ||
+      !REGEX.LOWERCASE.test(pass.pass) ||
+      !REGEX.DIGITS.test(pass.pass) ||
+      !REGEX.SPECIAL_CHAR.test(pass.pass) ||
+      !REGEX.MIN_LENGTH.test(pass.pass)
+    )
+      errMsg = ERROR_MESSAGES.CREATE_PASS_MSG;
+    else errMsg = EMTY_STR;
 
-    else {
-      errMsg = "";
-    }
-    setError(errMsg);
-  };
+    setError((p) => ({ ...p, pass: errMsg }));
+  }, [pass.pass]);
 
-  const validateConfirmPass = () => {
-
-    if (pass.confirmPass.length === 0)
-      setconfirmError(INPUT.REQUIRED);
-
+  const validateConfirmPass = useCallback(() => {
+    if (isEmpty(pass.confirmPass))
+      setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.INPUT_REQUIRED }));
     else if (pass.confirmPass !== pass.pass)
-      setconfirmError("Passwords do not match.");
+      setError((p) => ({ ...p, confirmPass: ERROR_MESSAGES.PASS_DONT_MATCH }));
+    else setError((p) => ({ ...p, confirmPass: EMTY_STR }));
+  }, [pass.confirmPass, pass.pass]);
 
-    else
-      setconfirmError("");
-
-  };
+  const handleCancel = useCallback(() => {
+    updateState(LABELS.NEW_ACCOUNT, null, false);
+    navigate(ROUTES.DEFAULT);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async (e) => {
-
-    if ((e.key === "Enter") || (e.key === undefined)) {
-
-      if (pass.pass.length === 0 && pass.confirmPass.length === 0) {
-        setError(INPUT.REQUIRED);
-        setconfirmError(INPUT.REQUIRED);
-      }
-      else if (pass.pass.length === 0) {
-        setError(INPUT.REQUIRED);
-      }
-      else if (pass.confirmPass.length === 0) {
-        setconfirmError(INPUT.REQUIRED);
-      }
-      else {
-        if (!error && !confirmError) {
-          dispatch(toggleLoader(true));
-          let res = await setUserPass(pass.pass);
-          if (res.error) {
-            dispatch(toggleLoader(false));
-            toast.error(res.data);
-          } else {
-            dispatch(toggleLoader(false));
-            setShow(true);
-            setTimeout(() => {
-              if (isLogin !== true) dispatch(setLogin(true));
-              setShow(false);
-              setTimeout(() => {
-                navigate("/wallet");
-              }, 500);
-            }, 2000);
-          }
+    if (e.key === LABELS.ENTER || e.key === undefined) {
+      if (!error.pass && !error.confirmPass && pass.pass && pass.confirmPass) {
+        if (params.id === LABELS.CREATE) {
+          sendRuntimeMessage(
+            MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+            MESSAGE_EVENT_LABELS.CREATE_OR_RESTORE,
+            { password: pass.pass, opts: { name: accountName }, type: "create" }
+          );
+          setDetailsPage(true);
+        } else {
+          setUserPass(pass.pass);
+          navigate(ROUTES.IMPORT_WALLET);
         }
       }
     }
   };
 
-  const handleChange = (e) => {
-    setPass((prev) => {
+  const handleChange = useCallback((e) => {
+    setPass((p) => {
       return {
-        ...prev,
-        [e.target.name]: e.target.value.trim(),
+        ...p,
+        [e.target.name]: e.target.value.trim()
       };
     });
-  };
+  }, []);
 
   return (
     <>
       <div onKeyDown={handleSubmit} className={`${style.cardWhite}`}>
-        <div className={style.cardWhite__beginText}>
-          <h1>Create Password</h1>
+        {params.id === LABELS.CREATE ? (
+          <StepHeaders active={3} />
+        ) : (
+          <StepHeaders active={1} isCreate={false} />
+        )}
+        <MenuRestofHeaders
+          backTo={params.id === LABELS.CREATE ? ROUTES.CREATE_WALLET : ROUTES.DEFAULT}
+          title={"Create Password"}
+        />
+        <div className={`${style.cardWhite__beginText} ${style.cardWhite__createPassText}`}>
           <p>
-            Your password is used to unlock your wallet and is stored securely
-            on your device. We recommend 12 characters, with uppercase and
-            lowercase letters, symbols and numbers.
+            Your password is used to unlock your wallet and is stored securely on your device. We
+            recommend 12 characters, with uppercase and lowercase letters, symbols and numbers.
           </p>
-          <div className={style.cardWhite__beginText__passInputSec}>
+          <div className={style.cardWhite__beginText__passInputSec} style={{ marginTop: "20px" }}>
             <InputFieldSimple
-              // type="password"
-              value={pass.pass}
-              name="pass"
-              onChange={handleChange}
-              placeholder={"Enter Password"}
-              placeholderBaseColor={true}
               coloredBg={true}
+              value={pass?.pass}
+              name={LABELS.PASS}
               keyUp={validatePass}
+              onChange={handleChange}
+              placeholderBaseColor={true}
+              placeholder={"Enter Password"}
+              onDrop={(e) => {
+                e.preventDefault();
+              }}
             />
           </div>
-          <p className={style.errorText}>{error ? error : ""}</p>
-          <div className={style.cardWhite__beginText__passInputSec}>
+          <p className={style.errorText}>{error.pass ? error.pass : ""}</p>
+          <div className={style.cardWhite__beginText__passInputSec} style={{ marginTop: "34px" }}>
             <InputFieldSimple
-              // type="password"
-              value={pass.confirmPass}
+              coloredBg={true}
               name="confirmPass"
               onChange={handleChange}
-              placeholder={"Confirm Password"}
+              value={pass?.confirmPass}
               placeholderBaseColor={true}
-              coloredBg={true}
               keyUp={validateConfirmPass}
+              placeholder={"Confirm Password"}
+              onDrop={(e) => {
+                e.preventDefault();
+              }}
             />
-            <p className={style.errorText}>{confirmError ? confirmError : ""}</p>
+            <p className={style.errorText}>{error.confirmPass ? error.confirmPass : ""}</p>
           </div>
-          <div style={{ marginTop: "30px" }}>
+
+          <div style={{ marginTop: "50px" }} className={style.contBtn}>
             <ButtonComp
+              isDisable={isDisable}
               onClick={handleSubmit}
               text={"Continue"}
               maxWidth={"100%"}
             />
+            <ButtonComp bordered={true} onClick={handleCancel} text={"Cancel"} maxWidth={"100%"} />
           </div>
         </div>
-      </div>
-      <div className={style.menuItems__cancleContinue}>
-        {show && (
-          <div className="loader">
-            <CongratulationsScreen text={`Your Wallet is ${params.id === "create" ? "Created" : "Imported"}.`} />
-          </div>
-        )}
       </div>
     </>
   );

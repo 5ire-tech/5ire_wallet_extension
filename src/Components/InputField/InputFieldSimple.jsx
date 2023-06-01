@@ -7,23 +7,27 @@ import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
 function InputFieldSimple({
   name,
   keyUp,
+  value,
+  onDrop,
   onChange,
   minHeight,
   coloredBg,
   placeholder,
-  placeholderBaseColor,
+  placeholderBaseColor
 }) {
   return (
     <Input.Password
-      className={`${style.inputSimple} ${style.inputPassword} ${placeholderBaseColor ? "placeholderBaseColor" : ""
-        } ${coloredBg ? style.inputField__coloredBg : ""}`}
+      onDrop={onDrop}
+      className={`${style.inputSimple} ${style.inputPassword} ${
+        placeholderBaseColor ? "placeholderBaseColor" : ""
+      } ${coloredBg ? style.inputField__coloredBg : ""}`}
       placeholder={placeholder}
       style={{ minHeight: minHeight }}
       onChange={onChange}
-      name={name}
       onKeyUp={keyUp}
-      // className={style.inputSimple}
-      // placeholder={placeholder}
+      name={name}
+      value={value}
+      autoComplete="off"
       iconRender={(visible) =>
         visible ? (
           <img src={EyeOpenIcon} width={19} height={12} draggable={false} alt="eyeOpen" />
@@ -39,20 +43,23 @@ export default InputFieldSimple;
 
 export const InputField = ({
   min,
+  key,
   mb0,
   type,
   name,
   value,
   label,
   keyUp,
+  onDrop,
   keyDown,
   onChange,
   coloredBg,
   addonAfter,
+  suffix = "",
   inputSelect,
   placeholder,
   defaultValue,
-  placeholderBaseColor,
+  placeholderBaseColor
 }) => {
   return (
     <div className={`${style.boxStyle} inputField ${mb0 ? style.mb0 : ""}`}>
@@ -61,20 +68,25 @@ export const InputField = ({
       </label>
       <Input
         name={name}
+        onDrop={onDrop}
         type={type ? type : "text"}
-        min = {min}
-        // max = {max}
+        min={min}
+        key={key}
         value={value}
+        autoComplete="off"
         onChange={onChange}
         onKeyUp={keyUp}
         onKeyDown={keyDown}
         onWheel={(e) => e.target.blur()}
-        className={`${style.inputField__input} ${inputSelect ? style.inputField__inputSelect : ""
-          }  ${placeholderBaseColor ? "placeholderBaseColor" : ""} ${coloredBg ? style.inputField__coloredBg : ""
-          }`}
+        className={`${style.inputField__input} ${
+          inputSelect ? style.inputField__inputSelect : ""
+        }  ${placeholderBaseColor ? "placeholderBaseColor" : ""} ${
+          coloredBg ? style.inputField__coloredBg : ""
+        }`}
         addonAfter={addonAfter}
         defaultValue={defaultValue}
         placeholder={placeholder}
+        suffix={suffix}
       />
     </div>
   );
@@ -88,18 +100,22 @@ export const InputFieldOnly = ({
   label,
   onChange,
   minHeight,
+  onDrop,
   coloredBg,
   placeholder,
-  placeholderBaseColor,
+  placeholderBaseColor
 }) => {
   return (
     <div className={`${style.boxStyle} inputFieldOnly `}>
       <label className={style.boxStyle__label}>{label}</label>
       <Input
+        onDrop={onDrop}
+        autoComplete="off"
         value={value}
         type={type ? type : "text"}
-        className={`${style.inputSimple} ${placeholderBaseColor ? "placeholderBaseColor" : ""
-          } ${coloredBg ? style.inputField__coloredBg : ""}`}
+        className={`${style.inputSimple} ${placeholderBaseColor ? "placeholderBaseColor" : ""} ${
+          coloredBg ? style.inputField__coloredBg : ""
+        }`}
         placeholder={placeholder}
         style={{ minHeight: minHeight }}
         onChange={onChange}

@@ -1,15 +1,26 @@
 .create {
+  width: 100%;
+  max-width: 108px;
+  height: 78px;
   &__account {
     border: none;
     cursor: pointer;
     display: flex;
-    gap: 23px;
-    background-color: #0f2046;
+    gap: 6px;
+    background-color: #172647;;
     padding: 18px;
+    flex-direction: column;
     align-items: center;
-    border-bottom: 2px solid #08132c;
+    border-radius: 8px;
+    padding-top: 14px;
+    align-items: center;
+    height: 50px;
+    justify-content: space-between;
+   
+   
     p {
-      font-size: 15px;
+      font-size: 12px;
+      text-transform: capitalize;
       font-weight: 500;
       color: #fff;
       margin-bottom: 0;

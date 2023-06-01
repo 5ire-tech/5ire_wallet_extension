@@ -25,7 +25,7 @@
   }
 
   &__multiSwapBtn {
-    padding: 30px 37px;
+    padding: 16px 80px;
     padding-bottom: 0;
   }
   &__sendSwapbtn {
@@ -33,21 +33,56 @@
     border-radius: 12px;
     background: #0e1e41;
     border: 1px solid #102658;
+    padding: 3px;
+    position: relative;
     &__buttons {
-      background: #0e1e41;
+      background: transparent;
       // border-radius: 12px 0 0px 12px;
       width: 100%;
       border-radius: 12px;
       cursor: pointer;
       color: $white;
       border: 0;
-      font-size: 15px;
-      padding: 14px;
+      font-size: 14px;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      position: relative;
+      z-index: 1;
+      transition: width .3s,left .3s,right .3s;
       &__active {
+        img{
+          filter: contrast(100);
+        }
+      }
+     
+    }
+    .animations {
+      position: absolute;
+      width: 116px;
+      height: 36px;
+      top: 0;
+      z-index: 0;
+      
+      &.activeFirst {
+        left: 0;
         background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
         // border: 1px solid rgba(255, 255, 255, 0.5);
         border: 1px solid #13d3e1;
+        border-radius: 12px;
         // border-radius: 0px 12px 12px 0px;
+        transition: width .3s,left .3s,right .3s;
+      }
+      &.activeSecond {
+        left: 120px;
+        background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
+        // border: 1px solid rgba(255, 255, 255, 0.5);
+        border: 1px solid #13d3e1;
+        border-radius: 12px;
+        // border-radius: 0px 12px 12px 0px;
+        transition: width .3s,left .3s,right .3s;
       }
     }
   }

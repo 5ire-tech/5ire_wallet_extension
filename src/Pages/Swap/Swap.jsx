@@ -1,368 +1,371 @@
-import { useEffect } from "react";
-import { toast } from "react-toastify";
-import React, { useState } from "react";
+import { useCallback, useEffect } from "react";
+import { Switch, Tooltip } from "antd";
+import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
-import { useSelector } from "react-redux";
-import useWallet from "../../Hooks/useWallet";
-import { shortner } from "../../Helper/helper";
+import { AuthContext } from "../../Store";
+import Info from "../../Assets/infoIcon.svg";
 import SwapIcon from "../../Assets/SwapIcon.svg";
-import CopyIcon from "../../Assets/CopyIcon.svg";
-import ComplSwap from "../../Assets/DarkLogo.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
-import WalletCardLogo from "../../Assets/walletcardLogo.svg";
+import SmallLogo from "../../Assets/smallLogo.svg";
+import ComplSwap from "../../Assets/succeslogo.svg";
+import React, { useState, useContext } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
+import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import { InputField } from "../../Components/InputField/InputFieldSimple";
-import { NATIVE, EVM, ERROR_MESSAGES, INPUT,COPIED } from "../../Constants/index";
-import { connectionObj, Connection } from "../../Helper/connection.helper";
-
+import {
+  EVM,
+  NATIVE,
+  LABELS,
+  TX_TYPE,
+  EXTRA_FEE,
+  ERROR_MESSAGES,
+  MESSAGE_TYPE_LABELS,
+  EXISTENTIAL_DEPOSITE,
+  MESSAGE_EVENT_LABELS,
+  MESSAGES
+} from "../../Constants/index";
 
 function Swap() {
-
+  const [isEd, setEd] = useState(true);
   const [error, setError] = useState("");
-  const [txHash, setTxHash] = useState("");
   const [amount, setAmount] = useState("");
-  const [gassFee, setGassFee] = useState("");
-  const [swapErr, setSwapError] = useState("");
   const [disableBtn, setDisable] = useState(true);
+  const [maxClicked, setMaxClicked] = useState(false);
+  const [isMaxDisabled, setMaxDisabled] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [toFrom, setToFrom] = useState({ from: NATIVE, to: EVM });
-  const [address, setAddress] = useState({ fromAddress: "", toAddress: "" });
 
-  const {
-    currentAccount,
-    balance,
-    httpEndPoints,
-    currentNetwork
-  } = useSelector((state) => state.auth);
-  const {
-    evmToNativeSwap,
-    nativeToEvmSwap,
-    getBalance,
-    retriveNativeFee,
-    retriveEvmFee,
-  } = useWallet();
+  const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
 
+  const { allAccountsBalance, pendingTransactionBalance, currentNetwork, currentAccount } = state;
 
+  const [balance, setBalance] = useState(
+    allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
+  );
+
+  //Reset the amount and error when to and from changes
   useEffect(() => {
-    if (toFrom.from.toLowerCase() === NATIVE.toLowerCase())
-      setAddress({
-        toAddress: currentAccount?.evmAddress,
-        fromAddress: currentAccount?.nativeAddress,
-      });
-
-    else if (toFrom.from.toLowerCase() === EVM.toLowerCase())
-      setAddress({
-        toAddress: currentAccount?.nativeAddress,
-        fromAddress: currentAccount?.evmAddress,
-      });
-    setAmount("");
     setError("");
-
-  }, [currentAccount?.evmAddress, currentAccount?.nativeAddress, toFrom]);
-
+    setAmount("");
+    updateEstimatedGas(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toFrom?.to, currentNetwork]);
 
   useEffect(() => {
+    setBalance(allAccountsBalance[currentAccount?.evmAddress][currentNetwork?.toLowerCase()]);
+  }, [
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.nativeBalance,
+    currentAccount?.evmAddress,
+    currentNetwork,
+    allAccountsBalance
+  ]);
 
-    const getData = setTimeout(() => {
-      if (amount.length > 0 && !error) {
+  useEffect(() => {
+    if (!amount && !estimatedGas) {
+      setError("");
+    }
+  }, [amount, estimatedGas]);
+
+  useEffect(() => {
+    if (
+      (toFrom.from === EVM && Number(balance?.evmBalance) < 1) ||
+      (toFrom.from === NATIVE && Number(balance?.nativeBalance) < 1)
+    ) {
+      setMaxDisabled(true);
+    } else {
+      setMaxDisabled(false);
+    }
+  }, [balance?.evmBalance, balance?.nativeBalance, toFrom?.from]);
+
+  //Get fee if to and amount is present
+  useEffect(() => {
+    if (amount && !error && !estimatedGas) {
+      const getData = setTimeout(() => {
         getFee();
-      } else {
-        setGassFee("");
-        setDisable(true);
-      }
-    }, 1000);
+      }, 1000);
+      return () => clearTimeout(getData);
+    } else if (!amount || error || !estimatedGas) {
+      setDisable(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [amount, error, isEd, toFrom?.from, estimatedGas]);
 
-    return () => clearTimeout(getData);
-
-  }, [amount, error]);
-
-
+  //Check for Insufficent balance
   useEffect(() => {
-    if (gassFee === "" || !gassFee) setDisable(true);
-
+    if (!estimatedGas) setDisable(true);
     else {
-      if (
-        toFrom.from.toLowerCase() === EVM.toLowerCase() &&
-        toFrom.to.toLowerCase() === NATIVE.toLowerCase()
-      ) {
-        if ((Number(amount) + Number(gassFee)) >= Number(balance.evmBalance)) {
-          setGassFee("");
-          setDisable(true);
-          setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+      if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
+        if (estimatedGas && !amount && maxClicked) {
+          const value =
+            Number(balance?.evmBalance) -
+            (Number(estimatedGas) +
+              EXTRA_FEE +
+              (isEd ? EXISTENTIAL_DEPOSITE : 0) +
+              pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
+                .evm);
 
+          setAmount(Number(value) >= 1 ? value : "");
+          updateEstimatedGas(Number(value) >= 1 ? estimatedGas : null);
+          !(Number(value) >= 1) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+          // Number(amount) < 1 && setError(ERROR_MESSAGES.AMOUNT_CANT_LESS_THEN_ONE);
+          setMaxClicked(false);
+
+          return;
+        } else if (
+          Number(amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0) >
+          Number(balance?.evmBalance) -
+            pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
+        ) {
+          setDisable(true);
+          updateEstimatedGas(null);
+          setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
         } else {
           setDisable(false);
           setError("");
         }
+      } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
+        if (estimatedGas && !amount && maxClicked) {
+          const value =
+            Number(balance?.nativeBalance) -
+            (Number(estimatedGas) +
+              EXTRA_FEE +
+              (isEd ? EXISTENTIAL_DEPOSITE : 0) +
+              pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
+                .native);
 
-      } else if (
-        toFrom.from.toLowerCase() === NATIVE.toLowerCase() &&
-        toFrom.to.toLowerCase() === EVM.toLowerCase()
-      ) {
+          setAmount(Number(value) >= 1 ? value : "");
+          updateEstimatedGas(Number(value) >= 1 ? estimatedGas : null);
+          !(Number(value) >= 1) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+          setMaxClicked(false);
 
-        if ((Number(amount) + Number(gassFee)) >= Number(balance.nativeBalance)) {
-          setGassFee("");
+          return;
+        }
+        if (
+          Number(amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0) >
+          Number(balance?.nativeBalance) -
+            pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
+              .native
+        ) {
           setDisable(true);
+          updateEstimatedGas(null);
           setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
-
         } else {
           setDisable(false);
           setError("");
         }
-
       }
     }
-  }, [gassFee]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [estimatedGas, amount, balance?.nativeBalance, isEd, toFrom.from, balance?.evmBalance]);
 
+  const blockInvalidChar = useCallback(
+    (e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault(),
+    []
+  );
 
-  const blockInvalidChar = (e) => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
-
-
-  const validateAmount = () => {
-
-    if (amount.length === 0)
-      setError(INPUT.REQUIRED);
-
-    else if (isNaN(amount))
-      setError("Please enter amount correctly.");
-
-    else if (Number(amount) <= 0)
-      setError("Amount can't be 0 or less then 0");
-
-    else if (
-      toFrom.from.toLowerCase() === EVM.toLowerCase() &&
-      toFrom.to.toLowerCase() === NATIVE.toLowerCase()
-    ) {
-
-      if (Number(amount) >= Number(balance.evmBalance))
+  //validate amount
+  const validateAmount = useCallback(() => {
+    if (amount.length === 0) setError(ERROR_MESSAGES.INPUT_REQUIRED);
+    else if (isNaN(amount)) setError(ERROR_MESSAGES.ENTER_AMOUNT_CORRECTLY);
+    else if (Number(amount) < 1) setError(ERROR_MESSAGES.AMOUNT_CANT_LESS_THEN_ONE);
+    else if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
+      if (
+        Number(amount) >=
+        Number(balance?.evmBalance) -
+          pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
+      )
         setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
-
-      else
-        setError("");
-    }
-
-    else if (
-      toFrom.from.toLowerCase() === NATIVE.toLowerCase() &&
-      toFrom.to.toLowerCase() === EVM.toLowerCase()
-    ) {
-
-      if (Number(amount) >= Number(balance.nativeBalance))
+      else setError("");
+    } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
+      if (
+        Number(amount) >=
+        Number(balance?.nativeBalance) -
+          pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native
+      )
         setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
-
-      else
-        setError("");
+      else setError("");
     }
-  };
+  }, [
+    amount,
+    balance?.evmBalance,
+    balance?.nativeBalance,
+    currentAccount.evmAddress,
+    currentNetwork,
+    pendingTransactionBalance,
+    toFrom.from
+  ]);
 
-
-  const handleApprove = async (e) => {
+  //Perform swap
+  const handleApprove = useCallback(async () => {
     try {
-
-      connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
-
-        if (!apiRes?.value) {
-
-          Connection.isExecuting.value = false;
-
-          if (
-            toFrom.from.toLowerCase() === EVM.toLowerCase() &&
-            toFrom.to.toLowerCase() === NATIVE.toLowerCase()
-          ) {
-
-            let res = await evmToNativeSwap(apiRes.evmApi, apiRes.nativeApi, amount);
-            if (res.error) {
-              setIsFaildOpen(true);
-              setSwapError(res.data);
-            } else {
-              setIsModalOpen(true);
-              setTxHash(res.data);
-              // setTimeout(() => {
-              //   getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-              // }, 3000);
-            }
-
-          } else if (
-            toFrom.from.toLowerCase() === NATIVE.toLowerCase() &&
-            toFrom.to.toLowerCase() === EVM.toLowerCase()
-          ) {
-
-            let res = await nativeToEvmSwap(apiRes.nativeApi, amount);
-            // console.log("res.err : ",res.error);
-            if (res.error) {
-            // console.log("error true");
-
-              setIsFaildOpen(true);
-              setSwapError(res.data);
-            } else {
-              // console.log("error false");
-              setIsModalOpen(true);
-              setTxHash(res.data);
-              // setTimeout(() => {
-              //   getBalance(apiRes.evmApi, apiRes.nativeApi, true);
-              // }, 3000);
+      if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
+        sendRuntimeMessage(
+          MESSAGE_TYPE_LABELS.INTERNAL_TX,
+          MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP,
+          {
+            value: amount,
+            options: {
+              account: state.currentAccount,
+              network: state.currentNetwork,
+              type: TX_TYPE.SWAP,
+              isEvm: true,
+              to: LABELS.EVM_TO_NATIVE,
+              fee: estimatedGas
             }
           }
-        }
-        setGassFee("");
-      });
+        );
+        setIsModalOpen(true);
+      } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
+        sendRuntimeMessage(
+          MESSAGE_TYPE_LABELS.INTERNAL_TX,
+          MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP,
+          {
+            value: amount,
+            options: {
+              account: state.currentAccount,
+              network: state.currentNetwork,
+              type: TX_TYPE.SWAP,
+              isEvm: false,
+              to: LABELS.NATIVE_TO_EVM,
+              fee: estimatedGas
+            }
+          }
+        );
+        setIsModalOpen(true);
+      }
     } catch (error) {
       toast.error("Error occured.");
     }
-  };
+  }, [amount, estimatedGas, state.currentAccount, state.currentNetwork, toFrom.from]);
 
-
-  const getFee = async () => {
-
-    connectionObj.initializeApi(httpEndPoints.testnet, httpEndPoints.qa, currentNetwork, false).then(async (apiRes) => {
-
-      if (!apiRes?.value) {
-
-        Connection.isExecuting.value = false;
-
-        if (toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase()) {
-
-          let feeRes = await retriveNativeFee(apiRes.nativeApi, "", amount);
-          if (feeRes.error) {
-            if (feeRes.data) {
-              toast.error(feeRes.error);
-              setDisable(false);
-            }
-          } else {
-            setGassFee(feeRes.data);
-            setDisable(false);
-          }
-
-        } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase()) {
-
-          let feeRes = await retriveEvmFee(apiRes.evmApi, "", amount);
-          if (feeRes.error) {
-            if (feeRes.data) {
-              setError(feeRes.error);
-            } else {
-              toast.error("Error while getting fee.");
-            }
-          } else {
-            setGassFee(feeRes.data);
-            setDisable(false);
-          }
-
-        }
+  //for getting the fee details
+  const getFee = useCallback(
+    async (loader = true) => {
+      if (
+        toFrom.from.toLocaleLowerCase() === NATIVE.toLowerCase() &&
+        Number(balance?.nativeBalance) > 0
+      ) {
+        loader && updateLoading(true);
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, {
+          value: amount ? amount : balance?.nativeBalance,
+          options: {
+            account: state.currentAccount
+          },
+          isEd
+        });
+      } else if (toFrom.from.toLocaleLowerCase() === EVM.toLowerCase() && balance?.evmBalance) {
+        loader && updateLoading(true);
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {
+          value: amount ? amount : balance?.evmBalance,
+          options: {
+            account: state.currentAccount
+          },
+          isEd
+        });
       }
-    });
 
-  };
+      updateEstimatedGas(null);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [amount, balance?.evmBalance, balance?.nativeBalance, isEd, state.currentAccount, toFrom.from]
+  );
 
+  //handle the changed value of inputs
+  const handleChange = useCallback(
+    (e) => {
+      const val = e.target.value;
+      const arr = val.split(".");
 
-  const handleChange = (e) => {
-    let val = e.target.value;
-    let arr = val.split(".");
-
-    if (arr.length > 1) {
-
-      if (arr[1].length > 18) {
-        let slice = arr[1].slice(0, 18);
-        setAmount(arr[0] + "." + slice);
+      if (arr.length > 1) {
+        if (arr[1].length > 18) {
+          let slice = arr[1].slice(0, 18);
+          setAmount(arr[0] + "." + slice);
+        } else {
+          if (amount !== val) {
+            setAmount(val);
+            updateEstimatedGas(null);
+          }
+        }
       } else {
         if (amount !== val) {
           setAmount(val);
-          setGassFee("");
+          updateEstimatedGas(null);
         }
       }
-    }
-    else {
-      if (amount !== val) {
-        setAmount(val);
-        setGassFee("");
-      }
-    }
-  };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [amount]
+  );
 
-
+  //Perform action on click of Enter
   const handleEnter = (e) => {
-    if ((e.key === "Enter")) {
+    if (e.key === LABELS.ENTER) {
       if (!disableBtn) {
         handleApprove();
       }
     }
   };
 
-
-  const handle_OK_Cancle = () => {
+  //handle Ok and cancel button of popup
+  const handle_OK_Cancel = useCallback(() => {
     setAmount("");
-    setGassFee("");
     setDisable(true);
     setIsFaildOpen(false);
     setIsModalOpen(false);
-  };
+    updateEstimatedGas(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-
+  //Set To and from
   const handleClick = () => {
-
-    if (toFrom.from.toLowerCase() === EVM.toLowerCase()) { }
     setToFrom({ from: NATIVE, to: EVM });
 
-    if (toFrom.from.toLowerCase() === NATIVE.toLowerCase())
-      setToFrom({ from: EVM, to: NATIVE });
+    if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) setToFrom({ from: EVM, to: NATIVE });
 
     setAmount("");
-    setGassFee("");
-
+    updateEstimatedGas(null);
   };
 
-
-  const handleCopy = (e) => {
-    if (e.target.name.toLowerCase() === NATIVE.toLowerCase())
-      navigator.clipboard.writeText(currentAccount.nativeAddress);
-
-    if (e.target.name.toLowerCase() === EVM.toLowerCase())
-      navigator.clipboard.writeText(currentAccount.evmAddress);
-
-    if (e.target.name.toLowerCase() === "hash")
-      navigator.clipboard.writeText(txHash);
-
-    toast.success(COPIED);
+  //set the ED toggler state
+  const onChangeToggler = (checked) => {
+    setEd(checked);
+    setError("");
+    setAmount("");
+    updateEstimatedGas(null);
   };
 
+  //performs action when user click on max button
+  const handleMaxClick = () => {
+    setMaxClicked(true);
+    setAmount("");
+    setError("");
+    getFee();
+  };
+
+  const suffix = (
+    <button disabled={isMaxDisabled} className="maxBtn" onClick={handleMaxClick}>
+      Max
+    </button>
+  );
 
   return (
     <>
-      <div className={style.swap} onKeyDown={handleEnter} >
+      <div className={style.swap} onKeyDown={handleEnter}>
         <div className={style.swap__swapCopy}>
           <div className={style.swap__swapSec}>
             <h3>From {toFrom.from}</h3>
-            <span>
-              {shortner(address.fromAddress)}
-              <img
-                width={15}
-                height={15}
-                alt="copyIcon"
-                src={CopyIcon}
-                draggable={false}
-                name={toFrom.from}
-                onClick={handleCopy}
-              />
-            </span>
           </div>
           <div className={style.swap__icon} onClick={handleClick}>
             <img src={SwapIcon} alt="swapIcon" draggable={false} />
           </div>
           <div className={style.swap__swapSec}>
             <h3>To {toFrom.to}</h3>
-            <span>
-              {shortner(address.toAddress)}{" "}
-              <img
-                width={15}
-                height={15}
-                src={CopyIcon}
-                alt="copyIcon"
-                name={toFrom.to}
-                draggable={false}
-                onClick={handleCopy}
-              />
-            </span>
           </div>
         </div>
         <div className={style.swap__swapAccount}>
@@ -371,19 +374,24 @@ function Swap() {
               min={"0"}
               type="number"
               value={amount}
+              key="swapInput"
+              suffix={suffix}
               coloredBg={true}
+              name={"swapAmount"}
               keyUp={validateAmount}
               onChange={handleChange}
               keyDown={blockInvalidChar}
               placeholderBaseColor={true}
               placeholder={"Enter Amount"}
+              onDrop={(e) => {
+                e.preventDefault();
+              }}
               addonAfter={
                 <span className={style.swap__pasteText}>
-                  <img src={WalletCardLogo} alt="walletLogo" draggable={false} />
+                  <img src={SmallLogo} alt="walletLogo" draggable={false} />
                   5ire
                 </span>
               }
-
             />
             <p className="errorText">{error}</p>
 
@@ -391,94 +399,47 @@ function Swap() {
               Balance 00.0000 5IRE
             </span> */}
           </div>
-          {/* <div className={style.swap__activeBalnce}>
-            <button
-              onClick={activeIst}
-              className={`${style.swap__activeBalanceSelect__buttons} 
-              ${
-                activeTab === "one" &&
-                style.swap__activeBalanceSelect__buttons__active
-              }
-            `}
-            >
-              25 %
-            </button>
-            <button
-              onClick={activeSecond}
-              className={`${style.swap__activeBalanceSelect__buttons}  ${
-                activeTab === "two" &&
-                style.swap__activeBalanceSelect__buttons__active
-              }`}
-            >
-              50 %
-            </button>
-            <button
-              onClick={activeThree}
-              className={`${style.swap__activeBalanceSelect__buttons}  ${
-                activeTab === "three" &&
-                style.swap__activeBalanceSelect__buttons__active
-              }`}
-            >
-              70 %
-            </button>
-            <button
-              onClick={activeFour}
-              className={`${style.swap__activeBalanceSelect__buttons}  ${
-                activeTab === "four" &&
-                style.swap__activeBalanceSelect__buttons__active
-              }`}
-            >
-              100 %
-            </button>
-          </div> */}
         </div>
-        <div className={style.swap__transactionFee}>
-          <p>{gassFee ? `Estimated fee : ${gassFee} 5ire` : ""}</p>
+        <div className={style.swap__txFeeBalance}>
+          <h2>{estimatedGas ? `TX Fee : ${estimatedGas} 5IRE` : ""}</h2>
+        </div>
+        <div className={style.swap__inFoAccount}>
+          <Tooltip title={MESSAGES.ED}>
+            <img src={Info} alt="infoImage" />
+          </Tooltip>
+          <h3>Transfer with account keep alive checks </h3>
+          <Switch defaultChecked onChange={onChangeToggler} />
         </div>
       </div>
       <Approve onClick={handleApprove} text="Swap" isDisable={disableBtn} />
+
       <ModalCustom
         isModalOpen={isModalOpen}
-        handleOk={handle_OK_Cancle}
-        handleCancel={handle_OK_Cancle}
-      >
+        handleOk={handle_OK_Cancel}
+        handleCancel={handle_OK_Cancel}
+        centered>
         <div className="swapsendModel">
           <div className="innerContact">
             <img src={ComplSwap} alt="swapIcon" width={127} height={127} draggable={false} />
             <h2 className="title">Swap Processed</h2>
-            <p className="transId">Your Swapped Transaction ID</p>
-            <span className="address">
-              {txHash ? shortner(txHash) : ""}
-              <img
-                width={15}
-                height={15}
-                name={"hash"}
-                src={CopyIcon}
-                alt="copyIcon"
-                draggable={false}
-                onClick={handleCopy}
-                />
-            </span>
-
             <div className="footerbuttons">
-              <ButtonComp text={"Swap Again"} onClick={handle_OK_Cancle} />
+              <ButtonComp text={"Swap Again"} onClick={handle_OK_Cancel} />
             </div>
           </div>
         </div>
       </ModalCustom>
+
       <ModalCustom
         isModalOpen={isFaildOpen}
-        handleOk={handle_OK_Cancle}
-        handleCancel={handle_OK_Cancle}
-      >
+        handleOk={handle_OK_Cancel}
+        handleCancel={handle_OK_Cancel}
+        centered>
         <div className="swapsendModel">
           <div className="innerContact">
             <img src={FaildSwap} alt="swapFaild" width={127} height={127} draggable={false} />
             <h2 className="title">Swap Failed!</h2>
-            <p className="transId">{swapErr}</p>
-
             <div className="footerbuttons">
-              <ButtonComp text={"Try Again"} onClick={handle_OK_Cancle} />
+              <ButtonComp text={"Try Again"} onClick={handle_OK_Cancel} />
             </div>
           </div>
         </div>

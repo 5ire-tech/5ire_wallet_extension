@@ -1,12 +1,12 @@
 @import "../../../styles/__vars.scss";
 .restOfHeaders {
-  padding: 10px 24px 10px 24px;
+  padding-top:30px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   gap: 15px;
   h4 {
-    font-size: 20px;
+    font-size: 22px;
     // font-weight: m;
     margin-bottom: 0;
     white-space: nowrap;
@@ -18,4 +18,11 @@
 }
 .backarow{
   transform: rotate(180deg);
+}
+.silverLogo{
+  width: 45px;
+}
+.backarrowIcon{
+  position: absolute;
+  left: 20px;
 }

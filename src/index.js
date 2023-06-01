@@ -1,119 +1,81 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
 import "./index.scss";
 import App from "./App";
-// import reportWebVitals from "./reportWebVitals";
+import React from "react";
+import Context from "./Store";
+import ReactDOM from "react-dom/client";
+import { Toaster } from "react-hot-toast";
 import { MemoryRouter } from "react-router-dom";
-import { Provider } from "react-redux";
-import { Store } from "./Scripts/webext-redux/dist/webext-redux";
-import { CONNECTION_NAME, PORT_NAME } from "./Constants";
-import reduxStore from "./Store/store";
-import browser from "webextension-polyfill";
-import { ToastContainer } from "react-toastify";
-const isDev = process.env.NODE_ENV === "development";
+import { EMTY_STR, LABELS } from "./Constants";
+import { getDataLocal } from "../src/Storage/loadstore";
+import { sessionStorage } from "../src/Storage/index";
+import { MessageOverStream } from "./Utility/message_helper";
 
 // eslint-disable-next-line no-extend-native
 Number.prototype.noExponents = function () {
   try {
     var data = String(this).split(/[eE]/);
     if (data.length === 1) return data[0];
-    var z = "",
-      sign = this < 0 ? "-" : "",
-      str = data[0].replace(".", ""),
+    var z = EMTY_STR,
+      sign = this < 0 ? "-" : EMTY_STR,
+      str = data[0].replace(".", EMTY_STR),
       mag = Number(data[1]) + 1;
     if (mag < 0) {
       z = sign + "0.";
       while (mag++) z += "0";
       // eslint-disable-next-line no-useless-escape
-      return z + str.replace(/^\-/, "");
+      return z + str.replace(/^\-/, EMTY_STR);
     }
     mag -= str.length;
     while (mag--) z += "0";
     return str + z;
   } catch (error) {
-  
+    console.log("Error in no exponent", error);
   }
 };
 
-const initApp = () => {
-  const store = new Store({ portName: PORT_NAME });
+//find the root element for component injection
+const root = ReactDOM.createRoot(document.getElementById("root"));
 
-  const root = ReactDOM.createRoot(document.getElementById("root"));
-
-  //fix for redux v8 in webext
-  Object.assign(store, {
-    dispatch: store.dispatch.bind(store),
-    getState: store.getState.bind(store),
-    subscribe: store.subscribe.bind(store),
-  });
-  const unsubscribe = store.subscribe(() => {
-    unsubscribe()
-
-    // The store implements the same interface as Redux's store
-    // so you can use tools like `react-redux` no problem!
-    root.render(
-      <Provider store={store}>
-        <MemoryRouter>
-          {/* <React.StrictMode> */}
-          <App />
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="colored"
-          />
-          {/* </React.StrictMode> */}
-        </MemoryRouter>
-      </Provider>
-    );
-  });
-
-  // If you want to start measuring performance in your app, pass a function
-  // to log results (for example: reportWebVitals(console.log))
-  // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-  // reportWebVitals();
+//init the main app
+const initApp = (data, externalControlsState, windowAndTabState) => {
+  root.render(
+    <MemoryRouter>
+      <Context>
+        <App
+          data={data}
+          externalControlsState={externalControlsState}
+          windowAndTabState={windowAndTabState}
+        />
+        <Toaster />
+      </Context>
+    </MemoryRouter>
+  );
 };
 
+(async () => {
+  try {
+    //connect to the background script using port longlive connection
+    MessageOverStream.setupStream();
 
+    //inject the current state into main app
+    const currentLocalState = await getDataLocal(LABELS.STATE);
+    const externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
+    const windowAndTabState = await getDataLocal(LABELS.WINDOW_AND_TAB_STATE);
 
-if (!isDev) {
-  browser.runtime.connect({ name: CONNECTION_NAME });
+    //created the transaction queue
+    await getDataLocal(LABELS.TRANSACTION_QUEUE);
 
-  // Listens for when the store gets initialized
-  browser.runtime.onMessage.addListener((req) => {
-    if (req.type === "STORE_INITIALIZED") {
-      // Initializes the popup logic
-      initApp();
-    }
-  });
-} else {
-  const root = ReactDOM.createRoot(document.getElementById("root"));
-  root.render(
-    <Provider store={reduxStore}>
-      <MemoryRouter>
-        {/* <React.StrictMode> */}
-        <App />
-        <ToastContainer
-          position="top-right"
-          autoClose={4000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
-        {/* </React.StrictMode> */}
-      </MemoryRouter>
-    </Provider>
-  );
-  // reportWebVitals();
-}
+    const loginState = await sessionStorage.get(LABELS.ISLOGIN);
+    currentLocalState.isLogin = !loginState?.isLogin ? false : currentLocalState?.isLogin;
+    initApp(currentLocalState, externalControlsState, windowAndTabState);
+  } catch (err) {
+    console.log("Error in the initlization of main app: ", err);
+    root.render(
+      <div className="errPage">
+        <center>
+          <h2>Something Bad Happend 😟</h2>
+        </center>
+      </div>
+    );
+  }
+})();

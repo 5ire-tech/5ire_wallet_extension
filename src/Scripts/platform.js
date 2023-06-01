@@ -1,45 +1,227 @@
 import Browser from "webextension-polyfill";
-import { setUIdata } from "../Utility/redux_helper";
+import { isNullorUndef } from "../Utility/utility";
+import { Error, ErrorPayload } from "../Utility/error_helper";
+import { hasLength, isString, isNumber } from "../Utility/utility";
+import { WINDOW_HEIGHT, WINDOW_WIDTH, ERRCODES, ERROR_MESSAGES } from "../Constants";
+import { isManifestV3 } from "./utils";
 
-export class ExtensionPlatform {
-  //
-  // Public
-  //
+//Handle the window and notification creation
+export default class WindowManager {
+  static instance = null;
+  constructor(
+    windowCloseCallback,
+    windowCreateCallback,
+    windowFocusChangeEvent,
+    tabsChangeEvent,
+    tabUpdateEvent
+  ) {
+    this.addOnRemovedListener(windowCloseCallback);
+    this.addOnWindowCreateListner(windowCreateCallback);
+    this.addWindowFocusChangeListner(windowFocusChangeEvent);
+    this.addTabChangeListner(tabsChangeEvent);
+    this.addTabUpdateListner(tabUpdateEvent);
+  }
+
+  //Get instance from builder function
+  static getInstance(
+    windowCloseCallback,
+    windowCreateCallback,
+    windowFocusChangeEvent,
+    tabsChangeEvent,
+    tabUpdateEvent
+  ) {
+    if (!WindowManager.instance) {
+      WindowManager.instance = new WindowManager(
+        windowCloseCallback,
+        windowCreateCallback,
+        windowFocusChangeEvent,
+        tabsChangeEvent,
+        tabUpdateEvent
+      );
+
+      delete WindowManager.constructor;
+    }
+    return WindowManager.instance;
+  }
+
+  /**
+   * Mark the notification popup as having been automatically closed.
+   *
+   * This lets us differentiate between the cases where we close the
+   * notification popup v.s. when the user closes the popup window directly.
+   */
+  markAsAutomaticallyClosed = () => {
+    this._popupAutomaticallyClosed = true;
+  };
+
+  /**
+   * Either brings an existing MetaMask notification window into focus, or creates a new notification window. New
+   * notification windows are given a 'popup' type.
+   *
+   */
+  showPopup = async (route = "") => {
+    console.log("Route", route);
+    //position control's
+    let left = 0;
+    let top = 0;
+
+    if (this.popupId) {
+      this.focusWindow(this.popupId);
+      return;
+    }
+
+    try {
+      const lastFocused = await this.getLastFocusedWindow();
+
+      // Position window in top right corner of lastFocused window.
+      top = lastFocused.top;
+      left = lastFocused.left + (lastFocused.width - WINDOW_WIDTH);
+    } catch (e) {
+      // The following properties are more than likely 0, due to being
+      // opened from the background chrome process for the extension that
+      // has no physical dimensions
+      const { screenX, screenY, outerWidth } = window;
+      top = Math.max(screenY, 0);
+      left = Math.max(screenX + (outerWidth - WINDOW_WIDTH), 0);
+    }
+
+    const extensionURL = Browser.runtime.getURL("index.html");
+
+    // create new approval window
+    const popupWindow = await this.openWindow({
+      url: extensionURL,
+      type: "popup",
+      width: WINDOW_WIDTH,
+      height: WINDOW_HEIGHT,
+      left,
+      top
+    });
+
+    // Firefox currently ignores left/top for create, but it works for update
+    if (popupWindow.left !== left && popupWindow.state !== "fullscreen") {
+      await this.updateWindowPosition(popupWindow.id, left, top);
+    }
+
+    // Firefox currently ignores left/top for create, but it works for update
+    if (popupWindow.left !== left && popupWindow.state !== "fullscreen") {
+      await this.updateWindowPosition(popupWindow.id, left, top);
+    }
+
+    return popupWindow.id;
+  };
+
+  /**
+   * get all currently opened window and remove extra windows
+   */
+  filterAndRemoveWindows = async (filterId, isRemoveAll) => {
+    const allPopupWindows = await this.getAllPopupWindows();
+
+    if (isRemoveAll) {
+      for (let itemWindow of allPopupWindows) await this.closePopup(itemWindow.id);
+      return;
+    }
+
+    const otherWindowThanTask = allPopupWindows.filter((item) => item.id !== filterId);
+    for (let itemWindow of otherWindowThanTask) await this.closePopup(itemWindow.id);
+  };
+
+  /**
+   * close the current active popup
+   * @param {*} popupId
+   */
+  closePopup = async (popupId) => {
+    await this.closeWindow(popupId);
+  };
+
+  /**
+   * Checks all open MetaMask windows, and returns the first one it finds that is a notification window (i.e. has the
+   * type 'popup')
+   *
+   * @private
+   */
+  _getPopup = async () => {
+    const windows = await this.getAllWindows();
+    return this._getPopupIn(windows);
+  };
+
+  /**
+   * Given an array of windows, returns the 'popup' that has been opened by MetaMask, or null if no such window exists.
+   * @private
+   * @param {Array} windows - An array of objects containing data about the open MetaMask extension windows.
+   */
+  _getPopupIn = (windows) => {
+    return windows
+      ? windows.find((win) => {
+          // Returns notification popup
+          return win && win.type === "popup" && win.id === this._popupId;
+        })
+      : null;
+  };
+
+  /************************************ Internal Window Control Methods ************************************/
+  //reload the extension
   reload() {
     Browser.runtime.reload();
   }
 
+  //open tab
   async openTab(options) {
     const newTab = await Browser.tabs.create(options);
     return newTab;
   }
 
+  //open window
   async openWindow(options) {
     const newWindow = await Browser.windows.create(options);
     return newWindow;
   }
 
+  //close window
+  async closeWindow(windowId) {
+    await Browser.windows.remove(windowId);
+  }
+
+  //get the window using the window id
+  async getWindowById(windowId) {
+    try {
+      const window = await Browser.windows.get(windowId);
+      return window;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  //focus on window
   async focusWindow(windowId) {
     await Browser.windows.update(windowId, { focused: true });
   }
 
+  //update window position
   async updateWindowPosition(windowId, left, top) {
     await Browser.windows.update(windowId, { left, top });
   }
 
+  //get all windows
+  async getAllPopupWindows() {
+    const allWindows = await Browser.windows.getAll({ windowTypes: ["popup"] });
+    return allWindows;
+  }
+
+  //get the last focus window
   async getLastFocusedWindow() {
     const windowObject = await Browser.windows.getLastFocused();
     return windowObject;
   }
 
+  //close the current window
   async closeCurrentWindow() {
     const windowDetails = await Browser.windows.getCurrent();
     Browser.windows.remove(windowDetails.id);
   }
 
+  //get the app version
   getVersion() {
-    const { version, version_name: versionName } =
-      Browser.runtime.getManifest();
+    const { version, version_name: versionName } = Browser.runtime.getManifest();
 
     const versionParts = version.split(".");
     if (versionName) {
@@ -59,7 +241,7 @@ export class ExtensionPlatform {
       // On Firefox, the build type and build version are in the third part of the version.
       const [major, minor, patchAndPrerelease] = versionParts;
       const matches = patchAndPrerelease.match(/^(\d+)([A-Za-z]+)(\d)+$/u);
-      if (matches === null) {
+      if (isNullorUndef(matches)) {
         throw new Error(`Version contains invalid prerelease: ${version}`);
       }
       const [, patch, buildType, buildVersion] = matches;
@@ -71,6 +253,7 @@ export class ExtensionPlatform {
     return version;
   }
 
+  //get the platform (os) information
   getPlatformInfo(cb) {
     try {
       const platformInfo = Browser.runtime.getPlatformInfo();
@@ -83,198 +266,93 @@ export class ExtensionPlatform {
     }
   }
 
-  addOnRemovedListener(listener) {
-    Browser.windows.onRemoved.addListener(listener);
+  //add the listner for close btn
+  addOnRemovedListener(cb) {
+    Browser.windows.onRemoved.addListener(cb);
   }
 
+  //add the listner for create window event
+  addOnWindowCreateListner(cb) {
+    Browser.windows.onCreated.addListener(cb);
+  }
+
+  //add window focus change listner
+  addWindowFocusChangeListner(cb) {
+    Browser.windows.onFocusChanged.addListener(cb);
+  }
+
+  //add Tab change listner
+  addTabChangeListner(cb) {
+    Browser.tabs.onActivated.addListener(cb);
+  }
+
+  //add event for tab update event
+  addTabUpdateListner(cb) {
+    Browser.tabs.onUpdated.addListener(cb);
+  }
+
+  //get all windows
   async getAllWindows() {
     const windows = await Browser.windows.getAll();
     return windows;
   }
 
+  //get active tab
   async getActiveTabs() {
     const tabs = await Browser.tabs.query({ active: true });
     return tabs;
   }
 
+  //get current active tab
   async currentTab() {
     const tab = await Browser.tabs.getCurrent();
     return tab;
   }
 
+  //switch between tabs
   async switchToTab(tabId) {
     const tab = await Browser.tabs.update(tabId, { highlighted: true });
     return tab;
   }
 
+  //close a tab using tabId
   async closeTab(tabId) {
     await Browser.tabs.remove(tabId);
   }
 }
 
-const NOTIFICATION_HEIGHT = 620;
-const NOTIFICATION_WIDTH = 400;
+//manage the notification's and bedge's
+export class NotificationAndBedgeManager {
+  static instance = null;
 
-export const NOTIFICATION_MANAGER_EVENTS = {
-  POPUP_CLOSED: "onPopupClosed",
-};
-
-/**
- * A collection of methods for controlling the showing and hiding of the notification popup.
- */
-export default class NotificationManager {
-  constructor(store) {
-    this.platform = new ExtensionPlatform();
-    this.platform.addOnRemovedListener(this._onWindowClosed.bind(this));
-    this.store = store;
-  }
-
-  /**
-   * Mark the notification popup as having been automatically closed.
-   *
-   * This lets us differentiate between the cases where we close the
-   * notification popup v.s. when the user closes the popup window directly.
-   */
-  markAsAutomaticallyClosed() {
-    this._popupAutomaticallyClosed = true;
-  }
-
-  /**
-   * Either brings an existing MetaMask notification window into focus, or creates a new notification window. New
-   * notification windows are given a 'popup' type.
-   *
-   */
-  async showPopup(route = "") {
-
-    const popup = await this._getPopup();
-
-    //ensure only 1 instance of popup is opened
-    // this.store.dispatch(setTxPopup(true))
-    await Browser.storage.local.set({ popupStatus: true });
-
-    // Bring focus to chrome popup
-    if (popup) {
-      // bring focus to existing chrome popup
-      await this.platform.focusWindow(popup.id);
-    } else {
-      let left = 0;
-      let top = 0;
-      try {
-        const lastFocused = await this.platform.getLastFocusedWindow();
-        // Position window in top right corner of lastFocused window.
-        top = lastFocused.top;
-        left = lastFocused.left + (lastFocused.width - NOTIFICATION_WIDTH);
-      } catch (_) {
-        // The following properties are more than likely 0, due to being
-        // opened from the background chrome process for the extension that
-        // has no physical dimensions
-        const { screenX, screenY, outerWidth } = window;
-        top = Math.max(screenY, 0);
-        left = Math.max(screenX + (outerWidth - NOTIFICATION_WIDTH), 0);
-      }
-      const extensionURL = Browser.runtime.getURL("index.html");
-
-      // create new notification popup
-      const popupWindow = await this.platform.openWindow({
-        url: extensionURL + `?route=${route}`,
-        type: "popup",
-        width: NOTIFICATION_WIDTH,
-        height: NOTIFICATION_HEIGHT,
-        left,
-        top,
-      });
-
-      // Firefox currently ignores left/top for create, but it works for update
-      if (popupWindow.left !== left && popupWindow.state !== "fullscreen") {
-        await this.platform.updateWindowPosition(popupWindow.id, left, top);
-      }
-      this._popupId = popupWindow.id;
+  //get the already created instance
+  static getInstance = () => {
+    if (!NotificationAndBedgeManager.instance) {
+      NotificationAndBedgeManager.instance = new NotificationAndBedgeManager();
+      delete NotificationAndBedgeManager.constructor;
     }
-  }
+    return NotificationAndBedgeManager.instance;
+  };
 
-  async _onWindowClosed(windowId) {
-    // console.log("Yyyyyyyy", windowId, this._popupId)
-    if (windowId === this._popupId) {
+  //show extension notifications
+  showNotification(message, title = "5ire", type = "basic") {
+    if (!isString(message) && !hasLength(message))
+      new Error(new ErrorPayload(ERRCODES.CHECK_FAIL, ERROR_MESSAGES.INVALID_TYPE)).throw();
 
-      //false the current popup if the close button is clicked
-      // this.store.dispatch(setTxPopup(false))
-      // const dataHere = await Browser.storage.local.get("popupStatus");
-      // console.log("here is your data inside local: ", dataHere);
-      await Browser.storage.local.set({ popupStatus: false });
-      // const hereOutput = await Browser.storage.local.get("popupStatus");
-
-      this._popupId = undefined;
-      // this.emit("POPUP_CLOSED", {
-      //   automaticallyClosed: this._popupAutomaticallyClosed,
-      // });
-      this._popupAutomaticallyClosed = undefined;
-      this.handleClose()
-
-    }
-  }
-
-  handleClose() {
-    const state = this.store.getState();
-    const method = state?.auth.uiData?.message?.method;
-    const conntectMethods = ["eth_requestAccounts",
-      "eth_accounts",
-      "connect"];
-
-
-    //for connect permission rejection evm
-    if (conntectMethods.indexOf('method') > -1) {
-      Browser.tabs.sendMessage(state?.auth?.uiData?.tabId, {
-        id: state?.auth.uiData?.id,
-        response: null,
-        error: "User rejected connect permission.",
-
-      });
-
-      //for transaction permission rejection evm
-    } else if (method === 'eth_sendTransaction') {
-      Browser.tabs.sendMessage(state?.auth?.uiData?.tabId, {
-        id: state?.auth?.uiData?.id,
-        response: null,
-        error: "User rejected  transaction.",
-      });
-
-    }
-
-
-    //for all other permission rejection
-    Browser.tabs.sendMessage(state?.auth?.uiData?.tabId, {
-      id: state?.auth.uiData?.id,
-      response: null,
-      error: "Action rejected by the user",
-
+    Browser.notifications.create("", {
+      iconUrl: Browser.runtime.getURL("logo192.png"),
+      message,
+      title,
+      type
     });
-
-    this.store.dispatch(setUIdata({}))
-
-  }
-  /**
-   * Checks all open MetaMask windows, and returns the first one it finds that is a notification window (i.e. has the
-   * type 'popup')
-   *
-   * @private
-   */
-  async _getPopup() {
-    const windows = await this.platform.getAllWindows();
-    return this._getPopupIn(windows);
   }
 
-  /**
-   * Given an array of windows, returns the 'popup' that has been opened by MetaMask, or null if no such window exists.
-   *
-   * @private
-   * @param {Array} windows - An array of objects containing data about the open MetaMask extension windows.
-   */
-  _getPopupIn(windows) {
-    return windows
-      ? windows.find((win) => {
-        // Returns notification popup
-        return win && win.type === "popup" && win.id === this._popupId;
-      })
-      : null;
+  //show the bedge on extension icon
+  showBedge(bedgeMessage) {
+    const isNum = isNumber(bedgeMessage);
+    const actionKey = isManifestV3 ? "action" : "browserAction";
+    Browser[actionKey].setBadgeText({
+      text: isNum ? (bedgeMessage > 0 ? String(bedgeMessage) : "") : bedgeMessage
+    });
   }
 }

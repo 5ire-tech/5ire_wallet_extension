@@ -1,19 +1,14 @@
 import bcrypt from "bcryptjs";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  setLogin,
-  setPassword,
-  setCurrentAcc,
-  pushAccounts,
-  setNewAccount,
-} from "../Utility/redux_helper";
-import { encryptor } from "../Helper/CryptoHelper";
+import { useContext } from "react";
+import { AuthContext } from "../Store";
 import Browser from "webextension-polyfill";
 import { isManifestV3 } from "../Scripts/utils";
+import { encryptor } from "../Helper/CryptoHelper";
+import { LABELS, ERROR_MESSAGES, SUCCESS_MESSAGES } from "../Constants/index";
 
 export default function useAuth() {
-  const { pass, newAccount } = useSelector((state) => state.auth);
-  const dispatch = useDispatch();
+  const { state, updateState } = useContext(AuthContext);
+  const { allAccounts, newAccount, txHistory } = state;
 
   const setUserPass = (p) => {
     return new Promise(async (resolve) => {
@@ -24,86 +19,88 @@ export default function useAuth() {
         if (salt) {
           hash = bcrypt.hashSync(p, salt);
           if (hash) {
-            let temp1m = encryptor(newAccount?.temp1m, hash);
-            let dataToDispatch = {
+            const temp1m = encryptor(newAccount?.temp1m, hash);
+
+            const dataToDispatch = {
               ...newAccount,
               temp1m,
-              temp2p: null,
+              temp2p: null
             };
 
-            dispatch(setPassword(hash));
-            dispatch(setNewAccount(null));
-            dispatch(setCurrentAcc(dataToDispatch));
-            dispatch(pushAccounts(dataToDispatch));
-            if (isManifestV3) {
-              await Browser.storage.session.set({ login: true });
-            } else {
-              await Browser.storage.local.set({ login: true });
-            }
+            const currentAccountDetails = {
+              index: allAccounts.length,
+              accountName: newAccount.accountName
+            };
+
+            updateState(LABELS.PASS, hash);
+            updateState(LABELS.NEW_ACCOUNT, null);
+            updateState(LABELS.TX_HISTORY, {
+              ...txHistory,
+              [newAccount.evmAddress]: []
+            });
+            updateState(LABELS.ALL_ACCOUNTS, [...allAccounts, dataToDispatch]);
+            updateState(LABELS.CURRENT_ACCOUNT, currentAccountDetails);
+            updateState(LABELS.ISLOGIN, true, true, true);
+
             resolve({
               error: false,
-              data: "Successfully created password for user!",
+              data: SUCCESS_MESSAGES.PASS_CREATED_SUCCESS
             });
-          } else throw new Error("Error while setting up password for user!");
-        } else throw new Error("Error while setting up password for user!");
+          } else throw new Error();
+        } else throw new Error();
       } catch (error) {
-        // console.log("Error : ", error);
+        console.log("Error while settig user Pass : ", error);
         resolve({
           error: true,
-          data: "Error occured.",
+          data: ERROR_MESSAGES.ERR_OCCURED
         });
       }
     });
   };
 
-  const verifyPass = async (p) => {
+  const verifyPass = async (pass, hash) => {
     try {
-      let res = bcrypt.compareSync(p, pass);
+      let res = bcrypt.compareSync(pass, hash);
 
       if (res) {
         if (isManifestV3) {
           await Browser.storage.session.set({ login: true });
         } else {
           await Browser.storage.local.set({ login: true });
-        } 
+        }
 
         return {
           error: false,
-          data: "Login successfully.",
+          data: SUCCESS_MESSAGES.LOGIN_SUCCESS
         };
       } else {
         return {
           error: true,
-          data: "Incorrect password.",
+          data: ERROR_MESSAGES.INCORRECT_PASS
         };
       }
     } catch (error) {
-      // console.log("Error : ", error);
+      console.log("Error while verifying password : ", error);
       return {
         error: true,
-        data: "Error Occured.",
+        data: ERROR_MESSAGES.ERR_OCCURED
       };
     }
   };
 
   const logout = async () => {
     try {
-      if (isManifestV3) {
-        await Browser.storage.session.remove(["login"]);
-      } else {
-        await Browser.storage.local.remove(["login"]);
-      }
-      dispatch(setLogin(false));
+      updateState(LABELS.ISLOGIN, false, true, true);
 
       return {
         error: false,
-        data: "Logout successfully!",
+        data: SUCCESS_MESSAGES.LOGOUT_SUCCESS
       };
     } catch (error) {
-      console.log("Error : ", error);
+      console.log("Error  while logging out: ", error);
       return {
         error: false,
-        data: "Error while logging out!",
+        data: ERROR_MESSAGES.LOGOUT_ERR
       };
     }
   };
@@ -111,6 +108,6 @@ export default function useAuth() {
   return {
     verifyPass,
     setUserPass,
-    logout,
+    logout
   };
 }

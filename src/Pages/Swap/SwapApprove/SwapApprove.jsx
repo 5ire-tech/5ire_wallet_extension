@@ -2,6 +2,7 @@ import React from "react";
 import style from "./style.module.scss";
 import SwapIcon from "../../../Assets/ArrowRightIcon.svg";
 import Approve from "../../Approve/Approve";
+
 function SwapApprove() {
   return (
     <>
@@ -14,7 +15,7 @@ function SwapApprove() {
             <p>0xs3...5486s</p>
           </div>
           <div className={style.swapApprove__approveCard__icon}>
-            <img src={SwapIcon} draggable={false} alt="swapIcon"/>
+            <img src={SwapIcon} draggable={false} alt="swapIcon" />
           </div>
           <div className={style.swapApprove__approveCard__swapSec}>
             <h3>

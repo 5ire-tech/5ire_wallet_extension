@@ -1,49 +1,56 @@
-import React from "react";
-import {toast} from "react-toastify";
+import { ROUTES } from "../../Routes";
+import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
-import { useSelector } from "react-redux";
+import { shortner } from "../../Helper/helper";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../Store/index";
 import CopyIcon from "../../Assets/CopyIcon.svg";
+import React, { useContext, useEffect } from "react";
 import ButtonComp from "../ButtonComp/ButtonComp.jsx";
-import { NATIVE, EVM, COPIED } from "../../Constants/index";
-import Exportprivate from "../../Assets/PNG/exportprivate.png";
-// import { InputFieldOnly } from "../InputField/InputFieldSimple.jsx";
+import { NATIVE, EVM, COPIED } from "../../Constants";
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx";
 
 function ManageWallet() {
   const navigate = useNavigate();
-  const { currentAccount } = useSelector(state => state.auth);
+
+  const { state, setPassVerified } = useContext(AuthContext);
+  const { currentAccount } = state;
+
+  useEffect(() => {
+    setPassVerified(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCopy = (e) => {
     if (e.target.name === NATIVE) {
-      navigator.clipboard.writeText(currentAccount.nativeAddress);
+      navigator.clipboard.writeText(currentAccount?.nativeAddress);
     }
     if (e.target.name === EVM) {
-      navigator.clipboard.writeText(currentAccount.evmAddress);
+      navigator.clipboard.writeText(currentAccount?.evmAddress);
     }
     if (e.target.name === "name") {
-      navigator.clipboard.writeText(currentAccount.accountName);
+      navigator.clipboard.writeText(currentAccount?.accountName);
     }
-    toast.success(COPIED)
-  }
+    toast.success(COPIED);
+  };
 
   return (
     <>
       <div className={`scrollableCont`}>
-        <MenuRestofHeaders backTo={"/wallet"} title={"Manage Wallet"} />
+        <MenuRestofHeaders backTo={ROUTES.WALLET} title={"Manage Wallet"} />
         <div className={`flexedContent`}>
-          {/* <InputFieldOnly
-            placeholder={"Type Wallet Name"}
-            placeholderBaseColor={true}
-            coloredBg={true}
-            label="Wallet Name:"
-          /> */}
           <div className={style.wallet}>
             <div className={style.wallet__addressInput}>
               <label>Wallet Name:</label>
               <p className={style.wallet__addressInput__copyText}>
                 <span>{currentAccount?.accountName}</span>
-                <img src={CopyIcon} alt="copyIcon" name="name" onClick={handleCopy} draggable={false}/>{" "}
+                <img
+                  src={CopyIcon}
+                  alt="copyIcon"
+                  name="name"
+                  onClick={handleCopy}
+                  draggable={false}
+                />{" "}
               </p>
             </div>
           </div>
@@ -51,26 +58,41 @@ function ManageWallet() {
             <div className={style.wallet__addressInput}>
               <label>Native Chain Address:</label>
               <p className={style.wallet__addressInput__copyText}>
-                <span>{currentAccount.nativeAddress}</span>
-                <img src={CopyIcon} alt="copyIcon" name={NATIVE} onClick={handleCopy} draggable={false}/>{" "}
+                <span>{shortner(currentAccount?.nativeAddress, 15, 15)}</span>
+                <img
+                  src={CopyIcon}
+                  alt="copyIcon"
+                  name={NATIVE}
+                  onClick={handleCopy}
+                  draggable={false}
+                />{" "}
               </p>
             </div>
           </div>
           <div className={style.wallet}>
             <div className={style.wallet__addressInput}>
-              <label>Evm Chain Address:</label>
+              <label>EVM Chain Address:</label>
               <p className={style.wallet__addressInput__copyText}>
-                <span>{currentAccount.evmAddress}</span>
-                <img src={CopyIcon} alt="copyIcon" name={EVM} onClick={handleCopy} draggable={false} />{" "}
+                <span>{shortner(currentAccount?.evmAddress, 15, 15)}</span>
+                <img
+                  src={CopyIcon}
+                  alt="copyIcon"
+                  name={EVM}
+                  onClick={handleCopy}
+                  draggable={false}
+                />{" "}
               </p>
             </div>
           </div>
           <div className={style.btn_icon}>
             <ButtonComp
-              onClick={() => navigate("/enterPassword")}
-              text="Export Private Key"
-              img={Exportprivate}
-            ></ButtonComp>
+              onClick={() => navigate(ROUTES.ENTER_PASS)}
+              text="Reveal Secret Keys"></ButtonComp>
+            {/* <ButtonComp
+              bordered={true}
+              onClick={() => navigate(ROUTES.ENTER_PASS + "/" + MNEMONIC)}
+              text="Reveal Mnemonic"
+            /> */}
           </div>
         </div>
       </div>

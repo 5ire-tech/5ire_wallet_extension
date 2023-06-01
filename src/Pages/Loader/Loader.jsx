@@ -1,16 +1,17 @@
-import { Spin } from "antd";
-import { useSelector } from "react-redux";
+import { Player } from "@lottiefiles/react-lottie-player";
+import JsonData from "../../Assets/JsonFiles/loader";
 
 export default function Loader() {
-  const isLoading = useSelector((state) => state?.auth?.isLoading);
-
-  if (isLoading) {
-    return (
-      <div className="loader">
-        <Spin size="large" />
+  return (
+    <div className="loader">
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <Player
+          autoplay={true}
+          loop={true}
+          controls={true}
+          src={JsonData}
+          style={{ height: "190px", width: "190px" }}></Player>
       </div>
-    );
-  } else {
-    return [];
-  }
+    </div>
+  );
 }

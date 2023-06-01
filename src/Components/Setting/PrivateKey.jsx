@@ -1,85 +1,133 @@
-import { useEffect } from "react";
-import { toast } from "react-toastify";
-import React, { useState } from "react";
+import { ROUTES } from "../../Routes";
+import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
-import { useSelector } from "react-redux";
-import {COPIED} from "../../Constants/index";
-import useWallet from "../../Hooks/useWallet";
+import { AuthContext } from "../../Store/index";
 import CopyIcon from "../../Assets/CopyIcon.svg";
-import ButtonComp from "../ButtonComp/ButtonComp";
-import { decryptor } from "../../Helper/CryptoHelper";
+import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
+import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
+import React, { useContext, useEffect, useState } from "react";
+import { sendRuntimeMessage } from "../../Utility/message_helper.js";
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
-
+import {
+  COPIED,
+  PVT_KEY,
+  MNEMONIC,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS
+} from "../../Constants/index";
 
 function PrivateKey() {
-  const { currentAccount, pass } = useSelector((state) => state.auth);
-  const [key, setKey] = useState("");
-  const [seed, setSeed] = useState("");
-  const [show, handleShow] = useState(false);
-  const { getKey } = useWallet();
-  const name = ["seed", "key"];
+  const { state, privateKey, seedPhrase } = useContext(AuthContext);
+  const { currentAccount } = state;
+  const [isOpen, setOpen] = useState({ open1: true, open2: true });
 
+  const handleEyeOpen = (e) => {
+    const name = e.target.name;
+    setOpen((p) => ({ ...p, [name]: !isOpen[name] }));
+  };
   useEffect(() => {
-    setKey(getKey(currentAccount?.temp1m, pass));
-  }, [currentAccount, getKey]);
+    sendRuntimeMessage(
+      MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+      MESSAGE_EVENT_LABELS.EXPORT_PRIVATE_KEY,
+      { address: currentAccount?.evmAddress }
+    );
+    sendRuntimeMessage(
+      MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+      MESSAGE_EVENT_LABELS.EXPORT_SEED_PHRASE,
+      { address: currentAccount.nativeAddress }
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCopy = (e) => {
-    if (e.target.name === name[0])
-      navigator.clipboard.writeText(seed);
-    else if (e.target.name === name[1])
-      navigator.clipboard.writeText(key);
+    if (e.target.name === MNEMONIC) navigator.clipboard.writeText(seedPhrase);
+    else if (e.target.name === PVT_KEY) navigator.clipboard.writeText(privateKey);
     toast.success(COPIED);
-  };
-
-  useEffect(() => {
-    if (show && !seed) {
-      let seed = (decryptor(currentAccount.temp1m, pass));
-      setSeed(seed)
-    }
-  }, [show]);
-
-  const handleClick = () => {
-    handleShow(!show);
   };
 
   return (
     <>
       <div className={`scrollableCont`}>
-        <MenuRestofHeaders backTo={"/wallet"} title={""} />
+        <MenuRestofHeaders backTo={ROUTES.ENTER_PASS} title={""} />
         <div className={`flexedContent`}>
           <div className={style.enterPassword}>
             <div className={style.commonHeadeing}>
-              <h1>Your Private Key</h1>
+              <h1>Your Secret Keys</h1>
             </div>
             <div className={style.wallet}>
               <div className={style.wallet__addressInput}>
-                <p className={style.wallet__addressInput__copyText}>
-                  <span>{key}</span>
+                <label>EVM Private Key:</label>
+                <p
+                  className={`${style.wallet__addressInput__copyText} ${style.wallet__addressInput__privateCopyText}`}>
+                  <span className={isOpen.open1 && "blurContact"}>
+                    {privateKey ? privateKey : ""}
+                  </span>
+                  {isOpen?.open1 ? (
+                    <img
+                      width={19}
+                      height={16}
+                      name="open1"
+                      alt="eyeClose"
+                      src={EyeCloseIcon}
+                      draggable={false}
+                      onClick={handleEyeOpen}
+                    />
+                  ) : (
+                    <img
+                      width={19}
+                      height={12}
+                      alt="eyeOpen"
+                      name="open1"
+                      draggable={false}
+                      src={EyeOpenIcon}
+                      onClick={handleEyeOpen}
+                    />
+                  )}
                   <img
                     draggable={false}
                     src={CopyIcon}
                     alt="copyIcon"
-                    name="key"
+                    name={PVT_KEY}
                     onClick={handleCopy}
                   />
                 </p>
               </div>
             </div>
 
-            <div className={style.mnemonicsButton}>
-              <ButtonComp
-                onClick={handleClick}
-                text={show ? "Hide Mnemonic" : "Reveal Mnemonic"} />
-            </div>
-            <div className={style.wallet} hidden={!show ? true : false}>
+            <div className={style.wallet}>
               <div className={style.wallet__addressInput}>
-                <p className={style.wallet__addressInput__copyText}>
-                  <span>{seed}</span>
+                <label>Mnemonic Phrase:</label>
+                <p
+                  className={`${style.wallet__addressInput__copyText} ${style.wallet__addressInput__privateCopyText}`}>
+                  <span className={isOpen.open2 && "blurContact"}>
+                    {seedPhrase ? seedPhrase : ""}
+                  </span>
+                  {isOpen?.open2 ? (
+                    <img
+                      width={19}
+                      height={16}
+                      name="open2"
+                      alt="eyeClose"
+                      src={EyeCloseIcon}
+                      draggable={false}
+                      onClick={handleEyeOpen}
+                    />
+                  ) : (
+                    <img
+                      width={19}
+                      height={12}
+                      alt="eyeOpen"
+                      name="open2"
+                      draggable={false}
+                      src={EyeOpenIcon}
+                      onClick={handleEyeOpen}
+                    />
+                  )}
                   <img
                     draggable={false}
                     src={CopyIcon}
                     alt="copyIcon"
-                    name="seed"
+                    name={MNEMONIC}
                     onClick={handleCopy}
                   />
                 </p>
