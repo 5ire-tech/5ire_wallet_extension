@@ -68,6 +68,7 @@
         padding-top: 0;
         word-break: break-word;
         line-height: 14px;
+        max-width: 350px
       }
     }
 
@@ -530,6 +531,7 @@
   // z-index: 99999;
   display: flex;
   justify-content: flex-end;
+  margin-bottom: 10px;
 
   button {
     border-radius: 4px;

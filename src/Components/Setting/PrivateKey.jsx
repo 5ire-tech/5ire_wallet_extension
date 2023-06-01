@@ -48,12 +48,12 @@ function PrivateKey() {
   return (
     <>
       <div className={`scrollableCont`}>
-        <MenuRestofHeaders backTo={ROUTES.ENTER_PASS} title={""} />
+        <MenuRestofHeaders backTo={ROUTES.ENTER_PASS} title={"Your Secret Keys"} />
         <div className={`flexedContent`}>
           <div className={style.enterPassword}>
-            <div className={style.commonHeadeing}>
+            {/* <div className={style.commonHeadeing}>
               <h1>Your Secret Keys</h1>
-            </div>
+            </div> */}
             <div className={style.wallet}>
               <div className={style.wallet__addressInput}>
                 <label>EVM Private Key:</label>
