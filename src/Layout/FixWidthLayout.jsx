@@ -28,7 +28,7 @@ function FixWidthLayout({ children }) {
         {(pathname === ROUTES.WALLET ||
           ROUTES.SWAP_APPROVE ||
           ROUTES.APPROVE_TXN ||
-          pathname === ROUTES.HISTORY_P ||
+          pathname === ROUTES.HISTORY ||
           pathname === ROUTES.MY_ACCOUNT) && (
           <div className={style.fixedLayout__inner__walletLayout}>
             <div className={style.decoratedBg} style={{ textAlign: "left" }}>
@@ -40,7 +40,7 @@ function FixWidthLayout({ children }) {
         <Content className={style.fixedLayout__content}>{children} </Content>
         {(isEqual(pathname, ROUTES.APPROVE_TXN) ||
           isEqual(pathname, ROUTES.WALLET) ||
-          isEqual(pathname, ROUTES.HISTORY_P) ||
+          isEqual(pathname, ROUTES.HISTORY) ||
           isEqual(pathname, ROUTES.MY_ACCOUNT)) && <MenuFooter />}
       </div>
     </div>

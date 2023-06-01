@@ -36,7 +36,7 @@ function MenuFooter() {
   return (
     <div className={`${style.menuItems} welcomeFooter`}>
       {(pathname === ROUTES.WALLET ||
-        pathname === ROUTES.HISTORY_P ||
+        pathname === ROUTES.HISTORY ||
         pathname === ROUTES.MY_ACCOUNT) && (
         <>
           <Link
@@ -52,9 +52,9 @@ function MenuFooter() {
           </Link>
           <Link
             draggable={false}
-            to={ROUTES.HISTORY_P}
+            to={ROUTES.HISTORY}
             className={`${style.menuItems__items} ${
-              pathname === ROUTES.HISTORY_P ? style.menuItems__items__active : ""
+              pathname === ROUTES.HISTORY ? style.menuItems__items__active : ""
             }`}>
             <div className={style.menuItems__items__img}>
               <img src={HistoryIcon} alt="HistoryIcon" draggable={false} />

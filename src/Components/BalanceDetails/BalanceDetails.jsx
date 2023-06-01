@@ -239,14 +239,14 @@ function BalanceDetails({ mt0 }) {
       {(isEqual(pathname, ROUTES.WALLET) ||
         isEqual(pathname, ROUTES.SWAP_APPROVE) ||
         isEqual(pathname, ROUTES.APPROVE_TXN) ||
-        isEqual(pathname, ROUTES.HISTORY_P) ||
+        isEqual(pathname, ROUTES.HISTORY) ||
         isEqual(pathname, ROUTES.MY_ACCOUNT)) && (
         <div className={`${style.balanceDetails} ${mt0 ? mt0 : EMTY_STR}`}>
           <div className={style.balanceDetails__decoratedSec}>
             <>
               <img src={DarkLogo} alt="logo" draggable={false} />
               {(isEqual(pathname, ROUTES.WALLET) ||
-                isEqual(pathname, ROUTES.HISTORY_P) ||
+                isEqual(pathname, ROUTES.HISTORY) ||
                 isEqual(pathname, ROUTES.APPROVE_TXN) ||
                 isEqual(pathname, ROUTES.MY_ACCOUNT)) && (
                 <div

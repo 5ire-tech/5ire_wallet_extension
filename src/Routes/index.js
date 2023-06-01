@@ -3,12 +3,11 @@ export const ROUTES = {
   SEND: "/send",
   SWAP: "/swap",
   WALLET: "/wallet",
-  HISTORY_P: "/history",
   HISTORY: "/history",
   SETTINGS: "/setting",
   PVT_KEY: "/private-key",
   NATIVE_TXN: "/native-tx",
-  VALIDATOR_NOMINATOR_TXN: "/validator-nomiator-tx",
+  MY_ACCOUNT: "/my-account",
   SET_PASS: "/set-password",
   APPROVE_TXN: "/approve-tx",
   SWAP_APPROVE: "/swap-approve",
@@ -19,8 +18,8 @@ export const ROUTES = {
   IMPORT_WALLET: "/import-wallet",
   MANAGE_WALLET: "/manage-wallet",
   UNLOACK_WALLET: "/unlock-wallet",
+  PRIVACY_POLICY: "/privacy-policy",
   NEW_WALLET_DETAILS: "/new-wallet-details",
-  MY_ACCOUNT: "/my-account",
   FORGOT_PASSWORD: "/forgot-password",
-  PRIVACY_POLICY: "/privacy-policy"
+  VALIDATOR_NOMINATOR_TXN: "/validator-nomiator-tx"
 };

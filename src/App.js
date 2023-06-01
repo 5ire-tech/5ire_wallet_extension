@@ -142,7 +142,7 @@ function App(props) {
             />
             <Route
               index
-              path={ROUTES.HISTORY_P}
+              path={ROUTES.HISTORY}
               element={
                 <FixWidthLayout>
                   <History />
