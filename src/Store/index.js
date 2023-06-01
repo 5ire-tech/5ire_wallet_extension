@@ -39,9 +39,7 @@ export default function Context({ children }) {
   const [externalControlsState, setExternalControlState] = useState(externalControls);
   const [showCongratLoader, setShowCongratLoader] = useState(false);
 
-  //transaction queue
-  const [pendingBalance, setPendingBalance] = useState(0);
-
+  //for check if localstate is loaded or not
   const [isStateLoaded, setStateLoaded] = useState(false);
 
   //background error's
@@ -150,6 +148,7 @@ export default function Context({ children }) {
 
   //set the evm fee
   const updateEstimatedGas = (latestEstimatedGas) => {
+    log("changed: ", latestEstimatedGas, latestEstimatedGas !== estimatedGas);
     latestEstimatedGas !== estimatedGas && setEstimatedGas(latestEstimatedGas);
   };
 
@@ -291,7 +290,6 @@ export default function Context({ children }) {
     passVerified,
     isStateLoaded,
     newWalletName,
-    pendingBalance,
     backgroundError,
     showCongratLoader,
     valdatorNominatorFee,
@@ -314,7 +312,6 @@ export default function Context({ children }) {
     setNetworkError,
     setPassVerified,
     setNewWalletName,
-    setPendingBalance,
     setBackgroundError,
     updateEstimatedGas,
     setShowCongratLoader,
