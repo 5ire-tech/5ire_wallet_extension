@@ -542,6 +542,7 @@
 .errorText {
   text-align: left;
   color: $red;
+  max-width: 370px;
   position: absolute;
   font-size: 12px !important;
 }
