@@ -200,12 +200,13 @@ export class ExternalWindowControl {
             active: true,
             windowId: windowId
           });
+          const url = tab[0]?.pendingUrl || tab[0]?.url;
           const windowAndTabDetails = {
             windowId: windowId,
             tabDetails: {
-              tabId: tab[0].id,
-              url: tab[0]?.pendingUrl || tab[0].url,
-              origin: new URL(tab[0]?.pendingUrl || tab[0].url).origin
+              tabId: tab[0]?.id,
+              url: url,
+              origin: url && new URL(url)?.origin
             }
           };
 
