@@ -1,0 +1,6 @@
+{
+    "presets": ["@babel/preset-env"],
+    "plugins": ["@babel/plugin-transform-modules-commonjs"],
+    "ignore": ["node_modules", "src/Assets", "src/Components", "src/Hooks", "src/maifest", "src/Pages", "src/Routes", "src/styles", "src/App.js", "src/index.js", "src/reportWebVitals.js", "src/setupTests.js", "src/App.test.js", "src/Layout", "src/Store"]
+}
+  

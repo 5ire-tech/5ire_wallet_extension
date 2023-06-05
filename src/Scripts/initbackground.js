@@ -1250,6 +1250,10 @@ export class Services {
   getBlockInsideDetails = async (network, txHash) => {
     try {
       log("here is the network: ", network);
+
+      //return if the node connection is null
+      if (!NetworkHandler.api[network]?.nativeApi) return null;
+
       const { nativeApi } = NetworkHandler.api[network];
       const blockNumber = TransactionQueue.blockSlots[network];
 
@@ -1531,6 +1535,16 @@ export class Services {
   createConnection = async (currentNetwork) => {
     const connector = Connection.getInsatnce();
     const apiConn = await connector.initializeApi(currentNetwork);
+
+    //check if there is error property connection payload
+    if (apiConn?.error) {
+      ExtensionEventHandle.eventEmitter.emit(
+        INTERNAL_EVENT_LABELS.ERROR,
+        new ErrorPayload(ERRCODES.FAILED_TO_CONNECT_NETWORK, apiConn?.error.message)
+      );
+      return { error: apiConn?.error };
+    }
+
     return apiConn;
   };
 
