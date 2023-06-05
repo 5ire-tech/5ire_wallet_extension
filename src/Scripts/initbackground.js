@@ -1067,16 +1067,16 @@ export class ExtensionEventHandle {
 
         //transaction failed and error message handler
         if (isEqual(err?.errCode, ERRCODES.ERROR_WHILE_TRANSACTION))
-          this.services.messageToUI(
-            MESSAGE_EVENT_LABELS.BACKGROUND_ERROR,
-            customMessage || ERROR_MESSAGES.ERROR_WHILE_TRANSACTION
-          );
+          this.services.messageToUI(MESSAGE_EVENT_LABELS.BACKGROUND_ERROR, {
+            message: customMessage || ERROR_MESSAGES.ERROR_WHILE_TRANSACTION,
+            real: err?.errMessage
+          });
 
         if (isEqual(err?.errCode, ERRCODES.ERROR_WHILE_GETTING_ESTIMATED_FEE))
-          this.services.messageToUI(
-            MESSAGE_EVENT_LABELS.BACKGROUND_ERROR,
-            customMessage || ERROR_MESSAGES.ERROR_WHILE_GAS_ESTIMATION
-          );
+          this.services.messageToUI(MESSAGE_EVENT_LABELS.BACKGROUND_ERROR, {
+            message: customMessage || ERROR_MESSAGES.ERROR_WHILE_GAS_ESTIMATION,
+            real: err?.errMessage
+          });
 
         if (isEqual(err?.errCode, ERRCODES.FAILED_TO_CONNECT_NETWORK))
           this.services.messageToUI(
@@ -1085,10 +1085,10 @@ export class ExtensionEventHandle {
           );
 
         if (isEqual(err?.errCode, ERRCODES.INTERNAL))
-          this.services.messageToUI(
-            MESSAGE_EVENT_LABELS.BACKGROUND_ERROR,
-            customMessage || ERROR_MESSAGES.INTERNAL_ERROR
-          );
+          this.services.messageToUI(MESSAGE_EVENT_LABELS.BACKGROUND_ERROR, {
+            message: customMessage || ERROR_MESSAGES.INTERNAL_ERROR,
+            real: err?.errMessage
+          });
       } catch (err) {
         log("Error in error event handler: ", err);
       }
@@ -2571,7 +2571,6 @@ export class NetworkHandler {
 
     //insert connection into its network slot
     NetworkHandler.api[currentNetwork.toLowerCase()] = api;
-    log("all api is here: ", NetworkHandler.api);
     await this.checkNetwork();
   };
 

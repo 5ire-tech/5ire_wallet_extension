@@ -233,10 +233,7 @@ export class ExternalWindowControl {
         windowAndTabState.tabDetails.tabId !== changePayload.tabId &&
         changePayload.tabId !== -1
       ) {
-        log("change payload: ", changePayload);
-
         const tab = await Browser.tabs.get(changePayload.tabId);
-        log("tab payload: ", tab);
         const windowAndTabDetails = {
           windowId: changePayload.windowId,
           tabDetails: {
@@ -267,7 +264,6 @@ export class ExternalWindowControl {
       if (windowAndTabState.tabDetails.tabId === tabId) {
         const tab = await Browser.tabs.get(tabId);
         if (windowAndTabState.tabDetails.origin !== new URL(tab?.pendingUrl || tab.url).origin) {
-          log("changed the url details: ");
           const windowAndTabDetails = {
             windowId: windowAndTabState.windowId,
             tabDetails: {

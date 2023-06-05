@@ -3,7 +3,7 @@ import Browser from "webextension-polyfill";
 import { useNavigate } from "react-router-dom";
 import { isManifestV3 } from "../Scripts/utils";
 import { createContext, useState } from "react";
-import { isNullorUndef, log } from "../Utility/utility";
+import { isNullorUndef } from "../Utility/utility";
 import { sessionStorage, localStorage } from "../Storage";
 import { sendEventToTab, setTimer } from "../Helper/helper";
 import { TabMessagePayload } from "../Utility/network_calls";
@@ -148,7 +148,6 @@ export default function Context({ children }) {
 
   //set the evm fee
   const updateEstimatedGas = (latestEstimatedGas) => {
-    log("changed: ", latestEstimatedGas, latestEstimatedGas !== estimatedGas);
     latestEstimatedGas !== estimatedGas && setEstimatedGas(latestEstimatedGas);
   };
 
