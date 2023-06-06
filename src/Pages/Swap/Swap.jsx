@@ -4,7 +4,7 @@ import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
 import { AuthContext } from "../../Store";
 import Info from "../../Assets/infoIcon.svg";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect } from "react";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import SmallLogo from "../../Assets/smallLogo.svg";
@@ -37,7 +37,6 @@ function Swap() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [toFrom, setToFrom] = useState({ from: NATIVE, to: EVM });
-  const timeoutRef = useRef(null);
 
   const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
   const { allAccountsBalance, pendingTransactionBalance, currentNetwork, currentAccount } = state;
@@ -49,10 +48,7 @@ function Swap() {
     setAmount("");
     updateEstimatedGas(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    return () => {
-      timeoutRef.current && clearTimeout(timeoutRef.current);
-    };
-  }, [toFrom?.to, currentNetwork, updateEstimatedGas]);
+  }, [toFrom?.to, currentNetwork]);
 
   useEffect(() => {
     if (!amount && !estimatedGas) {
@@ -211,7 +207,7 @@ function Swap() {
             }
           }
         );
-        timeoutRef.current = setTimeout(() => {
+        setTimeout(() => {
           setIsModalOpen(true);
           updateLoading(false);
         }, 3000);
@@ -232,14 +228,17 @@ function Swap() {
             }
           }
         );
-        timeoutRef.current = setTimeout(() => {
+        setTimeout(() => {
           setIsModalOpen(true);
           updateLoading(false);
         }, 3000);
       }
+      setAmount("");
+      updateEstimatedGas(null);
     } catch (error) {
       toast.error("Error occured.");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     amount,
     estimatedGas,
@@ -274,19 +273,9 @@ function Swap() {
           isEd
         });
       }
-
-      updateEstimatedGas(null);
     },
-    [
-      amount,
-      balance?.evmBalance,
-      balance?.nativeBalance,
-      isEd,
-      state.currentAccount,
-      toFrom.from,
-      updateEstimatedGas,
-      updateLoading
-    ]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [amount, balance?.evmBalance, balance?.nativeBalance, isEd, state.currentAccount, toFrom.from]
   );
 
   //handle the changed value of inputs
@@ -312,7 +301,8 @@ function Swap() {
         }
       }
     },
-    [amount, updateEstimatedGas]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [amount]
   );
 
   //Perform action on click of Enter
@@ -326,11 +316,9 @@ function Swap() {
 
   //handle Ok and cancel button of popup
   const handle_OK_Cancel = () => {
-    setAmount("");
     setDisable(true);
     setIsFaildOpen(false);
     setIsModalOpen(false);
-    updateEstimatedGas(null);
   };
 
   //Set To and from

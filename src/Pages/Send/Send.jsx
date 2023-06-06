@@ -11,7 +11,7 @@ import { validateAddress } from "../../Utility/utility";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
-import React, { useState, useEffect, useContext, useCallback, useRef } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { InputField, InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import {
   EVM,
@@ -35,7 +35,6 @@ function Send() {
   const [err, setErr] = useState({ to: "", amount: "" });
   const [isMaxDisabled, setMaxDisabled] = useState(true);
   const [data, setData] = useState({ to: "", amount: "" });
-  const timeoutRef = useRef(null);
 
   const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
   const { currentAccount, pendingTransactionBalance, currentNetwork, allAccountsBalance } = state;
@@ -53,10 +52,6 @@ function Send() {
     if (!data.to && !data.amount && !estimatedGas) {
       setErr({ to: "", amount: "" });
     }
-
-    return () => {
-      timeoutRef.current && clearTimeout(timeoutRef.current);
-    };
   }, [data.to, data.amount, estimatedGas]);
 
   useEffect(() => {
@@ -155,7 +150,6 @@ function Send() {
     activeTab,
     data.amount,
     estimatedGas,
-    updateEstimatedGas,
     balance?.evmBalance,
     balance?.nativeBalance
   ]);
@@ -292,7 +286,8 @@ function Send() {
         }
       }
     },
-    [data.to, updateEstimatedGas]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data.to]
   );
 
   //Perform action on click of Enter
@@ -325,7 +320,7 @@ function Send() {
             },
             isEd
           });
-          timeoutRef.current = setTimeout(() => {
+          setTimeout(() => {
             setIsModalOpen(true);
             updateLoading(false);
           }, 3000);
@@ -348,12 +343,14 @@ function Send() {
             },
             isEd
           });
-          timeoutRef.current = setTimeout(() => {
+          setTimeout(() => {
             setIsModalOpen(true);
             updateLoading(false);
           }, 3000);
         }
       }
+      setData({ amount: "", to: "" });
+      updateEstimatedGas(null);
     } catch (error) {
       toast.error(ERROR_MESSAGES.ERR_OCCURED);
     }
@@ -381,10 +378,7 @@ function Send() {
   //handle Ok and cancel button of popup
   const handle_OK_Cancel = () => {
     setIsFaildOpen(false);
-    updateEstimatedGas(null);
-    setData({ to: "", amount: "" });
     setIsModalOpen(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   };
 
   //performs action when user click on max button
