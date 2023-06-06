@@ -440,17 +440,15 @@ function BalanceDetails({ mt0 }) {
                             ].totalBalance
                           }>
                           <span className="totalBal">
-                            {
-                              allAccountsBalance[currentAccount?.evmAddress][
-                                currentNetwork.toLowerCase()
-                              ].totalBalance
-                            }
+                            {allAccountsBalance[currentAccount?.evmAddress][
+                              currentNetwork.toLowerCase()
+                            ].totalBalance || 0}
                           </span>
                         </Tooltip>{" "}
                         &nbsp;{CURRENCY}
                       </>
                     ) : (
-                      ""
+                      0
                     )}{" "}
                   </span>
                 </p>
@@ -462,21 +460,13 @@ function BalanceDetails({ mt0 }) {
                     <Tooltip
                       title={
                         allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
-                          ?.nativeBalance
-                          ? allAccountsBalance[currentAccount?.evmAddress][
-                              currentNetwork.toLowerCase()
-                            ]?.nativeBalance
-                          : ""
+                          ?.nativeBalance || 0
                       }>
                       <h3>
                         {/* <img src={WalletCardLogo} draggable={false} alt="walletLogo" /> */}
                         {allAccountsBalance[currentAccount?.evmAddress][
                           currentNetwork.toLowerCase()
-                        ]?.nativeBalance
-                          ? allAccountsBalance[currentAccount?.evmAddress][
-                              currentNetwork.toLowerCase()
-                            ]?.nativeBalance
-                          : ""}
+                        ]?.nativeBalance || 0}
                       </h3>
                     </Tooltip>
                   </div>
@@ -497,20 +487,12 @@ function BalanceDetails({ mt0 }) {
                     <Tooltip
                       title={
                         allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
-                          ?.evmBalance
-                          ? allAccountsBalance[currentAccount?.evmAddress][
-                              currentNetwork.toLowerCase()
-                            ]?.evmBalance
-                          : ""
+                          ?.evmBalance || 0
                       }>
                       <h3>
                         {allAccountsBalance[currentAccount?.evmAddress][
                           currentNetwork.toLowerCase()
-                        ]?.evmBalance
-                          ? allAccountsBalance[currentAccount?.evmAddress][
-                              currentNetwork.toLowerCase()
-                            ]?.evmBalance
-                          : ""}
+                        ]?.evmBalance || 0}
                       </h3>
                     </Tooltip>
                   </div>

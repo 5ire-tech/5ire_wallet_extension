@@ -54,18 +54,6 @@ function Swap() {
     };
   }, [toFrom?.to, currentNetwork]);
 
-  // useEffect(() => {
-  //   setBalance(allAccountsBalance[currentAccount?.evmAddress][currentNetwork?.toLowerCase()]);
-  // }, [
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance,
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.nativeBalance,
-  //   currentAccount?.evmAddress,
-  //   currentNetwork,
-  //   allAccountsBalance
-  // ]);
-
   useEffect(() => {
     if (!amount && !estimatedGas) {
       setError("");
@@ -250,7 +238,14 @@ function Swap() {
     } catch (error) {
       toast.error("Error occured.");
     }
-  }, [amount, estimatedGas, state.currentAccount, state.currentNetwork, toFrom.from]);
+  }, [
+    amount,
+    estimatedGas,
+    state.currentAccount,
+    state.currentNetwork,
+    toFrom.from,
+    updateLoading
+  ]);
 
   //for getting the fee details
   const getFee = useCallback(

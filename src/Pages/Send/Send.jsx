@@ -49,18 +49,6 @@ function Send() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentAccount?.evmAddress, currentAccount?.nativeAddress, currentNetwork]);
 
-  // useEffect(() => {
-  //   setBalance(allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]);
-  // }, [
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance,
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.nativeBalance,
-  //   currentAccount?.evmAddress,
-  //   currentNetwork,
-  //   allAccountsBalance
-  // ]);
-
   useEffect(() => {
     if (!data.to && !data.amount && !estimatedGas) {
       setErr({ to: "", amount: "" });
@@ -380,7 +368,8 @@ function Send() {
     estimatedGas,
     isEd,
     state.currentAccount,
-    state.currentNetwork
+    state.currentNetwork,
+    updateLoading
   ]);
 
   const activeSend = (e) => {
