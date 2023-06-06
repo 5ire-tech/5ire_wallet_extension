@@ -120,9 +120,8 @@ export const sendEventToTab = async (
   emitWithoutConnectionCheck = false
 ) => {
   if (
-    !checkStringInclusionIntoArray(tabDetails.tabDetails.origin, RESTRICTED_URLS) &&
-    ((connectedApps && connectedApps[tabDetails.tabDetails.origin]?.isConnected) ||
-      emitWithoutConnectionCheck)
+    !checkStringInclusionIntoArray(tabDetails.origin, RESTRICTED_URLS) &&
+    ((connectedApps && connectedApps[tabDetails.origin]?.isConnected) || emitWithoutConnectionCheck)
   ) {
     tabDetails.tabDetails.tabId && sendMessageToTab(tabDetails.tabDetails.tabId, tabMessagePayload);
   }

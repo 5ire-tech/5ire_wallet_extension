@@ -4,7 +4,7 @@ import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
 import { AuthContext } from "../../Store";
 import Info from "../../Assets/infoIcon.svg";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import SmallLogo from "../../Assets/smallLogo.svg";
@@ -37,6 +37,7 @@ function Swap() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [toFrom, setToFrom] = useState({ from: NATIVE, to: EVM });
+  const timeoutRef = useRef(null);
 
   const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
   const { allAccountsBalance, pendingTransactionBalance, currentNetwork, currentAccount } = state;
@@ -48,7 +49,10 @@ function Swap() {
     setAmount("");
     updateEstimatedGas(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toFrom?.to, currentNetwork]);
+    return () => {
+      timeoutRef.current && clearTimeout(timeoutRef.current);
+    };
+  }, [toFrom?.to, currentNetwork, updateEstimatedGas]);
 
   useEffect(() => {
     if (!amount && !estimatedGas) {
@@ -191,6 +195,7 @@ function Swap() {
   const handleApprove = useCallback(async () => {
     try {
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
+        updateLoading(true);
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.INTERNAL_TX,
           MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP,
@@ -206,8 +211,12 @@ function Swap() {
             }
           }
         );
-        setIsModalOpen(true);
+        timeoutRef.current = setTimeout(() => {
+          setIsModalOpen(true);
+          updateLoading(false);
+        }, 3000);
       } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
+        updateLoading(true);
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.INTERNAL_TX,
           MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP,
@@ -223,12 +232,22 @@ function Swap() {
             }
           }
         );
-        setIsModalOpen(true);
+        timeoutRef.current = setTimeout(() => {
+          setIsModalOpen(true);
+          updateLoading(false);
+        }, 3000);
       }
     } catch (error) {
       toast.error("Error occured.");
     }
-  }, [amount, estimatedGas, state.currentAccount, state.currentNetwork, toFrom.from]);
+  }, [
+    amount,
+    estimatedGas,
+    state.currentAccount,
+    state.currentNetwork,
+    toFrom.from,
+    updateLoading
+  ]);
 
   //for getting the fee details
   const getFee = useCallback(

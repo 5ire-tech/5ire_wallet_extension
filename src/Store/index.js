@@ -70,7 +70,7 @@ export default function Context({ children }) {
       switch (message.event) {
         case MESSAGE_EVENT_LABELS.EVM_FEE:
         case MESSAGE_EVENT_LABELS.NATIVE_FEE:
-          !estimatedGas && updateEstimatedGas(message.data.fee);
+          Number(message.data.fee) !== Number(estimatedGas) && updateEstimatedGas(message.data.fee);
           setTimer(updateLoading.bind(null, false));
           break;
 
@@ -148,7 +148,7 @@ export default function Context({ children }) {
 
   //set the evm fee
   const updateEstimatedGas = (latestEstimatedGas) => {
-    latestEstimatedGas !== estimatedGas && setEstimatedGas(latestEstimatedGas);
+    Number(latestEstimatedGas) !== Number(estimatedGas) && setEstimatedGas(latestEstimatedGas);
   };
 
   //set Loading

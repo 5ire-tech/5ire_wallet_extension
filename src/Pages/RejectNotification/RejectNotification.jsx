@@ -35,7 +35,7 @@ function ApproveTx() {
       value: activeSession?.message?.value,
       toAddress: activeSession?.message?.to,
       data: activeSession?.message?.data,
-      options: { account: currentAccount }
+      options: { account: currentAccount, id: activeSession?.id }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

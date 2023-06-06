@@ -9,6 +9,7 @@ import { EMTY_STR, LABELS } from "./Constants";
 import { getDataLocal } from "../src/Storage/loadstore";
 import { sessionStorage } from "../src/Storage/index";
 import { MessageOverStream } from "./Utility/message_helper";
+import Browser from "webextension-polyfill";
 
 // eslint-disable-next-line no-extend-native
 Number.prototype.noExponents = function () {
@@ -61,6 +62,10 @@ const initApp = (data, externalControlsState, windowAndTabState) => {
     const currentLocalState = await getDataLocal(LABELS.STATE);
     const externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
     const windowAndTabState = await getDataLocal(LABELS.WINDOW_AND_TAB_STATE);
+
+    //handle the reopening the extension window using shortcut
+    const isPopup = Browser.extension.getViews({ type: "popup" });
+    !isPopup.length && !externalControlsState.activeSession && window.close();
 
     //created the transaction queue
     await getDataLocal(LABELS.TRANSACTION_QUEUE);

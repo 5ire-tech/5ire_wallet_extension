@@ -1,9 +1,7 @@
 import Web3 from "web3";
 import { ApiPromise } from "@polkadot/api";
-import { ErrorPayload } from "../Utility/error_helper";
 import { HttpProvider, WsProvider } from "@polkadot/rpc-provider";
-import { ExtensionEventHandle } from "../Scripts/initbackground";
-import { ERRCODES, HTTP_END_POINTS, INTERNAL_EVENT_LABELS } from "../Constants";
+import { HTTP_END_POINTS } from "../Constants";
 
 export class Connection {
   static nativeApi = {};
@@ -35,10 +33,6 @@ export class Connection {
         evmApi: Connection.evmApi[networkMode]
       };
     } catch (err) {
-      ExtensionEventHandle.eventEmitter.emit(
-        INTERNAL_EVENT_LABELS.ERROR,
-        new ErrorPayload(ERRCODES.FAILED_TO_CONNECT_NETWORK, err.message)
-      );
       return { error: err };
     }
   };

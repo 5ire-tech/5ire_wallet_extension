@@ -67,6 +67,8 @@
     "build:chrome": "yarn fix && INLINE_RUNTIME_CHUNK=false BUILD_TYPE=CHROME MINI=1 GENERATE_SOURCEMAP=false craco build",
     "build:dev-firefox": "yarn fix && INLINE_RUNTIME_CHUNK=false MINI=0 BUILD_TYPE=FIREFOX GENERATE_SOURCEMAP=false craco build",
     "build:firefox": "yarn fix && NLINE_RUNTIME_CHUNK=true BUILD_TYPE=FIREFOX  MINI=1 GENERATE_SOURCEMAP=false craco build",
+    "test-background": "yarn generate-test-files && node ./background-tests/Scripts/background-tests/test-runner.js",
+    "generate-test-files": "npx babel src/ --out-dir background-tests",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint .",
