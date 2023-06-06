@@ -284,6 +284,12 @@ function Swap() {
       const val = e.target.value;
       const arr = val.split(".");
 
+      if (val === "") {
+        updateEstimatedGas(null);
+        setAmount("");
+        return;
+      }
+
       if (arr.length > 1) {
         if (arr[1].length > 18) {
           let slice = arr[1].slice(0, 18);
@@ -302,7 +308,7 @@ function Swap() {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [amount]
+    [amount, updateEstimatedGas]
   );
 
   //Perform action on click of Enter

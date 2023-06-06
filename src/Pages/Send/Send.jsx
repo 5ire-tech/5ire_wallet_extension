@@ -262,6 +262,12 @@ function Send() {
   //handle the changed value of inputs
   const handleChange = useCallback(
     (e) => {
+      if (e.target.value === "") {
+        updateEstimatedGas(null);
+        setData((prev) => ({ ...prev, amount: "" }));
+        return;
+      }
+
       if (e.target.name === LABELS.AMOUNT) {
         const arr = e.target.value.split(".");
         if (arr.length > 1) {
@@ -287,7 +293,7 @@ function Send() {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data.to]
+    [data.to, data.amount, updateEstimatedGas]
   );
 
   //Perform action on click of Enter
