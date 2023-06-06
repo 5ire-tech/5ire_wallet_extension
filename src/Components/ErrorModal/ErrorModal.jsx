@@ -15,7 +15,7 @@ export default function ErrorModal() {
 
     if (backgroundError?.real?.includes(ERROR_MESSAGES.PAIR_KEYRING_ERROR)) {
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.LOCK, {});
-      toast.error(ERROR_MESSAGES.LOGIN_AGAIN)
+      toast.error(ERROR_MESSAGES.LOGIN_AGAIN);
     }
   };
 
