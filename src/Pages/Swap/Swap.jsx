@@ -1,10 +1,10 @@
-import { useCallback, useEffect } from "react";
 import { Switch, Tooltip } from "antd";
 import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
 import { AuthContext } from "../../Store";
 import Info from "../../Assets/infoIcon.svg";
+import { useCallback, useEffect } from "react";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import SmallLogo from "../../Assets/smallLogo.svg";
@@ -50,18 +50,6 @@ function Swap() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toFrom?.to, currentNetwork]);
 
-  // useEffect(() => {
-  //   setBalance(allAccountsBalance[currentAccount?.evmAddress][currentNetwork?.toLowerCase()]);
-  // }, [
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.evmBalance,
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]?.nativeBalance,
-  //   currentAccount?.evmAddress,
-  //   currentNetwork,
-  //   allAccountsBalance
-  // ]);
-
   useEffect(() => {
     if (!amount && !estimatedGas) {
       setError("");
@@ -70,14 +58,16 @@ function Swap() {
 
   useEffect(() => {
     if (
-      (toFrom.from === EVM && Number(balance?.evmBalance) < 1) ||
-      (toFrom.from === NATIVE && Number(balance?.nativeBalance) < 1)
+      (toFrom.from === EVM && Number(balance?.evmBalance) <= 2 && isEd) ||
+      (toFrom.from === NATIVE && Number(balance?.nativeBalance) <= 2 && isEd) ||
+      (toFrom.from === EVM && Number(balance?.evmBalance) <= 1 && !isEd) ||
+      (toFrom.from === NATIVE && Number(balance?.nativeBalance) <= 1 && !isEd)
     ) {
       setMaxDisabled(true);
     } else {
       setMaxDisabled(false);
     }
-  }, [balance?.evmBalance, balance?.nativeBalance, toFrom?.from]);
+  }, [balance?.evmBalance, balance?.nativeBalance, toFrom?.from, isEd]);
 
   //Get fee if to and amount is present
   useEffect(() => {
@@ -268,8 +258,16 @@ function Swap() {
 
       updateEstimatedGas(null);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [amount, balance?.evmBalance, balance?.nativeBalance, isEd, state.currentAccount, toFrom.from]
+    [
+      amount,
+      balance?.evmBalance,
+      balance?.nativeBalance,
+      isEd,
+      state.currentAccount,
+      toFrom.from,
+      updateEstimatedGas,
+      updateLoading
+    ]
   );
 
   //handle the changed value of inputs
@@ -295,8 +293,7 @@ function Swap() {
         }
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [amount]
+    [amount, updateEstimatedGas]
   );
 
   //Perform action on click of Enter
@@ -315,7 +312,6 @@ function Swap() {
     setIsFaildOpen(false);
     setIsModalOpen(false);
     updateEstimatedGas(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   };
 
   //Set To and from
