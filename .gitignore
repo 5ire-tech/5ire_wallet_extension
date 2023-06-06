@@ -10,6 +10,7 @@
 
 # production
 /build
+/background-tests
 
 # misc
 .DS_Store

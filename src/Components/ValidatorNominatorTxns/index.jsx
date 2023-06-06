@@ -72,7 +72,7 @@ function ValidatorNominatorTxns() {
     sendMessageOverStream(
       MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
       MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE,
-      {}
+      { options: { id: activeSession?.id } }
     );
     setDisableApproval(!valdatorNominatorFee?.fee);
     // eslint-disable-next-line react-hooks/exhaustive-deps

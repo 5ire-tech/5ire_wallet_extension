@@ -8,7 +8,7 @@ import FaildSwap from "../../Assets/DarkLogo.svg";
 import SmallLogo from "../../Assets/smallLogo.svg";
 import ComplSwap from "../../Assets/succeslogo.svg";
 import { validateAddress } from "../../Utility/utility";
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useEffect, useContext, useCallback, useRef } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
@@ -35,6 +35,7 @@ function Send() {
   const [err, setErr] = useState({ to: "", amount: "" });
   const [isMaxDisabled, setMaxDisabled] = useState(true);
   const [data, setData] = useState({ to: "", amount: "" });
+  const timeoutRef = useRef(null);
 
   const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
   const { currentAccount, pendingTransactionBalance, currentNetwork, allAccountsBalance } = state;
@@ -64,6 +65,10 @@ function Send() {
     if (!data.to && !data.amount && !estimatedGas) {
       setErr({ to: "", amount: "" });
     }
+
+    return () => {
+      timeoutRef.current && clearTimeout(timeoutRef.current);
+    };
   }, [data.to, data.amount, estimatedGas]);
 
   useEffect(() => {
@@ -318,6 +323,7 @@ function Send() {
         if (balance?.evmBalance < 1.1) {
           toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
         } else {
+          updateLoading(true);
           //pass the message request for evm transfer
           sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TX, {
             to: data.to,
@@ -331,12 +337,16 @@ function Send() {
             },
             isEd
           });
-          setIsModalOpen(true);
+          timeoutRef.current = setTimeout(() => {
+            setIsModalOpen(true);
+            updateLoading(false);
+          }, 3000);
         }
       } else if (activeTab === NATIVE) {
         if (balance?.nativeBalance < 1.1) {
           toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
         } else {
+          updateLoading(true);
           //pass the message request for native transfer
           sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TX, {
             to: data.to,
@@ -350,7 +360,10 @@ function Send() {
             },
             isEd
           });
-          setIsModalOpen(true);
+          timeoutRef.current = setTimeout(() => {
+            setIsModalOpen(true);
+            updateLoading(false);
+          }, 3000);
         }
       }
 

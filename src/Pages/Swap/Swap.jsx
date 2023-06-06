@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Switch, Tooltip } from "antd";
 import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
@@ -37,6 +37,7 @@ function Swap() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [toFrom, setToFrom] = useState({ from: NATIVE, to: EVM });
+  const timeoutRef = useRef(null);
 
   const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
   const { allAccountsBalance, pendingTransactionBalance, currentNetwork, currentAccount } = state;
@@ -48,6 +49,9 @@ function Swap() {
     setAmount("");
     updateEstimatedGas(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      timeoutRef.current && clearTimeout(timeoutRef.current);
+    };
   }, [toFrom?.to, currentNetwork]);
 
   // useEffect(() => {
@@ -201,6 +205,7 @@ function Swap() {
   const handleApprove = useCallback(async () => {
     try {
       if (toFrom.from.toLowerCase() === EVM.toLowerCase()) {
+        updateLoading(true);
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.INTERNAL_TX,
           MESSAGE_EVENT_LABELS.EVM_TO_NATIVE_SWAP,
@@ -216,8 +221,12 @@ function Swap() {
             }
           }
         );
-        setIsModalOpen(true);
+        timeoutRef.current = setTimeout(() => {
+          setIsModalOpen(true);
+          updateLoading(false);
+        }, 3000);
       } else if (toFrom.from.toLowerCase() === NATIVE.toLowerCase()) {
+        updateLoading(true);
         sendRuntimeMessage(
           MESSAGE_TYPE_LABELS.INTERNAL_TX,
           MESSAGE_EVENT_LABELS.NATIVE_TO_EVM_SWAP,
@@ -233,7 +242,10 @@ function Swap() {
             }
           }
         );
-        setIsModalOpen(true);
+        timeoutRef.current = setTimeout(() => {
+          setIsModalOpen(true);
+          updateLoading(false);
+        }, 3000);
       }
     } catch (error) {
       toast.error("Error occured.");

@@ -2138,6 +2138,8 @@ export class TransactionsRPC {
 
 //for balance, fee and other calls
 export class GeneralWalletRPC {
+  // static feeStore = {};
+
   constructor() {
     this.hybridKeyring = HybridKeyring.getInstance();
     this.nominatorValidatorHandler = ValidatorNominatorHandler.getInstance();
@@ -2225,6 +2227,14 @@ export class GeneralWalletRPC {
       if (isNullorUndef(account))
         new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
+      //check if fee is calculated for same request
+      // if (GeneralWalletRPC.feeStore[id]) {
+      //   const payload = {
+      //     data: { fee: GeneralWalletRPC.feeStore[id] }
+      //   };
+      //   return new EventPayload(null, message.event, payload);
+      // }
+
       let toAddress = data.toAddress ? data.toAddress : data?.data ? null : account.nativeAddress;
       let amount = data?.value;
 
@@ -2247,11 +2257,11 @@ export class GeneralWalletRPC {
         tx.data = data.data;
       }
 
-      log("here is address: ", tx);
-
       const gasAmount = await evmApi.eth.estimateGas(tx);
       const gasPrice = await evmApi.eth.getGasPrice();
       const fee = new BigNumber(gasPrice * gasAmount).dividedBy(DECIMALS).toString();
+
+      // GeneralWalletRPC.feeStore[id] = fee;
 
       const payload = {
         data: { fee }
@@ -2434,11 +2444,20 @@ export class GeneralWalletRPC {
   //calculate the fee for nominator and validator
   validatorNominatorFee = async (message, state) => {
     try {
+      // const id = message.data.options.id;
+      // //check if fee is calculated for same request
+      // if (GeneralWalletRPC.feeStore[id])
+      //   return new EventPayload(null, message.event, GeneralWalletRPC.feeStore[id]);
+
       const eventPayload = await this.nominatorValidatorHandler.handleNativeAppsTask(
         state,
         message,
         true
       );
+
+      //set the current fee using tx id
+      // GeneralWalletRPC.feeStore[id] = eventPayload.payload;
+
       return eventPayload;
     } catch (err) {
       log("here is error: ", err);
