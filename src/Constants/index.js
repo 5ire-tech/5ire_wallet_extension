@@ -27,7 +27,7 @@ export const RELOAD_ID = "RELOAD_PAGE";
 
 //tabs event
 export const TABS_EVENT = {
-  ACCOUNT_CHANGE_EVENT: "accountsChanged",
+  ACCOUNT_CHANGE_EVENT: "accountChanged",
   NETWORK_CHANGE_EVENT: "networkChanged",
   WALLET_CONNECTED_EVENT: "connect",
   WALLET_DISCONNECTED_EVENT: "disconnect",
