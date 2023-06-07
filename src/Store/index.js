@@ -194,6 +194,7 @@ export default function Context({ children }) {
         setShowCongratLoader(false);
       }, 2000);
       sendEventToTab(
+        windowAndTab,
         new TabMessagePayload(
           TABS_EVENT.ACCOUNT_CHANGE_EVENT,
           {
@@ -226,6 +227,7 @@ export default function Context({ children }) {
     setNewAccount(data?.newAccount);
     //send account details whenever account is changed
     sendEventToTab(
+      windowAndTab,
       new TabMessagePayload(
         TABS_EVENT.ACCOUNT_CHANGE_EVENT,
         {
