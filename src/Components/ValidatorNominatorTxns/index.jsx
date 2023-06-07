@@ -9,8 +9,8 @@ import {
   ERROR_MESSAGES,
   MESSAGE_EVENT_LABELS,
   MESSAGE_TYPE_LABELS,
-  TX_TYPE
-  // VALIDATION_METHODS_VD_NM
+  TX_TYPE,
+  VALIDATION_METHODS_VD_NM
 } from "../../Constants";
 import { shortLongAddress } from "../../Utility/utility";
 import { AuthContext } from "../../Store";
@@ -80,15 +80,17 @@ function ValidatorNominatorTxns() {
 
   //process the transaction
   function handleClick(isApproved) {
-    // if (VALIDATION_METHODS_VD_NM.includes(activeSession?.method)) {
-    //   const totalAmount =
-    //     +valdatorNominatorFee?.fee +
-    //     +activeSession.message?.amount +
-    //     pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native;
-    //   if (+balance?.nativeBalance < totalAmount) {
-    //     return toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE_VD_NM);
-    //   }
-    // }
+    let totalAmount =
+      +valdatorNominatorFee?.fee +
+      pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native;
+
+    if (VALIDATION_METHODS_VD_NM.includes(activeSession?.method)) {
+      totalAmount += +activeSession.message?.amount;
+    }
+
+    if (isApproved && +balance?.nativeBalance < totalAmount) {
+      return toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE_VD_NM);
+    }
 
     // updateLoading(true);
     sendMessageOverStream(
