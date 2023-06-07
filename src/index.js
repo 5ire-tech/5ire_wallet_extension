@@ -63,10 +63,6 @@ const initApp = (data, externalControlsState, windowAndTabState) => {
     const externalControlsState = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
     const windowAndTabState = await getDataLocal(LABELS.WINDOW_AND_TAB_STATE);
 
-    //handle the reopening the extension window using shortcut
-    // const isPopup = Browser.extension.getViews({ type: "popup" });
-    // !isPopup.length && !externalControlsState.activeSession && window.close();
-
     //created the transaction queue
     await getDataLocal(LABELS.TRANSACTION_QUEUE);
 

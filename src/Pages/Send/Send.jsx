@@ -264,7 +264,7 @@ function Send() {
     (e) => {
       if (e.target.value === "") {
         updateEstimatedGas(null);
-        setData((prev) => ({ ...prev, amount: "" }));
+        setData((prev) => ({ ...prev, [e.target.name]: "" }));
         return;
       }
 
