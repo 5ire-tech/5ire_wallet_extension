@@ -114,17 +114,18 @@ export const generateErrorMessage = (method, origin) => {
 
 //send event to the connected tab
 export const sendEventToTab = async (
-  tabDetails,
+  windowAndTab,
   tabMessagePayload,
   connectedApps,
   emitWithoutConnectionCheck = false
 ) => {
   if (
-    !checkStringInclusionIntoArray(tabDetails?.tabDetails?.origin, RESTRICTED_URLS) &&
-    ((connectedApps && connectedApps[tabDetails?.tabDetails?.origin]?.isConnected) ||
+    !checkStringInclusionIntoArray(windowAndTab?.tabDetails?.origin, RESTRICTED_URLS) &&
+    ((connectedApps && connectedApps[windowAndTab?.tabDetails?.origin]?.isConnected) ||
       emitWithoutConnectionCheck)
   ) {
-    tabDetails.tabDetails.tabId && sendMessageToTab(tabDetails.tabDetails.tabId, tabMessagePayload);
+    windowAndTab.tabDetails.tabId &&
+      sendMessageToTab(windowAndTab.tabDetails.tabId, tabMessagePayload);
   }
 };
 
