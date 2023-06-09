@@ -50,6 +50,24 @@ function ValidatorNominatorTxns() {
   const [disableApproval, setDisableApproval] = useState(false);
   const balance = allAccountsBalance[currentAccount?.evmAddress][currentNetwork?.toLowerCase()];
 
+  //calculate the transaction fee
+  useEffect(() => {
+    //if balance is 0 then don't call the fee calculator
+    if (Number(balance?.nativeBalance) === 0) {
+      toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+      setDisableApproval(true);
+      return;
+    }
+    updateLoading(true);
+    sendMessageOverStream(
+      MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
+      MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE,
+      { options: { id: activeSession?.id } }
+    );
+    setDisableApproval(!valdatorNominatorFee?.fee);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   //check if user has sufficent balance to make trnsaction
   useEffect(() => {
     if (
@@ -65,18 +83,6 @@ function ValidatorNominatorTxns() {
     } else setDisableApproval(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valdatorNominatorFee?.fee]);
-
-  //calculate the transaction fee
-  useEffect(() => {
-    updateLoading(true);
-    sendMessageOverStream(
-      MESSAGE_TYPE_LABELS.FEE_AND_BALANCE,
-      MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_FEE,
-      { options: { id: activeSession?.id } }
-    );
-    setDisableApproval(!valdatorNominatorFee?.fee);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   //process the transaction
   function handleClick(isApproved) {

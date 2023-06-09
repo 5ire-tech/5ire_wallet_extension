@@ -30,6 +30,13 @@ function ApproveTx() {
   const account = currentAccount;
 
   useEffect(() => {
+    //if balance is 0 then don't call the fee calculator
+    if (Number(balance?.evmBalance) === 0) {
+      toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+      setDisableApproval(true);
+      return;
+    }
+
     updateLoading(true);
     sendMessageOverStream(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {
       value: activeSession?.message?.value,
