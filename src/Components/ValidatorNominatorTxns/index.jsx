@@ -47,7 +47,7 @@ function ValidatorNominatorTxns() {
 
   const { pendingTransactionBalance, allAccountsBalance, currentAccount, currentNetwork } = state;
 
-  const [disableApproval, setDisableApproval] = useState(false);
+  const [disableApproval, setDisableApproval] = useState(true);
   const balance = allAccountsBalance[currentAccount?.evmAddress][currentNetwork?.toLowerCase()];
 
   //calculate the transaction fee
