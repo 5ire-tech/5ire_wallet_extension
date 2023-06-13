@@ -14,7 +14,15 @@ import ExtensionPortStream from "./extension-port-stream-mod/index";
 import { ExternalConnection, ExternalWindowControl } from "./controller";
 import { getDataLocal, ExtensionStorageHandler } from "../Storage/loadstore";
 import { sendMessageToTab, sendRuntimeMessage } from "../Utility/message_helper";
-import { assert, compactToU8a, isHex, u8aConcat, u8aEq, u8aWrapBytes, u8aToHex } from "@polkadot/util";
+import {
+  assert,
+  compactToU8a,
+  isHex,
+  u8aConcat,
+  u8aEq,
+  u8aWrapBytes,
+  u8aToHex
+} from "@polkadot/util";
 import { checkStringInclusionIntoArray, formatNumUptoSpecificDecimal } from "../Helper/helper";
 import {
   API,
@@ -407,7 +415,7 @@ export class InitBackground {
 
   //background startup events binding
   bindBackgroundStartupEvents = async () => {
-    Browser.runtime.onStartup.addListener(() => { });
+    Browser.runtime.onStartup.addListener(() => {});
   };
 
   //event called when extension is suspended or closed
@@ -801,17 +809,17 @@ class TransactionQueue {
             transactionHistoryTrack.to = transactionHistoryTrack.intermidateHash
               ? transactionHistoryTrack.to
               : transactionHistoryTrack.isEvm
-                ? transactionStatus.to || transactionStatus.contractAddress
-                : transactionHistoryTrack.to;
+              ? transactionStatus.to || transactionStatus.contractAddress
+              : transactionHistoryTrack.to;
 
           //set the used gas
           transactionHistoryTrack.gasUsed = transactionHistoryTrack.isEvm
             ? (
-              (Number(transactionStatus?.gasUsed) *
-                Number(transactionStatus?.effectiveGasPrice)) /
-              ONE_ETH_IN_GWEI /
-              ONE_ETH_IN_GWEI
-            ).toString()
+                (Number(transactionStatus?.gasUsed) *
+                  Number(transactionStatus?.effectiveGasPrice)) /
+                ONE_ETH_IN_GWEI /
+                ONE_ETH_IN_GWEI
+              ).toString()
             : transactionStatus?.txFee;
 
           //set the amount when the method is reward
@@ -1631,8 +1639,8 @@ export class Services {
               hItem.to = hItem.intermidateHash
                 ? hItem.to
                 : hItem.isEvm
-                  ? transactionStatus.to || transactionStatus.contractAddress
-                  : hItem.to;
+                ? transactionStatus.to || transactionStatus.contractAddress
+                : hItem.to;
 
             await this.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, hItem, { account });
           }
@@ -1688,7 +1696,7 @@ export class TransactionsRPC {
       if (
         balanceWithFee >
         Number(balance.evmBalance) -
-        (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
+          (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -1796,7 +1804,7 @@ export class TransactionsRPC {
       if (
         balanceWithFee >=
         Number(balance?.evmBalance) -
-        (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
+          (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -1884,7 +1892,7 @@ export class TransactionsRPC {
       if (
         balanceWithFee >=
         Number(balance?.nativeBalance) -
-        (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)
+          (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -2002,7 +2010,7 @@ export class TransactionsRPC {
       if (
         balanceWithFee >=
         Number(balance?.nativeBalance) -
-        (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)
+          (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -2154,7 +2162,7 @@ export class GeneralWalletRPC {
       // console.log("network and api: ", NetworkHandler.api, state.currentNetwork);
       const balance =
         state.allAccountsBalance[state.currentAccount?.evmAddress][
-        state.currentNetwork.toLowerCase()
+          state.currentNetwork.toLowerCase()
         ];
 
       if (!NetworkHandler.api[state.currentNetwork.toLowerCase()]?.evmApi)

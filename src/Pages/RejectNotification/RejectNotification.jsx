@@ -52,8 +52,8 @@ function ApproveTx() {
     if (
       estimatedGas &&
       Number(activeSession.message?.value) + Number(estimatedGas) >=
-      Number(balance?.evmBalance) -
-      pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
+        Number(balance?.evmBalance) -
+          pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
     ) {
       toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       setDisableApproval(true);
@@ -102,8 +102,9 @@ function ApproveTx() {
             </button>
             <button
               onClick={activeData}
-              className={`${style.rejectedSec__sendSwapbtn__buttons}  ${activeTab === "data" && style.rejectedSec__sendSwapbtn__buttons__active
-                }`}>
+              className={`${style.rejectedSec__sendSwapbtn__buttons}  ${
+                activeTab === "data" && style.rejectedSec__sendSwapbtn__buttons__active
+              }`}>
               HEX Data
             </button>
           </div>

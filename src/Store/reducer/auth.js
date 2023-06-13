@@ -153,15 +153,15 @@ const reducers = {
         typeof action.payload.status === "string"
           ? action.payload.status
           : action.payload.status
-            ? STATUS.SUCCESS
-            : STATUS.FAILED;
+          ? STATUS.SUCCESS
+          : STATUS.FAILED;
     if (otherTx)
       otherTx.status =
         typeof action.payload.status === "string"
           ? action.payload.status
           : action.payload.status
-            ? STATUS.SUCCESS
-            : STATUS.FAILED;
+          ? STATUS.SUCCESS
+          : STATUS.FAILED;
   },
 
   setSite: (state, action) => {

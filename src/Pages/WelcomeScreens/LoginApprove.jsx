@@ -44,11 +44,11 @@ function LoginApprove() {
       const res = isEthReq
         ? { method: activeSession.method, result: [account?.evmAddress] }
         : {
-          result: {
-            evmAddress: account?.evmAddress,
-            nativeAddress: account?.nativeAddress
-          }
-        };
+            result: {
+              evmAddress: account?.evmAddress,
+              nativeAddress: account?.nativeAddress
+            }
+          };
 
       //send the message to tab after approve request
       sendMessageToTab(

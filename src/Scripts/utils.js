@@ -104,7 +104,6 @@ export const getFormattedMethod = (method, message) => {
       amount = message?.amount;
       break;
 
-
     case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR_UNBONDED:
       methodName = "Withdraw Nominator Unbonded";
       amount = message?.value;

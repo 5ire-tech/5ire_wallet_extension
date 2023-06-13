@@ -20,15 +20,15 @@ function getTxIcon(type, status) {
       return status === STATUS.SUCCESS.toLowerCase()
         ? green_swap
         : status === STATUS.FAILED.toLowerCase()
-          ? red_swap
-          : yellow_swap;
+        ? red_swap
+        : yellow_swap;
     case TX_TYPE.CONTRACT_EXECUTION:
     case TX_TYPE.CONTRACT_DEPLOYMENT:
       return status === STATUS.SUCCESS.toLowerCase()
         ? green_contract
         : status === STATUS.FAILED.toLowerCase()
-          ? red_contract
-          : yellow_contract;
+        ? red_contract
+        : yellow_contract;
     case TX_TYPE.SEND:
     case TX_TYPE.NATIVE_APP:
     case TX_TYPE.NATIVE_SIGNER:
@@ -36,8 +36,8 @@ function getTxIcon(type, status) {
       return status === STATUS.SUCCESS.toLowerCase()
         ? green_send
         : status === STATUS.FAILED.toLowerCase()
-          ? red_send
-          : yellow_send;
+        ? red_send
+        : yellow_send;
   }
 }
 
@@ -78,11 +78,11 @@ export default function HistoryItem({ historyItem, handleHistoryOpen }) {
             <span
               className={
                 historyItem.status.toLowerCase() === STATUS.PENDING.toLowerCase() ||
-                  historyItem.status.toLowerCase() === STATUS.QUEUED.toLowerCase()
+                historyItem.status.toLowerCase() === STATUS.QUEUED.toLowerCase()
                   ? style.historySec__pending
                   : historyItem.status.toLowerCase() === STATUS.SUCCESS.toLowerCase()
-                    ? style.historySec__success
-                    : style.historySec__failed
+                  ? style.historySec__success
+                  : style.historySec__failed
               }>
               {historyItem.status}
             </span>

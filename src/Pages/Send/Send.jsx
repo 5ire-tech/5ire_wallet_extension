@@ -105,7 +105,7 @@ function Send() {
           if (
             Number(data.amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0) >
             Number(balance?.evmBalance) -
-            pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
+              pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
           ) {
             updateEstimatedGas(null);
             setErr((p) => ({
@@ -133,8 +133,8 @@ function Send() {
         } else if (
           Number(data.amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0) >
           Number(balance?.nativeBalance) -
-          pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
-            .native
+            pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
+              .native
         ) {
           updateEstimatedGas(null);
           setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
@@ -178,7 +178,7 @@ function Send() {
       if (
         Number(data.amount) >=
         Number(balance?.evmBalance) -
-        pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].evm
+          pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].evm
       )
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
       else setErr((p) => ({ ...p, amount: "" }));
@@ -186,7 +186,7 @@ function Send() {
       if (
         Number(data.amount) >=
         Number(balance?.nativeBalance) -
-        pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].native
+          pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].native
       )
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
       else setErr((p) => ({ ...p, amount: "" }));
@@ -419,13 +419,15 @@ function Send() {
             <button
               onClick={activeSend}
               name={EVM}
-              className={`${style.sendSec__sendSwapbtn__buttons}  ${activeTab === EVM && style.sendSec__sendSwapbtn__buttons__active
-                }`}>
+              className={`${style.sendSec__sendSwapbtn__buttons}  ${
+                activeTab === EVM && style.sendSec__sendSwapbtn__buttons__active
+              }`}>
               EVM
             </button>
             <div
-              className={`${activeTab === NATIVE && style.activeFirst} ${activeTab === EVM && style.activeSecond
-                } ${style.animations}`}></div>
+              className={`${activeTab === NATIVE && style.activeFirst} ${
+                activeTab === EVM && style.activeSecond
+              } ${style.animations}`}></div>
           </div>
         </div>
         <div className={style.sendSec__inputInnerSec}>
