@@ -808,7 +808,12 @@ class TransactionQueue {
 
           //set the used gas
           transactionHistoryTrack.gasUsed = transactionHistoryTrack.isEvm
-            ? (Number(transactionStatus?.gasUsed) / ONE_ETH_IN_GWEI).toString()
+            ? (
+                (Number(transactionStatus?.gasUsed) *
+                  Number(transactionStatus?.effectiveGasPrice)) /
+                ONE_ETH_IN_GWEI /
+                ONE_ETH_IN_GWEI
+              ).toString()
             : transactionStatus?.txFee;
 
           //set the amount when the method is reward

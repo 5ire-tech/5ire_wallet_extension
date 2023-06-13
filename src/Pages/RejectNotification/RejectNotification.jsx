@@ -164,7 +164,7 @@ function ApproveTx() {
                   </div>
 
                   <div className={style.rejectedSec__listReject__innerList}>
-                    <h4>Fee: </h4>
+                    <h4>Estimated Fee: </h4>
                     <p>
                       <span>{estimatedGas ? `${estimatedGas} ` : ""}</span>5ire
                     </p>
