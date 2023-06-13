@@ -153,15 +153,15 @@ const reducers = {
         typeof action.payload.status === "string"
           ? action.payload.status
           : action.payload.status
-          ? STATUS.SUCCESS
-          : STATUS.FAILED;
+            ? STATUS.SUCCESS
+            : STATUS.FAILED;
     if (otherTx)
       otherTx.status =
         typeof action.payload.status === "string"
           ? action.payload.status
           : action.payload.status
-          ? STATUS.SUCCESS
-          : STATUS.FAILED;
+            ? STATUS.SUCCESS
+            : STATUS.FAILED;
   },
 
   setSite: (state, action) => {
@@ -186,7 +186,7 @@ export const mainReducer = (state = userState, action) => {
 
     if (isFound) {
       const copyState = { ...state };
-      if (!(JSON.stringify(state.balance) === JSON.stringify(action.payload))) {
+      if (JSON.stringify(state.balance) !== JSON.stringify(action.payload)) {
         reducers[action.type](copyState, action);
       }
       return copyState;

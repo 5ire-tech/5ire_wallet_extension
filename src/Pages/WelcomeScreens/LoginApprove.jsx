@@ -6,9 +6,8 @@ import { isEqual } from "../../Utility/utility.js";
 import { Link, useNavigate } from "react-router-dom";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { TabMessagePayload } from "../../Utility/network_calls";
-import { sendMessageToTab } from "../../Utility/message_helper";
+import { sendMessageToTab, sendMessageOverStream } from "../../Utility/message_helper";
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
-import { sendMessageOverStream } from "../../Utility/message_helper";
 import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 import {
   LABELS,
@@ -45,11 +44,11 @@ function LoginApprove() {
       const res = isEthReq
         ? { method: activeSession.method, result: [account?.evmAddress] }
         : {
-            result: {
-              evmAddress: account?.evmAddress,
-              nativeAddress: account?.nativeAddress
-            }
-          };
+          result: {
+            evmAddress: account?.evmAddress,
+            nativeAddress: account?.nativeAddress
+          }
+        };
 
       //send the message to tab after approve request
       sendMessageToTab(

@@ -14,9 +14,9 @@ import { MessageOverStream } from "./Utility/message_helper";
 // eslint-disable-next-line no-extend-native
 Number.prototype.noExponents = function () {
   try {
-    var data = String(this).split(/[eE]/);
+    let data = String(this).split(/[eE]/);
     if (data.length === 1) return data[0];
-    var z = EMTY_STR,
+    let z = EMTY_STR,
       sign = this < 0 ? "-" : EMTY_STR,
       str = data[0].replace(".", EMTY_STR),
       mag = Number(data[1]) + 1;

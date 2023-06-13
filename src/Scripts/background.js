@@ -1,6 +1,5 @@
-import { InitBackground } from "./initbackground";
+import { InitBackground, ExtensionEventHandle } from "./initbackground";
 import { bindNoExponentWithNumber } from "./utils";
-import { ExtensionEventHandle } from "./initbackground";
 import { ERRCODES, INTERNAL_EVENT_LABELS } from "../Constants";
 import { ErrorPayload } from "../Utility/error_helper";
 

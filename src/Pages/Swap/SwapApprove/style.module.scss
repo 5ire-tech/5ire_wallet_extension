@@ -2,34 +2,39 @@
 
 .swapApprove {
   padding: 34px 32px;
+
   &__approveCard {
     display: flex;
     gap: 20px;
     align-items: center;
+
     &__swapSec {
       background: #0e1e41;
       border-radius: 12px;
       padding: 14px;
       max-width: 130px;
       width: 100%;
+
       h3 {
         color: $white;
         font-size: 12px;
+
         span {
           background: linear-gradient(91.26deg, #0071ff 0%, #54f0d1 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
-          text-fill-color: transparent;
           font-size: 16px;
         }
       }
+
       p {
         color: $white;
         font-size: 12px;
         padding-top: 10px;
       }
     }
+
     &__icon {
       img {
         border: 1px solid #707070;
@@ -38,15 +43,18 @@
       }
     }
   }
+
   &__approveList {
     padding: 25px 0;
+
     &__innerList {
       display: flex;
       justify-content: space-between;
       align-items: center;
       width: 100%;
       padding-top: 16px;
-      h4{
+
+      h4 {
         color: $white;
         font-size: 12px;
       }

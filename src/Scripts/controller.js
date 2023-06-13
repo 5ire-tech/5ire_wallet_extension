@@ -1,10 +1,9 @@
 import BigNumber from "bignumber.js";
 import { isAlreadyConnected } from "./utils";
-import { getDataLocal } from "../Storage/loadstore";
+import { getDataLocal, ExtensionStorageHandler } from "../Storage/loadstore";
 import { generateErrorMessage } from "../Helper/helper";
 import { isEqual, isNullorUndef, log } from "../Utility/utility";
 import { sendMessageToTab } from "../Utility/message_helper";
-import { ExtensionStorageHandler } from "../Storage/loadstore";
 import WindowManager, { NotificationAndBedgeManager } from "./platform";
 import { ExternalAppsRequest, TabMessagePayload } from "../Utility/network_calls";
 import {
@@ -363,11 +362,11 @@ export class ExternalConnection {
       const res = isEthReq
         ? { method: data?.method, result: [account.evmAddress] }
         : {
-            result: {
-              evmAddress: account.evmAddress,
-              nativeAddress: account.nativeAddress
-            }
-          };
+          result: {
+            evmAddress: account.evmAddress,
+            nativeAddress: account.nativeAddress
+          }
+        };
 
       //send the message to requester tab
       sendMessageToTab(data.tabId, new TabMessagePayload(data.id, res, data?.method));

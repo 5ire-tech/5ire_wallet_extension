@@ -11,9 +11,9 @@ export default function useAuth() {
   const { allAccounts, newAccount, txHistory } = state;
 
   const setUserPass = (p) => {
-    return new Promise(async (resolve) => {
+    return new Promise((resolve) => {
       try {
-        var salt = bcrypt.genSaltSync(10);
+        let salt = bcrypt.genSaltSync(10);
         let hash;
 
         if (salt) {

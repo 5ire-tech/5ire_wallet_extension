@@ -73,8 +73,8 @@ function ValidatorNominatorTxns() {
     if (
       valdatorNominatorFee?.fee &&
       Number(activeSession.message?.value) + Number(valdatorNominatorFee?.fee) >=
-        Number(balance?.nativeBalance) -
-          pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native
+      Number(balance?.nativeBalance) -
+      pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native
     ) {
       toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       setDisableApproval(true);

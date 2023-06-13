@@ -23,9 +23,9 @@ export const bindNoExponentWithNumber = () => {
   // eslint-disable-next-line no-extend-native
   Number.prototype.noExponents = function () {
     try {
-      var data = String(this).split(/[eE]/);
+      let data = String(this).split(/[eE]/);
       if (data.length === 1) return data[0];
-      var z = EMTY_STR,
+      let z = EMTY_STR,
         sign = this < 0 ? "-" : EMTY_STR,
         str = data[0].replace(".", EMTY_STR),
         mag = Number(data[1]) + 1;
@@ -99,15 +99,12 @@ export const getFormattedMethod = (method, message) => {
 
       break;
     case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR:
-      methodName = "Send Funds";
-      amount = message?.amount;
-      break;
-
     case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR:
       methodName = "Send Funds";
       amount = message?.amount;
-
       break;
+
+
     case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR_UNBONDED:
       methodName = "Withdraw Nominator Unbonded";
       amount = message?.value;
@@ -124,14 +121,9 @@ export const getFormattedMethod = (method, message) => {
       break;
 
     case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_BONDMORE:
-      methodName = "Bond More Funds";
-      amount = message?.amount;
-
-      break;
     case VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_BONDMORE:
       methodName = "Bond More Funds";
       amount = message?.amount;
-
       break;
     case VALIDATOR_NOMINATOR_METHOD.NATIVE_RESTART_VALIDATOR:
       methodName = "Restart Validator";
