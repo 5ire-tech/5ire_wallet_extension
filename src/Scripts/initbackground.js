@@ -6,7 +6,6 @@ import { TypeRegistry } from "@polkadot/types";
 import { HybridKeyring } from "./5ire-keyring";
 import { txNotificationStringTemplate, getFormattedMethod, isManifestV3 } from "./utils";
 import ValidatorNominatorHandler from "./nativehelper";
-import { httpRequest } from "../Utility/network_calls";
 import { Connection } from "../Helper/connection.helper";
 import { NotificationAndBedgeManager } from "./platform";
 import { Error, ErrorPayload } from "../Utility/error_helper";
@@ -59,7 +58,8 @@ import {
   EVMRPCPayload,
   TabMessagePayload,
   TransactionPayload,
-  TransactionProcessingPayload
+  TransactionProcessingPayload,
+  httpRequest
 } from "../Utility/network_calls";
 
 let tester = 0;
@@ -116,7 +116,6 @@ export class InitBackground {
        * 2. await chrome.scripting.getRegisteredContentScripts() to check for an existing
        *    inpage script before registering - The provider is not loaded on time.
        */
-      // console.log(`Dropped attempt to register inpage content script. ${err}`);
     }
   };
 
@@ -137,7 +136,6 @@ export class InitBackground {
      * communication
      */
     Browser.runtime.onConnect.addListener(async (port) => {
-      // console.log("stream connection: ", port);
       if (isEqual(port.name, STREAM_CHANNELS.CONTENTSCRIPT)) {
         InitBackground.backgroundStream = new ExtensionPortStream(port);
         //bind the stream data event for getting the messages from content-script
@@ -279,85 +277,13 @@ export class InitBackground {
         isEqual(message?.type, MESSAGE_TYPE_LABELS.FEE_AND_BALANCE)
       ) {
         await this.rpcRequestProcessor.rpcCallsMiddleware(message, localData);
-        return;
       } else if (message?.type === MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL) {
         await this.externalTaskHandler.processExternalTask(message, localData);
-        return;
       } else if (message?.type === MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING) {
         await this.keyringHandler.keyringHelper(message, localData);
-        // Promise.resolve(true);
-
-        return;
       } else if (message?.type === MESSAGE_TYPE_LABELS.NETWORK_HANDLER) {
         this.networkHandler.handleNetworkRelatedTasks(message, localData);
-        return;
       }
-
-      // try {
-      //   //check if message is array or onject
-      //   message.message = hasLength(message.message) ? message.message[0] : message.message;
-
-      //   //data for futher proceeding
-      //   const data = {
-      //     ...message,
-      //     origin: sender.origin,
-      //     tabId: sender?.tab?.id
-      //   };
-
-      //   console.log("data is here: ", data);
-      //   //check if the app has the permission to access requested method
-      //   if (!checkStringInclusionIntoArray(data?.method)) {
-      //     const { connectedApps } = await getDataLocal(LABELS.EXTERNAL_CONTROLS);
-      //     const isHasAccess = connectedApps[data.origin];
-      //     if (!isHasAccess?.isConnected) {
-      //       data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.ACCESS_NOT_GRANTED));
-      //       return;
-      //     }
-      //   }
-
-      //   //checks for event from injected script
-      //   switch (data.method) {
-      //     case "connect":
-      //     case "eth_requestAccounts":
-      //     case "eth_accounts":
-      //       await this.internalHandler.handleConnect(data, localData);
-      //       break;
-      //     case "disconnect":
-      //       await this.internalHandler.handleDisconnect(data, localData);
-      //       break;
-      //     case "eth_sendTransaction":
-      //       await this.internalHandler.handleEthTransaction(data, localData);
-      //       break;
-      //     case "get_endPoint":
-      //       await this.internalHandler.sendEndPoint(data, localData);
-      //       break;
-      //     case SIGNER_METHODS.SIGN_PAYLOAD:
-      //     case SIGNER_METHODS.SIGN_RAW:
-      //       await this.internalHandler.handleNativeSigner(data, localData);
-      //       break;
-      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_NOMINATOR:
-      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_ADD_VALIDATOR:
-      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_BONDMORE:
-      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_NOMINATOR_PAYOUT:
-      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_RENOMINATE:
-      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_RESTART_VALIDATOR:
-      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_STOP_NOMINATOR:
-      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_STOP_VALIDATOR:
-      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_UNBOND_NOMINATOR:
-      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_UNBOND_VALIDATOR:
-      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_BONDMORE:
-      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_VALIDATOR_PAYOUT:
-      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR:
-      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_NOMINATOR_UNBONDED:
-      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR:
-      //     case VALIDATOR_NOMINATOR_METHOD.NATIVE_WITHDRAW_VALIDATOR_UNBONDED:
-      //       await this.internalHandler.handleValidatorNominatorTransactions(data, localData);
-      //       break
-      //     default: data?.tabId && sendMessageToTab(data.tabId, new TabMessagePayload(data.message.id, null, null, null, ERROR_MESSAGES.INVALID_METHOD))
-      //   }
-      // } catch (err) {
-      //   ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, new ErrorPayload(ERRCODES.RUNTIME_MESSAGE_SECTION_ERROR, err.message))
-      // }
     });
   };
 

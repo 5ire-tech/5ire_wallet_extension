@@ -1,6 +1,6 @@
 {
     "sonarlint.connectedMode.project": {
-        "connectionId": "Localhost",
+        "connectionId": "http-localhost-9000",
         "projectKey": "Wallet-Extension"
     }
 }

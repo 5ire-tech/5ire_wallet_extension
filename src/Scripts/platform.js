@@ -1,7 +1,6 @@
 import Browser from "webextension-polyfill";
-import { isNullorUndef } from "../Utility/utility";
 import { Error, ErrorPayload } from "../Utility/error_helper";
-import { hasLength, isString, isNumber } from "../Utility/utility";
+import { hasLength, isString, isNumber, isNullorUndef } from "../Utility/utility";
 import { WINDOW_HEIGHT, WINDOW_WIDTH, ERRCODES, ERROR_MESSAGES } from "../Constants";
 import { isManifestV3 } from "./utils";
 

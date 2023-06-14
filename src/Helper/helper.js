@@ -34,7 +34,6 @@ export const formatDate = (_date) => {
 
     return dateTime;
   } catch (error) {
-    // console.log("Error while formating date : ", error);
     return "";
   }
 };
@@ -53,7 +52,6 @@ export const formatNumUptoSpecificDecimal = (num, numOfDecimals = 4) => {
       else return Number(num.slice(0, index + numOfDecimals + 1));
     }
   } catch (err) {
-    // console.log("Error while formatting num : ", err);
     return 0;
   }
 };

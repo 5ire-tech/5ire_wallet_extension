@@ -78,8 +78,6 @@ function ValidatorNominatorTxns() {
     ) {
       toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       setDisableApproval(true);
-      // setValdatorNominatorFee(null);
-      return;
     } else setDisableApproval(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valdatorNominatorFee?.fee]);
@@ -98,7 +96,6 @@ function ValidatorNominatorTxns() {
       return toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE_VD_NM);
     }
 
-    // updateLoading(true);
     sendMessageOverStream(
       MESSAGE_TYPE_LABELS.EXTERNAL_TX_APPROVAL,
       MESSAGE_EVENT_LABELS.VALIDATOR_NOMINATOR_TRANSACTION,

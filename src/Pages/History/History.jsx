@@ -45,7 +45,7 @@ function History() {
             <HistoryItem
               historyItem={data}
               handleHistoryOpen={handleHistoryOpen}
-              key={CURRENCY + index}
+              key={CURRENCY + data?.timeStamp}
               index={index}
             />
           ))
