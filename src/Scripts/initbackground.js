@@ -44,7 +44,8 @@ import {
   VALIDATOR_NOMINATOR_METHOD,
   TRANSACTION_STATUS_CHECK_TIMER,
   LAPSED_TRANSACTION_CHECKER_TIMER,
-  RESTRICTED_ETHEREUM_METHODS
+  RESTRICTED_ETHEREUM_METHODS,
+  WEI_IN_ONE_ETH
 } from "../Constants";
 import { log, isEqual, hasLength, isString, hasProperty, isNullorUndef } from "../Utility/utility";
 import {
@@ -811,8 +812,7 @@ class TransactionQueue {
             ? (
                 (Number(transactionStatus?.gasUsed) *
                   Number(transactionStatus?.effectiveGasPrice)) /
-                ONE_ETH_IN_GWEI /
-                ONE_ETH_IN_GWEI
+                WEI_IN_ONE_ETH
               ).toString()
             : transactionStatus?.txFee;
 
