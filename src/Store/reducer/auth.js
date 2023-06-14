@@ -186,7 +186,7 @@ export const mainReducer = (state = userState, action) => {
 
     if (isFound) {
       const copyState = { ...state };
-      if (!(JSON.stringify(state.balance) === JSON.stringify(action.payload))) {
+      if (JSON.stringify(state.balance) !== JSON.stringify(action.payload)) {
         reducers[action.type](copyState, action);
       }
       return copyState;

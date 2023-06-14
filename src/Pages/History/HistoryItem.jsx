@@ -11,8 +11,7 @@ import red_contract from "../../Assets/red_contract.svg";
 import green_contract from "../../Assets/green_contract.svg";
 
 import { isEqual } from "../../Utility/utility";
-import { formatDate } from "../../Helper/helper";
-import { fixNumber, numFormatter } from "../../Helper/helper";
+import { formatDate, fixNumber, numFormatter } from "../../Helper/helper";
 import { EVM, NATIVE, STATUS, TX_TYPE } from "../../Constants";
 
 function getTxIcon(type, status) {

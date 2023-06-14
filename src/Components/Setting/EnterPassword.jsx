@@ -1,7 +1,6 @@
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import { ROUTES } from "../../Routes";
 import style from "./style.module.scss";
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../Store/index";
 import ButtonComp from "../ButtonComp/ButtonComp";

@@ -96,7 +96,7 @@ function Send() {
               (isEd ? EXISTENTIAL_DEPOSITE : 0) +
               pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
                 .evm);
-          !(Number(amount) > 0) && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+          Number(amount) <= 0 && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
 
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
           setData((p) => ({ ...p, amount: amount > 0 ? amount : "" }));

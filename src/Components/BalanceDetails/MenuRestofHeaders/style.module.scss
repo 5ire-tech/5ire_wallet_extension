@@ -1,27 +1,33 @@
 @import "../../../styles/__vars.scss";
+
 .restOfHeaders {
-  padding-top:30px;
+  padding-top: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 15px;
+
   h4 {
     font-size: 22px;
     // font-weight: m;
     margin-bottom: 0;
     white-space: nowrap;
-    background: -webkit-linear-gradient(#0071ff ,  #54f0d1 );
+    background: -webkit-linear-gradient(#0071ff, #54f0d1);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     // Fill Color Style: gradient;
   }
 }
-.backarow{
+
+.backarow {
   transform: rotate(180deg);
 }
-.silverLogo{
+
+.silverLogo {
   width: 45px;
 }
+
 // .backarrowIcon{
 //   position: absolute;
 //   left: 20px;

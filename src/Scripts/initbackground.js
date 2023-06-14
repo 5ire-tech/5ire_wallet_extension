@@ -1,22 +1,28 @@
 import Web3 from "web3";
 import { BigNumber } from "bignumber.js";
-import { u8aToHex } from "@polkadot/util";
 import Browser from "webextension-polyfill";
 import { EventEmitter } from "./eventemitter";
 import { TypeRegistry } from "@polkadot/types";
 import { HybridKeyring } from "./5ire-keyring";
-import { txNotificationStringTemplate } from "./utils";
+import { txNotificationStringTemplate, getFormattedMethod, isManifestV3 } from "./utils";
 import ValidatorNominatorHandler from "./nativehelper";
 import { httpRequest } from "../Utility/network_calls";
 import { Connection } from "../Helper/connection.helper";
 import { NotificationAndBedgeManager } from "./platform";
-import { getFormattedMethod, isManifestV3 } from "./utils";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import ExtensionPortStream from "./extension-port-stream-mod/index";
 import { ExternalConnection, ExternalWindowControl } from "./controller";
 import { getDataLocal, ExtensionStorageHandler } from "../Storage/loadstore";
 import { sendMessageToTab, sendRuntimeMessage } from "../Utility/message_helper";
-import { assert, compactToU8a, isHex, u8aConcat, u8aEq, u8aWrapBytes } from "@polkadot/util";
+import {
+  assert,
+  compactToU8a,
+  isHex,
+  u8aConcat,
+  u8aEq,
+  u8aWrapBytes,
+  u8aToHex
+} from "@polkadot/util";
 import { checkStringInclusionIntoArray, formatNumUptoSpecificDecimal } from "../Helper/helper";
 import {
   API,

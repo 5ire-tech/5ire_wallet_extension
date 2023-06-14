@@ -1,10 +1,9 @@
 import BigNumber from "bignumber.js";
 import { isAlreadyConnected } from "./utils";
-import { getDataLocal } from "../Storage/loadstore";
+import { getDataLocal, ExtensionStorageHandler } from "../Storage/loadstore";
 import { generateErrorMessage } from "../Helper/helper";
 import { isEqual, isNullorUndef, log } from "../Utility/utility";
 import { sendMessageToTab } from "../Utility/message_helper";
-import { ExtensionStorageHandler } from "../Storage/loadstore";
 import WindowManager, { NotificationAndBedgeManager } from "./platform";
 import { ExternalAppsRequest, TabMessagePayload } from "../Utility/network_calls";
 import {

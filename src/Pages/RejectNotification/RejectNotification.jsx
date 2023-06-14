@@ -57,7 +57,6 @@ function ApproveTx() {
     ) {
       toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       setDisableApproval(true);
-      return;
     } else setDisableApproval(!estimatedGas);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [estimatedGas, balance?.evmBalance]);
