@@ -49,12 +49,12 @@
       z-index: 1;
       transition: width .3s, left .3s, right .3s;
 
-      &__active {
-        // background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
-        // border: 1px solid rgba(255, 255, 255, 0.5);
-        // border: 1px solid #13d3e1;
-        // border-radius: 0px 12px 12px 0px;
-      }
+      // &__active {
+      // background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
+      // border: 1px solid rgba(255, 255, 255, 0.5);
+      // border: 1px solid #13d3e1;
+      // border-radius: 0px 12px 12px 0px;
+      // }
     }
 
     .animations {
@@ -154,6 +154,5 @@
   display: block;
   font-size: 12px !important;
   position: absolute;
-  font-size: 12px;
 
 }

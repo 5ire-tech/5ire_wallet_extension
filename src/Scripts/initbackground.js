@@ -91,8 +91,12 @@ export class InitBackground {
 
   //init the background events
   static initBackground = () => {
-    new InitBackground();
-    delete InitBackground.constructor;
+    try {
+      new InitBackground();
+      delete InitBackground.constructor;
+    } catch {
+      console.log("Error while initializing background ");
+    }
   };
 
   /****************** Inject the script into current active tabs ******************/
@@ -1846,22 +1850,17 @@ export class TransactionsRPC {
         if (RpcRequestProcessor.isHttp) {
           const txHash = await transfer.signAndSend(signer);
           if (txHash) {
-            if (txHash) {
-              const hash = txHash.toHex();
-              transactionHistory.txHash = hash;
+            const hash = txHash.toHex();
+            transactionHistory.txHash = hash;
 
-              payload = {
-                data: transactionHistory,
-                options: {
-                  ...data.options
-                }
-              };
+            payload = {
+              data: transactionHistory,
+              options: {
+                ...data.options
+              }
+            };
 
-              return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, message.event, payload);
-            } else
-              new Error(
-                new ErrorPayload(ERRCODES.NETWORK_REQUEST, ERROR_MESSAGES.TX_FAILED)
-              ).throw();
+            return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, message.event, payload);
           } else {
             //Send and sign txn
             const { status, events, txHash } = transfer.signAndSend(signer);
@@ -2164,15 +2163,8 @@ export class GeneralWalletRPC {
       if (isNullorUndef(account))
         new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
-      //check if fee is calculated for same request
-      // if (GeneralWalletRPC.feeStore[id]) {
-      //   const payload = {
-      //     data: { fee: GeneralWalletRPC.feeStore[id] }
-      //   };
-      //   return new EventPayload(null, message.event, payload);
-      // }
-
-      let toAddress = data.toAddress ? data.toAddress : data?.data ? null : account.nativeAddress;
+      const contractAddress = data?.data ? null : account.nativeAddress;
+      let toAddress = data.toAddress ? data.toAddress : contractAddress;
       let amount = data?.value;
 
       if (toAddress?.startsWith("5")) {
