@@ -37,7 +37,7 @@ export const TABS_EVENT = {
 /* Regular expressions */
 export const REGEX = {
   MIN_LENGTH: /.{8,}/,
-  DIGITS: /(?=.*?[0-9])/,
+  DIGITS: /(?=.*?[/d])/,
   LOWERCASE: /(?=.*?[a-z])/,
   UPPERCASE: /(?=.*?[A-Z])/,
   WALLET_NAME: /^[a-z0-9\s]+$/i,

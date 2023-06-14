@@ -1,6 +1,0 @@
-projectKey=Wallet-Extension
-serverUrl=http://0.0.0.0:9000
-serverVersion=10.0.0.68432
-dashboardUrl=http://0.0.0.0:9000/dashboard?id=Wallet-Extension
-ceTaskId=AYi01fYR1fXYZGqqACy3
-ceTaskUrl=http://0.0.0.0:9000/api/ce/task?id=AYi01fYR1fXYZGqqACy3
