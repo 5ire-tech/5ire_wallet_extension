@@ -2234,7 +2234,7 @@ export class GeneralWalletRPC {
       const signer = this.hybridKeyring.getNativeSignerByAddress(account.nativeAddress);
 
       if (toAddress?.startsWith("0x")) {
-        const amt = BigNumber(data.value).multipliedBy(DECIMALS).toString();
+        const amt = new BigNumber(data.value).multipliedBy(DECIMALS).toString();
         transferTx = await nativeApi.tx.evm.deposit(
           toAddress,
           Number(amt).noExponents().toString()
@@ -2601,7 +2601,7 @@ export class NativeSigner {
         null,
         null,
         null,
-        ErrorPayload(ERRCODES.SIGNER_ERROR, ERROR_MESSAGES.SINGER_ERROR)
+        new ErrorPayload(ERRCODES.SIGNER_ERROR, ERROR_MESSAGES.SINGER_ERROR)
       );
     }
   };
