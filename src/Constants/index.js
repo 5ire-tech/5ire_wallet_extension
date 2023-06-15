@@ -108,7 +108,7 @@ export const ERROR_MESSAGES = {
   INVALID_TYPE_LABEL: "Invalid type Label",
   INSUFFICENT_BALANCE: "Insufficient Balance",
   UNDEF_PROPERTY: "Object not has given property",
-  AMOUNT_CANT_BE_0: "Amount can't be 0 or less than 0",
+  AMOUNT_CANT_BE_0: "Amount can't be 0",
   SINGER_ERROR: "Error while signing the the raw/payload",
   ENTER_AMOUNT_CORRECTLY: "Please enter amount correctly",
   WALLET_NAME_ALREADY_EXISTS: "Wallet name already exists",
