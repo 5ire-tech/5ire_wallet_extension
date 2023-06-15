@@ -173,9 +173,11 @@ function Send() {
     else if (isNaN(data.amount))
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.ENTER_AMOUNT_CORRECTLY }));
     else if (Number(data.amount) <= 0)
-      setErr((p) => ({ ...p, amount: ERROR_MESSAGES.AMOUNT_CANT_BE_0 }));
+      setErr((p) => ({ ...p, amount: ERROR_MESSAGES.AMOUNT_SHOULD_BE_GREATER_THAN_0 }));
     else if (activeTab === EVM) {
-      if (
+      if (balance?.evmBalance < 1.1)
+        setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
+      else if (
         Number(data.amount) >=
         Number(balance?.evmBalance) -
           pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].evm
@@ -183,7 +185,9 @@ function Send() {
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
       else setErr((p) => ({ ...p, amount: "" }));
     } else if (activeTab === NATIVE) {
-      if (
+      if (balance?.nativeBalance < 1.1)
+        setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
+      else if (
         Number(data.amount) >=
         Number(balance?.nativeBalance) -
           pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].native
@@ -309,28 +313,24 @@ function Send() {
   const handleApprove = useCallback(async () => {
     try {
       if (activeTab === EVM) {
-        if (balance?.evmBalance < 1.1) {
-          toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
-        } else {
-          updateLoading(true);
-          //pass the message request for evm transfer
-          sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TX, {
-            to: data.to,
-            value: data.amount,
-            options: {
-              account: currentAccount,
-              network: currentNetwork,
-              type: TX_TYPE.SEND,
-              isEvm: true,
-              fee: estimatedGas
-            },
-            isEd
-          });
-          setTimeout(() => {
-            setIsModalOpen(true);
-            updateLoading(false);
-          }, 3000);
-        }
+        updateLoading(true);
+        //pass the message request for evm transfer
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TX, {
+          to: data.to,
+          value: data.amount,
+          options: {
+            account: currentAccount,
+            network: currentNetwork,
+            type: TX_TYPE.SEND,
+            isEvm: true,
+            fee: estimatedGas
+          },
+          isEd
+        });
+        setTimeout(() => {
+          setIsModalOpen(true);
+          updateLoading(false);
+        }, 3000);
       } else if (activeTab === NATIVE) {
         if (balance?.nativeBalance < 1.1) {
           toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);

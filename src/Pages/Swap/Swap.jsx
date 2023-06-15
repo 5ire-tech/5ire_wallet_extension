@@ -98,7 +98,6 @@ function Swap() {
           setAmount(Number(value) >= 1 ? value : "");
           updateEstimatedGas(Number(value) >= 1 ? estimatedGas : null);
           Number(value) <= 1 && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
-          // Number(amount) < 1 && setError(ERROR_MESSAGES.AMOUNT_CANT_LESS_THEN_ONE);
           setMaxClicked(false);
 
           return;
