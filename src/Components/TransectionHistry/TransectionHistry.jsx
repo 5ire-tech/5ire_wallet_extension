@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import DarkRyt from "../../Assets/darkRyt.svg";
-import { CURRENCY, STATUS, SUCCESS_MESSAGES, TX_TYPE } from "../../Constants";
+import { COPIED, CURRENCY, STATUS, TX_TYPE } from "../../Constants";
 import {
   shortner,
   fixNumber,
@@ -17,7 +17,7 @@ function TransectionHistry({ selectedTransaction, account }) {
   //for copying the hash to clipboard
   const handleClick = (hash) => {
     navigator.clipboard.writeText(hash);
-    toast.success(SUCCESS_MESSAGES.HASH_COPIED);
+    toast.success(COPIED);
   };
 
   //for opening the explorer tab
@@ -34,6 +34,8 @@ function TransectionHistry({ selectedTransaction, account }) {
 
   const isSwap = selectedTransaction?.type?.toLowerCase() === TX_TYPE.SWAP.toLowerCase();
   const isEvm = !!selectedTransaction?.isEvm;
+  const toAddress = isEvm ? account?.nativeAddress : account?.evmAddress;
+  const fromAddress = isEvm ? account?.evmAddress : account?.nativeAddress;
 
   return (
     <div className={style.transectionHistry} name={selectedTransaction?.txHash}>
@@ -41,7 +43,10 @@ function TransectionHistry({ selectedTransaction, account }) {
         <div className={style.transectionHistry__swapCopy}>
           <div className={style.transectionHistry__swapSec}>
             <h3>{`From ${isEvm ? "EVM" : "Native"}`}</h3>
-            <span>{shortner(isEvm ? account?.evmAddress : account?.nativeAddress)}</span>
+            <span>
+              {shortner(fromAddress || "")}
+              <img src={CopyIcon} alt="copyIcon" onClick={() => handleClick(fromAddress || "")} />
+            </span>
           </div>
           <div className={style.transectionHistry__icon} style={{ marginRight: "20px" }}>
             <img src={SwapIcon} alt="swapIcon" draggable={false} />
@@ -49,14 +54,20 @@ function TransectionHistry({ selectedTransaction, account }) {
           <div
             className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
             <h3>{`To ${isEvm ? "Native" : "EVM"}`}</h3>
-            <span>{shortner(isEvm ? account?.nativeAddress : account?.evmAddress)}</span>
+            <span>
+              {shortner(toAddress || "")}
+              <img src={CopyIcon} alt="copyIcon" onClick={() => handleClick(toAddress || "")} />
+            </span>
           </div>
         </div>
       ) : (
         <div className={style.transectionHistry__swapCopy}>
           <div className={style.transectionHistry__swapSec}>
             <h3>{`From ${isEvm ? "EVM" : "Native"}`}</h3>
-            <span>{shortner(isEvm ? account?.evmAddress : account?.nativeAddress)}</span>
+            <span>
+              {shortner(fromAddress || "")}
+              <img src={CopyIcon} alt="copyIcon" onClick={() => handleClick(fromAddress || "")} />
+            </span>
           </div>
           <div className={style.transectionHistry__icon} style={{ marginRight: "29px" }}>
             <img src={SwapIcon} alt="swapIcon" draggable={false} />
@@ -68,6 +79,15 @@ function TransectionHistry({ selectedTransaction, account }) {
               {selectedTransaction?.to
                 ? shortner(selectedTransaction?.to)
                 : "Contract Transactions"}
+              <img
+                src={CopyIcon}
+                alt="copyIcon"
+                onClick={() =>
+                  handleClick(
+                    selectedTransaction?.to ? selectedTransaction?.to : "Contract Transactions"
+                  )
+                }
+              />
             </span>
           </div>
         </div>
