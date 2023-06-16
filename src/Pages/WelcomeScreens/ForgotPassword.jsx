@@ -15,9 +15,14 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
+import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
+import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
 
 function ForgotPassword() {
   const [isDisable, setDisable] = useState(true);
+  const [isOpenEye, setEye] = useState(false);
+  // const [isMannual, setMannual] = useState(false);
+
   const [data, setData] = useState({
     pass: EMTY_STR,
     confirmPass: EMTY_STR,
@@ -177,6 +182,19 @@ function ForgotPassword() {
               onKeyUp={validateKey}
               onChange={handleChange}
               placeholder={"Enter mnemonic here"}
+              className={isOpenEye && "blurContact"}
+            />
+            <img
+              className="eyeIcon"
+              width={19}
+              height={16}
+              alt="eyeClose"
+              src={isOpenEye ? EyeCloseIcon : EyeOpenIcon}
+              draggable={false}
+              onClick={() => {
+                setEye((old) => !old);
+                // setMannual(true);
+              }}
             />
             {/* <p className="pasteTextArea">Paste</p> */}
             <p className={style.errorText}>{error?.key ? error.key : ""}</p>
