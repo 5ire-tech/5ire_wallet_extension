@@ -79,7 +79,7 @@ export class FireProvider extends SafeEventEmitter {
   //pass request to extension for processing the jsonrpc request
   //if request is not related to connection and transaction processing
   //then it is processed in inject content script in current webpage
-  sendJsonRpc(method, message = [], id) {
+  sendJsonRpc(method, message, id) {
     return new Promise(async (resolve, reject) => {
       try {
         if (RESTRICTED_METHODS.indexOf(method) < 0 && this.httpHost) {

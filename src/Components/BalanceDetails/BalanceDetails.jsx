@@ -54,16 +54,6 @@ function BalanceDetails({ mt0 }) {
   const { currentAccount, currentNetwork, allAccountsBalance } = state;
 
   useEffect(() => {
-    //check if current app is connected with extension
-    // getCurrentTabDetails().then((tabDetails) => {
-    //   const isConnectionExist = connectedApps[tabDetails.tabUrl];
-    //   if (isConnectionExist?.isConnected) {
-    //     setIsConnected(isConnectionExist.isConnected);
-    //   }
-    //   setUrl(tabDetails.tabUrl);
-    //   setNewSite(isNullorUndef(isConnectionExist));
-    // });
-
     const isConnectionExist = connectedApps[windowAndTab.tabDetails.origin];
     if (isConnectionExist?.isConnected) {
       setIsConnected(isConnectionExist.isConnected);
@@ -303,9 +293,7 @@ function BalanceDetails({ mt0 }) {
                       !isNewSite &&
                       allAccounts.length > 0 &&
                       allAccounts.map((e, i) => (
-                        <div
-                          className={style.activeDis_Modal__accountActive}
-                          key={i + e?.accountName}>
+                        <div className={style.activeDis_Modal__accountActive} key={e?.accountName}>
                           <div className={style.activeDis_Modal__leftSec}>
                             <img src={DarkLogo} alt="logo" />
                             <div className={style.activeDis_Modal__leftSec__accountConatct}>
@@ -527,7 +515,7 @@ function BalanceDetails({ mt0 }) {
                     size={180}
                     style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                     viewBox={`0 0 256 256`}
-                    value={currentAccount?.nativeAddress ? currentAccount?.nativeAddress : ""}
+                    value={currentAccount?.nativeAddress || ""}
                   />
                 </div>
                 <div className={style.balanceDetails__nativemodal__modalOr}>
@@ -535,7 +523,7 @@ function BalanceDetails({ mt0 }) {
                 </div>
                 <div className={style.balanceDetails__nativemodal__wrapedText}>
                   <p>
-                    {currentAccount?.nativeAddress ? currentAccount?.nativeAddress : ""}
+                    {currentAccount?.nativeAddress || ""}
                     <img
                       draggable={false}
                       src={CopyIcon}
@@ -560,7 +548,7 @@ function BalanceDetails({ mt0 }) {
                     size={200}
                     style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                     viewBox={`0 0 256 256`}
-                    value={currentAccount?.evmAddress ? currentAccount?.evmAddress : ""}
+                    value={currentAccount?.evmAddress || ""}
                   />
                 </div>
                 <div className={style.balanceDetails__nativemodal__modalOr}>
@@ -568,7 +556,7 @@ function BalanceDetails({ mt0 }) {
                 </div>
                 <div className={style.balanceDetails__nativemodal__wrapedText}>
                   <p>
-                    {currentAccount?.evmAddress ? currentAccount?.evmAddress : ""}
+                    {currentAccount?.evmAddress || ""}
                     <img
                       draggable={false}
                       src={CopyIcon}

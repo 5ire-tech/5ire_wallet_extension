@@ -70,20 +70,14 @@ function ValidatorNominatorTxns() {
 
   //check if user has sufficent balance to make trnsaction
   useEffect(() => {
-    if (
-      valdatorNominatorFee?.fee &&
-      Number(activeSession.message?.value) + Number(valdatorNominatorFee?.fee) >=
-        Number(balance?.nativeBalance) -
-          pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native
-    ) {
+    if (valdatorNominatorFee?.fee && isInsufficientBalance()) {
       toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       setDisableApproval(true);
     } else setDisableApproval(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valdatorNominatorFee?.fee]);
 
-  //process the transaction
-  function handleClick(isApproved) {
+  function isInsufficientBalance() {
     let totalAmount =
       +valdatorNominatorFee?.fee +
       pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native;
@@ -92,7 +86,11 @@ function ValidatorNominatorTxns() {
       totalAmount += +activeSession.message?.amount;
     }
 
-    if (isApproved && +balance?.nativeBalance < totalAmount) {
+    return +balance?.nativeBalance < totalAmount;
+  }
+  //process the transaction
+  function handleClick(isApproved) {
+    if (isApproved && isInsufficientBalance()) {
       return toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE_VD_NM);
     }
 

@@ -18,7 +18,7 @@ function ModalCustom({
           <img src={ModalCloseIcon} alt="close" draggable={false} className="closeModalIcon" />
         }
         title={title}
-        className={`modalCustom ${customClass && customClass}`}
+        className={`modalCustom ${customClass}`}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
