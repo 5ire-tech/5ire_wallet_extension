@@ -12,7 +12,8 @@ import footerstyle from "../MenuFooter/style.module.scss";
 import React, { useEffect, useContext, useState } from "react";
 import { sendMessageOverStream } from "../../Utility/message_helper";
 import pageStyle from "../../Pages/RejectNotification/style.module.scss";
-import { SIGNER_METHODS, MESSAGE_EVENT_LABELS, MESSAGE_TYPE_LABELS } from "../../Constants";
+import { SIGNER_METHODS, MESSAGE_EVENT_LABELS, MESSAGE_TYPE_LABELS, COPIED } from "../../Constants";
+import { toast } from "react-hot-toast";
 
 function NativeSigner() {
   const { Content } = Layout;
@@ -68,13 +69,20 @@ function NativeSigner() {
         return <RecComponent key={v} data={data[v]} />;
       }
       return (
-        <div key={v} className={pageStyle.rejectedSec__listReject__innerList}>
+        <div
+          key={v}
+          className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__listReject__txnDetail}`}>
           <h4>{v}: </h4>
-          <h4>{String(data[v]).length > 20 ? shortLongAddress(data[v]) : data[v]}</h4>
+          <p>{String(data[v]).length > 20 ? shortLongAddress(data[v]) : data[v]}</p>
         </div>
       );
     });
   }
+
+  const handleCopy = (data) => {
+    navigator.clipboard.writeText(data);
+    toast.success(COPIED);
+  };
 
   return (
     <div className={`${style.fixedLayout}`}>
@@ -90,37 +98,66 @@ function NativeSigner() {
                   </button>
                 </div>
                 <div className={pageStyle.rejectedSec__listReject}>
-                  <div className={pageStyle.rejectedSec__listReject__innerList}>
+                  <div
+                    className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__listReject__txnDetail}`}>
                     <h4>From: </h4>
-                    <h4>
+                    <p>
                       {shortner(String(state.currentAccount?.nativeAddress))}{" "}
-                      <img src={CopyIcon} alt="copyIcon" name="name" draggable={false} />{" "}
-                    </h4>
+                      <img
+                        src={CopyIcon}
+                        style={{ cursor: "pointer" }}
+                        alt="copyIcon"
+                        onClick={() => handleCopy(state.currentAccount?.nativeAddress)}
+                        draggable={false}
+                      />{" "}
+                    </p>
                   </div>
-                  <div className={pageStyle.rejectedSec__listReject__innerList}>
+                  <div
+                    className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__listReject__txnDetail}`}>
                     <h4>Method: </h4>
-                    <h4>
+                    <p>
                       {externalNativeTxDetails.method
                         ? externalNativeTxDetails.method
                         : formattedMethod}
-                      <img src={CopyIcon} alt="copyIcon" name="name" draggable={false} />
-                    </h4>
+                      <img
+                        src={CopyIcon}
+                        alt="copyIcon"
+                        style={{ cursor: "pointer" }}
+                        onClick={() =>
+                          handleCopy(
+                            externalNativeTxDetails.method
+                              ? externalNativeTxDetails.method
+                              : formattedMethod
+                          )
+                        }
+                        draggable={false}
+                      />
+                    </p>
                   </div>
 
-                  <div className={pageStyle.rejectedSec__listReject__innerList}>
+                  {/* <div
+                    className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__listReject__txnDetail}`}>
                     <h4>Tx Hash: </h4>
-                    <h4>
+                    <p>
                       {shortLongAddress(externalNativeTxDetails?.txHash) || ""}
-                      <img src={CopyIcon} alt="copyIcon" name="name" draggable={false} />
-                    </h4>
-                  </div>
+                      <img
+                        src={CopyIcon}
+                        style={{cursor:"pointer"}}
+
+                        alt="copyIcon"
+                        onClick={() => handleCopy(externalNativeTxDetails?.txHash)}
+                        draggable={false}
+                      />
+                    </p>
+                  </div> */}
 
                   <RecComponent data={externalNativeTxDetails?.args || {}} />
 
                   {externalNativeTxDetails?.estimatedGas && (
-                    <div className={pageStyle.rejectedSec__listReject__innerList}>
+                    <div
+                      className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__listReject__txnDetail}`}>
                       <h4>Estimated Fee: </h4>
-                      <h4>{externalNativeTxDetails?.estimatedGas || ""} 5IRE</h4>
+                      <p>{externalNativeTxDetails?.estimatedGas || ""} 5IRE</p>
                     </div>
                   )}
                 </div>
