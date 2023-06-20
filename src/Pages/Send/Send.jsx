@@ -15,6 +15,7 @@ import React, { useState, useEffect, useContext, useCallback } from "react";
 import { InputField, InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import {
   EVM,
+  REGEX,
   LABELS,
   NATIVE,
   TX_TYPE,
@@ -264,27 +265,65 @@ function Send() {
   };
 
   //handle the changed value of inputs
+  // const handleChange = useCallback(
+  //   (e) => {
+  //     if (e.target.value === "") {
+  //       updateEstimatedGas(null);
+  //       setData((prev) => ({ ...prev, [e.target.name]: "" }));
+  //       return;
+  //     }
+
+  //     if (e.target.name === LABELS.AMOUNT) {
+  //       const arr = e.target.value.split(".");
+  //       if (arr.length > 1) {
+  //         if (arr[1].length > 18) {
+  //           const slice = arr[1].slice(0, 18);
+  //           setData((p) => ({ ...p, amount: arr[0] + "." + slice }));
+  //         } else {
+  //           setData((p) => ({ ...p, amount: e.target.value }));
+  //           updateEstimatedGas(null);
+  //         }
+  //       } else {
+  //         setData((p) => ({ ...p, amount: e.target.value }));
+  //         updateEstimatedGas(null);
+  //       }
+  //     } else {
+  //       if (data.to !== e.target.value.trim()) {
+  //         setData((p) => ({
+  //           ...p,
+  //           [e.target.name]: e.target.value.trim()
+  //         }));
+  //         updateEstimatedGas(null);
+  //       }
+  //     }
+  //   },
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   [data.to, data.amount, updateEstimatedGas]
+  // );
+
   const handleChange = useCallback(
     (e) => {
-      if (e.target.value === "") {
-        updateEstimatedGas(null);
-        setData((prev) => ({ ...prev, [e.target.name]: "" }));
-        return;
-      }
+      let val = e.target.value;
 
       if (e.target.name === LABELS.AMOUNT) {
-        const arr = e.target.value.split(".");
-        if (arr.length > 1) {
+        val = e.target.value.replace(REGEX.DECIMAL_NUMBERS, "");
+        const arr = val.split(".");
+
+        if (arr.length === 2) {
           if (arr[1].length > 18) {
-            const slice = arr[1].slice(0, 18);
+            let slice = arr[1].slice(0, 18);
             setData((p) => ({ ...p, amount: arr[0] + "." + slice }));
           } else {
-            setData((p) => ({ ...p, amount: e.target.value }));
+            setData((p) => ({ ...p, amount: val }));
+            if (Number(val) !== Number(data.amount)) {
+              updateEstimatedGas(null);
+            }
+          }
+        } else if (arr.length === 1) {
+          setData((p) => ({ ...p, amount: val }));
+          if (Number(val) !== Number(data.amount)) {
             updateEstimatedGas(null);
           }
-        } else {
-          setData((p) => ({ ...p, amount: e.target.value }));
-          updateEstimatedGas(null);
         }
       } else {
         if (data.to !== e.target.value.trim()) {
@@ -448,9 +487,9 @@ function Send() {
           </div>
           <div style={{ marginTop: "17px" }}>
             <InputField
-              min={"0"}
+              min="0"
               name="amount"
-              type={"number"}
+              // type="number"
               coloredBg={true}
               key="sendInput"
               onDrop={(e) => {

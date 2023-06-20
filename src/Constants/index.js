@@ -40,6 +40,7 @@ export const REGEX = {
   DIGITS: /(?=.*?[\d])/,
   LOWERCASE: /(?=.*?[a-z])/,
   UPPERCASE: /(?=.*?[A-Z])/,
+  DECIMAL_NUMBERS: /[^\d.]/gi,
   WALLET_NAME: /^[a-z0-9\s]+$/i,
   SPECIAL_CHAR: /(?=.*?[#?!@$%^&*-])/
 };

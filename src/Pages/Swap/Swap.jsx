@@ -15,15 +15,16 @@ import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import { InputField } from "../../Components/InputField/InputFieldSimple";
 import {
   EVM,
+  REGEX,
   NATIVE,
   LABELS,
   TX_TYPE,
+  MESSAGES,
   EXTRA_FEE,
   ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
   EXISTENTIAL_DEPOSITE,
-  MESSAGE_EVENT_LABELS,
-  MESSAGES
+  MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
 
 function Swap() {
@@ -277,30 +278,57 @@ function Swap() {
   );
 
   //handle the changed value of inputs
+  // const handleChange = useCallback(
+  //   (e) => {
+  //     const val = e.target.value;
+  //     const arr = val.split(".");
+
+  //     if (val === "") {
+  //       updateEstimatedGas(null);
+  //       setAmount("");
+  //       return;
+  //     }
+
+  //     if (arr.length > 1) {
+  //       if (arr[1].length > 18) {
+  //         let slice = arr[1].slice(0, 18);
+  //         setAmount(arr[0] + "." + slice);
+  //       } else {
+  //         if (amount !== val) {
+  //           setAmount(val);
+  //           updateEstimatedGas(null);
+  //         }
+  //       }
+  //     } else {
+  //       if (amount !== val) {
+  //         setAmount(val);
+  //         updateEstimatedGas(null);
+  //       }
+  //     }
+  //   },
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   [amount, updateEstimatedGas]
+  // );
+
+  //Perform action on click of Enter
   const handleChange = useCallback(
     (e) => {
-      const val = e.target.value;
+      const val = e.target.value.replace(REGEX.DECIMAL_NUMBERS, "");
       const arr = val.split(".");
 
-      if (val === "") {
-        updateEstimatedGas(null);
-        setAmount("");
-        return;
-      }
-
-      if (arr.length > 1) {
+      if (arr.length === 2) {
         if (arr[1].length > 18) {
           let slice = arr[1].slice(0, 18);
           setAmount(arr[0] + "." + slice);
         } else {
-          if (amount !== val) {
-            setAmount(val);
+          setAmount(val);
+          if (Number(val) !== Number(amount)) {
             updateEstimatedGas(null);
           }
         }
-      } else {
-        if (amount !== val) {
-          setAmount(val);
+      } else if (arr.length === 1) {
+        setAmount(val);
+        if (Number(val) !== Number(amount)) {
           updateEstimatedGas(null);
         }
       }
@@ -309,7 +337,6 @@ function Swap() {
     [amount, updateEstimatedGas]
   );
 
-  //Perform action on click of Enter
   const handleEnter = (e) => {
     if (e.key === LABELS.ENTER) {
       if (!disableBtn) {
@@ -375,7 +402,7 @@ function Swap() {
           <div>
             <InputField
               min={"0"}
-              type="number"
+              // type="number"
               value={amount}
               key="swapInput"
               suffix={suffix}
