@@ -177,7 +177,7 @@ function MyAccount() {
             <div className={style.myAccountSec__rytSec}>
               {e?.type === WALLET_TYPES.IMPORTED_NATIVE && <h5>IMPORTED</h5>}
 
-              {Number(e.accountIndex) === 0 && e.type === "hd_wallet" ? (
+              {e.type === "hd_wallet" ? (
                 ""
               ) : (
                 <Dropdown

@@ -37,7 +37,6 @@ import {
   SIGNER_METHODS,
   STREAM_CHANNELS,
   HTTP_END_POINTS,
-  ONE_ETH_IN_GWEI,
   CONNECTION_METHODS,
   ERROR_EVENTS_LABELS,
   MESSAGE_TYPE_LABELS,
@@ -1559,7 +1558,11 @@ export class Services {
 
             //set the used gas
             hItem.gasUsed = hItem.isEvm
-              ? (Number(transactionStatus?.gasUsed) / ONE_ETH_IN_GWEI).toString()
+              ? (
+                  (Number(transactionStatus?.gasUsed) *
+                    Number(transactionStatus?.effectiveGasPrice)) /
+                  WEI_IN_ONE_ETH
+                ).toString()
               : transactionStatus?.txFee;
 
             //check the transaction type and save the to recipent according to type

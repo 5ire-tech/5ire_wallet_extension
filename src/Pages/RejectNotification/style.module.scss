@@ -111,6 +111,13 @@
 
       }
     }
+    &__txnDetail{
+      flex-direction: unset;
+      max-width: initial;
+      p{
+        justify-content: flex-end;
+      }
+    }
 
     &__innerDataList {
       overflow: auto;

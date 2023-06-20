@@ -25,11 +25,11 @@ import {
 
 function CreateWalletChain() {
   const navigate = useNavigate();
-  const [isOpen, setOpen] = useState({ open1: true, open2: true });
-
   const [show, setShow] = useState(false);
+  const [isOpen, setOpen] = useState({ open1: true, open2: true });
   const { setNewAccount, newAccount, setDetailsPage, updateLoading } = useContext(AuthContext);
-
+  const [mnemonic, setMnemonic] = useState("");
+  const [derivedPath, setDerivedPath] = useState("");
   // const handleCancle = async () => {
   //   sendRuntimeMessage(MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING, MESSAGE_EVENT_LABELS.REMOVE_ACCOUNT, { address: newAccount?.evmAddress });
   //   setDetailsPage(false);
@@ -50,6 +50,9 @@ function CreateWalletChain() {
 
     if (newAccount?.mnemonic || newAccount?.drivedMnemonic)
       setTimeout(() => {
+        const accData = (newAccount?.mnemonic || newAccount.drivedMnemonic).split("//");
+        setMnemonic(accData[0]);
+        setDerivedPath(accData[1] || "");
         updateLoading(false);
       }, 400);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -127,11 +130,9 @@ function CreateWalletChain() {
           </p>
         </div>
         <div className={style.cardWhite__addressInput}>
-          <label>Mnemonic Phrase: </label>
+          <label>Mnemonic Phrase: {"//" + derivedPath}</label>
           <p className={style.cardWhite__addressInput__copyText}>
-            <span className={isOpen.open1 && "blurContact"}>
-              {newAccount?.mnemonic ? newAccount.mnemonic : newAccount.drivedMnemonic}
-            </span>
+            <span className={isOpen.open1 && "blurContact"}>{mnemonic}</span>
             {isOpen?.open1 ? (
               <img
                 width={19}

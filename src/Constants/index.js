@@ -37,7 +37,7 @@ export const TABS_EVENT = {
 /* Regular expressions */
 export const REGEX = {
   MIN_LENGTH: /.{8,}/,
-  DIGITS: /(?=.*?[\d])/,
+  DIGITS: /(?=.*?\d)/,
   LOWERCASE: /(?=.*?[a-z])/,
   UPPERCASE: /(?=.*?[A-Z])/,
   DECIMAL_NUMBERS: /[^\d.]/gi,
@@ -109,7 +109,6 @@ export const ERROR_MESSAGES = {
   INVALID_TYPE_LABEL: "Invalid type Label",
   INSUFFICENT_BALANCE: "Insufficient Balance",
   UNDEF_PROPERTY: "Object not has given property",
-  AMOUNT_SHOULD_BE_GREATER_THAN_0: "Amount should be greater than 0",
   SINGER_ERROR: "Error while signing the the raw/payload",
   ENTER_AMOUNT_CORRECTLY: "Please enter amount correctly",
   WALLET_NAME_ALREADY_EXISTS: "Wallet name already exists",
@@ -117,6 +116,7 @@ export const ERROR_MESSAGES = {
   INTERNAL_ERROR: "Something wrong happend, please try again",
   PASS_CREATED_SUCCESS: "Successfully created password for user",
   AMOUNT_DATA_CHECK: "To or Data is fields is missing from request",
+  AMOUNT_SHOULD_BE_GREATER_THAN_0: "Amount should be greater than 0",
   NO_ACC_EXISTS_WITH_THIS_ADDR: "No account exist with this address",
   AMOUNT_CANT_LESS_THEN_ONE: "Swap amount can't be less than 1 5ire",
   ALPHANUMERIC_CHARACTERS: "Please enter alphanumeric characters only",
