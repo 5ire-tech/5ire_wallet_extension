@@ -446,13 +446,11 @@ export class ExtensionStorageHandler {
 
   recoverOldStateAccounts = async (message, state) => {
     const { vault, currentAccount } = message;
-    const allAccountsBalance = this._setAccountBalance(state, currentAccount);
     const pendingTransactionBalance = this._setAllAccountPendingBalance(state, currentAccount);
     const newState = {
       ...state,
       vault,
       isLogin: true,
-      allAccountsBalance,
       pendingTransactionBalance
     };
 
@@ -461,6 +459,7 @@ export class ExtensionStorageHandler {
       for (let i = 0; i < state?.oldAccounts.length; i++) {
         const account = state?.oldAccounts[i];
         txHistory[account.evmAddress] = [];
+        newState.allAccountsBalance = this._setAccountBalance(newState, account);
 
         for (let j = 0; j < account.txHistory?.length; j++) {
           const oldTx = account.txHistory[j];
