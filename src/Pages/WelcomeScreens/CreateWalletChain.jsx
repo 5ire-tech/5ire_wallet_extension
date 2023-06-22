@@ -52,7 +52,7 @@ function CreateWalletChain() {
       setTimeout(() => {
         const accData = (newAccount?.mnemonic || newAccount.drivedMnemonic).split("//");
         setMnemonic(accData[0]);
-        setDerivedPath(accData[1] || "");
+        setDerivedPath(newAccount.drivedMnemonic ? accData[1] : "");
         updateLoading(false);
       }, 400);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -69,15 +69,13 @@ function CreateWalletChain() {
     if (e.target.name === EVM) navigator.clipboard.writeText(newAccount?.evmAddress);
 
     if (e.target.name === MNEMONIC)
-      navigator.clipboard.writeText(
-        newAccount?.mnemonic ? newAccount?.mnemonic : newAccount?.drivedMnemonic
-      );
+      navigator.clipboard.writeText(newAccount?.mnemonic ? newAccount?.mnemonic : mnemonic);
 
     if (e.target.name === PVT_KEY) navigator.clipboard.writeText(newAccount?.evmPrivateKey);
 
     if (e.target.name === "all") {
       let string = `Mnemonic: ${
-        newAccount?.mnemonic ? newAccount?.mnemonic : newAccount?.drivedMnemonic
+        newAccount?.mnemonic ? newAccount?.mnemonic : mnemonic
       }\nEVM Private key: ${newAccount?.evmPrivateKey}\nEVM Address: ${
         newAccount?.evmAddress
       }\nNative Address: ${newAccount?.nativeAddress}`;
@@ -130,7 +128,7 @@ function CreateWalletChain() {
           </p>
         </div>
         <div className={style.cardWhite__addressInput}>
-          <label>Mnemonic Phrase: {"//" + derivedPath}</label>
+          <label>Mnemonic Phrase: {derivedPath ? "//" + derivedPath : ""}</label>
           <p className={style.cardWhite__addressInput__copyText}>
             <span className={isOpen.open1 && "blurContact"}>{mnemonic}</span>
             {isOpen?.open1 ? (

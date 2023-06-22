@@ -20,6 +20,9 @@ function PrivateKey() {
   const { state, privateKey, seedPhrase } = useContext(AuthContext);
   const { currentAccount } = state;
   const [isOpen, setOpen] = useState({ open1: true, open2: true });
+  const accData = seedPhrase.split("//");
+  const mnemonic = accData[0];
+  const derivedPath = seedPhrase?.includes("//") ? accData[1] : "";
 
   const handleEyeOpen = (e) => {
     const name = e.target.name;
@@ -40,7 +43,7 @@ function PrivateKey() {
   }, []);
 
   const handleCopy = (e) => {
-    if (e.target.name === MNEMONIC) navigator.clipboard.writeText(seedPhrase);
+    if (e.target.name === MNEMONIC) navigator.clipboard.writeText(mnemonic);
     else if (e.target.name === PVT_KEY) navigator.clipboard.writeText(privateKey);
     toast.success(COPIED);
   };
@@ -96,12 +99,10 @@ function PrivateKey() {
 
             <div className={style.wallet}>
               <div className={style.wallet__addressInput}>
-                <label>Mnemonic Phrase:</label>
+                <label>Mnemonic Phrase: {derivedPath ? "//" + derivedPath : ""}</label>
                 <p
                   className={`${style.wallet__addressInput__copyText} ${style.wallet__addressInput__privateCopyText}`}>
-                  <span className={isOpen.open2 && "blurContact"}>
-                    {seedPhrase ? seedPhrase : ""}
-                  </span>
+                  <span className={isOpen.open2 && "blurContact"}>{mnemonic ? mnemonic : ""}</span>
                   {isOpen?.open2 ? (
                     <img
                       width={19}
