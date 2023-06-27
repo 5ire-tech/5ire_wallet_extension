@@ -97,7 +97,12 @@ function Send() {
               (isEd ? EXISTENTIAL_DEPOSITE : 0) +
               pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
                 .evm);
-          Number(amount) <= 0 && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+          // Number(amount) <= 0 && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+          Number(amount) <= 0 &&
+            setErr((p) => ({
+              ...p,
+              amount: ERROR_MESSAGES.INSUFFICENT_BALANCE
+            }));
 
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
           setData((p) => ({ ...p, amount: amount > 0 ? amount : "" }));
@@ -127,7 +132,9 @@ function Send() {
               pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
                 .native);
 
-          Number(amount) <= 0 && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+          // Number(amount) <= 0 && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+          Number(amount) <= 0 &&
+            setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
           updateEstimatedGas(amount > 0 ? estimatedGas : null);
           setData((p) => ({ ...p, amount: amount > 0 ? amount : "" }));
           return;
@@ -264,43 +271,6 @@ function Send() {
     }
   };
 
-  //handle the changed value of inputs
-  // const handleChange = useCallback(
-  //   (e) => {
-  //     if (e.target.value === "") {
-  //       updateEstimatedGas(null);
-  //       setData((prev) => ({ ...prev, [e.target.name]: "" }));
-  //       return;
-  //     }
-
-  //     if (e.target.name === LABELS.AMOUNT) {
-  //       const arr = e.target.value.split(".");
-  //       if (arr.length > 1) {
-  //         if (arr[1].length > 18) {
-  //           const slice = arr[1].slice(0, 18);
-  //           setData((p) => ({ ...p, amount: arr[0] + "." + slice }));
-  //         } else {
-  //           setData((p) => ({ ...p, amount: e.target.value }));
-  //           updateEstimatedGas(null);
-  //         }
-  //       } else {
-  //         setData((p) => ({ ...p, amount: e.target.value }));
-  //         updateEstimatedGas(null);
-  //       }
-  //     } else {
-  //       if (data.to !== e.target.value.trim()) {
-  //         setData((p) => ({
-  //           ...p,
-  //           [e.target.name]: e.target.value.trim()
-  //         }));
-  //         updateEstimatedGas(null);
-  //       }
-  //     }
-  //   },
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   [data.to, data.amount, updateEstimatedGas]
-  // );
-
   const handleChange = useCallback(
     (e) => {
       let val = e.target.value;
@@ -372,7 +342,8 @@ function Send() {
         }, 3000);
       } else if (activeTab === NATIVE) {
         if (balance?.nativeBalance < 1.1) {
-          toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+          setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
+          // toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
         } else {
           updateLoading(true);
           //pass the message request for native transfer

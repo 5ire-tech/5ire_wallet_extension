@@ -50,11 +50,11 @@ function Swap() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toFrom?.to, currentNetwork]);
 
-  useEffect(() => {
-    if (!amount && !estimatedGas) {
-      setError("");
-    }
-  }, [amount, estimatedGas]);
+  // useEffect(() => {
+  //   if (!amount && !estimatedGas) {
+  //     setError("");
+  //   }
+  // }, [amount, estimatedGas]);
 
   useEffect(() => {
     if (
@@ -98,7 +98,8 @@ function Swap() {
 
           setAmount(Number(value) >= 1 ? value : "");
           updateEstimatedGas(Number(value) >= 1 ? estimatedGas : null);
-          Number(value) <= 1 && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+          // Number(value) <= 1 && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+          Number(value) <= 1 && setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
           setMaxClicked(false);
 
           return;
@@ -124,10 +125,11 @@ function Swap() {
               pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
                 .native);
 
-          setAmount(Number(value) >= 1 ? value : "");
           updateEstimatedGas(Number(value) >= 1 ? estimatedGas : null);
-          Number(value) <= 1 && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+          setAmount(Number(value) >= 1 ? value : "");
+          // Number(value) <= 1 && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
           setMaxClicked(false);
+          Number(value) <= 1 && setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
 
           return;
         }
