@@ -402,7 +402,7 @@ function BalanceDetails({ mt0 }) {
                     },
                     {
                       value: NETWORK.QA_NETWORK,
-                      label: <span className="flexedItemSelect">{NETWORK.QA_NETWORK}</span>
+                      label: <span className="flexedItemSelect">{"GA"}</span>
                     }
                   ]}
                 />

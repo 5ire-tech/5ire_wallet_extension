@@ -35,7 +35,7 @@ export class HybridKeyring extends EventEmitter {
   };
 
   static initKeyring() {
-    HybridKeyring.polkaKeyring = new Keyring();
+    HybridKeyring.polkaKeyring = new Keyring({ type: "sr25519" });
     HybridKeyring.ethKeyring = new EthKeyring();
     HybridKeyring.simpleEthKeyring = new SimpleKeyring();
   }

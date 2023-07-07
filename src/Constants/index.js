@@ -113,7 +113,7 @@ export const ERROR_MESSAGES = {
   ENTER_AMOUNT_CORRECTLY: "Please enter amount correctly",
   WALLET_NAME_ALREADY_EXISTS: "Wallet name already exists",
   NOT_VALID_JSON_RPC_METHOD: "JSON-RPC method is not valid",
-  INTERNAL_ERROR: "Something wrong happend, please try again",
+  INTERNAL_ERROR: "Something wrong happened, please try again",
   PASS_CREATED_SUCCESS: "Successfully created password for user",
   AMOUNT_DATA_CHECK: "To or Data is fields is missing from request",
   AMOUNT_SHOULD_BE_GREATER_THAN_0: "Amount should be greater than 0",
@@ -128,7 +128,7 @@ export const ERROR_MESSAGES = {
   ACCOUNT_ACCESS_NOT_GRANTED: "The requested account has not been authorized by the user",
   ERROR_WHILE_TRANSACTION: "Transaction failed, error occured during transaction processing",
   INSUFFICENT_BALANCE_VD_NM: "Insufficient Funds: Fee + Amount is more than available balance",
-  ERROR_WHILE_GAS_ESTIMATION: "Gas Estimation Failed, something wrong happend while gas estimation",
+  ERROR_WHILE_GAS_ESTIMATION: "Gas Estimation Failed, something wrong happened while gas estimation",
   INVALID_MSG_ARRAY_AND_OBJECTS_ALLOWED:
     "Invalid message, (*Only Objects or Arrays are valid value)",
   ERROR_WHILE_NETWORK_CONNECTION:
@@ -142,7 +142,7 @@ export const ERROR_MESSAGES = {
   REJECTED_BY_USER: "Request rejected by user",
   NETWORK_REQUEST: "Network error try after sometime",
   UNABLE_TO_REMOVE_ACC: "Unable to remove the account",
-  TX_FAILED: "Transaction failed. some wrong happend",
+  TX_FAILED: "Transaction failed. some wrong happened",
   INVALID_METHOD: "Method is not the part of system",
   INVAILD_ERROR_MESSAGE: "Error message must be an object",
   INVALID_RPC_OPERATION: "RPC is not the part of rpc call system",
@@ -229,7 +229,8 @@ export const LABELS = {
 };
 
 export const HTTP_END_POINTS = {
-  QA: "https://qa-http-nodes.5ire.network",
+  QA: "https://rpc-ga-testnet.5ire.network",
+  // QA: "https://qa-http-nodes.5ire.network",
   UAT: "https://uat-http-nodes.5ire.network",
   TESTNET: "https://rpc-testnet.5ire.network"
 };
@@ -254,7 +255,8 @@ export const EXPLORERS = {
 };
 
 export const WS_END_POINTS = {
-  QA: "wss://qa-wss-nodes.5ire.network",
+  QA: "wss://wss-ga-testnet.5ire.network",
+  //  QA: "wss://qa-wss-nodes.5ire.network",
   UAT: "wss://uat-wss-nodes.5ire.network",
   TESTNET: "wss://wss-testnet.5ire.network"
 };
