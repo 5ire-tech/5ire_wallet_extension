@@ -128,7 +128,8 @@ export const ERROR_MESSAGES = {
   ACCOUNT_ACCESS_NOT_GRANTED: "The requested account has not been authorized by the user",
   ERROR_WHILE_TRANSACTION: "Transaction failed, error occured during transaction processing",
   INSUFFICENT_BALANCE_VD_NM: "Insufficient Funds: Fee + Amount is more than available balance",
-  ERROR_WHILE_GAS_ESTIMATION: "Gas Estimation Failed, something wrong happened while gas estimation",
+  ERROR_WHILE_GAS_ESTIMATION:
+    "Gas Estimation Failed, something wrong happened while gas estimation",
   INVALID_MSG_ARRAY_AND_OBJECTS_ALLOWED:
     "Invalid message, (*Only Objects or Arrays are valid value)",
   ERROR_WHILE_NETWORK_CONNECTION:
@@ -229,8 +230,8 @@ export const LABELS = {
 };
 
 export const HTTP_END_POINTS = {
-  QA: "https://rpc-ga-testnet.5ire.network",
-  // QA: "https://qa-http-nodes.5ire.network",
+  // QA: "https://rpc-ga-testnet.5ire.network",
+  QA: "https://qa-http-nodes.5ire.network",
   UAT: "https://uat-http-nodes.5ire.network",
   TESTNET: "https://rpc-testnet.5ire.network"
 };
@@ -255,8 +256,8 @@ export const EXPLORERS = {
 };
 
 export const WS_END_POINTS = {
-  QA: "wss://wss-ga-testnet.5ire.network",
-  //  QA: "wss://qa-wss-nodes.5ire.network",
+  // QA: "wss://wss-ga-testnet.5ire.network",
+  QA: "wss://qa-wss-nodes.5ire.network",
   UAT: "wss://uat-wss-nodes.5ire.network",
   TESTNET: "wss://wss-testnet.5ire.network"
 };
