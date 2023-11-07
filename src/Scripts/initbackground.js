@@ -2111,7 +2111,7 @@ export class GeneralWalletRPC {
       //Native Balance
       if (RpcRequestProcessor.isHttp) {
         let balance_ = await nativeApi?._query.system.account(account.nativeAddress);
-        nbalance = parseFloat(`${balance_.data.free}`) - parseFloat(`${balance_.data.miscFrozen}`);
+        nbalance = parseFloat(`${balance_.data.free}`) - parseFloat(`${balance_.data.frozen}`);
       } else {
         let balance_ = await nativeApi?.derive.balances.all(account.nativeAddress);
         nbalance = balance_.availableBalance;
