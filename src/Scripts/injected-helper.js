@@ -59,6 +59,7 @@ export class InjectedScript {
       if (data?.event) {
         if (isEqual(data.event, TABS_EVENT.WALLET_CONNECTED_EVENT)) {
           // log("here is data response: ", data.response);
+
           this._afterConnecting(data.response?.result?.evmAddress);
         } else if (isEqual(data.event, TABS_EVENT.NETWORK_CHANGE_EVENT))
           this._afterNetworkChange(data.response?.result?.url);
@@ -79,7 +80,10 @@ export class InjectedScript {
         if (data.error) {
           InjectedScript.pageResponseHandler.reject(data);
         } else {
-          if (Object.values(CONNECTION_METHODS).find((item) => item === handler?.method)) {
+          if (
+            handler?.method !== CONNECTION_METHODS.GET_END_POINT &&
+            Object.values(CONNECTION_METHODS).find((item) => item === handler?.method)
+          ) {
             !isEqual(data.id, RELOAD_ID) &&
               this._afterConnecting(
                 data.response.result?.length
@@ -110,27 +114,29 @@ export class InjectedScript {
     // console.log("called the after connection");
     this._injectSelectedAddress(address);
     this._setConnectFlag(true);
-    await this._getHttpProvider();
-    await this._getChainid();
+    if (!InjectedScript.fireProvider.httpHost) {
+      await this._getHttpProvider();
+    }
+    // await this._getChainid();
   }
 
   // called when network changed
   async _afterNetworkChange(httpHost) {
     // log("called the network change")
     this._setHttpHost(httpHost);
-    await this._getChainid();
+    // await this._getChainid();
   }
 
   // check if app is connected after reload
   async _afterReloadPage() {
     if (!InjectedScript.fireProvider.httpHost) {
       // log("called the reload")
-      const isError = await this._getHttpProvider();
-      if (!isError) {
-        await this._getChainid();
-        await this._getAccount();
-        this._setConnectFlag(true);
-      }
+      await this._getHttpProvider();
+      //if (!isError) {
+      // await this._getChainid();
+      // await this._getAccount();
+      // this._setConnectFlag(true);
+      // }
     }
   }
 
@@ -204,7 +210,7 @@ export class InjectedScript {
   _clearAllConfig() {
     this._injectSelectedAddress(null);
     this._setConnectFlag(false);
-    this._injectChainId("");
-    this._setHttpHost("");
+    // this._injectChainId("");
+    // this._setHttpHost("");
   }
 }

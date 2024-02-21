@@ -385,7 +385,11 @@ function BalanceDetails({ mt0 }) {
                   defaultValue={[
                     {
                       value: currentNetwork,
-                      label: <span className="flexedItemSelect">{currentNetwork || "Testnet"}</span>
+                      label: (
+                        <span className="flexedItemSelect">
+                          {currentNetwork || NETWORK.TEST_NETWORK}
+                        </span>
+                      )
                     }
                   ]}
                   style={{
@@ -395,15 +399,15 @@ function BalanceDetails({ mt0 }) {
                     {
                       value: NETWORK.TEST_NETWORK,
                       label: <span className="flexedItemSelect">{NETWORK.TEST_NETWORK}</span>
-                    },
-                    {
-                      value: NETWORK.UAT,
-                      label: <span className="flexedItemSelect">{NETWORK.UAT}</span>
-                    },
-                    {
-                      value: NETWORK.QA_NETWORK,
-                      label: <span className="flexedItemSelect">{"GA"}</span>
                     }
+                    // {
+                    //   value: NETWORK.UAT,
+                    //   label: <span className="flexedItemSelect">{NETWORK.UAT}</span>
+                    // },
+                    // {
+                    //   value: NETWORK.QA_NETWORK,
+                    //   label: <span className="flexedItemSelect">{NETWORK.QA_NETWORK}</span>
+                    // }
                   ]}
                 />
               </div>

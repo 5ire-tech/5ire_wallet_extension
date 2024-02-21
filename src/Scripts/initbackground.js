@@ -311,6 +311,8 @@ export class InitBackground {
         }
       }
 
+      await services.updateLocalState("lock", { isLogin: false });
+
       //clear the all pending request from local store when extension updated or refreshed
       await services.updateLocalState(STATE_CHANGE_ACTIONS.CLEAR_ALL_EXTERNAL_REQUESTS, {});
       //clear the transaction queue when refreshed
@@ -345,7 +347,15 @@ export class InitBackground {
 
   //background startup events binding
   bindBackgroundStartupEvents = async () => {
-    Browser.runtime.onStartup.addListener(() => {});
+    Browser.runtime.onStartup.addListener(async () => {});
+    Browser.management.onDisabled.addListener(async () => {
+      const services = new Services();
+      await services.updateLocalState("lock", { isLogin: false });
+    });
+    Browser.management.onEnabled.addListener(async () => {
+      const services = new Services();
+      await services.updateLocalState("lock", { isLogin: false });
+    });
   };
 
   //event called when extension is suspended or closed
@@ -1501,7 +1511,7 @@ export class Services {
   };
 
   //update the local storage data
-  updateLocalState = async (key, data, options) => {
+  updateLocalState = async (key, data, options = {}) => {
     const res = await ExtensionStorageHandler.updateStorage(key, data, options);
     if (res) ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, res);
   };

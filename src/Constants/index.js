@@ -128,7 +128,8 @@ export const ERROR_MESSAGES = {
   ACCOUNT_ACCESS_NOT_GRANTED: "The requested account has not been authorized by the user",
   ERROR_WHILE_TRANSACTION: "Transaction failed, error occured during transaction processing",
   INSUFFICENT_BALANCE_VD_NM: "Insufficient Funds: Fee + Amount is more than available balance",
-  ERROR_WHILE_GAS_ESTIMATION: "Gas Estimation Failed, something wrong happened while gas estimation",
+  ERROR_WHILE_GAS_ESTIMATION:
+    "Gas Estimation Failed, something wrong happened while gas estimation",
   INVALID_MSG_ARRAY_AND_OBJECTS_ALLOWED:
     "Invalid message, (*Only Objects or Arrays are valid value)",
   ERROR_WHILE_NETWORK_CONNECTION:
@@ -412,7 +413,8 @@ export const VALIDATOR_NOMINATOR_METHOD = {
 export const CONNECTION_METHODS = {
   CONNECT: "connect",
   ETH_REQUEST_ACCOUNTS: "eth_requestAccounts",
-  ETH_ACCOUNTS: "eth_accounts"
+  ETH_ACCOUNTS: "eth_accounts",
+  GET_END_POINT: "get_endPoint"
 };
 
 export const WALLET_METHODS = {
