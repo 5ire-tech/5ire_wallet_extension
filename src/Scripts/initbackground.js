@@ -311,7 +311,7 @@ export class InitBackground {
         }
       }
 
-      await services.updateLocalState("lock", { isLogin: false });
+      // await services.updateLocalState("lock", { isLogin: false });
 
       //clear the all pending request from local store when extension updated or refreshed
       await services.updateLocalState(STATE_CHANGE_ACTIONS.CLEAR_ALL_EXTERNAL_REQUESTS, {});
