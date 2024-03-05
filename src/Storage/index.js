@@ -11,6 +11,11 @@ const setLocalStorage = async (data) => {
   return status;
 };
 
+export const clearAllStorage = async () => {
+  await browser.storage.local.clear();
+  if (isManifestV3) await browser.storage.session.clear();
+};
+
 export const setSessionStorage = (data) => {
   return new Promise((resolve, reject) => {
     browser.storage.session

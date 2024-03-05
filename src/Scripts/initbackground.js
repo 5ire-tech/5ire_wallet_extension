@@ -60,6 +60,7 @@ import {
   TransactionProcessingPayload,
   httpRequest
 } from "../Utility/network_calls";
+import { clearAllStorage } from "../Storage";
 
 let tester = 0;
 
@@ -355,6 +356,9 @@ export class InitBackground {
     Browser.management.onEnabled.addListener(async () => {
       const services = new Services();
       await services.updateLocalState("lock", { isLogin: false });
+    });
+    Browser.management.onUninstalled.addListener(async () => {
+      await clearAllStorage();
     });
   };
 
