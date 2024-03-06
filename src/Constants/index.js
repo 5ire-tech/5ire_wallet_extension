@@ -413,8 +413,8 @@ export const VALIDATOR_NOMINATOR_METHOD = {
 export const CONNECTION_METHODS = {
   CONNECT: "connect",
   ETH_REQUEST_ACCOUNTS: "eth_requestAccounts",
-  ETH_ACCOUNTS: "eth_accounts",
-  GET_END_POINT: "get_endPoint"
+  ETH_ACCOUNTS: "eth_accounts"
+  // GET_END_POINT: "get_endPoint"
 };
 
 export const WALLET_METHODS = {

@@ -1,7 +1,7 @@
 import { INPAGE, getId } from "./constants";
 import { InjectedScript } from "./injected-helper";
 import SafeEventEmitter from "@metamask/safe-event-emitter";
-import { SIGNER_METHODS, RESTRICTED_METHODS, VERSION } from "../Constants";
+import { SIGNER_METHODS, RESTRICTED_METHODS, VERSION, HTTP_END_POINTS } from "../Constants";
 /*
 Custom Web3 provider for interacting with the 5ire browser extension and pass to
 5ire extension to handle the json-rpc request and send the response back
@@ -9,7 +9,7 @@ Custom Web3 provider for interacting with the 5ire browser extension and pass to
 export class FireProvider extends SafeEventEmitter {
   constructor() {
     super();
-    this.httpHost = "";
+    this.httpHost = HTTP_END_POINTS.TESTNET;
     this.selectedAddress = null;
     this.chainId = "";
     this.version = VERSION;
@@ -104,13 +104,14 @@ export class FireProvider extends SafeEventEmitter {
             return resolve(content.result);
           }
         }
-        if (method === "eth_accounts") {
+
+        if (!this.connected && method === "eth_accounts") {
           return reject("");
         }
 
         if (
           method === "eth_requestAccounts" ||
-          // method === "eth_accounts" ||
+          method === "eth_accounts" ||
           method === "connect" ||
           method === "disconnect"
         )

@@ -370,6 +370,13 @@ export class ExternalConnection {
 
       //send the message to requester tab
       sendMessageToTab(data.tabId, new TabMessagePayload(data.id, res, data?.method));
+    } else if (isEqual(data?.method, EVM_JSON_RPC_METHODS.ETH_ACCOUNTS)) {
+      //only send accounts if its connected otherwise empty response
+
+      sendMessageToTab(
+        data.tabId,
+        new TabMessagePayload(data.id, null, null, null, ERROR_MESSAGES.ACCESS_NOT_GRANTED)
+      );
     } else {
       await this.externalWindowController.newConnectionRequest(
         { route: ROUTE_FOR_APPROVAL_WINDOWS.CONNECTION_ROUTE, ...data },

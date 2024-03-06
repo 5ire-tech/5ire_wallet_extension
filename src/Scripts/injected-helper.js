@@ -58,7 +58,7 @@ export class InjectedScript {
       //handle the event from exetension
       if (data?.event) {
         if (isEqual(data.event, TABS_EVENT.WALLET_CONNECTED_EVENT)) {
-          // log("here is data response: ", data.response);
+          log("here is data response: ", data.response);
 
           this._afterConnecting(data.response?.result?.evmAddress);
         } else if (isEqual(data.event, TABS_EVENT.NETWORK_CHANGE_EVENT))
