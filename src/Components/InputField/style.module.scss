@@ -1,29 +1,35 @@
 @import "../../styles/__vars.scss";
+
 input::placeholder {
   color: $white !important;
 }
+
 .inputPassword {
   border-radius: 12px !important;
   border: 1px solid #404058 !important;
+
   span {
     cursor: pointer !important;
   }
 }
+
 .inputSimple {
   background-color: $blue-08132C;
   border-radius: 28px;
   padding: 14px 16px;
   border: 0;
+
   input {
     background-color: transparent;
     font-weight: normal;
     border-radius: 12px;
     padding: 14px 16px;
     border: 1px solid #404058;
-    color: $white;
+    color: $white !important;
     font-size: 14px;
+
     &::placeholder {
-      color: $white;
+      color: $white !important;
     }
   }
 }
@@ -31,31 +37,37 @@ input::placeholder {
 .inputField {
   &__coloredBg {
     background-color: $blue-08132C !important;
+
     input {
-    background-color: $blue-08132C !important;
-    border: 0;
-    padding: 0;
-    color: $white;
-    &:focus , &:focus-visible, &:focus-within{
+      background-color: $blue-08132C !important;
       border: 0;
-      box-shadow: none;
-      outline: none;
-    }
-    &::placeholder {
-      color: $white;
-    }
+      padding: 0;
+      color: $white !important;
+
+      &:focus,
+      &:focus-visible,
+      &:focus-within {
+        border: 0;
+        box-shadow: none;
+        outline: none;
+      }
+
+      &::placeholder {
+        color: $white !important;
+      }
     }
   }
 
   &__inputSelect {
     padding: 5px 5px 5px 16px !important;
   }
+
   &__input {
     background-color: $blue-08132C;
     border-radius: 12px;
     padding: 11px 16px;
     border: 1px solid #404058;
-    color: $white;
+    color: $white !important;
     font-size: 14px;
 
     .ant-input-wrapper {
@@ -70,6 +82,7 @@ input::placeholder {
   display: flex;
   flex-direction: column;
   position: relative;
+
   // margin-bottom: 15px;
   &__label {
     color: #ffffff;
@@ -78,26 +91,29 @@ input::placeholder {
     margin-bottom: 8px;
     opacity: 0.6;
   }
+
   &:last-child {
     margin-bottom: 0;
   }
-  &__label:empty{
+
+  &__label:empty {
     display: none;
   }
 }
+
 .mb0 {
   margin-bottom: 0;
 }
 
 
 input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button { 
-      -webkit-appearance: none; 
-      margin: 0; 
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
-input[type=number] { 
+input[type=number] {
   -moz-appearance: textfield;
   appearance: textfield;
-  margin: 0; 
+  margin: 0;
 }

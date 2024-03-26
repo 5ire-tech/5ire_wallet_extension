@@ -4,7 +4,7 @@
 
 ## Prerequisites
 
-1. [**Node js >v16.0**](https://nodejs.org/en/download/)
+1. [**Node js v18.18.0](https://nodejs.org/en/download/)
 2. **2GB RAM** recommended **>8GB**
 3. **Minimum 10GB of storage**
 4. **React js 17.0.2**

@@ -1,7 +1,7 @@
 {
   "name": "5ire Wallet",
   "description": "5ire Wallet in your browser compatible with both Native and EVM chains.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html",
@@ -21,14 +21,22 @@
     "tabs",
     "management"
   ],
-  "host_permissions": ["http://*/", "https://*/"],
+  "host_permissions": [
+    "http://*/",
+    "https://*/"
+  ],
   "background": {
     "service_worker": "static/js/background.js"
   },
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
-      "js": ["static/js/content.js"],
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "static/js/content.js"
+      ],
       "all_frames": false,
       "run_at": "document_end"
     }

@@ -156,7 +156,7 @@ body {
 
   input,
   textarea {
-    background-color: transparent;
+    background-color: transparent !important;
     border-radius: 12px;
     padding: 11px 16px;
     border: 1px solid #404058 !important;
@@ -314,7 +314,7 @@ body {
 
 .ant-drawer {
   &-body {
-    padding: 20px 0 !important;
+    // padding: 20px 0 !important;
     padding-bottom: 0;
   }
 
@@ -327,7 +327,7 @@ body {
   }
 
   &-header {
-    padding: 0 0 10px 0 !important;
+    // padding: 0 0 10px 0 !important;
     border-bottom: 1px solid #707070 !important;
 
     &-title {
