@@ -10,34 +10,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  setup_node:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: 'yarn'
-          cache-dependency-path: 'yarn.lock'
-
   build_and_upload_artifact:
     strategy:
       matrix:
         browser: [firefox, chrome]
-    needs:
-      - setup_node
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18.18.0
+        cache: 'yarn'
+        cache-dependency-path: 'yarn.lock'
+
+    - run: yarn install
+
     - name: Build ${{ matrix.browser }} extension
-      shell: bash
-      run: ./build.sh ${{ matrix.browser }}
+      run: yarn run build:${{ matrix.browser }}
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: 5ire-wallet-${{ matrix.browser }}-extension
-        path: ${{ matrix.browser }}-extension.tar.gz
+        path: build/*
         compression-level: 0
         if-no-files-found: error
 
