@@ -1,0 +1,22 @@
+name: GitHub Security Alerts for Jira
+
+on:
+  schedule:
+    - cron: '30 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  syncSecurityAlerts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Sync security alerts to Jira issues"
+        uses: reload/github-security-jira@v1.x
+        env:
+          GH_SECURITY_TOKEN: ${{ secrets.GitHubSecurityToken }}
+          JIRA_TOKEN: ${{ secrets.JiraApiToken }}
+          JIRA_HOST: https://5ire.atlassian.net/
+          JIRA_USER: himanshu@5ire.org
+          JIRA_PROJECT: APP
+          JIRA_ISSUE_TYPE: Security
+          JIRA_WATCHERS: salil@5ire.org,mike@5ire.org,lukasz@5ire.org
+          JIRA_RESTRICTED_COMMENT_ROLE: "Administrators"

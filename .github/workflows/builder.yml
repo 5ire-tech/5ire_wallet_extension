@@ -11,39 +11,41 @@ concurrency:
 
 jobs:
   setup_node:
-    name: Install and Setup NodeJS
-    uses: actions/setup-node@v4
-    cache: 'yarn'
-    cache-dependency-path: 'yarn.lock'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'yarn'
+          cache-dependency-path: 'yarn.lock'
 
   build_and_upload_artifact:
     strategy:
       matrix:
         browser: [firefox, chrome]
-
+    needs:
+      - setup_node
     runs-on: ubuntu-latest
     steps:
-
+    - uses: actions/checkout@v4
     - name: Build ${{ matrix.browser }} extension
-      needs:
-        - setup_node
       shell: bash
       run: ./build.sh ${{ matrix.browser }}
 
     - name: Upload artifact
-    uses: actions/upload-artifact@v4
-    with:
-      name: 5ire-wallet-${{ matrix.browser }}-extension
-      path: ${{ matrix.browser }}-extension.tar.gz
-      compression-level: 0
-      if-no-files-found: error
+      uses: actions/upload-artifact@v4
+      with:
+        name: 5ire-wallet-${{ matrix.browser }}-extension
+        path: ${{ matrix.browser }}-extension.tar.gz
+        compression-level: 0
+        if-no-files-found: error
 
   notify:
     if: always()
     name: Notify
     needs:
-      - docker_builder
-      - deploy_build
+      - build_and_upload_artifact
     runs-on: ubuntu-latest
     steps:
       - name: Prepare Slack message
