@@ -230,8 +230,8 @@ export const LABELS = {
 };
 
 export const HTTP_END_POINTS = {
-  QA: "https://rpc-ga-testnet.5ire.network",
-  // QA: "https://qa-http-nodes.5ire.network",
+  // QA: "https://rpc-ga-testnet.5ire.network",
+  QA: "https://qa-http-nodes.5ire.network",
   UAT: "https://uat-http-nodes.5ire.network",
   TESTNET: "https://rpc-testnet.5ire.network"
 };
@@ -256,8 +256,8 @@ export const EXPLORERS = {
 };
 
 export const WS_END_POINTS = {
-  QA: "wss://wss-ga-testnet.5ire.network",
-  //  QA: "wss://qa-wss-nodes.5ire.network",
+  // QA: "wss://wss-ga-testnet.5ire.network",
+  QA: "wss://qa-wss-nodes.5ire.network",
   UAT: "wss://uat-wss-nodes.5ire.network",
   TESTNET: "wss://wss-testnet.5ire.network"
 };
