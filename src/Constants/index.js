@@ -233,7 +233,8 @@ export const HTTP_END_POINTS = {
   // QA: "https://rpc-ga-testnet.5ire.network",
   QA: "https://qa-http-nodes.5ire.network",
   UAT: "https://uat-http-nodes.5ire.network",
-  TESTNET: "https://rpc-testnet.5ire.network"
+  //TESTNET: "https://rpc-testnet.5ire.network"
+  TESTNET: "https://rpc.ga.5ire.network"
 };
 
 export const SOCIAL_LINKS = {
@@ -252,14 +253,16 @@ export const API = {
 export const EXPLORERS = {
   QA: "https://qa-web-exp.5ire.network",
   UAT: "https://uat-web-exp.5ire.network",
-  TESTNET: "https://explorer.5ire.network"
+  // TESTNET: "https://explorer.5ire.network",
+  TESTNET: "https://explorer.ga.5ire.network"
 };
 
 export const WS_END_POINTS = {
   // QA: "wss://wss-ga-testnet.5ire.network",
   QA: "wss://qa-wss-nodes.5ire.network",
   UAT: "wss://uat-wss-nodes.5ire.network",
-  TESTNET: "wss://wss-testnet.5ire.network"
+  // TESTNET: "wss://wss-testnet.5ire.network"
+  TESTNET: "wss://wss.ga.5ire.network"
 };
 
 export const MESSAGE_EVENT_LABELS = {
@@ -298,7 +301,8 @@ export const MESSAGE_EVENT_LABELS = {
   //network related events
   NETWORK_CONNECTION_ERROR: "networkConnectionError",
   NETWORK_CHANGE: "networkChange",
-  NETWORK_CHECK: "networkCheck"
+  NETWORK_CHECK: "networkCheck",
+  GET_ED: "ed_value"
 };
 
 export const INTERNAL_EVENT_LABELS = {

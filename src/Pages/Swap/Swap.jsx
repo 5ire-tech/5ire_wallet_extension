@@ -23,7 +23,6 @@ import {
   EXTRA_FEE,
   ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
-  EXISTENTIAL_DEPOSITE,
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
 
@@ -38,7 +37,8 @@ function Swap() {
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [toFrom, setToFrom] = useState({ from: NATIVE, to: EVM });
 
-  const { state, estimatedGas, updateEstimatedGas, updateLoading } = useContext(AuthContext);
+  const { state, estimatedGas, updateEstimatedGas, updateLoading, edValue } =
+    useContext(AuthContext);
   const { allAccountsBalance, pendingTransactionBalance, currentNetwork, currentAccount } = state;
   const balance = allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()];
 
@@ -92,7 +92,7 @@ function Swap() {
             Number(balance?.evmBalance) -
             (Number(estimatedGas) +
               EXTRA_FEE +
-              (isEd ? EXISTENTIAL_DEPOSITE : 0) +
+              (isEd ? edValue : 0) +
               pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
                 .evm);
 
@@ -104,7 +104,7 @@ function Swap() {
 
           return;
         } else if (
-          Number(amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0) >
+          Number(amount) + Number(estimatedGas) + (isEd ? edValue : 0) >
           Number(balance?.evmBalance) -
             pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
         ) {
@@ -121,7 +121,7 @@ function Swap() {
             Number(balance?.nativeBalance) -
             (Number(estimatedGas) +
               EXTRA_FEE +
-              (isEd ? EXISTENTIAL_DEPOSITE : 0) +
+              (isEd ? edValue : 0) +
               pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
                 .native);
 
@@ -134,7 +134,7 @@ function Swap() {
           return;
         }
         if (
-          Number(amount) + Number(estimatedGas) + (isEd ? EXISTENTIAL_DEPOSITE : 0) >
+          Number(amount) + Number(estimatedGas) + (isEd ? edValue : 0) >
           Number(balance?.nativeBalance) -
             pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
               .native

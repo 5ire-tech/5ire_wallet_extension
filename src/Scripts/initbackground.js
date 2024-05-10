@@ -148,6 +148,7 @@ export class InitBackground {
         InitBackground.uiStream = new ExtensionPortStream(port);
         //bind the stream data event for getting the message from extension-ui
         InitBackground.uiStream.on("data", internalEventStream);
+
         ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.CONNECTION);
       }
 
@@ -1490,6 +1491,8 @@ export class Services {
     const connector = Connection.getInsatnce();
     const apiConn = await connector.initializeApi(currentNetwork);
 
+    const ed = apiConn.nativeApi.consts.balances.existentialDeposit.toString();
+    this.messageToUI(MESSAGE_EVENT_LABELS.GET_ED, { ed });
     //check if there is error property connection payload
     if (apiConn?.error) {
       ExtensionEventHandle.eventEmitter.emit(
@@ -2554,6 +2557,7 @@ export class NetworkHandler {
 
     //insert connection into its network slot
     NetworkHandler.api[currentNetwork.toLowerCase()] = api;
+
     await this.checkNetwork();
   };
 
@@ -2563,6 +2567,7 @@ export class NetworkHandler {
       const state = await getDataLocal(LABELS.STATE);
       const connectionApi = NetworkHandler.api[state.currentNetwork.toLowerCase()];
       const chainId = await connectionApi.evmApi.eth.getChainId();
+
       //send only if the extension opened
       ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.BALANCE_FETCH);
       InitBackground.uiStream &&
