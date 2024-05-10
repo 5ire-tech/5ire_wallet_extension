@@ -47,6 +47,8 @@ function Swap() {
     setError("");
     setAmount("");
     updateEstimatedGas(null);
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.GET_ED, {});
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toFrom?.to, currentNetwork]);
 
@@ -58,10 +60,10 @@ function Swap() {
 
   useEffect(() => {
     if (
-      (toFrom.from === EVM && Number(balance?.evmBalance) <= 2 && isEd) ||
-      (toFrom.from === NATIVE && Number(balance?.nativeBalance) <= 2 && isEd) ||
-      (toFrom.from === EVM && Number(balance?.evmBalance) <= 1 && !isEd) ||
-      (toFrom.from === NATIVE && Number(balance?.nativeBalance) <= 1 && !isEd)
+      (toFrom.from === EVM && Number(balance?.evmBalance) <= edValue && isEd) ||
+      (toFrom.from === NATIVE && Number(balance?.nativeBalance) <= edValue && isEd) ||
+      (toFrom.from === EVM && Number(balance?.evmBalance) <= edValue && !isEd) ||
+      (toFrom.from === NATIVE && Number(balance?.nativeBalance) <= edValue && !isEd)
     ) {
       setMaxDisabled(true);
     } else {
@@ -99,14 +101,14 @@ function Swap() {
           setAmount(Number(value) >= 1 ? value : "");
           updateEstimatedGas(Number(value) >= 1 ? estimatedGas : null);
           // Number(value) <= 1 && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
-          Number(value) <= 1 && setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+          Number(value) <= edValue && setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
           setMaxClicked(false);
 
           return;
         } else if (
           Number(amount) + Number(estimatedGas) + (isEd ? edValue : 0) >
           Number(balance?.evmBalance) -
-            pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
+          pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
         ) {
           setDisable(true);
           updateEstimatedGas(null);
@@ -129,15 +131,15 @@ function Swap() {
           setAmount(Number(value) >= 1 ? value : "");
           // Number(value) <= 1 && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
           setMaxClicked(false);
-          Number(value) <= 1 && setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+          Number(value) <= edValue && setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
 
           return;
         }
         if (
           Number(amount) + Number(estimatedGas) + (isEd ? edValue : 0) >
           Number(balance?.nativeBalance) -
-            pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
-              .native
+          pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
+            .native
         ) {
           setDisable(true);
           updateEstimatedGas(null);
@@ -165,7 +167,7 @@ function Swap() {
       if (
         Number(amount) >=
         Number(balance?.evmBalance) -
-          pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
+        pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
       )
         setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       else setError("");
@@ -173,7 +175,7 @@ function Swap() {
       if (
         Number(amount) >=
         Number(balance?.nativeBalance) -
-          pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native
+        pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native
       )
         setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       else setError("");

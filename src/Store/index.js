@@ -142,9 +142,11 @@ export default function Context({ children }) {
           break;
         case MESSAGE_EVENT_LABELS.GET_ED:
           setEDValue(
-            Number(message?.data?.ed / DECIMALS)
-              .noExponents()
-              .toString()
+            Number(
+              Number(message?.data?.ed / DECIMALS)
+                .noExponents()
+                .toString()
+            )
           );
           break;
 

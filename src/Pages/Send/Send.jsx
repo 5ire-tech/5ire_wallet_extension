@@ -36,17 +36,19 @@ function Send() {
   const [isMaxDisabled, setMaxDisabled] = useState(true);
   const [data, setData] = useState({ to: "", amount: "" });
 
-  const MINIMUM_BALANCE = 1.1;
   const { state, estimatedGas, updateEstimatedGas, updateLoading, edValue } =
     useContext(AuthContext);
   const { currentAccount, pendingTransactionBalance, currentNetwork, allAccountsBalance } = state;
   const balance = allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()];
   console.log("HERRE edValue", edValue);
+  const MINIMUM_BALANCE = edValue;
+
   // Reset the amount, to and error evm and native address changed
   useEffect(() => {
     updateEstimatedGas(null);
     setErr({ to: "", amount: "" });
     setData({ to: "", amount: "" });
+    sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.GET_ED, {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentAccount?.evmAddress, currentAccount?.nativeAddress, currentNetwork]);
 
@@ -98,6 +100,7 @@ function Send() {
               (isEd ? edValue : 0) +
               pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
                 .evm);
+
           // Number(amount) <= 0 && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
           Number(amount) <= 0 &&
             setErr((p) => ({
@@ -109,10 +112,11 @@ function Send() {
           setData((p) => ({ ...p, amount: amount > 0 ? amount : "" }));
           return;
         } else if (data?.amount && estimatedGas && data?.to) {
+
           if (
             Number(data.amount) + Number(estimatedGas) + (isEd ? edValue : 0) >
             Number(balance?.evmBalance) -
-              pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
+            pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
           ) {
             updateEstimatedGas(null);
             setErr((p) => ({
@@ -142,8 +146,8 @@ function Send() {
         } else if (
           Number(data.amount) + Number(estimatedGas) + (isEd ? edValue : 0) >
           Number(balance?.nativeBalance) -
-            pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
-              .native
+          pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
+            .native
         ) {
           updateEstimatedGas(null);
           setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
@@ -189,7 +193,7 @@ function Send() {
       else if (
         Number(data.amount) >=
         Number(balance?.evmBalance) -
-          pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].evm
+        pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].evm
       )
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
       else setErr((p) => ({ ...p, amount: "" }));
@@ -199,7 +203,7 @@ function Send() {
       else if (
         Number(data.amount) >=
         Number(balance?.nativeBalance) -
-          pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].native
+        pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].native
       )
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
       else setErr((p) => ({ ...p, amount: "" }));
@@ -430,15 +434,13 @@ function Send() {
             <button
               onClick={activeSend}
               name={EVM}
-              className={`${style.sendSec__sendSwapbtn__buttons}  ${
-                activeTab === EVM && style.sendSec__sendSwapbtn__buttons__active
-              }`}>
+              className={`${style.sendSec__sendSwapbtn__buttons}  ${activeTab === EVM && style.sendSec__sendSwapbtn__buttons__active
+                }`}>
               EVM
             </button>
             <div
-              className={`${activeTab === NATIVE && style.activeFirst} ${
-                activeTab === EVM && style.activeSecond
-              } ${style.animations}`}></div>
+              className={`${activeTab === NATIVE && style.activeFirst} ${activeTab === EVM && style.activeSecond
+                } ${style.animations}`}></div>
           </div>
         </div>
         <div className={style.sendSec__inputInnerSec}>
