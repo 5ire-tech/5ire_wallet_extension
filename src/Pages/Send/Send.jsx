@@ -26,7 +26,6 @@ import {
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
 
-
 function Send() {
   const [isEd, setEd] = useState(true);
   const [disableBtn, setDisable] = useState(true);
@@ -37,7 +36,7 @@ function Send() {
   const [isMaxDisabled, setMaxDisabled] = useState(true);
   const [data, setData] = useState({ to: "", amount: "" });
 
-  const MINIMUM_BALANCE = 1.1
+  const MINIMUM_BALANCE = 1.1;
   const { state, estimatedGas, updateEstimatedGas, updateLoading, edValue } =
     useContext(AuthContext);
   const { currentAccount, pendingTransactionBalance, currentNetwork, allAccountsBalance } = state;
@@ -113,7 +112,7 @@ function Send() {
           if (
             Number(data.amount) + Number(estimatedGas) + (isEd ? edValue : 0) >
             Number(balance?.evmBalance) -
-            pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
+              pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
           ) {
             updateEstimatedGas(null);
             setErr((p) => ({
@@ -143,8 +142,8 @@ function Send() {
         } else if (
           Number(data.amount) + Number(estimatedGas) + (isEd ? edValue : 0) >
           Number(balance?.nativeBalance) -
-          pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
-            .native
+            pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
+              .native
         ) {
           updateEstimatedGas(null);
           setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
@@ -190,7 +189,7 @@ function Send() {
       else if (
         Number(data.amount) >=
         Number(balance?.evmBalance) -
-        pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].evm
+          pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].evm
       )
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
       else setErr((p) => ({ ...p, amount: "" }));
@@ -200,7 +199,7 @@ function Send() {
       else if (
         Number(data.amount) >=
         Number(balance?.nativeBalance) -
-        pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].native
+          pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].native
       )
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
       else setErr((p) => ({ ...p, amount: "" }));
@@ -431,13 +430,15 @@ function Send() {
             <button
               onClick={activeSend}
               name={EVM}
-              className={`${style.sendSec__sendSwapbtn__buttons}  ${activeTab === EVM && style.sendSec__sendSwapbtn__buttons__active
-                }`}>
+              className={`${style.sendSec__sendSwapbtn__buttons}  ${
+                activeTab === EVM && style.sendSec__sendSwapbtn__buttons__active
+              }`}>
               EVM
             </button>
             <div
-              className={`${activeTab === NATIVE && style.activeFirst} ${activeTab === EVM && style.activeSecond
-                } ${style.animations}`}></div>
+              className={`${activeTab === NATIVE && style.activeFirst} ${
+                activeTab === EVM && style.activeSecond
+              } ${style.animations}`}></div>
           </div>
         </div>
         <div className={style.sendSec__inputInnerSec}>

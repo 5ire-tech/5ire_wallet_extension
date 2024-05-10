@@ -1,5 +1,4 @@
 import { BigNumber } from "bignumber.js";
-import { encodeAddress } from "@polkadot/keyring";
 import { DECIMALS, ERRCODES, ERROR_MESSAGES, LABELS, STATUS } from "../Constants";
 import { HybridKeyring } from "./5ire-keyring";
 import { NetworkHandler } from "./initbackground";
@@ -94,10 +93,10 @@ export default class ValidatorNominatorHandler {
 
     const bondedAmount = new BigNumber(stakeAmount).multipliedBy(DECIMALS).toFixed().toString();
 
-    const stashId = encodeAddress(nativeAddress);
+    // const stashId = encodeAddress(nativeAddress);
     const nominateTx = nativeApi.tx.staking.nominate(validatorsAccounts);
     const points = await nativeApi.derive.staking?.currentPoints(); //find points
-    const bondOwnTx = await nativeApi.tx.staking.bond(stashId, bondedAmount, "Staked");
+    const bondOwnTx = await nativeApi.tx.staking.bond(bondedAmount, "Staked");
     const batchAll = await nativeApi.tx.utility.batchAll([bondOwnTx, nominateTx]);
 
     if (isFee) {
