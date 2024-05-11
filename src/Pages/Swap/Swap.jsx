@@ -69,7 +69,7 @@ function Swap() {
     } else {
       setMaxDisabled(false);
     }
-  }, [balance?.evmBalance, balance?.nativeBalance, toFrom?.from, isEd]);
+  }, [balance?.evmBalance, balance?.nativeBalance, toFrom?.from, isEd, edValue]);
 
   //Get fee if to and amount is present
   useEffect(() => {
@@ -108,7 +108,7 @@ function Swap() {
         } else if (
           Number(amount) + Number(estimatedGas) + (isEd ? edValue : 0) >
           Number(balance?.evmBalance) -
-            pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
+          pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
         ) {
           setDisable(true);
           updateEstimatedGas(null);
@@ -138,8 +138,8 @@ function Swap() {
         if (
           Number(amount) + Number(estimatedGas) + (isEd ? edValue : 0) >
           Number(balance?.nativeBalance) -
-            pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
-              .native
+          pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
+            .native
         ) {
           setDisable(true);
           updateEstimatedGas(null);
@@ -167,7 +167,7 @@ function Swap() {
       if (
         Number(amount) >=
         Number(balance?.evmBalance) -
-          pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
+        pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
       )
         setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       else setError("");
@@ -175,7 +175,7 @@ function Swap() {
       if (
         Number(amount) >=
         Number(balance?.nativeBalance) -
-          pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native
+        pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native
       )
         setError(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       else setError("");
