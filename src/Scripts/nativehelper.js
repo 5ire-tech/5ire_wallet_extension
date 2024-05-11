@@ -1,5 +1,4 @@
 import { BigNumber } from "bignumber.js";
-import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import { DECIMALS, ERRCODES, ERROR_MESSAGES, LABELS, STATUS } from "../Constants";
 import { HybridKeyring } from "./5ire-keyring";
 import { NetworkHandler } from "./initbackground";
@@ -94,10 +93,10 @@ export default class ValidatorNominatorHandler {
 
     const bondedAmount = new BigNumber(stakeAmount).multipliedBy(DECIMALS).toFixed().toString();
 
-    const stashId = encodeAddress(nativeAddress);
+    // const stashId = encodeAddress(nativeAddress);
     const nominateTx = nativeApi.tx.staking.nominate(validatorsAccounts);
     const points = await nativeApi.derive.staking?.currentPoints(); //find points
-    const bondOwnTx = await nativeApi.tx.staking.bond(stashId, bondedAmount, "Staked");
+    const bondOwnTx = await nativeApi.tx.staking.bond(bondedAmount, "Staked");
     const batchAll = await nativeApi.tx.utility.batchAll([bondOwnTx, nominateTx]);
 
     if (isFee) {
@@ -335,11 +334,11 @@ export default class ValidatorNominatorHandler {
     const { nativeApi } = NetworkHandler.api[network];
 
     const bondAmt = new BigNumber(payload.amount).multipliedBy(DECIMALS).toFixed().toString();
-    const stashId = encodeAddress(decodeAddress(nativeAddress));
+    // const stashId = encodeAddress(decodeAddress(nativeAddress));
     const commission = payload.commission === 0 ? 1 : payload.commission * 10 ** 7;
 
     const validatorInfo = {
-      bondTx: nativeApi.tx.staking.bond(stashId, bondAmt, "Staked"),
+      bondTx: nativeApi.tx.staking.bond(bondAmt, "Staked"),
       sessionTx: nativeApi.tx.session.setKeys(payload?.rotateKeys, new Uint8Array()),
       validateTx: nativeApi.tx.staking.validate({
         blocked: false,

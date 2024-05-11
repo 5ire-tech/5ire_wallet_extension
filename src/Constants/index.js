@@ -12,7 +12,7 @@ export const PORT_NAME = "WEBEXT_REDUX_TEST";
 export const UI_CONNECTION_NAME = "5IRE_EXT_UI";
 export const RESTRICTED_FOR_CONTENT_SCRIPT = "chrome-extension://";
 
-export const EXTRA_FEE = 0.001;
+export const EXTRA_FEE = 0;
 export const WINDOW_WIDTH = 400;
 export const DECIMALS = 10 ** 18;
 export const WINDOW_HEIGHT = 620;
@@ -181,6 +181,7 @@ export const ERRCODES = {
   ERROR_WHILE_TRANSACTION: 11,
   ERROR_WHILE_BALANCE_FETCH: 12,
   ERROR_WHILE_GETTING_ESTIMATED_FEE: 13,
+  ERROR_WHILE_GETTING_ED: 17,
   KEYRING_SECTION_ERROR: 14,
   RUNTIME_MESSAGE_SECTION_ERROR: 15,
   ERROR_WHILE_TRANSACTION_STATUS_CHECK: 16
@@ -230,10 +231,11 @@ export const LABELS = {
 };
 
 export const HTTP_END_POINTS = {
-  QA: "https://rpc-ga-testnet.5ire.network",
-  // QA: "https://qa-http-nodes.5ire.network",
+  // QA: "https://rpc-ga-testnet.5ire.network",
+  QA: "https://qa-http-nodes.5ire.network",
   UAT: "https://uat-http-nodes.5ire.network",
-  TESTNET: "https://rpc-testnet.5ire.network"
+  //TESTNET: "https://rpc-testnet.5ire.network"
+  TESTNET: "https://rpc.ga.5ire.network"
 };
 
 export const SOCIAL_LINKS = {
@@ -252,14 +254,16 @@ export const API = {
 export const EXPLORERS = {
   QA: "https://qa-web-exp.5ire.network",
   UAT: "https://uat-web-exp.5ire.network",
-  TESTNET: "https://explorer.5ire.network"
+  // TESTNET: "https://explorer.5ire.network",
+  TESTNET: "https://explorer.ga.5ire.network"
 };
 
 export const WS_END_POINTS = {
-  QA: "wss://wss-ga-testnet.5ire.network",
-  //  QA: "wss://qa-wss-nodes.5ire.network",
+  // QA: "wss://wss-ga-testnet.5ire.network",
+  QA: "wss://qa-wss-nodes.5ire.network",
   UAT: "wss://uat-wss-nodes.5ire.network",
-  TESTNET: "wss://wss-testnet.5ire.network"
+  // TESTNET: "wss://wss-testnet.5ire.network"
+  TESTNET: "wss://wss.ga.5ire.network"
 };
 
 export const MESSAGE_EVENT_LABELS = {
@@ -298,7 +302,8 @@ export const MESSAGE_EVENT_LABELS = {
   //network related events
   NETWORK_CONNECTION_ERROR: "networkConnectionError",
   NETWORK_CHANGE: "networkChange",
-  NETWORK_CHECK: "networkCheck"
+  NETWORK_CHECK: "networkCheck",
+  GET_ED: "getED"
 };
 
 export const INTERNAL_EVENT_LABELS = {

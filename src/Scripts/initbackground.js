@@ -148,6 +148,7 @@ export class InitBackground {
         InitBackground.uiStream = new ExtensionPortStream(port);
         //bind the stream data event for getting the message from extension-ui
         InitBackground.uiStream.on("data", internalEventStream);
+
         ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.CONNECTION);
       }
 
@@ -1490,6 +1491,8 @@ export class Services {
     const connector = Connection.getInsatnce();
     const apiConn = await connector.initializeApi(currentNetwork);
 
+    // const ed = apiConn.nativeApi.consts.balances.existentialDeposit.toString();
+    // this.messageToUI(MESSAGE_EVENT_LABELS.GET_ED, { ed });
     //check if there is error property connection payload
     if (apiConn?.error) {
       ExtensionEventHandle.eventEmitter.emit(
@@ -2122,14 +2125,18 @@ export class GeneralWalletRPC {
       // Evm Balance
       const w3balance = await evmApi?.eth?.getBalance(account.evmAddress);
 
-      //Native Balance
-      if (RpcRequestProcessor.isHttp) {
-        let balance_ = await nativeApi?._query.system.account(account.nativeAddress);
-        nbalance = parseFloat(`${balance_.data.free}`) - parseFloat(`${balance_.data.miscFrozen}`);
-      } else {
-        let balance_ = await nativeApi?.derive.balances.all(account.nativeAddress);
-        nbalance = balance_.availableBalance;
-      }
+      // //Native Balance
+      // if (RpcRequestProcessor.isHttp) {
+      //   let balance_ = await nativeApi?._query.system.account(account.nativeAddress);
+      //   nbalance = parseFloat(`${balance_.data.free}`) - parseFloat(`${balance_.data.miscFrozen}`);
+      // } else {
+      //   let balance_ = await nativeApi?.derive.balances.all(account.nativeAddress);
+      //   nbalance = balance_.availableBalance;
+      // }
+
+      let balances = await nativeApi?.query.system.account(account.nativeAddress);
+      const balance1 = balances.toHuman();
+      nbalance = +balance1?.data?.free?.replaceAll(",", "");
 
       let evmBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toString();
       let nativeBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toString();
@@ -2208,7 +2215,6 @@ export class GeneralWalletRPC {
       const fee = new BigNumber(gasPrice * gasAmount).dividedBy(DECIMALS).toString();
 
       // GeneralWalletRPC.feeStore[id] = fee;
-
       const payload = {
         data: { fee }
       };
@@ -2418,6 +2424,25 @@ export class GeneralWalletRPC {
       );
     }
   };
+
+  getED = async (message, state) => {
+    try {
+      const { nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
+      const ed = nativeApi.consts.balances.existentialDeposit.toString();
+      const payload = {
+        data: { ed }
+      };
+
+      return new EventPayload(null, message.event, payload);
+    } catch (err) {
+      return new EventPayload(
+        null,
+        null,
+        null,
+        new ErrorPayload(ERRCODES.ERROR_WHILE_GETTING_ED, err?.message)
+      );
+    }
+  };
 }
 
 //keyring handler
@@ -2550,6 +2575,7 @@ export class NetworkHandler {
 
     //insert connection into its network slot
     NetworkHandler.api[currentNetwork.toLowerCase()] = api;
+
     await this.checkNetwork();
   };
 
@@ -2559,6 +2585,7 @@ export class NetworkHandler {
       const state = await getDataLocal(LABELS.STATE);
       const connectionApi = NetworkHandler.api[state.currentNetwork.toLowerCase()];
       const chainId = await connectionApi.evmApi.eth.getChainId();
+
       //send only if the extension opened
       ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.BALANCE_FETCH);
       InitBackground.uiStream &&

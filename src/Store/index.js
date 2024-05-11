@@ -8,7 +8,13 @@ import { sessionStorage, localStorage } from "../Storage";
 import { sendEventToTab, setTimer } from "../Helper/helper";
 import { TabMessagePayload } from "../Utility/network_calls";
 import { bindRuntimeMessageListener } from "../Utility/message_helper";
-import { LABELS, TABS_EVENT, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../Constants";
+import {
+  LABELS,
+  TABS_EVENT,
+  MESSAGE_TYPE_LABELS,
+  MESSAGE_EVENT_LABELS,
+  DECIMALS
+} from "../Constants";
 import {
   userState,
   externalControls,
@@ -38,6 +44,7 @@ export default function Context({ children }) {
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
   const [externalControlsState, setExternalControlState] = useState(externalControls);
   const [showCongratLoader, setShowCongratLoader] = useState(false);
+  const [edValue, setEDValue] = useState(1);
 
   //for check if localstate is loaded or not
   const [isStateLoaded, setStateLoaded] = useState(false);
@@ -132,6 +139,15 @@ export default function Context({ children }) {
 
         case MESSAGE_EVENT_LABELS.NETWORK_CHECK:
           setTimer(updateLoading.bind(null, false));
+          break;
+        case MESSAGE_EVENT_LABELS.GET_ED:
+          setEDValue(
+            Number(
+              Number(message?.data?.ed / DECIMALS)
+                .noExponents()
+                .toString()
+            )
+          );
           break;
 
         default:
@@ -294,6 +310,7 @@ export default function Context({ children }) {
     valdatorNominatorFee,
     externalControlsState,
     externalNativeTxDetails,
+    edValue,
 
     //data setters
     setState,
@@ -317,7 +334,8 @@ export default function Context({ children }) {
     setValdatorNominatorFee,
     setExternalControlState,
     importAccountByMnemonics,
-    setExternalNativeTxDetails
+    setExternalNativeTxDetails,
+    setEDValue
   };
 
   return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>;
