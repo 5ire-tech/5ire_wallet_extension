@@ -69,7 +69,7 @@ function Send() {
     } else {
       setMaxDisabled(false);
     }
-  }, [balance?.evmBalance, balance?.nativeBalance, activeTab, data?.to, err.to]);
+  }, [balance?.evmBalance, balance?.nativeBalance, activeTab, data?.to, err.to, MINIMUM_BALANCE]);
 
   //Get fee if to and amount is present
   useEffect(() => {
