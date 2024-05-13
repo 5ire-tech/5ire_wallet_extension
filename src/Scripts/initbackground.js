@@ -2124,7 +2124,6 @@ export class GeneralWalletRPC {
 
       // Evm Balance
       const w3balance = await evmApi?.eth?.getBalance(account.evmAddress);
-
       let balances = await nativeApi?.query.system.account(account.nativeAddress);
       const balance1 = balances.toHuman();
       const total = +balance1?.data?.free?.replaceAll(",", "");
