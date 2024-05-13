@@ -2124,19 +2124,11 @@ export class GeneralWalletRPC {
 
       // Evm Balance
       const w3balance = await evmApi?.eth?.getBalance(account.evmAddress);
-
-      // //Native Balance
-      // if (RpcRequestProcessor.isHttp) {
-      //   let balance_ = await nativeApi?._query.system.account(account.nativeAddress);
-      //   nbalance = parseFloat(`${balance_.data.free}`) - parseFloat(`${balance_.data.miscFrozen}`);
-      // } else {
-      //   let balance_ = await nativeApi?.derive.balances.all(account.nativeAddress);
-      //   nbalance = balance_.availableBalance;
-      // }
-
       let balances = await nativeApi?.query.system.account(account.nativeAddress);
       const balance1 = balances.toHuman();
-      nbalance = +balance1?.data?.free?.replaceAll(",", "");
+      const total = +balance1?.data?.free?.replaceAll(",", "");
+      const frozen = +balance1?.data?.frozen?.replaceAll(",", "");
+      nbalance = total - frozen;
 
       let evmBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toString();
       let nativeBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toString();
