@@ -11,7 +11,6 @@ export const CONNECTION_NAME = "5IRE_EXT";
 export const PORT_NAME = "WEBEXT_REDUX_TEST";
 export const UI_CONNECTION_NAME = "5IRE_EXT_UI";
 export const RESTRICTED_FOR_CONTENT_SCRIPT = "chrome-extension://";
-
 export const EXTRA_FEE = 0.0001;
 export const WINDOW_WIDTH = 400;
 export const DECIMALS = 10 ** 18;
