@@ -23,19 +23,12 @@
     "<all_urls>"
   ],
   "background": {
-    "scripts": [
-      "./static/js/background.js"
-    ]
+    "scripts": ["./static/js/background.js"]
   },
   "content_scripts": [
     {
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ],
-      "js": [
-        "./static/js/content.js"
-      ],
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["./static/js/content.js"],
       "all_frames": false,
       "run_at": "document_end"
     }

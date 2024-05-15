@@ -2196,7 +2196,7 @@ export class GeneralWalletRPC {
       const tx = {
         to: toAddress,
         from: account.evmAddress,
-        value: amount
+        value: Number(amount) * DECIMALS
       };
 
       if (data?.data) {
