@@ -2,7 +2,6 @@ import Web3 from "web3";
 import { BigNumber } from "bignumber.js";
 import Browser from "webextension-polyfill";
 import { EventEmitter } from "./eventemitter";
-import { TypeRegistry } from "@polkadot/types";
 import { HybridKeyring } from "./5ire-keyring";
 import { txNotificationStringTemplate, getFormattedMethod, isManifestV3 } from "./utils";
 import ValidatorNominatorHandler from "./nativehelper";
@@ -349,7 +348,7 @@ export class InitBackground {
 
   //background startup events binding
   bindBackgroundStartupEvents = async () => {
-    Browser.runtime.onStartup.addListener(async () => { });
+    Browser.runtime.onStartup.addListener(async () => {});
     Browser.management.onDisabled.addListener(async () => {
       const services = new Services();
       await services.updateLocalState("lock", { isLogin: false });
@@ -754,16 +753,16 @@ class TransactionQueue {
             transactionHistoryTrack.to = transactionHistoryTrack.intermidateHash
               ? transactionHistoryTrack.to
               : transactionHistoryTrack.isEvm
-                ? transactionStatus.to || transactionStatus.contractAddress
-                : transactionHistoryTrack.to;
+              ? transactionStatus.to || transactionStatus.contractAddress
+              : transactionHistoryTrack.to;
 
           //set the used gas
           transactionHistoryTrack.gasUsed = transactionHistoryTrack.isEvm
             ? (
-              (Number(transactionStatus?.gasUsed) *
-                Number(transactionStatus?.effectiveGasPrice)) /
-              WEI_IN_ONE_ETH
-            ).toString()
+                (Number(transactionStatus?.gasUsed) *
+                  Number(transactionStatus?.effectiveGasPrice)) /
+                WEI_IN_ONE_ETH
+              ).toString()
             : transactionStatus?.txFee;
 
           //set the amount when the method is reward
@@ -1576,10 +1575,10 @@ export class Services {
             //set the used gas
             hItem.gasUsed = hItem.isEvm
               ? (
-                (Number(transactionStatus?.gasUsed) *
-                  Number(transactionStatus?.effectiveGasPrice)) /
-                WEI_IN_ONE_ETH
-              ).toString()
+                  (Number(transactionStatus?.gasUsed) *
+                    Number(transactionStatus?.effectiveGasPrice)) /
+                  WEI_IN_ONE_ETH
+                ).toString()
               : transactionStatus?.txFee;
 
             //check the transaction type and save the to recipent according to type
@@ -1589,8 +1588,8 @@ export class Services {
               hItem.to = hItem.intermidateHash
                 ? hItem.to
                 : hItem.isEvm
-                  ? transactionStatus.to || transactionStatus.contractAddress
-                  : hItem.to;
+                ? transactionStatus.to || transactionStatus.contractAddress
+                : hItem.to;
 
             await this.updateLocalState(STATE_CHANGE_ACTIONS.TX_HISTORY_UPDATE, hItem, { account });
           }
@@ -1646,7 +1645,7 @@ export class TransactionsRPC {
       if (
         balanceWithFee >
         Number(balance.evmBalance) -
-        (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
+          (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -1754,7 +1753,7 @@ export class TransactionsRPC {
       if (
         balanceWithFee >=
         Number(balance?.evmBalance) -
-        (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
+          (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -1842,7 +1841,7 @@ export class TransactionsRPC {
       if (
         balanceWithFee >=
         Number(balance?.nativeBalance) -
-        (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)
+          (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -1955,7 +1954,7 @@ export class TransactionsRPC {
       if (
         balanceWithFee >=
         Number(balance?.nativeBalance) -
-        (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)
+          (state.pendingTransactionBalance[account.evmAddress][network].native - balanceWithFee)
       )
         new Error(
           new ErrorPayload(ERRCODES.INSUFFICENT_BALANCE, ERROR_MESSAGES.INSUFFICENT_BALANCE)
@@ -2107,7 +2106,7 @@ export class GeneralWalletRPC {
       // console.log("network and api: ", NetworkHandler.api, state.currentNetwork);
       const balance =
         state.allAccountsBalance[state.currentAccount?.evmAddress][
-        state.currentNetwork.toLowerCase()
+          state.currentNetwork.toLowerCase()
         ];
 
       if (!NetworkHandler.api[state.currentNetwork.toLowerCase()]?.evmApi)
@@ -2605,34 +2604,35 @@ export class NativeSigner {
     try {
       const account = state.currentAccount;
       const pair = this.hybridKeyring.getNativeSignerByAddress(account.nativeAddress);
+      const connectionApi = NetworkHandler.api[state.currentNetwork.toLowerCase()];
 
-      let registry;
+      let registry = connectionApi.nativeApi.registry;
       const isJsonPayload = (value) => {
         return value?.genesisHash !== undefined;
       };
 
       if (isJsonPayload(payload)) {
-        registry = new TypeRegistry();
+        // registry = new TypeRegistry();
         registry.setSignedExtensions(payload.signedExtensions);
         // }
-      } else {
-        // for non-payload, just create a registry to use
-        registry = new TypeRegistry();
       }
+      // else {
+      //   // for non-payload, just create a registry to use
+      //   registry = new TypeRegistry();
+      // }
 
-      const extrinsicPayload = registry.createType("ExtrinsicPayload", payload, {
-        version: payload.version
-      });
-      //.sign(pair);
+      const extrinsicPayload = registry
+        .createType("ExtrinsicPayload", payload, {
+          version: payload.version
+        })
+        .sign(pair);
 
-      const payloadU8a = extrinsicPayload.toU8a({ method: true });
-      const rawSignatureU8a = pair.sign(payloadU8a, { withType: true });
-      const signatureHex = u8aToHex(rawSignatureU8a);
+      // const payloadU8a = extrinsicPayload.toU8a({ method: true });
+      // const rawSignatureU8a = pair.sign(payloadU8a, { withType: true });
+      // const signatureHex = u8aToHex(rawSignatureU8a);
 
       return new EventPayload(null, null, {
-        data: {
-          signature: signatureHex
-        }
+        data: extrinsicPayload
       });
     } catch (err) {
       log("error while signing the payload: ", err);
