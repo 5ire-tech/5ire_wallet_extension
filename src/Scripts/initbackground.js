@@ -2,7 +2,6 @@ import Web3 from "web3";
 import { BigNumber } from "bignumber.js";
 import Browser from "webextension-polyfill";
 import { EventEmitter } from "./eventemitter";
-import { TypeRegistry } from "@polkadot/types";
 import { HybridKeyring } from "./5ire-keyring";
 import { txNotificationStringTemplate, getFormattedMethod, isManifestV3 } from "./utils";
 import ValidatorNominatorHandler from "./nativehelper";
@@ -2605,25 +2604,36 @@ export class NativeSigner {
     try {
       const account = state.currentAccount;
       const pair = this.hybridKeyring.getNativeSignerByAddress(account.nativeAddress);
+      const connectionApi = NetworkHandler.api[state.currentNetwork.toLowerCase()];
 
-      let registry;
+      let registry = connectionApi.nativeApi.registry;
       const isJsonPayload = (value) => {
         return value?.genesisHash !== undefined;
       };
 
       if (isJsonPayload(payload)) {
-        registry = new TypeRegistry();
+        // registry = new TypeRegistry();
         registry.setSignedExtensions(payload.signedExtensions);
         // }
-      } else {
-        // for non-payload, just create a registry to use
-        registry = new TypeRegistry();
       }
+      // else {
+      //   // for non-payload, just create a registry to use
+      //   registry = new TypeRegistry();
+      // }
 
-      const result = registry
-        .createType("ExtrinsicPayload", payload, { version: payload.version })
+      const extrinsicPayload = registry
+        .createType("ExtrinsicPayload", payload, {
+          version: payload.version
+        })
         .sign(pair);
-      return new EventPayload(null, null, { data: result });
+
+      // const payloadU8a = extrinsicPayload.toU8a({ method: true });
+      // const rawSignatureU8a = pair.sign(payloadU8a, { withType: true });
+      // const signatureHex = u8aToHex(rawSignatureU8a);
+
+      return new EventPayload(null, null, {
+        data: extrinsicPayload
+      });
     } catch (err) {
       log("error while signing the payload: ", err);
       return new EventPayload(
