@@ -33,6 +33,7 @@ import ValidatorNominatorTxns from "./Components/ValidatorNominatorTxns";
 import CongratulationsScreen from "./Pages/WelcomeScreens/CongratulationsScreen";
 
 import WelcomeScreen from "./Pages/WelcomeScreens/WelcomeScreen";
+import SettingComp from "./Pages/SettingComp/SettingComp";
 
 function App(props) {
   const {
@@ -158,6 +159,16 @@ function App(props) {
                 </FixWidthLayout>
               }
             />
+            <Route
+              index
+              path={ROUTES.SETTING_COMP}
+              element={
+                <FixWidthLayout>
+                  <SettingComp />
+                </FixWidthLayout>
+              }
+            />
+            s
             <Route
               index
               path={ROUTES.SWAP_APPROVE}

@@ -3,10 +3,7 @@
 .historySec {
   &__historyHead {
     h3 {
-      background: -webkit-linear-gradient(#0071ff, #54f0d1);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: $white;
       font-size: 16px;
       text-align: left;
       padding: 16px 25px;
@@ -72,17 +69,20 @@
   }
 
   &__success {
-    color: #3CC8C8;
+    color: #3cc8c8;
   }
 
   &__failed {
-    color: #FF6332;
+    color: #ff6332;
   }
 }
 
 .noTxn {
-  color: rgb(255, 255, 255);
+  color: $white;
   text-align: center;
+  margin-top: 30px;
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .histryDataScrol {

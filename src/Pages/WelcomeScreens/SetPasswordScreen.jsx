@@ -117,11 +117,7 @@ export default function SetPasswordScreen() {
           title={"Create Password"}
         />
         <div className={`${style.cardWhite__beginText} ${style.cardWhite__createPassText}`}>
-          <p>
-            Your password is used to unlock your wallet and is stored securely on your device. We
-            recommend 12 characters, with uppercase and lowercase letters, symbols and numbers.
-          </p>
-          <div className={style.cardWhite__beginText__passInputSec} style={{ marginTop: "20px" }}>
+          <div className={style.cardWhite__beginText__passInputSec} style={{ marginTop: "6px" }}>
             <InputFieldSimple
               coloredBg={true}
               value={pass?.pass}
@@ -136,7 +132,7 @@ export default function SetPasswordScreen() {
             />
           </div>
           <p className={style.errorText}>{error.pass ? error.pass : ""}</p>
-          <div className={style.cardWhite__beginText__passInputSec} style={{ marginTop: "34px" }}>
+          <div className={style.cardWhite__beginText__passInputSec} style={{ marginTop: "30px" }}>
             <InputFieldSimple
               coloredBg={true}
               name="confirmPass"
@@ -151,8 +147,11 @@ export default function SetPasswordScreen() {
             />
             <p className={style.errorText}>{error.confirmPass ? error.confirmPass : ""}</p>
           </div>
-
-          <div style={{ marginTop: "50px" }} className={style.contBtn}>
+          <p className="passwordTextInstruction">
+            Your password is used to unlock your wallet and is stored securely on your device. We
+            recommend 12 characters, with uppercase and lowercase letters, symbols and numbers.
+          </p>
+          <div style={{ marginTop: "15px" }} className={style.contBtn}>
             <ButtonComp
               isDisable={isDisable}
               onClick={handleSubmit}

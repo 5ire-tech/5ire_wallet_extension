@@ -2,9 +2,8 @@ import Send from "../Send/Send";
 import Swap from "../Swap/Swap.jsx";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
-import SwapLogo from "../../Assets/swap_arrow.svg";
-import TransferLogo from "../../Assets/send_arrow.svg";
 import React, { useEffect, useState, useContext } from "react";
+import { Assets, Transfer } from "../../Assets/StoreAsset/StoreAsset";
 
 function Wallet() {
   const [activeTab, setActiveTab] = useState("send");
@@ -31,7 +30,7 @@ function Wallet() {
               className={`${style.firstButton} ${style.wallet__sendSwapbtn__buttons} 
               ${activeTab === "send" && style.wallet__sendSwapbtn__buttons__active}
             `}>
-              <img src={TransferLogo} alt="transferLogo" />
+              <Transfer />
               Transfer
             </button>
             <button
@@ -39,7 +38,7 @@ function Wallet() {
               className={`${style.secondtButton} ${style.wallet__sendSwapbtn__buttons}  ${
                 activeTab === "swap" && style.wallet__sendSwapbtn__buttons__active
               }`}>
-              <img src={SwapLogo} alt="swapLogo" /> Swap
+              <Assets /> Assets
             </button>
             <div
               className={`${activeTab === "send" && style.activeFirst} ${

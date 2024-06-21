@@ -1,3 +1,6 @@
+@import "../../styles/__vars.scss";
+
+
 .create {
   width: 100%;
   max-width: 108px;
@@ -8,22 +11,25 @@
     cursor: pointer;
     display: flex;
     gap: 6px;
-    background-color: #172647;
+    border-radius: 15px;
+    border: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15));
     padding: 18px;
     flex-direction: column;
     align-items: center;
-    border-radius: 8px;
     padding-top: 14px;
     height: 50px;
     justify-content: space-between;
-
 
     p {
       font-size: 12px;
       text-transform: capitalize;
       font-weight: 500;
-      color: #fff;
+      color: $gray8D96AA;
       margin-bottom: 0;
+    }
+    svg{
+      width: 24px;
+      height: 24px; 
     }
   }
 }

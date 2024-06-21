@@ -1,7 +1,6 @@
 @import "../../styles/__vars.scss";
 
 .cardWhite {
-  background-color: $blue-08132C;
 
   // padding: 36px 24px 26px;
   &.cardWhiteCenterd {
@@ -38,15 +37,17 @@
       line-height: 20px;
     }
   }
-
+  &__innerSec {
+    border: 1px solid var(--UI-Secondary-Blue-Tone, #00a7dc26);
+    border-radius: 15px;
+    padding: 15px;
+    margin-top: 30px;
+  }
   &__beginText {
     padding: 24px;
 
     h1 {
-      background: linear-gradient(91.26deg, #0071ff 0%, #54f0d1 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: $white;
       font-weight: 600;
       font-size: 24px;
       line-height: 28px;
@@ -54,10 +55,13 @@
     }
 
     p {
-      color: $white;
-      font-size: 16px;
-      line-height: 24px;
-      padding-top: 32px;
+      color: $gray8D96AA;
+      font-size: 15px;
+      line-height: 18.15px;
+      // padding-top: 32px;
+      span {
+        color: $blue-0c98fc;
+      }
 
       &.errorText {
         color: #ff0000;
@@ -67,7 +71,7 @@
         padding-top: 0;
         word-break: break-word;
         line-height: 14px;
-        max-width: 350px
+        max-width: 350px;
       }
     }
 
@@ -77,11 +81,14 @@
     }
   }
 
-  &__createPassText {
-    p {
-      padding-top: 0;
-    }
-  }
+  // &__createPassText {
+  //   &__passwordTextInstruction{
+  //     margin-top: 15px;
+  //     border: 1px solid var(--UI-Secondary-Blue-Tone, #00A7DC26) !important;
+  //     padding: 15px;
+  //     border-radius: 15px;
+  //   }
+  // }
 
   &__noteSec {
     padding: 0 40px;
@@ -116,8 +123,8 @@
     }
 
     &__copyText {
-      border: 1px solid #404058;
-      border-radius: 12px;
+      border: 1px solid var(--UI-Secondary-Blue-Tone, #00a7dc26);
+      border-radius: 15px;
       padding: 12px 8px;
       display: flex;
       justify-content: space-between;
@@ -138,13 +145,10 @@
     }
 
     &__copyAll {
-      background: linear-gradient(114.15deg,
-          #0da6c2 20.67%,
-          #0e39c6 89.64%,
-          #0e39c6 89.64%);
+      background: $blue-0c98fc;
       border: 1px solid rgba(255, 255, 255, 0.5);
       border-radius: 12px;
-      color: $white;
+      color: $black020713;
       font-size: 15px;
       font-weight: 700;
       padding: 5px;
@@ -157,7 +161,7 @@
       justify-content: center;
 
       &:hover {
-        border: 1px solid $border-1098FC;
+        border: 1px solid $blue-0c98fc;
       }
     }
   }
@@ -169,26 +173,22 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 32px;
-      padding-top: 48px;
+      gap: 30px;
+      padding-top: 140px;
     }
 
     &__innercontact {
       h1 {
-        background: linear-gradient(91.26deg, #0071ff 0%, #54f0d1 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        font-size: 22px;
+        color: $white;
+        font-size: 24px;
         margin: 0;
-        transform: rotate(0.01deg);
-        font-weight: 700;
+        font-weight: 600;
       }
 
       p {
         color: $white;
         font-size: 18px;
-        padding-top: 10px;
+        // padding-top: 10px;
       }
 
       span {
@@ -241,7 +241,7 @@
   }
 
   &__linkOuter {
-    padding-top: 100px;
+    padding-top: 130px;
     display: flex;
     flex-direction: column;
     gap: 25px;
@@ -323,7 +323,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 20px;
-      margin: 36px 0 10px;
+      margin: 150px 0 10px;
       flex-direction: column;
     }
 
@@ -376,7 +376,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: transparent linear-gradient(180deg, #00aeef1a 0%, #367cc71a 100%) 0% 0% no-repeat padding-box;
+        background: transparent linear-gradient(180deg, #00aeef1a 0%, #367cc71a 100%) 0% 0%
+          no-repeat padding-box;
         border: 1px solid #00aeef;
         margin: 0 auto;
         cursor: pointer;
@@ -460,10 +461,18 @@
 }
 
 .congratScreen {
-  background: #08132c;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #050e25;
+  border: 1px solid var(--UI-Secondary-Blue-Tone, #00a7dc26);
   backdrop-filter: blur(12px);
-  border-radius: 8px;
+  border-radius: 30px;
+  max-width: 360px;
+  width: 100%;
+  padding: 30px;
+  margin: 0 auto;
+  p {
+    color: $blue-0c98fc;
+    padding-top: 15px;
+  }
 }
 
 .currentItem {
@@ -471,7 +480,6 @@
 }
 
 .token {
-
   // &__symbol_dec{
   //     display: flex;
   //     gap: 20px;
@@ -527,7 +535,7 @@
   // z-index: 99999;
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 10px;
+  // margin-bottom: 10px;
 
   button {
     border-radius: 4px;
@@ -535,7 +543,6 @@
     font-size: 10px;
   }
 }
-
 
 .errorText {
   text-align: left;
@@ -573,5 +580,5 @@
   right: 0;
   max-width: 345px;
   margin: 0 auto;
-  background-color: #07122b;
+  background-color: $blue020713;
 }

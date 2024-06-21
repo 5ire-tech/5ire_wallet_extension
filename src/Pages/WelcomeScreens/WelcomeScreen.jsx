@@ -12,7 +12,7 @@ function WelcomeScreen() {
           <div className={style.cardWhite__cardInner__innerLogocontact}>
             <img src={PlaceLogo} alt="placeLogo" draggable={false} />
             <div className={style.cardWhite__cardInner__innercontact}>
-              <h1>5ire Wallet</h1>
+              {/* <h1>5ire Wallet</h1> */}
               <p>The Decentralized Wallet</p>
             </div>
           </div>

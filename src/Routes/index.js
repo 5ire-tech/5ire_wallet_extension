@@ -8,6 +8,7 @@ export const ROUTES = {
   PVT_KEY: "/private-key",
   NATIVE_TXN: "/native-tx",
   MY_ACCOUNT: "/my-account",
+  SETTING_COMP: "/settingComp",
   SET_PASS: "/set-password",
   APPROVE_TXN: "/approve-tx",
   SWAP_APPROVE: "/swap-approve",

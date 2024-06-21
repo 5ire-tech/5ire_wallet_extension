@@ -6,11 +6,7 @@ import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import ThreeDot from "../../Assets/dot3.svg";
 import { useNavigate } from "react-router-dom";
-import Import from "../../Assets/PNG/import.png";
-import Logout from "../../Assets/PNG/logout.png";
-import DarkLogo from "../../Assets/DarkLogo.svg";
 import GreenCircle from "../../Assets/greencircle.svg";
-import Createaccount from "../../Assets/PNG/createaccount.png";
 import { TabMessagePayload } from "../../Utility/network_calls";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
@@ -26,6 +22,7 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
+import { Createaccount, Import, Logout, WhiteLogo } from "../../Assets/StoreAsset/StoreAsset";
 
 function MyAccount() {
   const navigate = useNavigate();
@@ -125,12 +122,12 @@ function MyAccount() {
     <div className={style.myAccountSec}>
       <div className={style.myAccountSec__tabAccount}>
         <AccountSetting
-          img={Createaccount}
+          img={<Createaccount />}
           title="Create New Account"
           onClick={hanldeCreateNewAcc}
         />
-        <AccountSetting img={Import} title="Import Account" onClick={handleImportAcc} />
-        <AccountSetting img={Logout} title="Logout" onClick={handleLogout} />
+        <AccountSetting img={<Import />} title="Import Account" onClick={handleImportAcc} />
+        <AccountSetting img={<Logout />} title="Logout" onClick={handleLogout} />
       </div>
       <div className={style.myAccountSec__accountHeading}>
         <h3>My Accounts</h3>
@@ -139,7 +136,7 @@ function MyAccount() {
         {allAccounts?.map((e, i) => (
           <div className={style.myAccountSec__accountActive} key={i + e?.accountIndex}>
             <div className={style.myAccountSec__leftSec}>
-              <img src={DarkLogo} alt="logo" draggable={false} />
+              <WhiteLogo />
               <div className={style.myAccountSec__leftSec__accountConatct}>
                 <div className={style.nameGreenCircel}>
                   {e?.accountName === currentAccount?.accountName && (

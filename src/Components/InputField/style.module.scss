@@ -1,12 +1,12 @@
 @import "../../styles/__vars.scss";
 
 input::placeholder {
-  color: $white !important;
+  color: $gray8D96AA !important;
 }
 
 .inputPassword {
-  border-radius: 12px !important;
-  border: 1px solid #404058 !important;
+  border-radius: 15px !important;
+  border: 1px solid var(--UI-Secondary-Blue-Tone, #00A7DC26)!important;
 
   span {
     cursor: pointer !important;
@@ -15,8 +15,8 @@ input::placeholder {
 
 .inputSimple {
   background-color: $blue-08132C;
-  border-radius: 28px;
-  padding: 14px 16px;
+  border-radius: 15px;
+  padding: 13px 16px;
   border: 0;
 
   input {
@@ -29,17 +29,17 @@ input::placeholder {
     font-size: 14px;
 
     &::placeholder {
-      color: $white !important;
+      color: $gray8D96AA !important;
     }
   }
 }
 
 .inputField {
   &__coloredBg {
-    background-color: $blue-08132C !important;
+    background-color: transparent !important;
 
     input {
-      background-color: $blue-08132C !important;
+      background-color: transparent !important;
       border: 0;
       padding: 0;
       color: $white !important;
@@ -53,7 +53,7 @@ input::placeholder {
       }
 
       &::placeholder {
-        color: $white !important;
+        color: $gray8D96AA !important;
       }
     }
   }
@@ -64,9 +64,9 @@ input::placeholder {
 
   &__input {
     background-color: $blue-08132C;
-    border-radius: 12px;
     padding: 11px 16px;
-    border: 1px solid #404058;
+    border-radius: 15px;
+    border: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15));
     color: $white !important;
     font-size: 14px;
 

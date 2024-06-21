@@ -1,7 +1,7 @@
 @import "../../styles/__vars.scss";
 
 .sendSec {
-  padding: 13px 25px;
+  padding: 14px 25px;
 
   &__sourceLabel {
     display: flex;
@@ -19,9 +19,19 @@
     display: flex;
     flex-direction: column;
     // gap: 16px;
-    padding-top: 10px;
+    padding-top: 15px;
   }
-
+  &__assetSec {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    h2 {
+      color: var(--UI-Maintext, #fff);
+      font-size: 15px;
+      font-weight: 600;
+    }
+  }
+ 
   &__sendSwapbtn {
     display: flex;
     border-radius: 12px;
@@ -47,7 +57,7 @@
       padding: 5px;
       position: relative;
       z-index: 1;
-      transition: width .3s, left .3s, right .3s;
+      transition: width 0.3s, left 0.3s, right 0.3s;
 
       // &__active {
       // background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
@@ -69,7 +79,7 @@
         background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
         border: 1px solid #13d3e1;
         border-radius: 7px;
-        transition: width .3s, left .3s, right .3s;
+        transition: width 0.3s, left 0.3s, right 0.3s;
       }
 
       &.activeSecond {
@@ -78,7 +88,7 @@
         background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
         border: 1px solid #13d3e1;
         border-radius: 7px;
-        transition: width .3s, left .3s, right .3s;
+        transition: width 0.3s, left 0.3s, right 0.3s;
       }
     }
   }
@@ -135,16 +145,17 @@
   &__pasteText {
     display: flex;
     align-items: center;
-    gap: 10px;
-    color: $white;
-    font-size: 12px;
+    gap: 4px;
+    color: $blue-0c98fc;
+    font-size: 20px;
+    margin-right: 15px;
 
-    img {
-      border-left: 1px solid #404058;
-      padding-left: 10px;
+    // img {
+      // border-left: 1px solid #404058;
+      // padding-left: 10px;
       // width: 24px;
       // height: 24px;
-    }
+    // }
   }
 }
 
@@ -154,5 +165,4 @@
   display: block;
   font-size: 12px !important;
   position: absolute;
-
 }

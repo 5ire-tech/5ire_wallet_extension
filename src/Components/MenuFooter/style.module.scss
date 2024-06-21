@@ -2,9 +2,8 @@
 
 .menuItems {
   padding: 14px 28px;
-  box-shadow: 0px 3px 8px #223f7017;
-  //   border: 1px solid #c4d7f8;
-  background-color: #0f2046;
+  background: rgba(2, 7, 19, 0.60);
+  backdrop-filter: blur(15px);
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -45,6 +44,12 @@
 
     &__active {
       opacity: 100%;
+      svg{
+        path{
+          // fill: $blue-0c98fc;
+          stroke: $blue-0c98fc;
+        }
+      }
     }
 
     span {

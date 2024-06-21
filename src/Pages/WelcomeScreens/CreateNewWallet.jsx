@@ -7,7 +7,7 @@ import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
-import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+import WelcomeLogo from "../../Assets/welcomeLogo.svg";
 import {
   REGEX,
   LABELS,
@@ -101,7 +101,8 @@ function CreateNewWallet() {
     <>
       <div className={style.cardWhite} onKeyDown={handleClick}>
         {!isLogin && <StepHeaders active={2} />}
-        <MenuRestofHeaders logosilver={true} title="5ire Wallet" />
+        {/* <MenuRestofHeaders logosilver={true} title="5ire Wallet" /> */}
+        {isLogin && <img src={WelcomeLogo} alt="logo" style={{ marginTop: "20px" }} />}
         <div className={style.cardWhite__cardInner}>
           <div className={style.cardWhite__cardInner__innercontact}>
             <h1>Create a New Wallet</h1>

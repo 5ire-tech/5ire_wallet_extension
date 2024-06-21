@@ -1,13 +1,14 @@
-import QRCode from "react-qr-code";
+// import QRCode from "react-qr-code";
 import { ROUTES } from "../../Routes";
-import { toast } from "react-hot-toast";
+// import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import Info from "../../Assets/infoIcon.svg";
 import ThreeDot from "../../Assets/dot3.svg";
-import WalletQr from "../../Assets/QRicon.svg";
+// import WalletQr from "../../Assets/QRicon.svg";
 import { useLocation } from "react-router-dom";
-import CopyIcon from "../../Assets/CopyIcon.svg";
+// import CopyIcon from "../../Assets/CopyIcon.svg";
+import SmallLogo from "../../Assets/smallLogo.svg";
 import DarkLogo from "../../Assets/DarkLogo.svg";
 import GrayCircle from "../../Assets/graycircle.svg";
 import ModalCustom from "../ModalCustom/ModalCustom";
@@ -15,17 +16,16 @@ import GreenCircle from "../../Assets/greencircle.svg";
 import { Dropdown, Select, Space, Tooltip } from "antd";
 import { sendEventToTab, formatNumUptoSpecificDecimal } from "../../Helper/helper";
 import React, { useEffect, useState, useContext } from "react";
-import DownArrowSuffix from "../../Assets/DownArrowSuffix.svg";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
 import { isEqual, isNullorUndef } from "../../Utility/utility";
 import { TabMessagePayload } from "../../Utility/network_calls";
 
 import {
-  EVM,
-  COPIED,
+  // EVM,
+  // COPIED,
   LABELS,
-  NATIVE,
+  // NATIVE,
   NETWORK,
   EMTY_STR,
   CURRENCY,
@@ -36,14 +36,15 @@ import {
   MESSAGE_EVENT_LABELS,
   STATE_CHANGE_ACTIONS
 } from "../../Constants/index";
+import { DownArrow, WhiteLogo } from "../../Assets/StoreAsset/StoreAsset";
 
 function BalanceDetails({ mt0 }) {
   const getLocation = useLocation();
   const [url, setUrl] = useState("");
   const [isNewSite, setNewSite] = useState(false);
-  const [isEvmModal, setIsEvmModal] = useState(false);
+  // const [isEvmModal, setIsEvmModal] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHeaderActive, setHeaderActive] = useState(false);
   const { state, updateState, externalControlsState, allAccounts, updateLoading, windowAndTab } =
     useContext(AuthContext);
@@ -134,35 +135,35 @@ function BalanceDetails({ mt0 }) {
     );
   };
 
-  const handleCopy = (e) => {
-    if (e.target.name === NATIVE) navigator.clipboard.writeText(currentAccount?.nativeAddress);
-    else if (e.target.name === EVM) navigator.clipboard.writeText(currentAccount?.evmAddress);
-    toast.success(COPIED);
-  };
+  // const handleCopy = (e) => {
+  //   if (e.target.name === NATIVE) navigator.clipboard.writeText(currentAccount?.nativeAddress);
+  //   else if (e.target.name === EVM) navigator.clipboard.writeText(currentAccount?.evmAddress);
+  //   toast.success(COPIED);
+  // };
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
+  // const showModal = () => {
+  //   setIsModalOpen(true);
+  // };
 
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
+  // const handleOk = () => {
+  //   setIsModalOpen(false);
+  // };
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+  // const handleCancel = () => {
+  //   setIsModalOpen(false);
+  // };
 
-  const evmModal = () => {
-    setIsEvmModal(true);
-  };
+  // const evmModal = () => {
+  //   setIsEvmModal(true);
+  // };
 
-  const evmOk = () => {
-    setIsEvmModal(false);
-  };
+  // const evmOk = () => {
+  //   setIsEvmModal(false);
+  // };
 
-  const evmCancel = () => {
-    setIsEvmModal(false);
-  };
+  // const evmCancel = () => {
+  //   setIsEvmModal(false);
+  // };
 
   const headerActive = () => {
     setHeaderActive(true);
@@ -230,15 +231,17 @@ function BalanceDetails({ mt0 }) {
         isEqual(pathname, ROUTES.SWAP_APPROVE) ||
         isEqual(pathname, ROUTES.APPROVE_TXN) ||
         isEqual(pathname, ROUTES.HISTORY) ||
-        isEqual(pathname, ROUTES.MY_ACCOUNT)) && (
+        isEqual(pathname, ROUTES.MY_ACCOUNT) ||
+        isEqual(pathname, ROUTES.SETTING_COMP)) && (
         <div className={`${style.balanceDetails} ${mt0 ? mt0 : EMTY_STR}`}>
           <div className={style.balanceDetails__decoratedSec}>
             <>
-              <img src={DarkLogo} alt="logo" draggable={false} />
+              <WhiteLogo />
               {(isEqual(pathname, ROUTES.WALLET) ||
                 isEqual(pathname, ROUTES.HISTORY) ||
                 isEqual(pathname, ROUTES.APPROVE_TXN) ||
-                isEqual(pathname, ROUTES.MY_ACCOUNT)) && (
+                isEqual(pathname, ROUTES.MY_ACCOUNT) ||
+                isEqual(pathname, ROUTES.SETTING_COMP)) && (
                 <div
                   className={`${
                     isConnected && !isEqual(pathname, ROUTES.APPROVE_TXN)
@@ -381,7 +384,7 @@ function BalanceDetails({ mt0 }) {
                 <Select
                   disabled={isEqual(pathname, ROUTES.APPROVE_TXN)}
                   onChange={handleNetworkChange}
-                  suffixIcon={<img src={DownArrowSuffix} alt="DownArrow" draggable={false} />}
+                  suffixIcon={<DownArrow />}
                   defaultValue={[
                     {
                       value: currentNetwork,
@@ -418,92 +421,104 @@ function BalanceDetails({ mt0 }) {
             <div className={style.balanceDetails__innerBalance}>
               <div className={style.balanceDetails__innerBalance__totalBalnce}>
                 <p>
-                  Total Balance :{" "}
-                  <span>
-                    {allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
-                      .totalBalance ? (
-                      <>
-                        {" "}
-                        <Tooltip
-                          placement="bottom"
-                          title={
-                            allAccountsBalance[currentAccount?.evmAddress][
-                              currentNetwork.toLowerCase()
-                            ].totalBalance
-                          }>
-                          <span className="totalBal">
-                            {allAccountsBalance[currentAccount?.evmAddress][
-                              currentNetwork.toLowerCase()
-                            ].totalBalance || 0}
-                          </span>
-                        </Tooltip>{" "}
-                        &nbsp;{CURRENCY}
-                      </>
-                    ) : (
-                      0
-                    )}{" "}
-                  </span>
+                  {allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
+                    .totalBalance ? (
+                    <>
+                      {" "}
+                      <Tooltip
+                        placement="bottom"
+                        title={
+                          allAccountsBalance[currentAccount?.evmAddress][
+                            currentNetwork.toLowerCase()
+                          ].totalBalance
+                        }>
+                        <span className="totalBal">
+                          {allAccountsBalance[currentAccount?.evmAddress][
+                            currentNetwork.toLowerCase()
+                          ].totalBalance || 0}
+                        </span>
+                      </Tooltip>
+                      <span>
+                        <img src={SmallLogo} />
+                        {CURRENCY}
+                      </span>
+                    </>
+                  ) : (
+                    0
+                  )}
                 </p>
               </div>
               <div className={style.balanceDetails__innerBalance__chainBalance}>
                 <div className={style.balanceDetails__innerBalance__balanceCard}>
                   <div className={style.balanceDetails__innerBalance__balanceName}>
-                    <p>Native Chain Balance</p>
+                    <p>Transferable</p>
                     <Tooltip
                       title={
                         allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
                           ?.nativeBalance || 0
                       }>
-                      <h3>
-                        {/* <img src={WalletCardLogo} draggable={false} alt="walletLogo" /> */}
-                        {allAccountsBalance[currentAccount?.evmAddress][
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <h3>
+                          {/* <img src={WalletCardLogo} draggable={false} alt="walletLogo" /> */}
+                          {/* {allAccountsBalance[currentAccount?.evmAddress][
                           currentNetwork.toLowerCase()
-                        ]?.nativeBalance || 0}
-                      </h3>
+                        ]?.nativeBalance || 0} */}
+                          52.02
+                        </h3>
+                        <span>
+                          <img src={SmallLogo} />
+                        </span>
+                      </div>
                     </Tooltip>
                   </div>
-                  <div className={style.balanceDetails__innerBalance__walletQa}>
-                    <img
+                  {/* <div className={style.balanceDetails__innerBalance__walletQa}> */}
+                  {/* <img
                       onClick={showModal}
                       alt="walletQR"
                       src={WalletQr}
                       width={30}
                       height={30}
                       draggable={false}
-                    />
-                  </div>
+                    /> */}
+                  {/* </div> */}
                 </div>
                 <div className={style.balanceDetails__innerBalance__balanceCard}>
                   <div className={style.balanceDetails__innerBalance__balanceName}>
-                    <p>EVM Chain Balance</p>
+                    <p>Staked</p>
                     <Tooltip
                       title={
                         allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
                           ?.evmBalance || 0
                       }>
-                      <h3>
-                        {allAccountsBalance[currentAccount?.evmAddress][
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <h3>
+                          {/* {allAccountsBalance[currentAccount?.evmAddress][
                           currentNetwork.toLowerCase()
-                        ]?.evmBalance || 0}
-                      </h3>
+                        ]?.evmBalance || 0} */}
+                          52.02
+                        </h3>
+                        <span>
+                          <img src={SmallLogo} />
+                        </span>
+                      </div>
                     </Tooltip>
                   </div>
-                  <div className={style.balanceDetails__innerBalance__walletQa}>
-                    <img
+                  {/* <div className={style.balanceDetails__innerBalance__walletQa}> */}
+                  {/* <img
                       onClick={evmModal}
                       alt="balance"
                       src={WalletQr}
                       width={30}
                       height={30}
                       draggable={false}
-                    />
-                  </div>
+                    /> */}
+                  {/* </div> */}
                 </div>
               </div>
             </div>
           )}
 
-          <ModalCustom
+          {/* <ModalCustom
             isModalOpen={isModalOpen}
             handleOk={handleOk}
             handleCancel={handleCancel}
@@ -572,7 +587,7 @@ function BalanceDetails({ mt0 }) {
                 </div>
               </div>
             </div>
-          </ModalCustom>
+          </ModalCustom> */}
         </div>
       )}
     </>

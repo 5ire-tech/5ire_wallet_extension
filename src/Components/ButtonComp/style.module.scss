@@ -1,9 +1,9 @@
 @import "../../styles/__vars.scss";
 .ButtonStyle {
-  background: linear-gradient(114.15deg, #0DA6C2 20.67%, #0E39C6 89.64%, #0E39C6 89.64%);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 12px;
-  color: $white;
+  background: #00a7dc;
+  border: 0;
+  border-radius: 15px;
+  color: $black020713;
   font-size: 14px;
   font-weight: 700;
   // max-width: 165px;
@@ -15,12 +15,12 @@
   justify-content: center;
   align-items: center;
   &:hover {
-    border: 1px solid $border-1098FC;
+    opacity: 0.8;
   }
   &__bordered {
-    border: 1px solid $border-1098FC;
-    background: transparent;
-    color: $border-1098FC;
+    border: 0;
+    background-color: #14378b26;
+    color: $blue-0c98fc;
     &:hover {
        opacity: 0.6;
       }
