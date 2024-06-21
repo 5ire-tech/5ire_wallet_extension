@@ -2,7 +2,7 @@
 
 .settingComp {
   padding: 16px 22px;
-  &__settingSec{
+  &__settingSec {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -11,14 +11,8 @@
 .sttings {
   display: flex;
   justify-content: space-between;
-  border-radius: 20px;
-  border: 1px solid #ffffff2e;
-  background: linear-gradient(
-    88deg,
-    rgba(255, 255, 255, 0) 1.62%,
-    rgba(255, 255, 255, 0.1) 48.43%,
-    rgba(255, 255, 255, 0) 98.38%
-  );
+  border-radius: 15px;
+  border: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15));
   backdrop-filter: blur(32px);
   padding: 11px 16px;
   align-items: center;
@@ -30,8 +24,8 @@
     align-items: center;
 
     &__textsTop {
-      font-size: 14px;
-      font-weight: 400;
+      font-size: 17px;
+      font-weight: 600;
       margin: 0;
       color: #fff;
     }

@@ -82,7 +82,7 @@ function MenuFooter() {
             to={ROUTES.SETTING_COMP}
             // onClick={() => setOpen2(true)}
             className={`${style.menuItems__items} ${
-              pathname === ROUTES.MANAGE_WALLET ? style.menuItems__items__active : ""
+              pathname === ROUTES.SETTING_COMP ? style.menuItems__items__active : ""
             }`}>
             <div className={style.menuItems__items__img}>
               <SettingIcon />

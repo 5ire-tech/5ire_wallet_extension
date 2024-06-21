@@ -28,8 +28,7 @@ function CreateWalletChain() {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const [isOpen, setOpen] = useState({ open1: true, open2: true });
-  const { state, setNewAccount, newAccount, setDetailsPage, updateLoading } =
-    useContext(AuthContext);
+  const { setNewAccount, newAccount, setDetailsPage, updateLoading } = useContext(AuthContext);
   const [mnemonic, setMnemonic] = useState("");
   const [derivedPath, setDerivedPath] = useState("");
   // const handleCancle = async () => {
@@ -46,7 +45,6 @@ function CreateWalletChain() {
       setDetailsPage(false);
     }, 2000);
   };
-  const { isLogin } = state;
 
   useEffect(() => {
     updateLoading(true);
@@ -92,8 +90,10 @@ function CreateWalletChain() {
     <>
       <div className={style.cardWhite}>
         {newAccount?.mnemonic && <StepHeaders active={4} />}
+        {newAccount?.mnemonic ? null : (
+          <img src={WelcomeLogo} alt="logo" style={{ marginTop: "20px" }} />
+        )}
         <MenuRestofHeaders title="New Wallet Details" />
-        {isLogin && <img src={WelcomeLogo} alt="logo" style={{ marginTop: "20px" }} />}
 
         <div className={style.cardWhite__addressInput}>
           <div style={{ display: "flex", alignItems: "center" }}>

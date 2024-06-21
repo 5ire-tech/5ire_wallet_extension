@@ -58,7 +58,7 @@ body {
   .stickyHeader {
     position: sticky;
     top: 0;
-    background: #08132c;
+    // background: #08132c;
     z-index: 9;
   }
 
@@ -66,7 +66,7 @@ body {
     padding: 24px 28px 0;
     overflow-y: auto;
     height: 100%;
-    background-color: #08132c;
+    // background-color: #08132c; 
   }
 }
 
@@ -140,7 +140,7 @@ body {
   .maxBtn {
     border-radius: 6px;
     background: var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15));
-    border:0;
+    border: 0;
     cursor: pointer;
     color: $blue-0c98fc;
     padding: 4px;
@@ -363,20 +363,20 @@ body {
     color: #fff !important;
   }
 }
-.ant-select-selection-item{
+.ant-select-selection-item {
   color: #fff;
 }
 .ant-select-dropdown {
   background-color: $blue-08132C !important;
   border: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15)) !important;
-  .ant-select-item-option-selected{
-    .ant-select-item-option-content{
+  .ant-select-item-option-selected {
+    .ant-select-item-option-content {
       color: #000;
     }
   }
-    .ant-select-item-option-content{
-      color: #fff;
-    }
+  .ant-select-item-option-content {
+    color: #fff;
+  }
 }
 
 :where(.css-dev-only-do-not-override-acm2ia).ant-select-dropdown
@@ -391,10 +391,9 @@ body {
 // }
 :where(.css-acm2ia).ant-select-dropdown
   .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
-  
   font-weight: 600;
   background-color: #616161 !important;
-  .ant-select-item-option-content{
+  .ant-select-item-option-content {
     color: rgba(0, 0, 0, 0.88);
   }
 }
@@ -442,13 +441,11 @@ body {
   gap: 20px;
 }
 
-
-.assetSelectStyle{
+.assetSelectStyle {
   .ant-select-selector {
     border: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15)) !important;
     background-color: transparent !important;
   }
- 
 }
 //checkbox css//
 
@@ -498,8 +495,8 @@ body {
 }
 
 .ant-drawer-content {
-  background-color: #08132c !important;
-  box-shadow: 0px -5px 12px rgba(6, 122, 252, 0.7);
+  background-color: var(--UI-Backing, #020713) !important;
+  box-shadow: 0px -5px 12px rgb(6 , 41 , 78);
   backdrop-filter: blur(3.5px);
   border-radius: 12px 12px 0px 0px;
   max-width: 400px;
@@ -512,11 +509,7 @@ body {
     font-weight: 600;
     font-size: 20px;
     line-height: 40px;
-    background: -webkit-linear-gradient(#0071ff, #54f0d1);
-    text-align: center;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: $white;
   }
 }
 
@@ -693,4 +686,9 @@ body {
   border: 1px solid var(--UI-Secondary-Blue-Tone, #00a7dc26) !important;
   padding: 15px;
   border-radius: 15px;
+}
+
+.innerScrool {
+  height: 260px;
+  overflow: auto;
 }

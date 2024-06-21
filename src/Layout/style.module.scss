@@ -7,6 +7,7 @@
   justify-content: center;
   width: 400px;
   margin:  0 auto;
+  background-color: #020713;
   &__inner {
     height: 599px;
     // background-color: $blue-08132C;
@@ -25,7 +26,7 @@
     &__paddingX {
       padding-left: 0;
       padding-right: 0;
-      background-color: $inputBg;
+      // background-color: $inputBg;
     }
   }
 }

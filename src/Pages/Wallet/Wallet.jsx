@@ -47,12 +47,12 @@ function Wallet() {
           </div>
         </div>
         {activeTab === "send" && (
-          <div>
+          <div className="innerScrool">
             <Send />
           </div>
         )}
         {activeTab === "swap" && (
-          <div>
+          <div className="innerScrool">
             <Swap />
           </div>
         )}

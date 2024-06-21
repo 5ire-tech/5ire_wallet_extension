@@ -393,7 +393,9 @@ function Send() {
       setErr((p) => ({ ...p, amount: "" }));
     }
   };
-
+  const handleChange1 = (value) => {
+    console.log(`selected ${value}`);
+  };
   const suffix = (
     <button disabled={isMaxDisabled} className="maxBtn" onClick={handleMaxClick}>
       Max
@@ -436,7 +438,7 @@ function Send() {
               style={{
                 width: 200
               }}
-              onChange={handleChange}
+              onChange={handleChange1}
               options={[
                 {
                   value: "all",

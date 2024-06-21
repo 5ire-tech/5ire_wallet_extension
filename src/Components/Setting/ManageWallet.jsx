@@ -9,6 +9,7 @@ import React, { useContext, useEffect } from "react";
 import ButtonComp from "../ButtonComp/ButtonComp.jsx";
 import { NATIVE, EVM, COPIED } from "../../Constants";
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx";
+import WelcomeLogo from "../../Assets/welcomeLogo.svg";
 
 function ManageWallet() {
   const navigate = useNavigate();
@@ -37,6 +38,9 @@ function ManageWallet() {
   return (
     <>
       <div className={`scrollableCont`}>
+        <div className="">
+          <img src={WelcomeLogo} alt="logo" style={{ marginTop: "20px" }} />
+        </div>
         <MenuRestofHeaders backTo={ROUTES.WALLET} title={"Manage Wallet"} />
         <div className={`flexedContent`}>
           <div className={style.wallet}>
