@@ -36,10 +36,11 @@ function Send() {
     useContext(AuthContext);
   const { currentAccount, pendingTransactionBalance, currentNetwork, allAccountsBalance } = state;
   const balance = allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()];
-  console.log("HERRE edValue", edValue);
   const MINIMUM_BALANCE = edValue;
 
-  // Reset the amount, to and error evm and native address changed
+  /**
+   * Reset the amount, to and error evm and native address changed
+   */
   useEffect(() => {
     updateEstimatedGas(null);
     setErr({ to: "", amount: "" });
@@ -55,14 +56,16 @@ function Send() {
   }, [data.to, data.amount, estimatedGas]);
 
   useEffect(() => {
-    if (Number(balance?.evmBalance) < MINIMUM_BALANCE || !data.to || err.to) {
+    if (Number(balance?.transferableBalance) < MINIMUM_BALANCE || !data.to || err.to) {
       setMaxDisabled(true);
     } else {
       setMaxDisabled(false);
     }
-  }, [balance?.evmBalance, balance?.nativeBalance, data?.to, err.to, MINIMUM_BALANCE]);
+  }, [balance?.transferableBalance, balance?.stakedBalance, data?.to, err.to, MINIMUM_BALANCE]);
 
-  //Get fee if to and amount is present
+  /**
+   * Get fee if to and amount is present
+   */
   useEffect(() => {
     if (!err.to && !err.amount && data.amount && data.to && !estimatedGas) {
       const getData = setTimeout(() => {
@@ -85,7 +88,7 @@ function Send() {
       // if (activeTab === EVM) {
       if (estimatedGas && !data.amount && data.to) {
         const amount =
-          Number(balance?.evmBalance) -
+          Number(balance?.transferableBalance) -
           (Number(estimatedGas) +
             EXTRA_FEE +
             pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm);
@@ -103,7 +106,7 @@ function Send() {
       } else if (data?.amount && estimatedGas && data?.to) {
         if (
           Number(data.amount) + Number(estimatedGas) >
-          Number(balance?.evmBalance) -
+          Number(balance?.transferableBalance) -
             pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
         ) {
           updateEstimatedGas(null);
@@ -146,7 +149,7 @@ function Send() {
       // }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.to, data.amount, estimatedGas, balance?.evmBalance, balance?.nativeBalance]);
+  }, [data.to, data.amount, estimatedGas, balance?.transferableBalance]);
 
   const blockInvalidChar = useCallback(
     (e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault(),
@@ -169,11 +172,11 @@ function Send() {
     else if (Number(data.amount) <= 0)
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.AMOUNT_SHOULD_BE_GREATER_THAN_0 }));
     else {
-      if (balance?.evmBalance < MINIMUM_BALANCE)
+      if (balance?.transferableBalance < MINIMUM_BALANCE)
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
       else if (
         Number(data.amount) >=
-        Number(balance?.evmBalance) -
+        Number(balance?.transferableBalance) -
           pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].evm
       )
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
@@ -191,8 +194,8 @@ function Send() {
     //   else setErr((p) => ({ ...p, amount: "" }));
     // }
   }, [
-    balance?.evmBalance,
-    balance?.nativeBalance,
+    balance?.transferableBalance,
+    // balance?.nativeBalance,
     currentAccount?.evmAddress,
     currentNetwork,
     data?.amount,
@@ -248,12 +251,12 @@ function Send() {
     //   });
     // } else
 
-    if (Number(balance?.evmBalance) > 0) {
+    if (Number(balance?.transferableBalance) > 0) {
       loader && updateLoading(true);
 
       //calculate the evm fee
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {
-        value: data?.amount ? data.amount : balance?.evmBalance,
+        value: data?.amount ? data.amount : balance?.transferableBalance,
         toAddress: data.to,
         options: { account: currentAccount },
         isEd: false
@@ -366,8 +369,8 @@ function Send() {
     data.amount,
     estimatedGas,
     currentNetwork,
-    balance?.evmBalance,
-    balance?.nativeBalance,
+    balance?.transferableBalance,
+    // balance?.nativeBalance,
     currentAccount?.evmAddress,
     updateLoading
   ]);

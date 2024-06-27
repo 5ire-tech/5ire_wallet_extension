@@ -1,13 +1,13 @@
-// import QRCode from "react-qr-code";
+import QRCode from "react-qr-code";
 import { ROUTES } from "../../Routes";
-// import { toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import Info from "../../Assets/infoIcon.svg";
 import ThreeDot from "../../Assets/dot3.svg";
-// import WalletQr from "../../Assets/QRicon.svg";
+import WalletQr from "../../Assets/QRicon.svg";
 import { useLocation } from "react-router-dom";
-// import CopyIcon from "../../Assets/CopyIcon.svg";
+import CopyIcon from "../../Assets/CopyIcon.svg";
 import SmallLogo from "../../Assets/smallLogo.svg";
 import DarkLogo from "../../Assets/DarkLogo.svg";
 import GrayCircle from "../../Assets/graycircle.svg";
@@ -22,10 +22,10 @@ import { isEqual, isNullorUndef } from "../../Utility/utility";
 import { TabMessagePayload } from "../../Utility/network_calls";
 
 import {
-  // EVM,
-  // COPIED,
+  EVM,
+  COPIED,
   LABELS,
-  // NATIVE,
+  NATIVE,
   NETWORK,
   EMTY_STR,
   CURRENCY,
@@ -44,7 +44,7 @@ function BalanceDetails({ mt0 }) {
   const [isNewSite, setNewSite] = useState(false);
   // const [isEvmModal, setIsEvmModal] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-  // const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHeaderActive, setHeaderActive] = useState(false);
   const { state, updateState, externalControlsState, allAccounts, updateLoading, windowAndTab } =
     useContext(AuthContext);
@@ -135,23 +135,23 @@ function BalanceDetails({ mt0 }) {
     );
   };
 
-  // const handleCopy = (e) => {
-  //   if (e.target.name === NATIVE) navigator.clipboard.writeText(currentAccount?.nativeAddress);
-  //   else if (e.target.name === EVM) navigator.clipboard.writeText(currentAccount?.evmAddress);
-  //   toast.success(COPIED);
-  // };
+  const handleCopy = (e) => {
+    if (e.target.name === NATIVE) navigator.clipboard.writeText(currentAccount?.nativeAddress);
+    else if (e.target.name === EVM) navigator.clipboard.writeText(currentAccount?.evmAddress);
+    toast.success(COPIED);
+  };
 
-  // const showModal = () => {
-  //   setIsModalOpen(true);
-  // };
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
 
-  // const handleOk = () => {
-  //   setIsModalOpen(false);
-  // };
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
 
-  // const handleCancel = () => {
-  //   setIsModalOpen(false);
-  // };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   // const evmModal = () => {
   //   setIsEvmModal(true);
@@ -442,6 +442,16 @@ function BalanceDetails({ mt0 }) {
                         <img src={SmallLogo} />
                         {CURRENCY}
                       </span>
+                      <div className={style.balanceDetails__innerBalance__walletQa}>
+                        <img
+                          onClick={showModal}
+                          alt="walletQR"
+                          src={WalletQr}
+                          width={30}
+                          height={30}
+                          draggable={false}
+                        />
+                      </div>
                     </>
                   ) : (
                     0
@@ -455,15 +465,14 @@ function BalanceDetails({ mt0 }) {
                     <Tooltip
                       title={
                         allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
-                          ?.nativeBalance || 0
+                          ?.transferableBalance || 0
                       }>
                       <div style={{ display: "flex", alignItems: "center" }}>
                         <h3>
                           {/* <img src={WalletCardLogo} draggable={false} alt="walletLogo" /> */}
-                          {/* {allAccountsBalance[currentAccount?.evmAddress][
-                          currentNetwork.toLowerCase()
-                        ]?.nativeBalance || 0} */}
-                          52.02
+                          {allAccountsBalance[currentAccount?.evmAddress][
+                            currentNetwork.toLowerCase()
+                          ]?.transferableBalance || 0}
                         </h3>
                         <span>
                           <img src={SmallLogo} />
@@ -488,14 +497,13 @@ function BalanceDetails({ mt0 }) {
                     <Tooltip
                       title={
                         allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
-                          ?.evmBalance || 0
+                          ?.stakedBalance || 0
                       }>
                       <div style={{ display: "flex", alignItems: "center" }}>
                         <h3>
-                          {/* {allAccountsBalance[currentAccount?.evmAddress][
-                          currentNetwork.toLowerCase()
-                        ]?.evmBalance || 0} */}
-                          52.02
+                          {allAccountsBalance[currentAccount?.evmAddress][
+                            currentNetwork.toLowerCase()
+                          ]?.stakedBalance || 0}
                         </h3>
                         <span>
                           <img src={SmallLogo} />
@@ -518,7 +526,7 @@ function BalanceDetails({ mt0 }) {
             </div>
           )}
 
-          {/* <ModalCustom
+          <ModalCustom
             isModalOpen={isModalOpen}
             handleOk={handleOk}
             handleCancel={handleCancel}
@@ -527,14 +535,14 @@ function BalanceDetails({ mt0 }) {
               <div className={style.balanceDetails__nativemodal__innerContact}>
                 <div className={style.balanceDetails__nativemodal__logoFlex}>
                   <img src={DarkLogo} alt="logo" width={55} height={55} draggable={false} />
-                  <p className={style.balanceDetails__nativemodal__title}>5ire Native Chain</p>
+                  <p className={style.balanceDetails__nativemodal__title}>5ire Chain</p>
                 </div>
                 <div className={style.balanceDetails__nativemodal__scanner}>
                   <QRCode
                     size={180}
                     style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                     viewBox={`0 0 256 256`}
-                    value={currentAccount?.nativeAddress || ""}
+                    value={currentAccount?.evmAddress || ""}
                   />
                 </div>
                 <div className={style.balanceDetails__nativemodal__modalOr}>
@@ -542,7 +550,7 @@ function BalanceDetails({ mt0 }) {
                 </div>
                 <div className={style.balanceDetails__nativemodal__wrapedText}>
                   <p>
-                    {currentAccount?.nativeAddress || ""}
+                    {currentAccount?.evmAddress || ""}
                     <img
                       draggable={false}
                       src={CopyIcon}
@@ -555,6 +563,7 @@ function BalanceDetails({ mt0 }) {
               </div>
             </div>
           </ModalCustom>
+          {/* 
           <ModalCustom isModalOpen={isEvmModal} handleOk={evmOk} handleCancel={evmCancel} centered>
             <div className={style.balanceDetails__nativemodal}>
               <div className={style.balanceDetails__nativemodal__innerContact}>

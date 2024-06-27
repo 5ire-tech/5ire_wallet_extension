@@ -16,6 +16,7 @@ function ManageWallet() {
 
   const { state, setPassVerified } = useContext(AuthContext);
   const { currentAccount } = state;
+  // console.log("currentAccount : ", currentAccount);
 
   useEffect(() => {
     setPassVerified(false);
@@ -58,7 +59,7 @@ function ManageWallet() {
               </p>
             </div>
           </div>
-          <div className={style.wallet}>
+          {/* <div className={style.wallet}>
             <div className={style.wallet__addressInput}>
               <label>Native Chain Address:</label>
               <p className={style.wallet__addressInput__copyText}>
@@ -72,7 +73,7 @@ function ManageWallet() {
                 />{" "}
               </p>
             </div>
-          </div>
+          </div> */}
           <div className={style.wallet}>
             <div className={style.wallet__addressInput}>
               <label>EVM Chain Address:</label>

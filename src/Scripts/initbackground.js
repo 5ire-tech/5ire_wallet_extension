@@ -301,7 +301,7 @@ export class InitBackground {
       const pendingTxBalance = state.pendingTransactionBalance;
 
       // clear the pending transaction balance
-      const transactionBalance = { evm: 0, native: 0 };
+      const transactionBalance = { evm: 0 };
       for (const account of Object.keys(pendingTxBalance)) {
         for (const network of Object.values(NETWORK)) {
           await services.updateLocalState(
@@ -1644,7 +1644,7 @@ export class TransactionsRPC {
 
       if (
         balanceWithFee >
-        Number(balance.evmBalance) -
+        Number(balance?.transferableBalance) -
           (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
       )
         new Error(
@@ -2114,46 +2114,54 @@ export class GeneralWalletRPC {
           data: balance
         });
 
-      let nbalance = 0;
-      const { evmApi, nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
+      // let nbalance = 0;
+      const { nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
       const account = state.currentAccount;
 
       if (isNullorUndef(account))
         new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
       // Evm Balance
-      const w3balance = await evmApi?.eth?.getBalance(account.evmAddress);
+      // const w3balance = await evmApi?.eth?.getBalance(account.evmAddress);
 
       let balances = await nativeApi?.query.system.account(account.nativeAddress);
       const balance1 = balances.toHuman();
-      const total = +balance1?.data?.free?.replaceAll(",", "");
+
+      const free = +balance1?.data?.free?.replaceAll(",", "");
       const frozen = +balance1?.data?.frozen?.replaceAll(",", "");
-      nbalance = total - frozen;
+      // nbalance = total - frozen;
 
-      let evmBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toString();
-      let nativeBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toString();
+      // let evmBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toString();
+      // let nativeBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toString();
 
-      if (Number(nativeBalance) % 1 !== 0) {
-        let tempBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toFixed(6, 8).toString();
-        if (Number(tempBalance) % 1 === 0) nativeBalance = parseInt(tempBalance);
-        else nativeBalance = tempBalance;
+      let stakedBalance = new BigNumber(frozen).dividedBy(DECIMALS).toString();
+      let transferableBalance = new BigNumber(free).dividedBy(DECIMALS).toString();
+
+      if (Number(stakedBalance) % 1 !== 0) {
+        let tempBalance = new BigNumber(frozen).dividedBy(DECIMALS).toFixed(6, 8).toString();
+        if (Number(tempBalance) % 1 === 0) stakedBalance = parseInt(tempBalance);
+        else stakedBalance = tempBalance;
       }
 
-      if (Number(evmBalance) % 1 !== 0) {
-        let tempBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toFixed(6, 8).toString();
-        if (Number(tempBalance) % 1 === 0) evmBalance = parseInt(tempBalance);
-        else evmBalance = tempBalance;
+      if (Number(transferableBalance) % 1 !== 0) {
+        let tempBalance = new BigNumber(free).dividedBy(DECIMALS).toFixed(6, 8).toString();
+        if (Number(tempBalance) % 1 === 0) transferableBalance = parseInt(tempBalance);
+        else transferableBalance = tempBalance;
       }
 
-      let totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toString();
+      // let totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toString();
+      let totalBalance = new BigNumber(stakedBalance).plus(transferableBalance).toString();
       if (Number(totalBalance) % 1 !== 0)
-        totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toFixed(6, 8).toString();
+        totalBalance = new BigNumber(stakedBalance)
+          .plus(transferableBalance)
+          .toFixed(6, 8)
+          .toString();
 
       const payload = {
         data: {
-          evmBalance,
-          nativeBalance,
-          totalBalance
+          totalBalance,
+          stakedBalance,
+          transferableBalance
         }
       };
 

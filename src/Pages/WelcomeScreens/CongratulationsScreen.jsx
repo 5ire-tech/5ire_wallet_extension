@@ -6,7 +6,7 @@ import Congratulation from "../../Assets/CongratulationsImg.svg";
 
 function CongratulationsScreen({ children, text }) {
   return (
-    <div className={style.setPassword__secretPharse}>
+    <div className={`${style.setPassword__secretPharse} fixedCongrModel`}>
       <div className={`${style.cardWhite__beginText} ${style.congratScreen}`}>
         <div style={{ display: "flex", justifyContent: "center" }}>
           {/* <Player
