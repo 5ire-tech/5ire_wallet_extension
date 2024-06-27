@@ -3,7 +3,7 @@ import Swap from "../Swap/Swap.jsx";
 import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import React, { useEffect, useState, useContext } from "react";
-import { Assets, Transfer } from "../../Assets/StoreAsset/StoreAsset";
+import { Transfer } from "../../Assets/StoreAsset/StoreAsset";
 
 function Wallet() {
   const [activeTab, setActiveTab] = useState("send");
@@ -17,9 +17,9 @@ function Wallet() {
   const activeSend = () => {
     setActiveTab("send");
   };
-  const activeSwap = () => {
-    setActiveTab("swap");
-  };
+  // const activeSwap = () => {
+  //   setActiveTab("swap");
+  // };
   return (
     <div className={style.wallet}>
       <div className={style.wallet__sendSwapSec}>
@@ -33,17 +33,17 @@ function Wallet() {
               <Transfer />
               Transfer
             </button>
-            <button
+            {/* <button
               onClick={activeSwap}
               className={`${style.secondtButton} ${style.wallet__sendSwapbtn__buttons}  ${
                 activeTab === "swap" && style.wallet__sendSwapbtn__buttons__active
               }`}>
               <Assets /> Assets
-            </button>
-            <div
+            </button> */}
+            {/* <div
               className={`${activeTab === "send" && style.activeFirst} ${
                 activeTab === "swap" && style.activeSecond
-              } ${style.animations}`}></div>
+              } ${style.animations}`}></div> */}
           </div>
         </div>
         {activeTab === "send" && (

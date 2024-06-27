@@ -1,6 +1,6 @@
 import { Modal } from "antd";
 import React from "react";
-import ModalCloseIcon from "../../Assets/ModalCloseIcon.svg";
+import { CloseIcon } from "../../Assets/StoreAsset/StoreAsset";
 
 function ModalCustom({
   isModalOpen,
@@ -14,9 +14,7 @@ function ModalCustom({
   return (
     <div>
       <Modal
-        closeIcon={
-          <img src={ModalCloseIcon} alt="close" draggable={false} className="closeModalIcon" />
-        }
+        closeIcon={<CloseIcon />}
         title={title}
         className={`modalCustom ${customClass}`}
         open={isModalOpen}
