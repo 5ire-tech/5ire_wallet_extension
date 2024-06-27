@@ -119,7 +119,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 5px;
+      margin-bottom: 40px;
     }
 
     &__innerContact {
@@ -138,7 +138,7 @@
     }
 
     &__modalOr {
-      background-color: #dfe2e4;
+      background: var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15));
       height: 1px;
       text-align: center;
       width: 100%;
@@ -146,13 +146,13 @@
       margin-top: 8px;
 
       p {
-        color: $white;
-        font-size: 12px;
+        color: $gray8D96AA;
+        font-size: 15px;
         position: absolute;
-        top: -10px;
+        top: -15px;
         left: 45%;
-        background: #0f2046;
         padding: 3px;
+        background: #021d3f;
       }
     }
 
@@ -173,7 +173,9 @@
         word-break: break-all;
         text-align: center;
         align-items: center;
-
+        border-radius: 15px;
+        padding: 15px;
+        border: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15));
         img {
           cursor: pointer;
         }

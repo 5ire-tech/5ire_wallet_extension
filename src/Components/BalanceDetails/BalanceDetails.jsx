@@ -9,6 +9,7 @@ import WalletQr from "../../Assets/QRicon.svg";
 import { useLocation } from "react-router-dom";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import SmallLogo from "../../Assets/smallLogo.svg";
+import welcomeLogo from "../../Assets/welcomeLogo.svg";
 import DarkLogo from "../../Assets/DarkLogo.svg";
 import GrayCircle from "../../Assets/graycircle.svg";
 import ModalCustom from "../ModalCustom/ModalCustom";
@@ -447,8 +448,8 @@ function BalanceDetails({ mt0 }) {
                           onClick={showModal}
                           alt="walletQR"
                           src={WalletQr}
-                          width={30}
-                          height={30}
+                          width={20}
+                          height={20}
                           draggable={false}
                         />
                       </div>
@@ -534,8 +535,7 @@ function BalanceDetails({ mt0 }) {
             <div className={style.balanceDetails__nativemodal}>
               <div className={style.balanceDetails__nativemodal__innerContact}>
                 <div className={style.balanceDetails__nativemodal__logoFlex}>
-                  <img src={DarkLogo} alt="logo" width={55} height={55} draggable={false} />
-                  <p className={style.balanceDetails__nativemodal__title}>5ire Chain</p>
+                  <img src={welcomeLogo} alt="logo" draggable={false} />
                 </div>
                 <div className={style.balanceDetails__nativemodal__scanner}>
                   <QRCode
