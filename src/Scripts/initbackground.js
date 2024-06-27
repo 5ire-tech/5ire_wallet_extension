@@ -2124,18 +2124,13 @@ export class GeneralWalletRPC {
       // Evm Balance
       // const w3balance = await evmApi?.eth?.getBalance(account.evmAddress);
 
-      let balances = await nativeApi?.query.system.account(account.nativeAddress);
+      let balances = await nativeApi?.query.system.account(account.evmAddress);
       const balance1 = balances.toHuman();
 
       const free = +balance1?.data?.free?.replaceAll(",", "");
       const frozen = +balance1?.data?.frozen?.replaceAll(",", "");
-      // nbalance = total - frozen;
-
-      // let evmBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toString();
-      // let nativeBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toString();
-
       let stakedBalance = new BigNumber(frozen).dividedBy(DECIMALS).toString();
-      let transferableBalance = new BigNumber(free).dividedBy(DECIMALS).toString();
+      let totalBalance = new BigNumber(free).dividedBy(DECIMALS).toString();
 
       if (Number(stakedBalance) % 1 !== 0) {
         let tempBalance = new BigNumber(frozen).dividedBy(DECIMALS).toFixed(6, 8).toString();
@@ -2143,17 +2138,16 @@ export class GeneralWalletRPC {
         else stakedBalance = tempBalance;
       }
 
-      if (Number(transferableBalance) % 1 !== 0) {
+      if (Number(totalBalance) % 1 !== 0) {
         let tempBalance = new BigNumber(free).dividedBy(DECIMALS).toFixed(6, 8).toString();
-        if (Number(tempBalance) % 1 === 0) transferableBalance = parseInt(tempBalance);
-        else transferableBalance = tempBalance;
+        if (Number(tempBalance) % 1 === 0) totalBalance = parseInt(tempBalance);
+        else totalBalance = tempBalance;
       }
 
-      // let totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toString();
-      let totalBalance = new BigNumber(stakedBalance).plus(transferableBalance).toString();
-      if (Number(totalBalance) % 1 !== 0)
-        totalBalance = new BigNumber(stakedBalance)
-          .plus(transferableBalance)
+      let transferableBalance = new BigNumber(totalBalance).minus(stakedBalance).toString();
+      if (Number(transferableBalance) % 1 !== 0)
+        transferableBalance = new BigNumber(totalBalance)
+          .minus(stakedBalance)
           .toFixed(6, 8)
           .toString();
 

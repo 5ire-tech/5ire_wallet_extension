@@ -97,7 +97,7 @@ function NativeSigner() {
                     Txn Detail
                   </button>
                 </div>
-                <div className={pageStyle.rejectedSec__listReject}>
+                <div className={`${pageStyle.rejectedSec__listReject} detailTsxPage`}>
                   <div
                     className={`${pageStyle.rejectedSec__listReject__innerList} ${pageStyle.rejectedSec__listReject__txnDetail}`}>
                     <h4>From: </h4>
