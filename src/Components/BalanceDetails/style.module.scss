@@ -52,6 +52,11 @@
           display: flex;
           color: $blue-0c98fc;
           gap: 6px;
+          align-items: center;
+          img{
+            width: 30px;
+            height: 30px;
+          }
         }
       }
     }

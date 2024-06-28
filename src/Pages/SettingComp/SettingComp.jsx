@@ -6,6 +6,8 @@ import Wallet from "../../Assets/WalletIcon.svg";
 import PrivacyPo from "../../Assets/PrivacyPo.svg";
 import BackArrow from "../../Assets/arrowright.svg";
 import SocialAccount from "../../Components/SocialAccount/SocialAccount";
+import { openBrowserTab } from "../../Helper/helper";
+import { SOCIAL_LINKS } from "../../Constants";
 
 function SettingComp() {
   return (
@@ -31,8 +33,7 @@ function SettingComp() {
           <div
             className={style.sttings}
             style={{ marginTop: "14px" }}
-            // onClick={() => openBrowserTab(SOCIAL_LINKS.POLICY)}
-          >
+            onClick={() => openBrowserTab(SOCIAL_LINKS.POLICY)}>
             <div className={style.sttings__left}>
               <div className={style.walletIconBorder}>
                 <img draggable={false} src={PrivacyPo} width={30} height={30} alt="walletIcon" />
