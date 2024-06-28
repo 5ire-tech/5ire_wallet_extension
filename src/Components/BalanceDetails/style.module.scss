@@ -56,6 +56,7 @@
           img{
             width: 30px;
             height: 30px;
+            margin-left: 5px;
           }
         }
       }
@@ -513,4 +514,15 @@
   border-radius: 15px;
   padding: 16px 15px;
   background: var(--UI-Module, rgba(20, 55, 139, 0.15));
+}
+
+.topBalance{
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.qaImgSec{
+  display: flex;
+  width: 15px;
+  justify-content: flex-end;
 }

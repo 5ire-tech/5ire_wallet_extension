@@ -30,10 +30,7 @@ function SettingComp() {
           </div>
         </Link>
         <Link draggable={false}>
-          <div
-            className={style.sttings}
-            style={{ marginTop: "14px" }}
-            onClick={() => openBrowserTab(SOCIAL_LINKS.POLICY)}>
+          <div className={style.sttings} onClick={() => openBrowserTab(SOCIAL_LINKS.POLICY)}>
             <div className={style.sttings__left}>
               <div className={style.walletIconBorder}>
                 <img draggable={false} src={PrivacyPo} width={30} height={30} alt="walletIcon" />

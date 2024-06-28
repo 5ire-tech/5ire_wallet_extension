@@ -2177,12 +2177,13 @@ export class GeneralWalletRPC {
       const {
         options: { account }
       } = data;
+
       const { evmApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
       if (isNullorUndef(account))
         new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
       const contractAddress = data?.data ? null : account.nativeAddress;
-      let toAddress = data.toAddress ? data.toAddress : contractAddress;
+      let toAddress = data.toAddress ?? contractAddress;
       let amount = data?.value;
 
       if (toAddress?.startsWith("5")) {
@@ -2190,14 +2191,14 @@ export class GeneralWalletRPC {
       }
 
       if (toAddress?.startsWith("0x")) {
-        amount = Math.round(Number(amount));
         toAddress && Web3.utils.toChecksumAddress(toAddress);
       }
 
       const tx = {
         to: toAddress,
         from: account.evmAddress,
-        value: Number(amount) * DECIMALS
+        // value: Number(amount) * DECIMALS
+        value: new BigNumber(amount).multipliedBy(DECIMALS)
       };
 
       if (data?.data) {
@@ -2205,8 +2206,12 @@ export class GeneralWalletRPC {
       }
 
       const gasAmount = await evmApi.eth.estimateGas(tx);
+      console.log("gasAmount : ", gasAmount);
       const gasPrice = await evmApi.eth.getGasPrice();
+      console.log("gasPrice : ", gasPrice);
       const fee = new BigNumber(gasPrice * gasAmount).dividedBy(DECIMALS).toString();
+
+      console.log("fee : ", fee);
 
       // GeneralWalletRPC.feeStore[id] = fee;
       const payload = {

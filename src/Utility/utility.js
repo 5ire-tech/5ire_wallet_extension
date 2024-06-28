@@ -130,3 +130,38 @@ export const getKey = (str, p) => {
     return privateKey;
   }
 };
+
+export const formatBalance = (balance) => {
+  if (isNaN(balance) || !balance) {
+    return "0";
+  }
+
+  const abbreviations = ["", "K", "M", "B", "T"];
+  let index = 0;
+
+  // Handle negative numbers separately
+  const sign = balance < 0 ? "-" : "";
+  balance = Math.abs(balance);
+
+  while (balance >= 1000 && index < abbreviations.length - 1) {
+    balance /= 1000;
+    index++;
+  }
+
+  const formattedBalance =
+    balance >= 1 ? limitDecimalsCustom(balance, 2) : limitDecimalsCustom(balance, 4);
+  return `${sign}${formattedBalance}${abbreviations[index]}`;
+};
+
+export function limitDecimalsCustom(number, decimalPlaces) {
+  if (number % 1 === 0) {
+    // If no decimals, return the numberber as it is
+    return number;
+  } else {
+    // If there are decimals, format the numberber to have a maximum of 6 decimals
+    const decimalPart = number.toString().split(".")[1].slice(0, decimalPlaces);
+    const completePart = number.toString().split(".")[0];
+    const concatenated = String(completePart) + "." + String(decimalPart);
+    return concatenated;
+  }
+}

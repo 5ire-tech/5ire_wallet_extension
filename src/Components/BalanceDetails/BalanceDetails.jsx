@@ -7,37 +7,37 @@ import Info from "../../Assets/infoIcon.svg";
 import ThreeDot from "../../Assets/dot3.svg";
 import WalletQr from "../../Assets/QRicon.svg";
 import { useLocation } from "react-router-dom";
+import { Dropdown, Space, Tooltip } from "antd";
 import CopyIcon from "../../Assets/CopyIcon.svg";
-import SmallLogo from "../../Assets/smallLogo.svg";
-import welcomeLogo from "../../Assets/welcomeLogo.svg";
 import DarkLogo from "../../Assets/DarkLogo.svg";
+import SmallLogo from "../../Assets/smallLogo.svg";
+import { sendEventToTab } from "../../Helper/helper";
+import welcomeLogo from "../../Assets/welcomeLogo.svg";
 import GrayCircle from "../../Assets/graycircle.svg";
 import ModalCustom from "../ModalCustom/ModalCustom";
 import GreenCircle from "../../Assets/greencircle.svg";
-import { Dropdown, Select, Space, Tooltip } from "antd";
-import { sendEventToTab, formatNumUptoSpecificDecimal } from "../../Helper/helper";
 import React, { useEffect, useState, useContext } from "react";
+import { WhiteLogo } from "../../Assets/StoreAsset/StoreAsset";
+import { TabMessagePayload } from "../../Utility/network_calls";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
-import { isEqual, isNullorUndef } from "../../Utility/utility";
-import { TabMessagePayload } from "../../Utility/network_calls";
+import { isEqual, isNullorUndef, formatBalance } from "../../Utility/utility";
 
 import {
   EVM,
   COPIED,
   LABELS,
   NATIVE,
-  NETWORK,
+  // NETWORK,
   EMTY_STR,
   CURRENCY,
   TABS_EVENT,
   WALLET_TYPES,
-  HTTP_END_POINTS,
+  // HTTP_END_POINTS,
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
   STATE_CHANGE_ACTIONS
 } from "../../Constants/index";
-import { DownArrow, WhiteLogo } from "../../Assets/StoreAsset/StoreAsset";
 
 function BalanceDetails({ mt0 }) {
   const getLocation = useLocation();
@@ -47,8 +47,14 @@ function BalanceDetails({ mt0 }) {
   const [isConnected, setIsConnected] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHeaderActive, setHeaderActive] = useState(false);
-  const { state, updateState, externalControlsState, allAccounts, updateLoading, windowAndTab } =
-    useContext(AuthContext);
+  const {
+    state,
+    updateState,
+    externalControlsState,
+    allAccounts,
+    //  updateLoading,
+    windowAndTab
+  } = useContext(AuthContext);
 
   const { connectedApps } = externalControlsState;
   const { pathname } = getLocation;
@@ -72,35 +78,35 @@ function BalanceDetails({ mt0 }) {
   }, [currentNetwork, currentAccount?.evmAddress]);
 
   //network change handler
-  const handleNetworkChange = async (network) => {
-    updateLoading(true);
+  // const handleNetworkChange = async (network) => {
+  //   updateLoading(true);
 
-    updateState(LABELS.CURRENT_NETWORK, network);
+  //   updateState(LABELS.CURRENT_NETWORK, network);
 
-    updateState(
-      LABELS.BALANCE,
-      allAccountsBalance[currentAccount?.evmAddress][network?.toLowerCase()]
-    );
+  //   updateState(
+  //     LABELS.BALANCE,
+  //     allAccountsBalance[currentAccount?.evmAddress][network?.toLowerCase()]
+  //   );
 
-    //change the network
-    sendRuntimeMessage(
-      MESSAGE_TYPE_LABELS.NETWORK_HANDLER,
-      MESSAGE_EVENT_LABELS.NETWORK_CHANGE,
-      {}
-    );
+  //   //change the network
+  //   sendRuntimeMessage(
+  //     MESSAGE_TYPE_LABELS.NETWORK_HANDLER,
+  //     MESSAGE_EVENT_LABELS.NETWORK_CHANGE,
+  //     {}
+  //   );
 
-    //send the network change event to current opned tab if its connected
-    sendEventToTab(
-      windowAndTab,
-      new TabMessagePayload(
-        TABS_EVENT.NETWORK_CHANGE_EVENT,
-        { result: { network, url: HTTP_END_POINTS[network.toUpperCase()] } },
-        null,
-        TABS_EVENT.NETWORK_CHANGE_EVENT
-      ),
-      connectedApps
-    );
-  };
+  //   //send the network change event to current opned tab if its connected
+  //   sendEventToTab(
+  //     windowAndTab,
+  //     new TabMessagePayload(
+  //       TABS_EVENT.NETWORK_CHANGE_EVENT,
+  //       { result: { network, url: HTTP_END_POINTS[network.toUpperCase()] } },
+  //       null,
+  //       TABS_EVENT.NETWORK_CHANGE_EVENT
+  //     ),
+  //     connectedApps
+  //   );
+  // };
 
   //account change handler
   const onSelectAcc = (name) => {
@@ -328,7 +334,7 @@ function BalanceDetails({ mt0 }) {
                               {e?.accountName === currentAccount?.accountName ? (
                                 <p>
                                   <span className={style.activeDis_Modal__leftSec__spanContact}>
-                                    {`${formatNumUptoSpecificDecimal(
+                                    {/* {`${formatNumUptoSpecificDecimal(
                                       allAccountsBalance[currentAccount?.evmAddress][
                                         currentNetwork?.toLowerCase()
                                       ]?.totalBalance
@@ -337,6 +343,11 @@ function BalanceDetails({ mt0 }) {
                                           ]?.totalBalance
                                         : 0,
                                       2
+                                    )} `} */}
+                                    {`${formatBalance(
+                                      allAccountsBalance[currentAccount?.evmAddress][
+                                        currentNetwork?.toLowerCase()
+                                      ]?.totalBalance ?? 0
                                     )} `}
                                   </span>
                                   &nbsp;{CURRENCY}
@@ -382,7 +393,7 @@ function BalanceDetails({ mt0 }) {
                 </div>
               </ModalCustom>
               <div className={style.balanceDetails__selectStyle}>
-                <Select
+                {/* <Select
                   disabled={isEqual(pathname, ROUTES.APPROVE_TXN)}
                   onChange={handleNetworkChange}
                   suffixIcon={<DownArrow />}
@@ -413,7 +424,7 @@ function BalanceDetails({ mt0 }) {
                       label: <span className="flexedItemSelect">{NETWORK.QA_NETWORK}</span>
                     }
                   ]}
-                />
+                /> */}
               </div>
             </>
           </div>
@@ -426,30 +437,35 @@ function BalanceDetails({ mt0 }) {
                     .totalBalance ? (
                     <>
                       {" "}
-                      <Tooltip
-                        placement="bottom"
-                        title={
-                          allAccountsBalance[currentAccount?.evmAddress][
-                            currentNetwork.toLowerCase()
-                          ].totalBalance
-                        }>
-                        <span className="totalBal">
-                          {allAccountsBalance[currentAccount?.evmAddress][
-                            currentNetwork.toLowerCase()
-                          ].totalBalance || 0}
+                      <div className={style.topBalance}>
+                        <Tooltip
+                          placement="bottom"
+                          title={
+                            allAccountsBalance[currentAccount?.evmAddress][
+                              currentNetwork.toLowerCase()
+                            ].totalBalance
+                          }>
+                          <span className="totalBal">
+                            {formatBalance(
+                              allAccountsBalance[currentAccount?.evmAddress][
+                                currentNetwork.toLowerCase()
+                              ].totalBalance || 0
+                            )}
+                          </span>
+                        </Tooltip>
+                        <span>
+                          <img src={SmallLogo} />
+                          {/* {CURRENCY} */}
                         </span>
-                      </Tooltip>
-                      <span>
-                        <img src={SmallLogo} />
-                        {CURRENCY}
-                      </span>
-                      <div className={style.balanceDetails__innerBalance__walletQa}>
+                      </div>
+                      <div
+                        className={`${style.balanceDetails__innerBalance__walletQa} ${style.qaImgSec}`}>
                         <img
                           onClick={showModal}
                           alt="walletQR"
                           src={WalletQr}
-                          width={20}
-                          height={20}
+                          width={15}
+                          height={15}
                           draggable={false}
                         />
                       </div>
@@ -471,9 +487,14 @@ function BalanceDetails({ mt0 }) {
                       <div style={{ display: "flex", alignItems: "center" }}>
                         <h3>
                           {/* <img src={WalletCardLogo} draggable={false} alt="walletLogo" /> */}
-                          {allAccountsBalance[currentAccount?.evmAddress][
+                          {formatBalance(
+                            allAccountsBalance[currentAccount?.evmAddress][
+                              currentNetwork.toLowerCase()
+                            ]?.transferableBalance ?? 0
+                          )}
+                          {/* {allAccountsBalance[currentAccount?.evmAddress][
                             currentNetwork.toLowerCase()
-                          ]?.transferableBalance || 0}
+                          ]?.transferableBalance || 0} */}
                         </h3>
                         <span>
                           <img src={SmallLogo} />
@@ -502,9 +523,14 @@ function BalanceDetails({ mt0 }) {
                       }>
                       <div style={{ display: "flex", alignItems: "center" }}>
                         <h3>
-                          {allAccountsBalance[currentAccount?.evmAddress][
+                          {formatBalance(
+                            allAccountsBalance[currentAccount?.evmAddress][
+                              currentNetwork.toLowerCase()
+                            ]?.stakedBalance ?? 0
+                          )}
+                          {/* {allAccountsBalance[currentAccount?.evmAddress][
                             currentNetwork.toLowerCase()
-                          ]?.stakedBalance || 0}
+                          ]?.stakedBalance || 0} */}
                         </h3>
                         <span>
                           <img src={SmallLogo} />

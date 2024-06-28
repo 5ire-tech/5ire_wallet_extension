@@ -1,4 +1,3 @@
-import React, { useContext, useState, useCallback } from "react";
 import { toast } from "react-hot-toast";
 import { Dropdown, Space } from "antd";
 import { ROUTES } from "../../Routes";
@@ -6,12 +5,15 @@ import style from "./style.module.scss";
 import { AuthContext } from "../../Store";
 import ThreeDot from "../../Assets/dot3.svg";
 import { useNavigate } from "react-router-dom";
+import { sendEventToTab } from "../../Helper/helper";
+import { formatBalance } from "../../Utility/utility";
 import GreenCircle from "../../Assets/greencircle.svg";
 import { TabMessagePayload } from "../../Utility/network_calls";
+import React, { useContext, useState, useCallback } from "react";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import AccountSetting from "../../Components/AccountSetting/AccountSetting";
-import { sendEventToTab, formatNumUptoSpecificDecimal } from "../../Helper/helper";
+import { Createaccount, Import, Logout, WhiteLogo } from "../../Assets/StoreAsset/StoreAsset";
 
 import {
   LABELS,
@@ -22,7 +24,6 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
-import { Createaccount, Import, Logout, WhiteLogo } from "../../Assets/StoreAsset/StoreAsset";
 
 function MyAccount() {
   const navigate = useNavigate();
@@ -150,7 +151,7 @@ function MyAccount() {
                   <h2>{e?.accountName}</h2>
                 </div>
                 <p>
-                  {e?.accountName === currentAccount?.accountName ? (
+                  {/*(
                     allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
                       ?.totalBalance ? (
                       `${formatNumUptoSpecificDecimal(
@@ -161,6 +162,12 @@ function MyAccount() {
                     ) : (
                       `0 ${CURRENCY}`
                     )
+                  )  */}
+                  {e?.accountName === currentAccount?.accountName ? (
+                    `${formatBalance(
+                      allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
+                        ?.totalBalance ?? 0
+                    )} ${CURRENCY}`
                   ) : (
                     <span
                       onClick={() => onSelectAcc(e?.accountName)}

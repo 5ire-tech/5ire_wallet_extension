@@ -42,7 +42,7 @@ function ManageWallet() {
         <div className="">
           <img src={WelcomeLogo} alt="logo" style={{ marginTop: "20px" }} />
         </div>
-        <MenuRestofHeaders backTo={ROUTES.WALLET} title={"Manage Wallet"} />
+        <MenuRestofHeaders backTo={ROUTES.SETTING_COMP} title={"Manage Wallet"} />
         <div className={`flexedContent`}>
           <div className={style.wallet}>
             <div className={style.wallet__addressInput}>
