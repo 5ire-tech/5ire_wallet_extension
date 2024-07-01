@@ -52,6 +52,7 @@
       position: relative;
       z-index: 1;
       transition: width 0.3s, left 0.3s, right 0.3s;
+      border: 1px solid #00A7DC;
       &__active {
         color: $blue-0c98fc;
         svg {

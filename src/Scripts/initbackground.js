@@ -2206,12 +2206,8 @@ export class GeneralWalletRPC {
       }
 
       const gasAmount = await evmApi.eth.estimateGas(tx);
-      console.log("gasAmount : ", gasAmount);
       const gasPrice = await evmApi.eth.getGasPrice();
-      console.log("gasPrice : ", gasPrice);
       const fee = new BigNumber(gasPrice * gasAmount).dividedBy(DECIMALS).toString();
-
-      console.log("fee : ", fee);
 
       // GeneralWalletRPC.feeStore[id] = fee;
       const payload = {

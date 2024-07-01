@@ -155,11 +155,13 @@ body {
     background-color: transparent !important;
     border-radius: 15px;
     padding: 11px 16px;
-    border: 1px solid var(--UI-Secondary-Blue-Tone, #00a7dc26) !important;
+    border: 1px solid #dddddd82!important;
     color: $white;
     font-size: 14px;
     resize: none;
-
+    &:hover{
+      border: 1px solid #00A7DC !important;
+      }  
     &::placeholder {
       color: $gray8D96AA !important;
     }
@@ -697,4 +699,8 @@ body {
 .fixedCongrModel {
   max-width: 360px;
   width: 100%;
+}
+.detailTsxPage{
+  height: 330px;
+    overflow: auto;
 }

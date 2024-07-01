@@ -66,9 +66,12 @@ input::placeholder {
     background-color: $blue-08132C;
     padding: 11px 16px;
     border-radius: 15px;
-    border: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15));
+    border: 1px solid #dddddd82;
     color: $white !important;
     font-size: 14px;
+    &:hover{
+    border: 1px solid #00A7DC;
+    }
 
     .ant-input-wrapper {
       padding: 0;

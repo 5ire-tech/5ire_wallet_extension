@@ -28,6 +28,7 @@ function TransectionHistry({ selectedTransaction, account }) {
           selectedTransaction.chain,
           selectedTransaction.txHash,
           selectedTransaction.isEvm
+          // selectedTransaction?.to ? false : true
         )
       );
   };
