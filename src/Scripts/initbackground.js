@@ -1700,6 +1700,7 @@ export class TransactionsRPC {
           new Error(new ErrorPayload(ERRCODES.NETWORK_REQUEST, ERROR_MESSAGES.TX_FAILED)).throw();
       }
     } catch (err) {
+      console.log("Error  while transfer: ", err);
       payload = {
         data: null,
         options: {

@@ -605,7 +605,8 @@ export class HybridKeyring extends EventEmitter {
   async signEthTx(address, tx) {
     const acc = HybridKeyring.accounts.find((acc) => acc.evmAddress === address);
 
-    const common = Common.custom({ chainId: 997, networkId: 1 }, { hardfork: "london" });
+    // const common = Common.custom({ chainId: 997, networkId: 1 }, { hardfork: "london" });
+    const common = Common.custom({ chainId: 995, networkId: 1 }, { hardfork: "london" });
     const txn = TransactionFactory.fromTxData(tx, { common });
 
     let signedTx = null;

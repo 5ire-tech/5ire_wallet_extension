@@ -166,7 +166,7 @@ function MyAccount() {
                   {e?.accountName === currentAccount?.accountName ? (
                     `${formatBalance(
                       allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
-                        ?.totalBalance ?? 0
+                        ?.transferableBalance ?? 0
                     )} ${CURRENCY}`
                   ) : (
                     <span

@@ -12,7 +12,12 @@ import green_contract from "../../Assets/green_contract.svg";
 
 import { isEqual } from "../../Utility/utility";
 import { formatDate, fixNumber, numFormatter } from "../../Helper/helper";
-import { EVM, NATIVE, STATUS, TX_TYPE } from "../../Constants";
+import {
+  // EVM,
+  //  NATIVE,
+  STATUS,
+  TX_TYPE
+} from "../../Constants";
 
 function getTxIcon(type, status) {
   switch (type) {
@@ -62,11 +67,11 @@ export default function HistoryItem({ historyItem, handleHistoryOpen }) {
                 : historyItem.type}
             </h3>
             <p>
-              {historyItem?.to && historyItem?.to?.length > 40
+              {/* {historyItem?.to && historyItem?.to?.length > 40
                 ? historyItem?.to?.startsWith(5)
                   ? NATIVE
                   : EVM
-                : historyItem.to}
+                : historyItem.to} */}
             </p>
           </div>
         </div>

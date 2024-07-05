@@ -84,6 +84,7 @@ export const generateTransactionUrl = (network, txHash, isEvm) => {
       new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
     const explorerUrl = EXPLORERS[network.toUpperCase()];
     return `${explorerUrl}/${isEvm ? "tx" : "extrinsic"}/${txHash}`;
+    // return `${explorerUrl}/${isEvm ? "evm/tx" : "native/tx"}/${txHash}`;
   } catch (err) {
     log("error while generating the url: ", err);
   }

@@ -61,7 +61,8 @@ export const TX_TYPE = {
 export const NETWORK = {
   UAT: "UAT",
   QA_NETWORK: "QA",
-  TEST_NETWORK: "Testnet"
+  TEST_NETWORK: "Testnet",
+  MAINNET: "Mainnet"
 };
 
 export const STATUS = {
@@ -230,8 +231,8 @@ export const LABELS = {
 };
 
 export const HTTP_END_POINTS = {
-  // QA: "https://rpc-ga-testnet.5ire.network",
-  QA: "https://qa-http-nodes.5ire.network"
+  // QA: "https://qa-http-nodes.5ire.network"
+  MAINNET: "https://rpc.5ire.network"
   // UAT: "https://uat-http-nodes.5ire.network",
   //TESTNET: "https://rpc-testnet.5ire.network"
   // TESTNET: "https://rpc.ga.5ire.network"
@@ -251,8 +252,11 @@ export const API = {
 };
 
 export const EXPLORERS = {
+  //old
   // QA: "https://qa-web-exp.5ire.network"
-  QA: "https://scan.qa.5ire.network"
+  // MAINNET: "https://preview.5ire.network"
+  MAINNET: "https://5irescan.io"
+  // QA: "https://scan.qa.5ire.network"
   // UAT: "https://uat-web-exp.5ire.network",
   // TESTNET: "https://explorer.5ire.network",
   // TESTNET: "https://explorer.ga.5ire.network"
@@ -260,7 +264,8 @@ export const EXPLORERS = {
 
 export const WS_END_POINTS = {
   // QA: "wss://wss-ga-testnet.5ire.network",
-  QA: "wss://qa-wss-nodes.5ire.network"
+  MAINNET: "wss://rpc.5ire.network"
+  // QA: "wss://qa-wss-nodes.5ire.network"
   // UAT: "wss://uat-wss-nodes.5ire.network",
   // TESTNET: "wss://wss-testnet.5ire.network"
   // TESTNET: "wss://wss.ga.5ire.network"
