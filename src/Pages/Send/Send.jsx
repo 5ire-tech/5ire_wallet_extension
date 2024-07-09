@@ -47,7 +47,7 @@ function Send() {
     setData({ to: "", amount: "" });
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.GET_ED, {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentAccount?.evmAddress, currentAccount?.nativeAddress, currentNetwork]);
+  }, [currentAccount?.evmAddress, currentNetwork]);
 
   useEffect(() => {
     if (!data.to && !data.amount && !estimatedGas) {
@@ -235,7 +235,7 @@ function Send() {
     //     }
     //   }
     // }
-  }, [currentAccount?.evmAddress, currentAccount?.nativeAddress, data.to]);
+  }, [currentAccount?.evmAddress, data.to]);
 
   //for getting the fee details
   const getFee = async (loader = true) => {
