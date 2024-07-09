@@ -18,7 +18,6 @@ body {
   min-height: 100vh;
   width: 400px;
   margin: 0 auto;
-  background: #07122b;
 
   &__container {
     // padding: 30px 15px 40px;
@@ -30,7 +29,6 @@ body {
     flex-direction: column;
 
     .welcomeFooter {
-      background-color: $blue-08132C;
       padding: 0;
       max-width: 400px;
     }
@@ -39,7 +37,6 @@ body {
   &__content {
     // overflow-y: scroll;
     flex: 1 1;
-    background-color: #08132c;
     // overflow: auto;
   }
 
@@ -61,7 +58,7 @@ body {
   .stickyHeader {
     position: sticky;
     top: 0;
-    background: #08132c;
+    // background: #08132c;
     z-index: 9;
   }
 
@@ -69,7 +66,7 @@ body {
     padding: 24px 28px 0;
     overflow-y: auto;
     height: 100%;
-    background-color: #08132c;
+    // background-color: #08132c;
   }
 }
 
@@ -141,13 +138,12 @@ body {
   }
 
   .maxBtn {
-    background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
-    border: 1px solid #13d3e1;
-    border-radius: 7px;
+    border-radius: 6px;
+    background: var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15));
+    border: 0;
     cursor: pointer;
-    color: #fff;
+    color: $blue-0c98fc;
     padding: 4px;
-    margin-right: 5px;
   }
 }
 
@@ -157,17 +153,18 @@ body {
   input,
   textarea {
     background-color: transparent !important;
-    border-radius: 12px;
+    border-radius: 15px;
     padding: 11px 16px;
-    border: 1px solid #404058 !important;
+    border: 1px solid #dddddd82!important;
     color: $white;
     font-size: 14px;
     resize: none;
-
+    &:hover{
+      border: 1px solid #00A7DC !important;
+      }  
     &::placeholder {
-      color: $white !important;
+      color: $gray8D96AA !important;
     }
-
   }
 
   .eyeIcon {
@@ -215,17 +212,19 @@ body {
 }
 
 .modalCustom {
-  background: #08132c;
   width: 327px !important;
-  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 8px;
   height: auto !important;
-  box-shadow: 0px 0px 18px rgba(6, 122, 252, 0.7);
-  backdrop-filter: blur(3.5px);
-
+  border-radius: 30px;
+  border: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15));
+  background: var(--UI-Module, rgba(20, 55, 139, 0.15));
+  backdrop-filter: blur(20px);
   .ant-modal-content {
-    background-color: #08132c !important;
     padding: 8px 24px !important;
+    border-radius: 30px;
+    border: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15));
+    background: var(--UI-Module, rgba(20, 55, 139, 0.15));
+    backdrop-filter: blur(20px);
   }
 }
 
@@ -345,10 +344,12 @@ body {
 
 //select Css//
 .ant-select {
+  height: 50px !important;
   .ant-select-selector {
-    background-color: transparent !important;
-    border-radius: 20px !important;
-    height: 34px !important;
+    background: var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15)) !important;
+    border: 0 !important;
+    border-radius: 15px !important;
+    height: 50px !important;
     padding: 0 5px 0 12px !important;
     color: $white;
     border-color: $white !important;
@@ -366,13 +367,24 @@ body {
     color: #fff !important;
   }
 }
-
+.ant-select-selection-item {
+  color: #fff;
+}
 .ant-select-dropdown {
   background-color: $blue-08132C !important;
-  border: 1px solid $white;
+  border: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15)) !important;
+  .ant-select-item-option-selected {
+    .ant-select-item-option-content {
+      color: #000;
+    }
+  }
+  .ant-select-item-option-content {
+    color: #fff;
+  }
 }
 
-:where(.css-dev-only-do-not-override-acm2ia).ant-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+:where(.css-dev-only-do-not-override-acm2ia).ant-select-dropdown
+  .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
   background-color: #616161;
 }
 
@@ -381,10 +393,13 @@ body {
 //     height: 40px;
 //   }
 // }
-:where(.css-acm2ia).ant-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
-  color: rgba(0, 0, 0, 0.88);
+:where(.css-acm2ia).ant-select-dropdown
+  .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
   font-weight: 600;
   background-color: #616161 !important;
+  .ant-select-item-option-content {
+    color: rgba(0, 0, 0, 0.88);
+  }
 }
 
 :where(.css-acm2ia).ant-input {
@@ -413,9 +428,9 @@ body {
   align-items: center;
   gap: 5px;
   margin-top: 1px;
-  font-size: 12px;
-  font-weight: bold;
-  color: $white;
+  font-size: 17px;
+  font-weight: 600;
+  color: $blue-0c98fc;
 }
 
 :where(.css-dev-only-do-not-override-acm2ia).ant-select-dropdown .ant-select-item {
@@ -430,6 +445,12 @@ body {
   gap: 20px;
 }
 
+.assetSelectStyle {
+  .ant-select-selector {
+    border: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15)) !important;
+    background-color: transparent !important;
+  }
+}
 //checkbox css//
 
 .checkboxOuter {
@@ -478,12 +499,12 @@ body {
 }
 
 .ant-drawer-content {
-  background-color: #08132c !important;
-  box-shadow: 0px -5px 12px rgba(6, 122, 252, 0.7);
+  background-color: var(--UI-Backing, #020713) !important;
+  box-shadow: 0px -5px 12px rgb(6, 41, 78);
   backdrop-filter: blur(3.5px);
   border-radius: 12px 12px 0px 0px;
   max-width: 400px;
-  margin: 0 auto
+  margin: 0 auto;
 }
 
 .ant-drawer-title {
@@ -492,11 +513,7 @@ body {
     font-weight: 600;
     font-size: 20px;
     line-height: 40px;
-    background: -webkit-linear-gradient(#0071ff, #54f0d1);
-    text-align: center;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: $white;
   }
 }
 
@@ -517,7 +534,8 @@ body {
 }
 
 //Select css//
-.ant-select-item.ant-select-item-option.ant-select-item-option-active.ant-select-item-option-selected span.flexedItemSelect {
+.ant-select-item.ant-select-item-option.ant-select-item-option-active.ant-select-item-option-selected
+  span.flexedItemSelect {
   color: #000 !important;
 }
 
@@ -633,10 +651,13 @@ body {
 
 .totalBal {
   display: inline-block !important;
-  max-width: 190px;
+  // max-width: 190px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: $white !important;
+  font-size: 32px !important;
+  font-weight: 600;
 }
 
 .ant-tooltip .ant-tooltip-arrow::after {
@@ -662,4 +683,24 @@ body {
 .viewDisable {
   cursor: not-allowed !important;
   opacity: 0.4;
+}
+
+.passwordTextInstruction {
+  margin-top: 15px;
+  border: 1px solid var(--UI-Secondary-Blue-Tone, #00a7dc26) !important;
+  padding: 15px;
+  border-radius: 15px;
+}
+
+.innerScrool {
+  height: 260px;
+  overflow: auto;
+}
+.fixedCongrModel {
+  max-width: 360px;
+  width: 100%;
+}
+.detailTsxPage{
+  height: 330px;
+    overflow: auto;
 }

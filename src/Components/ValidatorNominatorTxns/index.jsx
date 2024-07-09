@@ -53,7 +53,7 @@ function ValidatorNominatorTxns() {
   //calculate the transaction fee
   useEffect(() => {
     //if balance is 0 then don't call the fee calculator
-    if (Number(balance?.nativeBalance) === 0) {
+    if (Number(balance?.transferableBalance) === 0) {
       toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       setDisableApproval(true);
       return;
@@ -80,13 +80,13 @@ function ValidatorNominatorTxns() {
   function isInsufficientBalance() {
     let totalAmount =
       +valdatorNominatorFee?.fee +
-      pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].native;
+      pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm;
 
     if (VALIDATION_METHODS_VD_NM.includes(activeSession?.method)) {
       totalAmount += +activeSession.message?.amount;
     }
 
-    return +balance?.nativeBalance < totalAmount;
+    return +balance?.transferableBalance < totalAmount;
   }
   //process the transaction
   function handleClick(isApproved) {

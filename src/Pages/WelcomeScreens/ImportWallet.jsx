@@ -10,7 +10,7 @@ import { isEmpty, validateMnemonic } from "../../Utility/utility";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
-import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+import WelcomeLogo from "../../Assets/welcomeLogo.svg";
 import {
   REGEX,
   LABELS,
@@ -148,7 +148,9 @@ function ImportWallet() {
   return (
     <div className={style.cardWhite} onKeyDown={handleClick}>
       {!isLogin && <StepHeaders active={2} isCreate={false} />}
-      <MenuRestofHeaders logosilver={true} title="5ire Wallet" />
+      {/* <MenuRestofHeaders logosilver={true} title="5ire Wallet" /> */}
+      {isLogin && <img src={WelcomeLogo} alt="logo" style={{ marginTop: "20px" }} />}
+
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__innercontact}>
           <h1>Import Wallet </h1>
@@ -197,7 +199,7 @@ function ImportWallet() {
             <p className="errorText">{warrning.key}</p>
           </div>
         </div>
-        <div className={style.setPassword__footerbuttons}>
+        <div className={style.setPassword__footerbuttons} style={{ marginTop: "90px" }}>
           <ButtonComp onClick={handleClick} text={"Import"} isDisable={isDisable} />
           <ButtonComp bordered={true} text={"Cancel"} onClick={handleCancel} />
         </div>

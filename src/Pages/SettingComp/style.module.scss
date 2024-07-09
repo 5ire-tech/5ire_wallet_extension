@@ -1,0 +1,39 @@
+@import "../../styles/__vars.scss";
+
+.settingComp {
+  padding: 16px 22px;
+  &__settingSec {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+.sttings {
+  display: flex;
+  justify-content: space-between;
+  border-radius: 15px;
+  border: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15));
+  backdrop-filter: blur(32px);
+  padding: 11px 16px;
+  align-items: center;
+  cursor: pointer;
+
+  &__left {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+
+    &__textsTop {
+      font-size: 17px;
+      font-weight: 600;
+      margin: 0;
+      color: #fff;
+    }
+  }
+
+  &__right {
+    img {
+      margin-right: 25px;
+    }
+  }
+}

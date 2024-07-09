@@ -2,7 +2,6 @@ import Web3 from "web3";
 import { BigNumber } from "bignumber.js";
 import Browser from "webextension-polyfill";
 import { EventEmitter } from "./eventemitter";
-import { TypeRegistry } from "@polkadot/types";
 import { HybridKeyring } from "./5ire-keyring";
 import { txNotificationStringTemplate, getFormattedMethod, isManifestV3 } from "./utils";
 import ValidatorNominatorHandler from "./nativehelper";
@@ -302,7 +301,7 @@ export class InitBackground {
       const pendingTxBalance = state.pendingTransactionBalance;
 
       // clear the pending transaction balance
-      const transactionBalance = { evm: 0, native: 0 };
+      const transactionBalance = { evm: 0 };
       for (const account of Object.keys(pendingTxBalance)) {
         for (const network of Object.values(NETWORK)) {
           await services.updateLocalState(
@@ -1645,7 +1644,7 @@ export class TransactionsRPC {
 
       if (
         balanceWithFee >
-        Number(balance.evmBalance) -
+        Number(balance?.transferableBalance) -
           (state.pendingTransactionBalance[account.evmAddress][network].evm - balanceWithFee)
       )
         new Error(
@@ -1701,6 +1700,7 @@ export class TransactionsRPC {
           new Error(new ErrorPayload(ERRCODES.NETWORK_REQUEST, ERROR_MESSAGES.TX_FAILED)).throw();
       }
     } catch (err) {
+      console.log("Error  while transfer: ", err);
       payload = {
         data: null,
         options: {
@@ -2115,46 +2115,48 @@ export class GeneralWalletRPC {
           data: balance
         });
 
-      let nbalance = 0;
-      const { evmApi, nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
+      // let nbalance = 0;
+      const { nativeApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
       const account = state.currentAccount;
 
       if (isNullorUndef(account))
         new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
       // Evm Balance
-      const w3balance = await evmApi?.eth?.getBalance(account.evmAddress);
+      // const w3balance = await evmApi?.eth?.getBalance(account.evmAddress);
 
-      let balances = await nativeApi?.query.system.account(account.nativeAddress);
+      let balances = await nativeApi?.query.system.account(account.evmAddress);
       const balance1 = balances.toHuman();
-      const total = +balance1?.data?.free?.replaceAll(",", "");
+
+      const free = +balance1?.data?.free?.replaceAll(",", "");
       const frozen = +balance1?.data?.frozen?.replaceAll(",", "");
-      nbalance = total - frozen;
+      let stakedBalance = new BigNumber(frozen).dividedBy(DECIMALS).toString();
+      let totalBalance = new BigNumber(free).dividedBy(DECIMALS).toString();
 
-      let evmBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toString();
-      let nativeBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toString();
-
-      if (Number(nativeBalance) % 1 !== 0) {
-        let tempBalance = new BigNumber(nbalance).dividedBy(DECIMALS).toFixed(6, 8).toString();
-        if (Number(tempBalance) % 1 === 0) nativeBalance = parseInt(tempBalance);
-        else nativeBalance = tempBalance;
+      if (Number(stakedBalance) % 1 !== 0) {
+        let tempBalance = new BigNumber(frozen).dividedBy(DECIMALS).toFixed(6, 8).toString();
+        if (Number(tempBalance) % 1 === 0) stakedBalance = parseInt(tempBalance);
+        else stakedBalance = tempBalance;
       }
 
-      if (Number(evmBalance) % 1 !== 0) {
-        let tempBalance = new BigNumber(w3balance).dividedBy(DECIMALS).toFixed(6, 8).toString();
-        if (Number(tempBalance) % 1 === 0) evmBalance = parseInt(tempBalance);
-        else evmBalance = tempBalance;
+      if (Number(totalBalance) % 1 !== 0) {
+        let tempBalance = new BigNumber(free).dividedBy(DECIMALS).toFixed(6, 8).toString();
+        if (Number(tempBalance) % 1 === 0) totalBalance = parseInt(tempBalance);
+        else totalBalance = tempBalance;
       }
 
-      let totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toString();
-      if (Number(totalBalance) % 1 !== 0)
-        totalBalance = new BigNumber(evmBalance).plus(nativeBalance).toFixed(6, 8).toString();
+      let transferableBalance = new BigNumber(totalBalance).minus(stakedBalance).toString();
+      if (Number(transferableBalance) % 1 !== 0)
+        transferableBalance = new BigNumber(totalBalance)
+          .minus(stakedBalance)
+          .toFixed(6, 8)
+          .toString();
 
       const payload = {
         data: {
-          evmBalance,
-          nativeBalance,
-          totalBalance
+          totalBalance,
+          stakedBalance,
+          transferableBalance
         }
       };
 
@@ -2176,12 +2178,13 @@ export class GeneralWalletRPC {
       const {
         options: { account }
       } = data;
+
       const { evmApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
       if (isNullorUndef(account))
         new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
       const contractAddress = data?.data ? null : account.nativeAddress;
-      let toAddress = data.toAddress ? data.toAddress : contractAddress;
+      let toAddress = data.toAddress ?? contractAddress;
       let amount = data?.value;
 
       if (toAddress?.startsWith("5")) {
@@ -2189,14 +2192,14 @@ export class GeneralWalletRPC {
       }
 
       if (toAddress?.startsWith("0x")) {
-        amount = Math.round(Number(amount));
         toAddress && Web3.utils.toChecksumAddress(toAddress);
       }
 
       const tx = {
         to: toAddress,
         from: account.evmAddress,
-        value: Number(amount) * DECIMALS
+        // value: Number(amount) * DECIMALS
+        value: new BigNumber(amount).multipliedBy(DECIMALS)
       };
 
       if (data?.data) {
@@ -2605,25 +2608,36 @@ export class NativeSigner {
     try {
       const account = state.currentAccount;
       const pair = this.hybridKeyring.getNativeSignerByAddress(account.nativeAddress);
+      const connectionApi = NetworkHandler.api[state.currentNetwork.toLowerCase()];
 
-      let registry;
+      let registry = connectionApi.nativeApi.registry;
       const isJsonPayload = (value) => {
         return value?.genesisHash !== undefined;
       };
 
       if (isJsonPayload(payload)) {
-        registry = new TypeRegistry();
+        // registry = new TypeRegistry();
         registry.setSignedExtensions(payload.signedExtensions);
         // }
-      } else {
-        // for non-payload, just create a registry to use
-        registry = new TypeRegistry();
       }
+      // else {
+      //   // for non-payload, just create a registry to use
+      //   registry = new TypeRegistry();
+      // }
 
-      const result = registry
-        .createType("ExtrinsicPayload", payload, { version: payload.version })
+      const extrinsicPayload = registry
+        .createType("ExtrinsicPayload", payload, {
+          version: payload.version
+        })
         .sign(pair);
-      return new EventPayload(null, null, { data: result });
+
+      // const payloadU8a = extrinsicPayload.toU8a({ method: true });
+      // const rawSignatureU8a = pair.sign(payloadU8a, { withType: true });
+      // const signatureHex = u8aToHex(rawSignatureU8a);
+
+      return new EventPayload(null, null, {
+        data: extrinsicPayload
+      });
     } catch (err) {
       log("error while signing the payload: ", err);
       return new EventPayload(

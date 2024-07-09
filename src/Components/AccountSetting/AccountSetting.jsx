@@ -7,7 +7,8 @@ function AccountSetting(props) {
   return (
     <div className={style.create}>
       <div className={style.create__account} onClick={onClick}>
-        <img src={img} alt="accSettingImg" draggable={false} />
+        {/* <img src={img} alt="accSettingImg" draggable={false} /> */}
+        <div>{img}</div>
         <p>{title}</p>
       </div>
     </div>

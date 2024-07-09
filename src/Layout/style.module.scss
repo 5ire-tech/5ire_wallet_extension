@@ -1,14 +1,16 @@
 @import '../styles/__vars.scss';
 .fixedLayout {
   min-height: 100vh;
-  background-color: #07122b;
+  background-image: url("../Assets/bgImg.png");
+  background-repeat: no-repeat;
   display: flex;
   justify-content: center;
   width: 400px;
   margin:  0 auto;
+  background-color: #020713;
   &__inner {
     height: 599px;
-    background-color: $blue-08132C;
+    // background-color: $blue-08132C;
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -24,7 +26,7 @@
     &__paddingX {
       padding-left: 0;
       padding-right: 0;
-      background-color: $inputBg;
+      // background-color: $inputBg;
     }
   }
 }

@@ -30,6 +30,7 @@ export default class ValidatorNominatorHandler {
 
     const externalData = activeSession?.message || message.options.externalTransaction.message;
     const method = activeSession?.method || message.options.externalTransaction.method;
+    console.log("method : ", method);
 
     const options = {
       nativeAddress: message?.options?.account.nativeAddress || state.currentAccount.nativeAddress,

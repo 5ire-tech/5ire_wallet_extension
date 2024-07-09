@@ -8,6 +8,7 @@ import { isEmpty } from "../../Utility/utility.js";
 import InputFieldSimple from "../InputField/InputFieldSimple.jsx";
 import { sendRuntimeMessage } from "../../Utility/message_helper.js";
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+import WelcomeLogo from "../../Assets/welcomeLogo.svg";
 import {
   LABELS,
   ERROR_MESSAGES,
@@ -70,6 +71,9 @@ function EnterPassword() {
   return (
     <>
       <div className={`scrollableCont`} onKeyDown={handleClick}>
+        <div className="">
+          <img src={WelcomeLogo} alt="logo" style={{ marginTop: "20px" }} />
+        </div>
         <MenuRestofHeaders backTo={ROUTES.MANAGE_WALLET} title={"Enter Password"} />
         <div className={`flexedContent`}>
           <div className={style.enterPassword}>

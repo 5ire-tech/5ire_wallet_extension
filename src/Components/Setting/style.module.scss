@@ -59,8 +59,8 @@
     }
 
     &__copyText {
-      border: 1px solid #404058;
-      border-radius: 12px;
+      border-radius: 15px;
+      border: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15));
       padding: 16px 8px;
       display: flex;
       justify-content: space-between;

@@ -3,7 +3,7 @@ import style from "./style.module.scss";
 import { toast } from "react-hot-toast";
 import SwapIcon from "../../Assets/SwapIcon.svg";
 import CopyIcon from "../../Assets/CopyIcon.svg";
-import DarkRyt from "../../Assets/darkRyt.svg";
+import DarkRyt from "../../Assets/arrowright.svg";
 import { COPIED, CURRENCY, STATUS, TX_TYPE } from "../../Constants";
 import {
   shortner,
@@ -28,6 +28,7 @@ function TransectionHistry({ selectedTransaction, account }) {
           selectedTransaction.chain,
           selectedTransaction.txHash,
           selectedTransaction.isEvm
+          // selectedTransaction?.to ? false : true
         )
       );
   };

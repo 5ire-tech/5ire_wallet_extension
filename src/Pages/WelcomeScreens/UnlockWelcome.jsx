@@ -10,7 +10,6 @@ import { decryptor } from "../../Helper/CryptoHelper";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import InputFieldSimple from "../../Components/InputField/InputFieldSimple";
-import MenuRestofHeaders from "../../Components/BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
 import {
   LABELS,
   ERROR_MESSAGES,
@@ -82,10 +81,11 @@ function UnlockWelcome() {
 
   return (
     <div className={style.cardWhite} onKeyDown={handleClick}>
-      <MenuRestofHeaders logosilver={false} title="5ire Wallet" />
       <div className={style.cardWhite__cardInner}>
         <div className={style.cardWhite__cardInner__centerLogo}>
-          <div className={style.cardWhite__cardInner__innerLogocontact}>
+          <div
+            className={style.cardWhite__cardInner__innerLogocontact}
+            style={{ paddingTop: "50px" }}>
             <img src={PlaceLogo} alt="placeLogo" draggable={false} />
             <div className={style.cardWhite__cardInner__innercontact}>
               <h1>Welcome Back!</h1>

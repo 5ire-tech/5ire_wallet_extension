@@ -1,3 +1,5 @@
+@import "../../styles/__vars.scss";
+
 .myAccountSec {
   padding: 25px;
 
@@ -7,15 +9,13 @@
   }
 
   &__accountHeading {
-    padding-top: 35px;
-    text-align: left;
+    padding-top: 30px;
 
     h3 {
-      background: -webkit-linear-gradient(#0071ff, #54f0d1);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      font-size: 16px;
+      color: $white;
+      font-size: 15px;
+      text-align: center;
+      font-weight: 600;
     }
   }
 
@@ -24,8 +24,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 13px 0;
-    border-bottom: 1px solid #202a41;
-
+    border-bottom: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15));
     &:last-child {
       border-bottom: 0;
     }
@@ -88,7 +87,6 @@
       color: #fff;
       font-size: 10px;
       font-weight: 600;
-
     }
 
     h2 {

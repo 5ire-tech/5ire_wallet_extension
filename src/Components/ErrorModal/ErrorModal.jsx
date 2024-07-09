@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
 import { AuthContext } from "../../Store";
-import ModalCustom from "../ModalCustom/ModalCustom";
+import { toast } from "react-hot-toast";
 import FaildSwap from "../../Assets/FaildSwap.svg";
 import ButtonComp from "../ButtonComp/ButtonComp";
+import ModalCustom from "../ModalCustom/ModalCustom";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { ERROR_MESSAGES, MESSAGE_EVENT_LABELS, MESSAGE_TYPE_LABELS } from "../../Constants";
-import { toast } from "react-hot-toast";
 
 export default function ErrorModal() {
   const { backgroundError, setBackgroundError } = useContext(AuthContext);

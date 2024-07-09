@@ -3,11 +3,11 @@ import { ROUTES } from "../../Routes";
 import React, { useState } from "react";
 import style from "./style.module.scss";
 import PrivacyPolicy from "./PrivacyPolicy";
-import Setting from "../../Assets/setting.svg";
+// import Setting from "../../Assets/setting.svg";
 import Wallet from "../../Assets/WalletIcon.svg";
-import HistoryIcon from "../../Assets/histry.svg";
+// import HistoryIcon from "../../Assets/histry.svg";
 import PrivacyPo from "../../Assets/PrivacyPo.svg";
-import Myaccount from "../../Assets/myaccount.svg";
+// import Myaccount from "../../Assets/myaccount.svg";
 import { openBrowserTab } from "../../Helper/helper";
 import { Link, useLocation } from "react-router-dom";
 import BackArrow from "../../Assets/PNG/arrowright.png";
@@ -15,6 +15,7 @@ import SocialAccount from "../SocialAccount/SocialAccount";
 import ModalCloseIcon from "../../Assets/ModalCloseIcon.svg";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { SOCIAL_LINKS, MESSAGE_TYPE_LABELS, MESSAGE_EVENT_LABELS } from "../../Constants/index";
+import { Account, History, SettingIcon, WalletIcon } from "../../Assets/StoreAsset/StoreAsset";
 
 function MenuFooter() {
   const getLocation = useLocation();
@@ -37,7 +38,8 @@ function MenuFooter() {
     <div className={`${style.menuItems} welcomeFooter`}>
       {(pathname === ROUTES.WALLET ||
         pathname === ROUTES.HISTORY ||
-        pathname === ROUTES.MY_ACCOUNT) && (
+        pathname === ROUTES.MY_ACCOUNT ||
+        pathname === ROUTES.SETTING_COMP) && (
         <>
           <Link
             draggable={false}
@@ -46,7 +48,7 @@ function MenuFooter() {
               pathname === ROUTES.WALLET ? style.menuItems__items__active : ""
             }`}>
             <div className={style.menuItems__items__img}>
-              <img src={Wallet} alt="HistoryIcon" draggable={false} />
+              <WalletIcon />
             </div>
             <span className={style.menuItems__items__title}>Wallet</span>
           </Link>
@@ -57,7 +59,7 @@ function MenuFooter() {
               pathname === ROUTES.HISTORY ? style.menuItems__items__active : ""
             }`}>
             <div className={style.menuItems__items__img}>
-              <img src={HistoryIcon} alt="HistoryIcon" draggable={false} />
+              <History />
             </div>
             <span className={style.menuItems__items__title}>History</span>
           </Link>
@@ -70,19 +72,20 @@ function MenuFooter() {
               pathname === ROUTES.MY_ACCOUNT ? style.menuItems__items__active : ""
             }`}>
             <div className={style.menuItems__items__img}>
-              <img src={Myaccount} alt="Myaccount" draggable={false} />
+              <Account />
             </div>
             <span className={style.menuItems__items__title}>My Accounts</span>
           </Link>
 
           <Link
             draggable={false}
-            onClick={() => setOpen2(true)}
+            to={ROUTES.SETTING_COMP}
+            // onClick={() => setOpen2(true)}
             className={`${style.menuItems__items} ${
-              pathname === ROUTES.MANAGE_WALLET ? style.menuItems__items__active : ""
+              pathname === ROUTES.SETTING_COMP ? style.menuItems__items__active : ""
             }`}>
             <div className={style.menuItems__items__img}>
-              <img src={Setting} alt="Setting" draggable={false} />
+              <SettingIcon />
             </div>
             <span className={style.menuItems__items__title}>Settings</span>
           </Link>

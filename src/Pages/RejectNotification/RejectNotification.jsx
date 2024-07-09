@@ -5,8 +5,8 @@ import { AuthContext } from "../../Store";
 import { useNavigate } from "react-router-dom";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import SwapIcon from "../../Assets/SwapIcon.svg";
-import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import React, { useState, useContext, useEffect } from "react";
+import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendMessageOverStream } from "../../Utility/message_helper";
 import {
   LABELS,
@@ -31,7 +31,7 @@ function ApproveTx() {
 
   useEffect(() => {
     //if balance is 0 then don't call the fee calculator
-    if (Number(balance?.evmBalance) === 0) {
+    if (Number(balance?.transferableBalance) === 0) {
       toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       setDisableApproval(true);
       return;
@@ -52,14 +52,14 @@ function ApproveTx() {
     if (
       estimatedGas &&
       Number(activeSession.message?.value) + Number(estimatedGas) >=
-        Number(balance?.evmBalance) -
+        Number(balance?.transferableBalance) -
           pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
     ) {
       toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
       setDisableApproval(true);
     } else setDisableApproval(!estimatedGas);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [estimatedGas, balance?.evmBalance]);
+  }, [estimatedGas, balance?.transferableBalance]);
 
   function handleClick(isApproved) {
     if (isApproved) {

@@ -25,14 +25,14 @@
   }
 
   &__multiSwapBtn {
-    padding: 16px 80px;
+    padding: 15px 20px;
     padding-bottom: 0;
   }
   &__sendSwapbtn {
     display: flex;
     border-radius: 12px;
-    background: #0e1e41;
-    border: 1px solid #102658;
+    background: var(--ui-module-dark, rgba(20, 55, 139, 0.15));
+    backdrop-filter: blur(5px);
     padding: 3px;
     position: relative;
     &__buttons {
@@ -51,38 +51,43 @@
       gap: 5px;
       position: relative;
       z-index: 1;
-      transition: width .3s,left .3s,right .3s;
+      transition: width 0.3s, left 0.3s, right 0.3s;
+      border: 1px solid #00A7DC;
       &__active {
-        img{
-          filter: contrast(100);
+        color: $blue-0c98fc;
+        svg {
+          path {
+            // fill: $blue-0c98fc;
+            stroke: $blue-0c98fc;
+          }
         }
+        // img{
+        //   filter: contrast(100);
+        // }
       }
-     
     }
     .animations {
       position: absolute;
-      width: 116px;
-      height: 36px;
-      top: 0;
+      width: 175px;
+      height: 42px;
+      top: 3px;
       z-index: 0;
-      
+
       &.activeFirst {
         left: 0;
-        background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
+        background: var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15));
         // border: 1px solid rgba(255, 255, 255, 0.5);
-        border: 1px solid #13d3e1;
-        border-radius: 12px;
+        border-radius: 10px;
         // border-radius: 0px 12px 12px 0px;
-        transition: width .3s,left .3s,right .3s;
+        transition: width 0.3s, left 0.3s, right 0.3s;
       }
       &.activeSecond {
-        left: 120px;
-        background: linear-gradient(114.15deg, #0da6c2 20.67%, #0e39c6 89.64%);
+        left: 180px;
+        background: var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15));
         // border: 1px solid rgba(255, 255, 255, 0.5);
-        border: 1px solid #13d3e1;
-        border-radius: 12px;
+        border-radius: 10px;
         // border-radius: 0px 12px 12px 0px;
-        transition: width .3s,left .3s,right .3s;
+        transition: width 0.3s, left 0.3s, right 0.3s;
       }
     }
   }

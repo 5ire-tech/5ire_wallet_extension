@@ -35,7 +35,7 @@ export class HybridKeyring extends EventEmitter {
   };
 
   static initKeyring() {
-    HybridKeyring.polkaKeyring = new Keyring({ type: "sr25519" });
+    HybridKeyring.polkaKeyring = new Keyring({ type: "ethereum" });
     HybridKeyring.ethKeyring = new EthKeyring();
     HybridKeyring.simpleEthKeyring = new SimpleKeyring();
   }
@@ -103,7 +103,8 @@ export class HybridKeyring extends EventEmitter {
         } else if (v.type === WALLET_TYPES.IMPORTED_NATIVE) {
           const oldKeys = await HybridKeyring.simpleEthKeyring.serialize();
           for (const k of v.mnemonics) {
-            HybridKeyring.polkaKeyring.addFromUri(k);
+            // HybridKeyring.polkaKeyring.addFromUri(k);
+            HybridKeyring.polkaKeyring.addFromUri(`${k}/m/44'/60'/0'/0/0`);
             const keyWallet = ethers.Wallet.fromPhrase(k);
             oldKeys.push(keyWallet.privateKey);
           }
@@ -276,7 +277,15 @@ export class HybridKeyring extends EventEmitter {
     const oldAccounts = HybridKeyring.accounts.filter((acc) => acc.type === WALLET_TYPES.HD);
     const existingHdAccounts = keyring.numberOfAccounts;
     const mainPair = HybridKeyring.polkaKeyring.getPair(oldAccounts[0]?.nativeAddress);
-    const newKr = mainPair.derive("//" + existingHdAccounts);
+    // const newKr = mainPair.derive("//" + existingHdAccounts);
+    const mnemonic = await this._exportNativeAccountByAddress(
+      mainPair.address,
+      HybridKeyring.password
+    );
+
+    const newKr = await HybridKeyring.polkaKeyring.addFromUri(
+      `${mnemonic}/m/44'/60'/0'/0/${existingHdAccounts}`
+    );
     HybridKeyring.polkaKeyring.addPair(newKr);
     const newAcc = {
       nativeAddress: newKr.address,
@@ -413,7 +422,8 @@ export class HybridKeyring extends EventEmitter {
     const ethAddress = Web3.utils.toChecksumAddress(keyWallet.address);
 
     //Generate native account from private key
-    const newKr = HybridKeyring.polkaKeyring.addFromUri(mnemonic);
+    // const newKr = HybridKeyring.polkaKeyring.addFromUri(mnemonic);
+    const newKr = HybridKeyring.polkaKeyring.addFromUri(`${mnemonic}/m/44'/60'/0'/0/0`);
 
     const newAcc = {
       nativeAddress: newKr.address,
@@ -595,7 +605,8 @@ export class HybridKeyring extends EventEmitter {
   async signEthTx(address, tx) {
     const acc = HybridKeyring.accounts.find((acc) => acc.evmAddress === address);
 
-    const common = Common.custom({ chainId: 997, networkId: 1 }, { hardfork: "london" });
+    // const common = Common.custom({ chainId: 997, networkId: 1 }, { hardfork: "london" });
+    const common = Common.custom({ chainId: 995, networkId: 1 }, { hardfork: "london" });
     const txn = TransactionFactory.fromTxData(tx, { common });
 
     let signedTx = null;
@@ -655,13 +666,18 @@ export class HybridKeyring extends EventEmitter {
 
   _generateNativeAccounts(data) {
     const accounts = [];
-    const keyringPair = HybridKeyring.polkaKeyring.addFromUri(data.mnemonic);
+
+    const keyringPair = HybridKeyring.polkaKeyring.addFromUri(`${data.mnemonic}/m/44'/60'/0'/0/0`);
     accounts.push(keyringPair.address);
     if (data.numberOfAccounts > 1) {
       for (let i = 1; i < data.numberOfAccounts; i++) {
-        const derivedPair = keyringPair.derive("//" + i);
+        // const derivedPair = keyringPair.derive("//" + i);
+        const derivedPair = HybridKeyring.polkaKeyring.addFromUri(
+          `${data.mnemonic}/m/44'/60'/0'/0/${i}`
+        );
+
         // const derivedPair = HybridKeyring.polkaKeyring.addFromUri(data.mnemonic + "//" + i)
-        HybridKeyring.polkaKeyring.addPair(derivedPair);
+        // HybridKeyring.polkaKeyring.addPair(derivedPair);
         accounts.push(derivedPair.address);
       }
     }

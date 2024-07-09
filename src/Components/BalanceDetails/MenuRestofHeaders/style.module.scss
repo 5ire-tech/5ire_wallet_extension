@@ -8,14 +8,11 @@
   gap: 15px;
 
   h4 {
-    font-size: 22px;
-    // font-weight: m;
+    font-size: 24px;
+    font-weight: 600;
     margin-bottom: 0;
     white-space: nowrap;
-    background: -webkit-linear-gradient(#0071ff, #54f0d1);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: $white;
     // Fill Color Style: gradient;
   }
 }

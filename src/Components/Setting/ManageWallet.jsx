@@ -9,12 +9,14 @@ import React, { useContext, useEffect } from "react";
 import ButtonComp from "../ButtonComp/ButtonComp.jsx";
 import { NATIVE, EVM, COPIED } from "../../Constants";
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders.jsx";
+import WelcomeLogo from "../../Assets/welcomeLogo.svg";
 
 function ManageWallet() {
   const navigate = useNavigate();
 
   const { state, setPassVerified } = useContext(AuthContext);
   const { currentAccount } = state;
+  // console.log("currentAccount : ", currentAccount);
 
   useEffect(() => {
     setPassVerified(false);
@@ -37,7 +39,10 @@ function ManageWallet() {
   return (
     <>
       <div className={`scrollableCont`}>
-        <MenuRestofHeaders backTo={ROUTES.WALLET} title={"Manage Wallet"} />
+        <div className="">
+          <img src={WelcomeLogo} alt="logo" style={{ marginTop: "20px" }} />
+        </div>
+        <MenuRestofHeaders backTo={ROUTES.SETTING_COMP} title={"Manage Wallet"} />
         <div className={`flexedContent`}>
           <div className={style.wallet}>
             <div className={style.wallet__addressInput}>
@@ -54,7 +59,7 @@ function ManageWallet() {
               </p>
             </div>
           </div>
-          <div className={style.wallet}>
+          {/* <div className={style.wallet}>
             <div className={style.wallet__addressInput}>
               <label>Native Chain Address:</label>
               <p className={style.wallet__addressInput__copyText}>
@@ -68,7 +73,7 @@ function ManageWallet() {
                 />{" "}
               </p>
             </div>
-          </div>
+          </div> */}
           <div className={style.wallet}>
             <div className={style.wallet__addressInput}>
               <label>EVM Chain Address:</label>

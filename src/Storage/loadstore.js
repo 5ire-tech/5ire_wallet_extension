@@ -517,10 +517,18 @@ export class ExtensionStorageHandler {
   _setAccountBalance = (state, acc) => {
     const obj = {};
 
+    // Object.values(NETWORK).forEach((e) => {
+    //   obj[e.toLowerCase()] = {
+    //     evmBalance: 0,
+    //     nativeBalance: 0,
+    //     totalBalance: 0
+    //   };
+    // });
+
     Object.values(NETWORK).forEach((e) => {
       obj[e.toLowerCase()] = {
-        evmBalance: 0,
-        nativeBalance: 0,
+        stakedBalance: 0,
+        transferableBalance: 0,
         totalBalance: 0
       };
     });
@@ -536,8 +544,8 @@ export class ExtensionStorageHandler {
 
     Object.values(NETWORK).forEach((e) => {
       obj[e.toLowerCase()] = {
-        evm: 0,
-        native: 0
+        evm: 0
+        // native: 0
       };
     });
 

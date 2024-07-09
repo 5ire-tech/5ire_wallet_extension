@@ -3,10 +3,7 @@
 .historySec {
   &__historyHead {
     h3 {
-      background: -webkit-linear-gradient(#0071ff, #54f0d1);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: $white;
       font-size: 16px;
       text-align: left;
       padding: 16px 25px;
@@ -41,14 +38,17 @@
       cursor: pointer;
 
       h3 {
-        color: $white;
-        font-size: 14px;
+        color: #abb2c1;
+        // color: $gray8D96AA;
+        font-size: 19px;
+        font-weight: 600;
       }
 
       p {
-        opacity: 0.6;
         color: $white;
-        font-size: 12px;
+        font-size: 17px;
+        font-weight: 500;
+        padding-top: 2px;
       }
     }
 
@@ -57,12 +57,12 @@
 
       h3 {
         color: $white;
-        font-size: 14px;
+        font-size: 17px;
       }
 
       p {
         color: $white;
-        font-size: 10px;
+        font-size: 14px;
       }
     }
   }
@@ -72,17 +72,20 @@
   }
 
   &__success {
-    color: #3CC8C8;
+    color: #57CC55;
   }
 
   &__failed {
-    color: #FF6332;
+    color: #ff6332;
   }
 }
 
 .noTxn {
-  color: rgb(255, 255, 255);
+  color: $white;
   text-align: center;
+  margin-top: 30px;
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .histryDataScrol {

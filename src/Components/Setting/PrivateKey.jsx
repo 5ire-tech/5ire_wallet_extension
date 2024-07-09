@@ -8,6 +8,7 @@ import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
 import React, { useContext, useEffect, useState } from "react";
 import { sendRuntimeMessage } from "../../Utility/message_helper.js";
 import MenuRestofHeaders from "../BalanceDetails/MenuRestofHeaders/MenuRestofHeaders";
+import WelcomeLogo from "../../Assets/welcomeLogo.svg";
 import {
   COPIED,
   PVT_KEY,
@@ -51,6 +52,9 @@ function PrivateKey() {
   return (
     <>
       <div className={`scrollableCont`}>
+        <div className="">
+          <img src={WelcomeLogo} alt="logo" style={{ marginTop: "20px" }} />
+        </div>
         <MenuRestofHeaders backTo={ROUTES.ENTER_PASS} title={"Your Secret Keys"} />
         <div className={`flexedContent`}>
           <div className={style.enterPassword}>

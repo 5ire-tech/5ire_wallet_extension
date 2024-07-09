@@ -1,9 +1,8 @@
-import { Switch, Tooltip } from "antd";
+import { Select } from "antd";
 import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
 import { AuthContext } from "../../Store";
-import Info from "../../Assets/infoIcon.svg";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import SmallLogo from "../../Assets/smallLogo.svg";
 import ComplSwap from "../../Assets/succeslogo.svg";
@@ -14,12 +13,9 @@ import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import { InputField, InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import {
-  EVM,
   REGEX,
   LABELS,
-  NATIVE,
   TX_TYPE,
-  MESSAGES,
   EXTRA_FEE,
   ERROR_MESSAGES,
   MESSAGE_TYPE_LABELS,
@@ -27,9 +23,9 @@ import {
 } from "../../Constants/index";
 
 function Send() {
-  const [isEd, setEd] = useState(true);
+  // const [isEd, setEd] = useState(true);
   const [disableBtn, setDisable] = useState(true);
-  const [activeTab, setActiveTab] = useState(NATIVE);
+  // const [activeTab, setActiveTab] = useState(NATIVE);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [err, setErr] = useState({ to: "", amount: "" });
@@ -40,17 +36,18 @@ function Send() {
     useContext(AuthContext);
   const { currentAccount, pendingTransactionBalance, currentNetwork, allAccountsBalance } = state;
   const balance = allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()];
-  console.log("HERRE edValue", edValue);
   const MINIMUM_BALANCE = edValue;
 
-  // Reset the amount, to and error evm and native address changed
+  /**
+   * Reset the amount, to and error evm and native address changed
+   */
   useEffect(() => {
     updateEstimatedGas(null);
     setErr({ to: "", amount: "" });
     setData({ to: "", amount: "" });
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.GET_ED, {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentAccount?.evmAddress, currentAccount?.nativeAddress, currentNetwork]);
+  }, [currentAccount?.evmAddress, currentNetwork]);
 
   useEffect(() => {
     if (!data.to && !data.amount && !estimatedGas) {
@@ -59,19 +56,16 @@ function Send() {
   }, [data.to, data.amount, estimatedGas]);
 
   useEffect(() => {
-    if (
-      (activeTab === EVM && Number(balance?.evmBalance) < MINIMUM_BALANCE) ||
-      (activeTab === NATIVE && Number(balance?.nativeBalance) < MINIMUM_BALANCE) ||
-      !data.to ||
-      err.to
-    ) {
+    if (Number(balance?.transferableBalance) < MINIMUM_BALANCE || !data.to || err.to) {
       setMaxDisabled(true);
     } else {
       setMaxDisabled(false);
     }
-  }, [balance?.evmBalance, balance?.nativeBalance, activeTab, data?.to, err.to, MINIMUM_BALANCE]);
+  }, [balance?.transferableBalance, balance?.stakedBalance, data?.to, err.to, MINIMUM_BALANCE]);
 
-  //Get fee if to and amount is present
+  /**
+   * Get fee if to and amount is present
+   */
   useEffect(() => {
     if (!err.to && !err.amount && data.amount && data.to && !estimatedGas) {
       const getData = setTimeout(() => {
@@ -84,87 +78,78 @@ function Send() {
       setDisable(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [err.to, err.amount, data?.to, data?.amount, isEd, estimatedGas]);
+  }, [err.to, err.amount, data?.to, data?.amount, estimatedGas]);
 
   //Check for Insufficent balance
   useEffect(() => {
     if (!estimatedGas) {
       setDisable(true);
     } else {
-      if (activeTab === EVM) {
-        if (estimatedGas && !data.amount && data.to) {
-          const amount =
-            Number(balance?.evmBalance) -
-            (Number(estimatedGas) +
-              EXTRA_FEE +
-              (isEd ? edValue : 0) +
-              pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
-                .evm);
+      // if (activeTab === EVM) {
+      if (estimatedGas && !data.amount && data.to) {
+        const amount =
+          Number(balance?.transferableBalance) -
+          (Number(estimatedGas) +
+            EXTRA_FEE +
+            pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm);
 
-          // Number(amount) <= 0 && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
-          Number(amount) <= 0 &&
-            setErr((p) => ({
-              ...p,
-              amount: ERROR_MESSAGES.INSUFFICENT_BALANCE
-            }));
+        // Number(amount) <= 0 && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+        Number(amount) <= 0 &&
+          setErr((p) => ({
+            ...p,
+            amount: ERROR_MESSAGES.INSUFFICENT_BALANCE
+          }));
 
-          updateEstimatedGas(amount > 0 ? estimatedGas : null);
-          setData((p) => ({ ...p, amount: amount > 0 ? amount : "" }));
-          return;
-        } else if (data?.amount && estimatedGas && data?.to) {
-          if (
-            Number(data.amount) + Number(estimatedGas) + (isEd ? edValue : 0) >
-            Number(balance?.evmBalance) -
-              pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
-          ) {
-            updateEstimatedGas(null);
-            setErr((p) => ({
-              ...p,
-              amount: ERROR_MESSAGES.INSUFFICENT_BALANCE
-            }));
-          } else {
-            setErr((p) => ({ ...p, amount: "" }));
-          }
-        }
-      } else if (activeTab === NATIVE) {
-        if (estimatedGas && !data.amount && data.to) {
-          const amount =
-            Number(balance?.nativeBalance) -
-            (Number(estimatedGas) +
-              EXTRA_FEE +
-              (isEd ? edValue : 0) +
-              pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
-                .native);
-
-          // Number(amount) <= 0 && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
-          Number(amount) <= 0 &&
-            setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
-          updateEstimatedGas(amount > 0 ? estimatedGas : null);
-          setData((p) => ({ ...p, amount: amount > 0 ? amount : "" }));
-          return;
-        } else if (
-          Number(data.amount) + Number(estimatedGas) + (isEd ? edValue : 0) >
-          Number(balance?.nativeBalance) -
-            pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
-              .native
+        updateEstimatedGas(amount > 0 ? estimatedGas : null);
+        setData((p) => ({ ...p, amount: amount > 0 ? amount : "" }));
+        return;
+      } else if (data?.amount && estimatedGas && data?.to) {
+        if (
+          Number(data.amount) + Number(estimatedGas) >
+          Number(balance?.transferableBalance) -
+            pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
         ) {
           updateEstimatedGas(null);
-          setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
+          setErr((p) => ({
+            ...p,
+            amount: ERROR_MESSAGES.INSUFFICENT_BALANCE
+          }));
         } else {
           setErr((p) => ({ ...p, amount: "" }));
         }
       }
+      // }
+      // else if (activeTab === NATIVE) {
+      //   if (estimatedGas && !data.amount && data.to) {
+      //     const amount =
+      //       Number(balance?.nativeBalance) -
+      //       (Number(estimatedGas) +
+      //         EXTRA_FEE +
+      //         (isEd ? edValue : 0) +
+      //         pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
+      //           .native);
+
+      //     // Number(amount) <= 0 && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+      //     Number(amount) <= 0 &&
+      //       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
+      //     updateEstimatedGas(amount > 0 ? estimatedGas : null);
+      //     setData((p) => ({ ...p, amount: amount > 0 ? amount : "" }));
+      //     return;
+      //   } else if (
+      //     Number(data.amount) + Number(estimatedGas) + (isEd ? edValue : 0) >
+      //     Number(balance?.nativeBalance) -
+      //       pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
+      //         .native
+      //   ) {
+      //     updateEstimatedGas(null);
+      //     setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
+      //   } else {
+      //     setErr((p) => ({ ...p, amount: "" }));
+      //   }
+      // }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    isEd,
-    data.to,
-    activeTab,
-    data.amount,
-    estimatedGas,
-    balance?.evmBalance,
-    balance?.nativeBalance
-  ]);
+  }, [data.to, data.amount, estimatedGas, balance?.transferableBalance]);
 
   const blockInvalidChar = useCallback(
     (e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault(),
@@ -172,12 +157,12 @@ function Send() {
   );
 
   //set the ED toggler state
-  const onChangeToggler = (checked) => {
-    setEd(checked);
-    updateEstimatedGas(null);
-    setErr((p) => ({ ...p, amount: "" }));
-    setData((p) => ({ ...p, amount: "" }));
-  };
+  // const onChangeToggler = (checked) => {
+  //   setEd(checked);
+  //   updateEstimatedGas(null);
+  //   setErr((p) => ({ ...p, amount: "" }));
+  //   setData((p) => ({ ...p, amount: "" }));
+  // };
 
   //validate amount
   const validateAmount = useCallback(() => {
@@ -186,31 +171,31 @@ function Send() {
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.ENTER_AMOUNT_CORRECTLY }));
     else if (Number(data.amount) <= 0)
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.AMOUNT_SHOULD_BE_GREATER_THAN_0 }));
-    else if (activeTab === EVM) {
-      if (balance?.evmBalance < MINIMUM_BALANCE)
+    else {
+      if (balance?.transferableBalance < MINIMUM_BALANCE)
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
       else if (
         Number(data.amount) >=
-        Number(balance?.evmBalance) -
+        Number(balance?.transferableBalance) -
           pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].evm
       )
         setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
       else setErr((p) => ({ ...p, amount: "" }));
-    } else if (activeTab === NATIVE) {
-      if (balance?.nativeBalance < MINIMUM_BALANCE)
-        setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
-      else if (
-        Number(data.amount) >=
-        Number(balance?.nativeBalance) -
-          pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].native
-      )
-        setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
-      else setErr((p) => ({ ...p, amount: "" }));
     }
+    // } else if (activeTab === NATIVE) {
+    //   if (balance?.nativeBalance < MINIMUM_BALANCE)
+    //     setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
+    //   else if (
+    //     Number(data.amount) >=
+    //     Number(balance?.nativeBalance) -
+    //       pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].native
+    //   )
+    //     setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
+    //   else setErr((p) => ({ ...p, amount: "" }));
+    // }
   }, [
-    activeTab,
-    balance?.evmBalance,
-    balance?.nativeBalance,
+    balance?.transferableBalance,
+    // balance?.nativeBalance,
     currentAccount?.evmAddress,
     currentNetwork,
     data?.amount,
@@ -220,58 +205,61 @@ function Send() {
 
   //validate to address
   const validateToAddress = useCallback(async () => {
-    if (activeTab === EVM) {
-      if (!data.to) setErr((p) => ({ ...p, to: ERROR_MESSAGES.INPUT_REQUIRED }));
-      else if (!data.to?.startsWith("0x"))
-        setErr((p) => ({ ...p, to: ERROR_MESSAGES.INCORRECT_ADDRESS }));
-      else if (data.to === currentAccount?.evmAddress)
-        setErr((p) => ({ ...p, to: ERROR_MESSAGES.NOT_YOUR_OWN_ADDRESS }));
-      else {
-        let res = await validateAddress(data.to);
+    // if (activeTab === EVM) {
+    if (!data.to) setErr((p) => ({ ...p, to: ERROR_MESSAGES.INPUT_REQUIRED }));
+    else if (!data.to?.startsWith("0x"))
+      setErr((p) => ({ ...p, to: ERROR_MESSAGES.INCORRECT_ADDRESS }));
+    else if (data.to === currentAccount?.evmAddress)
+      setErr((p) => ({ ...p, to: ERROR_MESSAGES.NOT_YOUR_OWN_ADDRESS }));
+    else {
+      let res = await validateAddress(data.to);
 
-        if (res.error) setErr((p) => ({ ...p, to: res.data }));
-        else {
-          setErr((p) => ({ ...p, to: "" }));
-        }
-      }
-    } else if (activeTab === NATIVE) {
-      if (!data.to) setErr((p) => ({ ...p, to: ERROR_MESSAGES.INPUT_REQUIRED }));
-      else if (!data.to?.startsWith("5"))
-        setErr((p) => ({ ...p, to: ERROR_MESSAGES.INCORRECT_ADDRESS }));
-      else if (data.to === currentAccount?.nativeAddress)
-        setErr((p) => ({ ...p, to: ERROR_MESSAGES.NOT_YOUR_OWN_ADDRESS }));
+      if (res.error) setErr((p) => ({ ...p, to: res.data }));
       else {
-        let res = await validateAddress(data.to);
-
-        if (res.error) setErr((p) => ({ ...p, to: res.data }));
-        else {
-          setErr((p) => ({ ...p, to: "" }));
-        }
+        setErr((p) => ({ ...p, to: "" }));
       }
     }
-  }, [activeTab, currentAccount?.evmAddress, currentAccount?.nativeAddress, data.to]);
+    //}
+    // else if (activeTab === NATIVE) {
+    //   if (!data.to) setErr((p) => ({ ...p, to: ERROR_MESSAGES.INPUT_REQUIRED }));
+    //   else if (!data.to?.startsWith("5"))
+    //     setErr((p) => ({ ...p, to: ERROR_MESSAGES.INCORRECT_ADDRESS }));
+    //   else if (data.to === currentAccount?.nativeAddress)
+    //     setErr((p) => ({ ...p, to: ERROR_MESSAGES.NOT_YOUR_OWN_ADDRESS }));
+    //   else {
+    //     let res = await validateAddress(data.to);
+
+    //     if (res.error) setErr((p) => ({ ...p, to: res.data }));
+    //     else {
+    //       setErr((p) => ({ ...p, to: "" }));
+    //     }
+    //   }
+    // }
+  }, [currentAccount?.evmAddress, data.to]);
 
   //for getting the fee details
   const getFee = async (loader = true) => {
-    if (activeTab === NATIVE && Number(balance?.nativeBalance) > 0) {
-      loader && updateLoading(true);
+    // if (activeTab === NATIVE && Number(balance?.nativeBalance) > 0) {
+    //   loader && updateLoading(true);
 
-      //calculate the native fee
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, {
-        value: data?.amount ? data.amount : balance?.nativeBalance,
-        toAddress: data.to,
-        options: { account: currentAccount },
-        isEd
-      });
-    } else if (activeTab === EVM && Number(balance?.evmBalance) > 0) {
+    //   //calculate the native fee
+    //   sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.NATIVE_FEE, {
+    //     value: data?.amount ? data.amount : balance?.nativeBalance,
+    //     toAddress: data.to,
+    //     options: { account: currentAccount },
+    //     isEd
+    //   });
+    // } else
+
+    if (Number(balance?.transferableBalance) > 0) {
       loader && updateLoading(true);
 
       //calculate the evm fee
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {
-        value: data?.amount ? data.amount : balance?.evmBalance,
+        value: data?.amount ? data.amount : balance?.transferableBalance,
         toAddress: data.to,
         options: { account: currentAccount },
-        isEd
+        isEd: false
       });
     }
   };
@@ -326,50 +314,50 @@ function Send() {
   //Perform Transfer
   const handleApprove = useCallback(async () => {
     try {
-      if (activeTab === EVM) {
-        updateLoading(true);
-        //pass the message request for evm transfer
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TX, {
-          to: data.to,
-          value: data.amount,
-          options: {
-            account: currentAccount,
-            network: currentNetwork,
-            type: TX_TYPE.SEND,
-            isEvm: true,
-            fee: estimatedGas
-          },
-          isEd
-        });
-        setTimeout(() => {
-          setIsModalOpen(true);
-          updateLoading(false);
-        }, 3000);
-      } else if (activeTab === NATIVE) {
-        if (balance?.nativeBalance < MINIMUM_BALANCE) {
-          setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
-          // toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
-        } else {
-          updateLoading(true);
-          //pass the message request for native transfer
-          sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TX, {
-            to: data.to,
-            value: data.amount,
-            options: {
-              account: currentAccount,
-              network: currentNetwork,
-              type: TX_TYPE.SEND,
-              isEvm: false,
-              fee: estimatedGas
-            },
-            isEd
-          });
-          setTimeout(() => {
-            setIsModalOpen(true);
-            updateLoading(false);
-          }, 3000);
-        }
-      }
+      // if (activeTab === EVM) {
+      updateLoading(true);
+      //pass the message request for evm transfer
+      sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TX, {
+        to: data.to,
+        value: data.amount,
+        options: {
+          account: currentAccount,
+          network: currentNetwork,
+          type: TX_TYPE.SEND,
+          isEvm: true,
+          fee: estimatedGas
+        },
+        isEd: false
+      });
+      setTimeout(() => {
+        setIsModalOpen(true);
+        updateLoading(false);
+      }, 3000);
+      // } else if (activeTab === NATIVE) {
+      //   if (balance?.nativeBalance < MINIMUM_BALANCE) {
+      //     setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
+      //     // toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
+      //   } else {
+      //     updateLoading(true);
+      //     //pass the message request for native transfer
+      //     sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.NATIVE_TX, {
+      //       to: data.to,
+      //       value: data.amount,
+      //       options: {
+      //         account: currentAccount,
+      //         network: currentNetwork,
+      //         type: TX_TYPE.SEND,
+      //         isEvm: false,
+      //         fee: estimatedGas
+      //       },
+      //       isEd
+      //     });
+      //     setTimeout(() => {
+      //       setIsModalOpen(true);
+      //       updateLoading(false);
+      //     }, 3000);
+      //   }
+      // }
       setData({ amount: "", to: "" });
       updateEstimatedGas(null);
     } catch (error) {
@@ -377,24 +365,22 @@ function Send() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    isEd,
     data.to,
-    activeTab,
     data.amount,
     estimatedGas,
     currentNetwork,
-    balance?.evmBalance,
-    balance?.nativeBalance,
+    balance?.transferableBalance,
+    // balance?.nativeBalance,
     currentAccount?.evmAddress,
     updateLoading
   ]);
 
-  const activeSend = (e) => {
-    updateEstimatedGas(null);
-    setActiveTab(e.target.name);
-    setErr({ to: "", amount: "" });
-    setData({ to: "", amount: "" });
-  };
+  // const activeSend = (e) => {
+  //   updateEstimatedGas(null);
+  //   setActiveTab(e.target.name);
+  //   setErr({ to: "", amount: "" });
+  //   setData({ to: "", amount: "" });
+  // };
 
   //handle Ok and cancel button of popup
   const handle_OK_Cancel = () => {
@@ -410,7 +396,9 @@ function Send() {
       setErr((p) => ({ ...p, amount: "" }));
     }
   };
-
+  const handleChange1 = (value) => {
+    console.log(`selected ${value}`);
+  };
   const suffix = (
     <button disabled={isMaxDisabled} className="maxBtn" onClick={handleMaxClick}>
       Max
@@ -420,7 +408,7 @@ function Send() {
   return (
     <>
       <div className={style.sendSec} onKeyDown={handleEnter}>
-        <div className={`scrollableCont ${style.sendSec__sourceLabel}`}>
+        {/* <div className={`scrollableCont ${style.sendSec__sourceLabel}`}>
           <label>Source Chain</label>
           <div className={style.sendSec__sendSwapbtn}>
             <button
@@ -443,6 +431,28 @@ function Send() {
               className={`${activeTab === NATIVE && style.activeFirst} ${
                 activeTab === EVM && style.activeSecond
               } ${style.animations}`}></div>
+          </div>
+        </div> */}
+        <div className={style.sendSec__assetSec}>
+          <h2>Asset</h2>
+          <div className="assetSelectStyle">
+            <Select
+              defaultValue="all"
+              style={{
+                width: 200
+              }}
+              onChange={handleChange1}
+              options={[
+                {
+                  value: "all",
+                  label: "All"
+                },
+                {
+                  value: "lucy",
+                  label: "Lucy"
+                }
+              ]}
+            />
           </div>
         </div>
         <div className={style.sendSec__inputInnerSec}>
@@ -477,13 +487,13 @@ function Send() {
               keyDown={blockInvalidChar}
               placeholderBaseColor={true}
               placeholder={"Enter Amount"}
-              addonAfter={
+              addonAfter={suffix}
+              suffix={
                 <span className={style.sendSec__pasteText}>
                   <img src={SmallLogo} alt="logo" draggable={false} />
                   5ire
                 </span>
               }
-              suffix={suffix}
             />
             <span className={style.errorText}>{err.amount}</span>
           </div>
@@ -491,13 +501,13 @@ function Send() {
         <div className={style.sendSec__txFeeBalance}>
           <h2>{estimatedGas ? `TX Fee : ${estimatedGas} 5IRE` : ""}</h2>
         </div>
-        <div className={style.sendSec__inFoAccount}>
+        {/* <div className={style.sendSec__inFoAccount}>
           <Tooltip title={MESSAGES.ED}>
             <img src={Info} style={{ cursor: "pointer" }} alt="infoIcon" />
           </Tooltip>
           <h3>Transfer with account keep alive checks </h3>
           <Switch defaultChecked name="EdToggler" onChange={onChangeToggler} />
-        </div>
+        </div> */}
       </div>
       <Approve onClick={handleApprove} text="Transfer" isDisable={disableBtn} />
 

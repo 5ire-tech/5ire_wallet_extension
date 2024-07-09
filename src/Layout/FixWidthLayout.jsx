@@ -29,7 +29,8 @@ function FixWidthLayout({ children }) {
           ROUTES.SWAP_APPROVE ||
           ROUTES.APPROVE_TXN ||
           pathname === ROUTES.HISTORY ||
-          pathname === ROUTES.MY_ACCOUNT) && (
+          pathname === ROUTES.MY_ACCOUNT ||
+          pathname === ROUTES.SETTING_COMP) && (
           <div className={style.fixedLayout__inner__walletLayout}>
             <div className={style.decoratedBg} style={{ textAlign: "left" }}>
               <BalanceDetails />
@@ -41,7 +42,8 @@ function FixWidthLayout({ children }) {
         {(isEqual(pathname, ROUTES.APPROVE_TXN) ||
           isEqual(pathname, ROUTES.WALLET) ||
           isEqual(pathname, ROUTES.HISTORY) ||
-          isEqual(pathname, ROUTES.MY_ACCOUNT)) && <MenuFooter />}
+          isEqual(pathname, ROUTES.MY_ACCOUNT) ||
+          isEqual(pathname, ROUTES.SETTING_COMP)) && <MenuFooter />}
       </div>
     </div>
   );
