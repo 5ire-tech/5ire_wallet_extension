@@ -1,0 +1,97 @@
+@import "../../styles/__vars.scss";
+
+.assetSec {
+  padding: 14px 20px;
+  .topDetail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: $white;
+    }
+    button {
+      border-radius: 10px;
+      background: var(--ui-module-dark, rgba(20, 55, 139, 0.15));
+      backdrop-filter: blur(5px);
+      color: $blue-0c98fc;
+      border: 0;
+      padding: 5px 20px;
+      cursor: pointer;
+    }
+  }
+  &__accountActive {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15));
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+  &__leftSec {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+
+    // img{
+    //   width: 33px;
+    // }
+    &__accountConatct {
+      text-align: left;
+
+      h2 {
+        // text-transform: capitalize;
+        font-size: 17px;
+        font-weight: 500;
+        color: #ffffff;
+        // display: inline-block !important;
+        // max-width: 177px;
+        // white-space: nowrap;
+        // overflow: hidden;
+        // text-overflow: ellipsis;
+      }
+
+      p {
+        font-size: 14px;
+        font-weight: 600;
+        color: $gray8D96AA;
+      }
+    }
+  }
+
+  &__rytSec {
+    h5 {
+      color: $white;
+      font-size: 17px;
+      font-weight: 500;
+    }
+
+    h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: $blue-0c98fc;
+    }
+  }
+}
+
+.customModel {
+  h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: $white;
+    margin-top: 5px;
+  }
+  .innerContct {
+    margin-top: 20px;
+    p {
+      font-size: 15px;
+      font-weight: 600;
+      color: $gray8D96AA;
+      margin-bottom: 15px;
+    }
+  }
+}

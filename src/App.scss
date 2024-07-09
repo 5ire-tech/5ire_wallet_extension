@@ -155,13 +155,13 @@ body {
     background-color: transparent !important;
     border-radius: 15px;
     padding: 11px 16px;
-    border: 1px solid #dddddd82!important;
+    border: 1px solid #dddddd82 !important;
     color: $white;
     font-size: 14px;
     resize: none;
-    &:hover{
-      border: 1px solid #00A7DC !important;
-      }  
+    &:hover {
+      border: 1px solid #00a7dc !important;
+    }
     &::placeholder {
       color: $gray8D96AA !important;
     }
@@ -446,9 +446,63 @@ body {
 }
 
 .assetSelectStyle {
-  .ant-select-selector {
-    border: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15)) !important;
-    background-color: transparent !important;
+  // .ant-select-selector {
+  //   border: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15)) !important;
+  //   background-color: transparent !important;
+  // }
+  button {
+    border: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15));
+    background-color: transparent;
+    width: 200px;
+    border-radius: 15px;
+    height: 50px;
+    font-size: 17px;
+    font-weight: 500;
+    color: $white;
+    text-align: left;
+    padding: 14px;
+    cursor: pointer;
+  }
+}
+
+.fireCustmModel {
+  .innerContct {
+    margin-top: 5px;
+  }
+  input {
+    padding: 6px 16px;
+  }
+  .topDetail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: $white;
+    }
+  }
+  .innerDetail {
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 5px;
+    &:hover {
+      border-radius: 8px;
+      background: #e0e0e036;
+    }
+    h2 {
+      font-size: 17px;
+      font-weight: 500;
+      color: #ffffff;
+    }
+    p {
+      font-size: 14px;
+      font-weight: 600;
+      color: #00a7dc;
+    }
   }
 }
 //checkbox css//
@@ -700,7 +754,7 @@ body {
   max-width: 360px;
   width: 100%;
 }
-.detailTsxPage{
+.detailTsxPage {
   height: 330px;
-    overflow: auto;
+  overflow: auto;
 }

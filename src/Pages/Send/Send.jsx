@@ -1,4 +1,3 @@
-import { Select } from "antd";
 import { toast } from "react-hot-toast";
 import style from "./style.module.scss";
 import Approve from "../Approve/Approve";
@@ -31,6 +30,7 @@ function Send() {
   const [err, setErr] = useState({ to: "", amount: "" });
   const [isMaxDisabled, setMaxDisabled] = useState(true);
   const [data, setData] = useState({ to: "", amount: "" });
+  const [isModalOpen1, setIsModalOpen1] = useState(false);
 
   const { state, estimatedGas, updateEstimatedGas, updateLoading, edValue } =
     useContext(AuthContext);
@@ -38,6 +38,15 @@ function Send() {
   const balance = allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()];
   const MINIMUM_BALANCE = edValue;
 
+  const showModal = () => {
+    setIsModalOpen1(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen1(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen1(false);
+  };
   /**
    * Reset the amount, to and error evm and native address changed
    */
@@ -396,9 +405,9 @@ function Send() {
       setErr((p) => ({ ...p, amount: "" }));
     }
   };
-  const handleChange1 = (value) => {
-    console.log(`selected ${value}`);
-  };
+  // const handleChange1 = (value) => {
+  //   console.log(`selected ${value}`);
+  // };
   const suffix = (
     <button disabled={isMaxDisabled} className="maxBtn" onClick={handleMaxClick}>
       Max
@@ -436,7 +445,8 @@ function Send() {
         <div className={style.sendSec__assetSec}>
           <h2>Asset</h2>
           <div className="assetSelectStyle">
-            <Select
+            <button onClick={showModal}>5ire</button>
+            {/* <Select
               defaultValue="all"
               style={{
                 width: 200
@@ -452,7 +462,32 @@ function Send() {
                   label: "Lucy"
                 }
               ]}
-            />
+            /> */}
+            <ModalCustom
+              isModalOpen={isModalOpen1}
+              handleOk={handleOk}
+              handleCancel={handleCancel}
+              centered
+              closeIcon={false}>
+              <div className="fireCustmModel customModel">
+                <div className="innerContct">
+                  <p>Select Assets</p>
+                  <InputFieldOnly
+                    coloredBg={true}
+                    placeholderBaseColor={true}
+                    placeholder={"Search"}
+                  />
+                </div>
+                <div className="topDetail">
+                  <h3>Name</h3>
+                  <h3>Amount</h3>
+                </div>
+                <div className="innerDetail">
+                  <h2>Wrapped Ethereum</h2>
+                  <p>65656565</p>
+                </div>
+              </div>
+            </ModalCustom>
           </div>
         </div>
         <div className={style.sendSec__inputInnerSec}>
