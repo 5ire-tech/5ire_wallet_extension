@@ -1,6 +1,6 @@
 {
   "name": "5ire Wallet",
-  "description": "EVM and Substrate combined wallet",
+  "description": "5ireChain non-custodial wallet in your browser.",
   "version": "0.3.0",
   "manifest_version": 2,
   "browser_action": {

@@ -254,8 +254,8 @@ export const API = {
 export const EXPLORERS = {
   //old
   // QA: "https://qa-web-exp.5ire.network"
-  // MAINNET: "https://preview.5ire.network"
-  MAINNET: "https://5irescan.io"
+  MAINNET: "https://preview.5ire.network"
+  // MAINNET: "https://5irescan.io"
   // QA: "https://scan.qa.5ire.network"
   // UAT: "https://uat-web-exp.5ire.network",
   // TESTNET: "https://explorer.5ire.network",

@@ -1,6 +1,6 @@
 {
   "name": "5ire Wallet",
-  "description": "5ire Wallet in your browser compatible with both Native and EVM chains.",
+  "description": "5ireChain non-custodial wallet in your browser.",
   "version": "0.3.0",
   "manifest_version": 3,
   "action": {
