@@ -86,12 +86,46 @@
     margin-top: 5px;
   }
   .innerContct {
-    margin-top: 20px;
+    margin-top: 15px;
     p {
       font-size: 15px;
       font-weight: 600;
       color: $gray8D96AA;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
+  }
+}
+
+.ant-notification-notice-wrapper {
+  background: var(--UI-Module, rgba(20, 55, 139, 0.15)) !important;
+  border-radius: 30px;
+}
+.ant-notification-notice-with-icon {
+  svg {
+    display: none !important;
+  }
+}
+.ant-notification-notice-close {
+  svg {
+    path {
+      fill: #00a7dc;
+    }
+  }
+}
+.ant-notification-notice {
+  border-radius: 30px;
+  border: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15));
+  background: var(--UI-Module, rgba(20, 55, 139, 0.15));
+  backdrop-filter: blur(20px);
+  .ant-notification-notice-message {
+    font-size: 20px;
+    font-weight: 600 !important;
+    color: #57cc55 !important;
+  }
+  .ant-notification-notice-description {
+    font-size: 14px !important;
+    font-weight: 500;
+    line-height: normal;
+    color: #8d96aa !important;
   }
 }

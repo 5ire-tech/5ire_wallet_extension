@@ -1,3 +1,4 @@
+import { notification } from "antd";
 import React, { useState } from "react";
 import { WhiteLogo } from "../../Assets/StoreAsset/StoreAsset";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
@@ -15,6 +16,15 @@ function Assets() {
   };
   const handle_OK_Cancel = () => {
     setIsModalOpen(false);
+  };
+
+  const openNotification = (placement) => {
+    notification.info({
+      message: `Token Succesfully Imported`,
+      description: "You have successfully imported USDT.",
+      // icon: null,
+      placement
+    });
   };
   return (
     <div className="assetSec">
@@ -57,7 +67,7 @@ function Assets() {
               />
             </div>
             <div style={{ marginTop: "15px" }}>
-              <ButtonComp text={"Done"} />
+              <ButtonComp text={"Done"} onClick={() => openNotification("bottom")} />
             </div>
           </center>
         </div>

@@ -20,6 +20,12 @@
     flex-direction: column;
     // gap: 16px;
     padding-top: 15px;
+    input {
+      padding: 13px 16px;
+    }
+    .ant-input-group-wrapper {
+      padding: 8px 16px;
+    }
   }
   &__assetSec {
     display: flex;
@@ -32,7 +38,7 @@
       font-weight: 600;
     }
   }
- 
+
   &__sendSwapbtn {
     display: flex;
     border-radius: 12px;
@@ -152,10 +158,10 @@
     margin-right: 15px;
 
     // img {
-      // border-left: 1px solid #404058;
-      // padding-left: 10px;
-      // width: 24px;
-      // height: 24px;
+    // border-left: 1px solid #404058;
+    // padding-left: 10px;
+    // width: 24px;
+    // height: 24px;
     // }
   }
 }

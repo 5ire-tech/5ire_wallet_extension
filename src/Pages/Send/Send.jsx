@@ -506,7 +506,7 @@ function Send() {
             />
             <span className={style.errorText}>{err.to}</span>
           </div>
-          <div style={{ marginTop: "17px" }}>
+          <div style={{ marginTop: "17px" }} className="maxInput">
             <InputField
               min="0"
               name="amount"
