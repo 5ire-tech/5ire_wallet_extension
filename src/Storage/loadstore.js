@@ -8,15 +8,19 @@ import {
   windowAndTabState
 } from "../Store/initialState";
 import {
-  hasLength,
   isEqual,
-  isNullorUndef,
-  isString,
   isEmpty,
-  hasProperty
+  isString,
+  hasLength,
+  hasProperty,
+  isNullorUndef
 } from "../Utility/utility";
 
-//local storage data null safety check
+/**
+ * local storage data null safety check
+ * @param {*} key
+ * @returns
+ */
 export const getDataLocal = async (key) => {
   try {
     if (!isString(key) && isEmpty(key.trim())) throw new Error(ERROR_MESSAGES.INVALID_QUERY);
@@ -103,7 +107,12 @@ export class ExtensionStorageHandler {
 
   //*************************************Helper methods*****************************/
 
-  //update the state
+  /**
+   * update the state
+   * @param {*} data
+   * @param {*} state
+   * @returns
+   */
   updateBalance = async (data, state) => {
     if (
       isEqual(
@@ -123,6 +132,22 @@ export class ExtensionStorageHandler {
       ...data
     };
 
+    return await this._updateStorage(newState);
+  };
+
+  /**
+   * update the token balance state
+   * @param {*} data
+   * @param {*} state
+   * @returns
+   */
+  updateTokenBalance = async (data, state) => {
+    const newState = { ...state };
+
+    if (data?.length) {
+      newState.tokens[state?.currentAccount?.evmAddress][state?.currentNetwork?.toLowerCase()] =
+        data;
+    }
     return await this._updateStorage(newState);
   };
 
@@ -309,12 +334,20 @@ export class ExtensionStorageHandler {
 
   /************************** Keyring Related Tasks *********************************/
 
-  // unlockWallet
+  /**
+   * Unlock wallet
+   * @param {*} message
+   */
   unlock = async (message) => {
     if (message.isLogin) this._updateSession(LABELS.ISLOGIN, message.isLogin);
   };
 
-  // set the new Account
+  /**
+   * Create new account
+   * @param {*} message
+   * @param {*} state
+   * @returns
+   */
   createOrRestore = async (message, state) => {
     const { vault, newAccount } = message;
     const currentAccount = {
@@ -325,14 +358,16 @@ export class ExtensionStorageHandler {
       type: newAccount.type
     };
     const allAccountsBalance = this._setAccountBalance(state, newAccount);
+    const tokens = this._setTokens(state, newAccount);
     const pendingTransactionBalance = this._setAllAccountPendingBalance(state, newAccount);
     const txHistory = this._txProperty(state, newAccount.evmAddress);
     const newState = {
       ...state,
       vault,
+      tokens,
+      txHistory,
       isLogin: true,
       currentAccount,
-      txHistory,
       allAccountsBalance,
       pendingTransactionBalance
     };
@@ -341,6 +376,12 @@ export class ExtensionStorageHandler {
     return await this._updateStorage(newState);
   };
 
+  /**
+   * Forgot Password by mnemonic
+   * @param {*} message
+   * @param {*} state
+   * @returns
+   */
   forgotPassByMnemonic = async (message, state) => {
     const { vault, newAccount } = message;
 
@@ -352,10 +393,15 @@ export class ExtensionStorageHandler {
       type: newAccount.type
     };
     let txHistory = {};
+    let tokens = {};
 
     if (state?.txHistory?.hasOwnProperty(newAccount.evmAddress))
       txHistory[newAccount?.evmAddress] = state.txHistory[newAccount.evmAddress];
     else txHistory = this._txProperty({ txHistory: {} }, newAccount.evmAddress);
+
+    if (state?.tokens?.hasOwnProperty(newAccount.evmAddress))
+      tokens[newAccount?.evmAddress] = state.tokens[newAccount.evmAddress];
+    else tokens = this._setTokens({ tokens: {} }, newAccount);
 
     const allAccountsBalance = this._setAccountBalance(state, newAccount);
     const pendingTransactionBalance = this._setAllAccountPendingBalance(state, newAccount);
@@ -363,6 +409,7 @@ export class ExtensionStorageHandler {
     const newState = {
       ...state,
       vault,
+      tokens,
       txHistory,
       currentAccount,
       allAccountsBalance,
@@ -373,15 +420,22 @@ export class ExtensionStorageHandler {
     return await this._updateStorage(newState);
   };
 
-  //import account by mnemonic
+  /**
+   * import account by mnemonic
+   * @param {*} message
+   * @param {*} state
+   * @returns
+   */
   importAccountByMnemonics = async (message, state) => {
     const { newAccount, vault } = message;
     const txHistory = this._txProperty(state, newAccount.evmAddress);
+    const tokens = this._setTokens(state, newAccount);
     const allAccountsBalance = this._setAccountBalance(state, newAccount);
     const pendingTransactionBalance = this._setAllAccountPendingBalance(state, newAccount);
     const newState = {
       ...state,
       vault,
+      tokens,
       txHistory,
       currentAccount: newAccount,
       allAccountsBalance,
@@ -390,7 +444,12 @@ export class ExtensionStorageHandler {
     return await this._updateStorage(newState);
   };
 
-  //add hd account
+  /**
+   * add hd account
+   * @param {*} message
+   * @param {*} state
+   * @returns
+   */
   addAccount = async (message, state) => {
     const { vault, newAccount } = message;
     const currentAccount = {
@@ -401,11 +460,13 @@ export class ExtensionStorageHandler {
       type: newAccount.type
     };
     const txHistory = this._txProperty(state, newAccount.evmAddress);
+    const tokens = this._setTokens(state, newAccount);
     const allAccountsBalance = this._setAccountBalance(state, newAccount);
     const pendingTransactionBalance = this._setAllAccountPendingBalance(state, newAccount);
     const newState = {
       ...state,
       vault,
+      tokens,
       currentAccount,
       txHistory,
       allAccountsBalance,
@@ -414,13 +475,23 @@ export class ExtensionStorageHandler {
     return await this._updateStorage(newState);
   };
 
-  //Lock the wallet
+  /**
+   * Lock the wallet
+   * @param {*} message
+   * @param {*} state
+   * @returns
+   */
   lock = async (message, state) => {
     const newState = { ...state, isLogin: message.isLogin };
     return await this._updateStorage(newState);
   };
 
-  // remove specific account
+  /**
+   * Remove specific account
+   * @param {*} message
+   * @param {*} state
+   * @returns
+   */
   removeAccount = async (message, state) => {
     const { removedAccountAddress, vault, accounts } = message;
 
@@ -444,6 +515,12 @@ export class ExtensionStorageHandler {
     return await this._updateStorage(newState);
   };
 
+  /**
+   * For recover accounts and transactions from old state(0.1.3)
+   * @param {*} message
+   * @param {*} state
+   * @returns
+   */
   recoverOldStateAccounts = async (message, state) => {
     const { vault, currentAccount } = message;
     const pendingTransactionBalance = this._setAllAccountPendingBalance(state, currentAccount);
@@ -497,6 +574,23 @@ export class ExtensionStorageHandler {
     return await this._updateStorage(newState);
   };
 
+  /**
+   * For Save  imported token
+   * @param {*} message
+   * @param {*} state
+   */
+  importToken = async (message, state) => {
+    const newState = { ...state };
+    const currentAddress = newState?.currentAccount?.evmAddress;
+    const tokenResAddress = newState?.tokens[currentAddress];
+    const currentNetwork = newState.currentNetwork.toLowerCase();
+
+    tokenResAddress[currentNetwork].push({
+      ...message
+    });
+    return await this._updateStorage(newState);
+  };
+
   //*********************************** Internal methods **************************/
   _updateStorage = async (state, key) => {
     const checkKey = key || LABELS.STATE;
@@ -507,7 +601,7 @@ export class ExtensionStorageHandler {
     await sessionStorage.set({ [key]: state });
   };
 
-  _txProperty = (state, accountName, oldHistory) => {
+  _txProperty = (state, accountName, oldHistory = null) => {
     return {
       ...state.txHistory,
       [accountName]: oldHistory ? oldHistory : []
@@ -516,14 +610,6 @@ export class ExtensionStorageHandler {
 
   _setAccountBalance = (state, acc) => {
     const obj = {};
-
-    // Object.values(NETWORK).forEach((e) => {
-    //   obj[e.toLowerCase()] = {
-    //     evmBalance: 0,
-    //     nativeBalance: 0,
-    //     totalBalance: 0
-    //   };
-    // });
 
     Object.values(NETWORK).forEach((e) => {
       obj[e.toLowerCase()] = {
@@ -536,6 +622,19 @@ export class ExtensionStorageHandler {
     return {
       ...state.allAccountsBalance,
       [acc.evmAddress]: { ...obj }
+    };
+  };
+
+  _setTokens = (state, acc) => {
+    const obj = {};
+
+    Object.values(NETWORK).forEach((e) => {
+      obj[e.toLowerCase()] = [];
+    });
+
+    return {
+      ...state.tokens,
+      [acc?.evmAddress]: { ...obj }
     };
   };
 

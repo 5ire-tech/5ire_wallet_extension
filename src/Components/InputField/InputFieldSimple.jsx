@@ -98,6 +98,7 @@ export const InputFieldOnly = ({
   type,
   keyUp,
   label,
+  disabled,
   onChange,
   minHeight,
   onDrop,
@@ -109,6 +110,7 @@ export const InputFieldOnly = ({
     <div className={`${style.boxStyle} inputFieldOnly `}>
       <label className={style.boxStyle__label}>{label}</label>
       <Input
+        disabled={disabled}
         onDrop={onDrop}
         autoComplete="off"
         value={value}

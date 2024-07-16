@@ -3,7 +3,7 @@ import { BigNumber } from "bignumber.js";
 import Browser from "webextension-polyfill";
 import { EventEmitter } from "./eventemitter";
 import { HybridKeyring } from "./5ire-keyring";
-import { txNotificationStringTemplate, getFormattedMethod, isManifestV3 } from "./utils";
+import { ERC20_ABI } from "../Constants/erc20.abi";
 import ValidatorNominatorHandler from "./nativehelper";
 import { Connection } from "../Helper/connection.helper";
 import { NotificationAndBedgeManager } from "./platform";
@@ -12,6 +12,7 @@ import ExtensionPortStream from "./extension-port-stream-mod/index";
 import { ExternalConnection, ExternalWindowControl } from "./controller";
 import { getDataLocal, ExtensionStorageHandler } from "../Storage/loadstore";
 import { sendMessageToTab, sendRuntimeMessage } from "../Utility/message_helper";
+import { txNotificationStringTemplate, getFormattedMethod, isManifestV3 } from "./utils";
 import {
   assert,
   compactToU8a,
@@ -67,6 +68,7 @@ let tester = 0;
 export class InitBackground {
   //check if there is time interval binded
   static balanceTimer = null;
+  static tokenBalanceTimer = null;
   static isStatusCheckerRunning = false;
   //background duplex stream for handling the communication between the content-script and background script
   static backgroundStream = null;
@@ -77,6 +79,7 @@ export class InitBackground {
     this.injectScriptInTab();
     this.bindAllEvents();
     this.networkHandler = NetworkHandler.getInstance();
+    this.contractHandler = ContractHandler.getInstance();
     this.rpcRequestProcessor = RpcRequestProcessor.getInstance();
     this.internalHandler = ExternalConnection.getInstance();
     this.keyringHandler = KeyringHandler.getInstance();
@@ -84,6 +87,7 @@ export class InitBackground {
 
     if (!InitBackground.balanceTimer) {
       InitBackground.balanceTimer = this._balanceUpdate();
+      InitBackground.tokenBalanceTimer = this._tokenBalanceUpdate();
       this._checkLapsedPendingTransactions();
     }
   }
@@ -258,7 +262,6 @@ export class InitBackground {
      */
     const internalEventStream = async ({ message }) => {
       const localData = await getDataLocal(LABELS.STATE);
-
       //checks for event from extension ui
       if (
         isEqual(message?.type, MESSAGE_TYPE_LABELS.INTERNAL_TX) ||
@@ -275,6 +278,7 @@ export class InitBackground {
 
     Browser.runtime.onMessage.addListener(async (message) => {
       const localData = await getDataLocal(LABELS.STATE);
+      // console.log("Here in Browser.runtime.onMessage .. ");
       //checks for event from extension ui
       if (
         isEqual(message?.type, MESSAGE_TYPE_LABELS.INTERNAL_TX) ||
@@ -287,7 +291,8 @@ export class InitBackground {
         await this.keyringHandler.keyringHelper(message, localData);
       } else if (message?.type === MESSAGE_TYPE_LABELS.NETWORK_HANDLER) {
         this.networkHandler.handleNetworkRelatedTasks(message, localData);
-      }
+      } else if (message?.type === MESSAGE_TYPE_LABELS.CONTRACT)
+        this.contractHandler.handleContractRelatedTasks(message, localData);
     });
   };
 
@@ -385,6 +390,12 @@ export class InitBackground {
     }, AUTO_BALANCE_UPDATE_TIMER);
   };
 
+  _tokenBalanceUpdate = () => {
+    return setInterval(() => {
+      ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.TOKEN_BALANCE_FETCH);
+    }, AUTO_BALANCE_UPDATE_TIMER);
+  };
+
   _checkLapsedPendingTransactions = () => {
     return setInterval(() => {
       if (!InitBackground.isStatusCheckerRunning && !TransactionQueue.transactionIntervalId) {
@@ -395,7 +406,9 @@ export class InitBackground {
   };
 }
 
-//process the trans
+/**
+ * Process the transactions
+ */
 class RpcRequestProcessor {
   static instance = null;
   static isHttp = true;
@@ -420,7 +433,10 @@ class RpcRequestProcessor {
   rpcCallsMiddleware = async (message, state) => {
     let rpcResponse = null;
     try {
-      if (isEqual(message.type, MESSAGE_TYPE_LABELS.FEE_AND_BALANCE)) {
+      if (
+        isEqual(message.type, MESSAGE_TYPE_LABELS.FEE_AND_BALANCE) ||
+        isEqual(message.type, MESSAGE_TYPE_LABELS.TOKEN_BALANCE)
+      ) {
         if (hasProperty(this.generalWalletRpc, message.event)) {
           rpcResponse = await this.generalWalletRpc[message.event](message, state);
           this.parseGeneralRpc(rpcResponse);
@@ -441,16 +457,16 @@ class RpcRequestProcessor {
 
   //parse and send the message related to fee and balance
   parseGeneralRpc = async (rpcResponse) => {
-    if (!rpcResponse.error) {
+    if (!rpcResponse?.error) {
       //change the state in local storage
-      if (rpcResponse.stateChangeKey)
+      if (rpcResponse?.stateChangeKey)
         await this.services.updateLocalState(
           rpcResponse.stateChangeKey,
           rpcResponse.payload.data,
           rpcResponse.payload?.options
         );
       //send the response message to extension ui
-      if (rpcResponse.eventEmit)
+      if (rpcResponse?.eventEmit)
         this.services.messageToUI(rpcResponse.eventEmit, rpcResponse.payload.data);
     } else {
       ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, rpcResponse.error);
@@ -481,7 +497,9 @@ class RpcRequestProcessor {
   };
 }
 
-//class implementation for transaction queue
+/**
+ * For handling transaction queue related Task
+ */
 class TransactionQueue {
   static instance = null;
   static transactionIntervalId = null;
@@ -920,6 +938,9 @@ class TransactionQueue {
   };
 }
 
+/**
+ * For handling extension events like auto update balance or nework detection
+ */
 export class ExtensionEventHandle {
   static instance = null;
   static eventEmitter = new EventEmitter();
@@ -993,6 +1014,22 @@ export class ExtensionEventHandle {
         state
       );
     });
+
+    ExtensionEventHandle.eventEmitter.on(INTERNAL_EVENT_LABELS.TOKEN_BALANCE_FETCH, async () => {
+      const state = await getDataLocal(LABELS.STATE);
+
+      //if account is not created
+      if (!state.currentAccount.accountName) return;
+
+      await this.rpcRequestProcessor.rpcCallsMiddleware(
+        {
+          event: MESSAGE_EVENT_LABELS.GET_TOKEN_BALANCE,
+          type: MESSAGE_TYPE_LABELS.TOKEN_BALANCE,
+          data: {}
+        },
+        state
+      );
+    });
   };
 
   // bind event for lapsed pending transaction updation
@@ -1050,7 +1087,9 @@ export class ExtensionEventHandle {
   };
 }
 
-//for non rpc tasks
+/**
+ * For non rpc tasks
+ */
 class ExternalTxTasks {
   constructor() {
     this.transactionQueueHandler = TransactionQueue.getInstance();
@@ -1192,7 +1231,9 @@ class ExternalTxTasks {
   };
 }
 
-//for extension common service work
+/**
+ * For extension common service work
+ */
 export class Services {
   constructor() {
     this.notificationAndBedgeManager = NotificationAndBedgeManager.getInstance();
@@ -1607,7 +1648,9 @@ export class Services {
   };
 }
 
-//for transaction realted calls
+/**
+ * For transaction realted calls
+ */
 export class TransactionsRPC {
   constructor() {
     this.hybridKeyring = HybridKeyring.getInstance();
@@ -2092,7 +2135,9 @@ export class TransactionsRPC {
   };
 }
 
-//for balance, fee and other calls
+/**
+ * For balance, fee and other calls
+ */
 export class GeneralWalletRPC {
   // static feeStore = {};
 
@@ -2167,6 +2212,42 @@ export class GeneralWalletRPC {
         null,
         null,
         new ErrorPayload(ERRCODES.ERROR_WHILE_BALANCE_FETCH, err.message)
+      );
+    }
+  };
+
+  getTokenBalance = async (message, state) => {
+    try {
+      const currentAccount = state.currentAccount?.evmAddress;
+      const currentNetwork = state?.currentNetwork?.toLowerCase();
+      const tokens = state?.tokens[currentAccount][currentNetwork];
+      if (tokens?.length) {
+        const tokensToUpdate = [];
+        for (let i = 0; i < tokens.length; i++) {
+          const token = tokens[i];
+          const { evmApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
+          const contract = new evmApi.eth.Contract(ERC20_ABI, token?.address);
+          const balance = await contract.methods.balanceOf(currentAccount).call();
+          tokensToUpdate.push({
+            ...token,
+            balance: balance
+          });
+        }
+
+        const payload = {
+          data: tokensToUpdate
+        };
+
+        return new EventPayload(STATE_CHANGE_ACTIONS.TOKEN_BALANCE, null, payload);
+      }
+      return new EventPayload(null, null, null);
+    } catch (error) {
+      console.log("error while getting tokenBalance : ", error);
+      return new EventPayload(
+        null,
+        null,
+        null,
+        new ErrorPayload(ERRCODES.TOKEN_BALANCE_UPDATE, error?.message)
       );
     }
   };
@@ -2441,7 +2522,9 @@ export class GeneralWalletRPC {
   };
 }
 
-//keyring handler
+/**
+ * keyring handler
+ */
 export class KeyringHandler {
   static instance = null;
 
@@ -2516,7 +2599,9 @@ export class KeyringHandler {
   };
 }
 
-//network task handler
+/**
+ * Network task handler
+ */
 export class NetworkHandler {
   static instance = null;
   static api = {};
@@ -2598,7 +2683,9 @@ export class NetworkHandler {
   };
 }
 
-//for the nominator and validator and other native transactions
+/**
+ * For the nominator and validator and other native
+ */
 export class NativeSigner {
   constructor() {
     this.hybridKeyring = HybridKeyring.getInstance();
@@ -2663,6 +2750,144 @@ export class NativeSigner {
         null,
         new ErrorPayload(ERRCODES.SIGNER_ERROR, ERROR_MESSAGES.SINGER_ERROR)
       );
+    }
+  };
+}
+
+export class ContractHandler {
+  static instance = null;
+
+  constructor() {
+    this.services = new Services();
+  }
+
+  static getInstance = () => {
+    if (!ContractHandler.instance) {
+      ContractHandler.instance = new ContractHandler();
+      delete ContractHandler.constructor;
+    }
+    return ContractHandler.instance;
+  };
+
+  /**
+   * Check if method exists in class instance or not
+   * @param {*} message
+   * @param {*} state
+   */
+  handleContractRelatedTasks = async (message, state) => {
+    try {
+      if (ContractHandler.instance[message.event]) {
+        const keyringResponse = await this._methodCaller(message, state);
+        this._parseResponse(keyringResponse);
+
+        //handle if the method is not the part of system
+      } else new Error(new ErrorPayload(ERRCODES.INTERNAL, ERROR_MESSAGES.UNDEF_PROPERTY)).throw();
+    } catch (err) {
+      ExtensionEventHandle.eventEmitter.emit(
+        INTERNAL_EVENT_LABELS.ERROR,
+        new ErrorPayload(ERRCODES.INTERNAL, err.message)
+      );
+    }
+  };
+
+  /**
+   * Get Contract info like name decimals and symbol
+   * @param {*} message
+   * @param {*} state
+   */
+  getTokenInfo = async (message, state) => {
+    try {
+      const { evmApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
+      const contract = new evmApi.eth.Contract(ERC20_ABI, message?.data?.address);
+      const decimals = await contract.methods.decimals().call();
+      const name = await contract.methods.name().call();
+      const symbol = await contract.methods.symbol().call();
+
+      const payload = {
+        decimals: decimals,
+        symbol: symbol,
+        name: name
+      };
+
+      return new EventPayload(null, message.event, payload);
+    } catch (error) {
+      new ErrorPayload(ERRCODES.CONTRACT_RELATED, ERROR_MESSAGES.ERC20_ONLY);
+    }
+  };
+
+  /**
+   * Import token to the wallet  f
+   * @param {*} message
+   * @param {*} state
+   */
+  importToken = async (message, state) => {
+    try {
+      const { evmApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
+      const contract = new evmApi.eth.Contract(ERC20_ABI, message?.data?.address);
+      const currentAccount = state.currentAccount?.evmAddress;
+      const balance = await contract.methods.balanceOf(currentAccount).call();
+
+      const payload = {
+        ...message?.data,
+        balance
+      };
+      return new EventPayload(message.event, message.event, payload);
+    } catch (error) {
+      console.log("error while importing token : ", error);
+      new ErrorPayload(ERRCODES.CONTRACT_RELATED, ERROR_MESSAGES.IMPORT_ERROR);
+    }
+  };
+
+  /**
+   * *********************** Internal Functions ***********************
+   */
+
+  /**
+   * call the class methods
+   * @param {*} message
+   * @param {*} state
+   * @returns
+   */
+  _methodCaller = async (message, state) => {
+    try {
+      const keyResponse = await ContractHandler.instance[message.event](message, state);
+      return keyResponse;
+    } catch (err) {
+      return new EventPayload(
+        null,
+        message.event,
+        null,
+        new ErrorPayload(
+          err.message.errCode ?? ERRCODES.CONTRACT_RELATED,
+          err.message.errMessage ?? err.message
+        )
+      );
+    }
+  };
+
+  /**
+   * send message to ui or update the storage if needed
+   * @param {*} response
+   */
+  _parseResponse = async (response) => {
+    if (!response?.error) {
+      //change the state in local storage
+      if (response.stateChangeKey)
+        await this.services.updateLocalState(
+          response.stateChangeKey,
+          response.payload,
+          response.payload?.options
+        );
+      //send the response message to extension ui
+      if (response?.eventEmit) this.services.messageToUI(response.eventEmit, response.payload);
+    } else {
+      if (Number(response?.error?.errCode) === 18)
+        response.eventEmit && this.services.messageToUI(response.eventEmit, response.error);
+      else
+        ExtensionEventHandle.eventEmitter.emit(
+          INTERNAL_EVENT_LABELS.ERROR,
+          new ErrorPayload(ERRCODES.CONTRACT_RELATED, response.error)
+        );
     }
   };
 }

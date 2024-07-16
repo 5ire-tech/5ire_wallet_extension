@@ -5,7 +5,7 @@ import { AuthContext } from "../../Store";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import SmallLogo from "../../Assets/smallLogo.svg";
 import ComplSwap from "../../Assets/succeslogo.svg";
-import { validateAddress } from "../../Utility/utility";
+import { debounce, validateAddress } from "../../Utility/utility";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
@@ -25,18 +25,39 @@ function Send() {
   // const [isEd, setEd] = useState(true);
   const [disableBtn, setDisable] = useState(true);
   // const [activeTab, setActiveTab] = useState(NATIVE);
+  const [tokensList, setTokensList] = useState([]);
+  const [searchedInput, setSearchInput] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFaildOpen, setIsFaildOpen] = useState(false);
   const [err, setErr] = useState({ to: "", amount: "" });
   const [isMaxDisabled, setMaxDisabled] = useState(true);
   const [data, setData] = useState({ to: "", amount: "" });
   const [isModalOpen1, setIsModalOpen1] = useState(false);
+  const [selectedToken, setSelectedToken] = useState({
+    name: "5ire",
+    balance: "",
+    address: "",
+    decimals: "",
+    symbol: ""
+  });
 
   const { state, estimatedGas, updateEstimatedGas, updateLoading, edValue } =
     useContext(AuthContext);
-  const { currentAccount, pendingTransactionBalance, currentNetwork, allAccountsBalance } = state;
+  const { currentAccount, pendingTransactionBalance, currentNetwork, allAccountsBalance, tokens } =
+    state;
   const balance = allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()];
   const MINIMUM_BALANCE = edValue;
+
+  const tokensByAddress = tokens[currentAccount?.evmAddress];
+  const tokensToShow = tokensByAddress[currentNetwork?.toLowerCase()];
+
+  useEffect(() => {
+    if (searchedInput) {
+      handleSearch(searchedInput);
+    } else {
+      setTokensList(tokensToShow);
+    }
+  }, [searchedInput]);
 
   const showModal = () => {
     setIsModalOpen1(true);
@@ -47,6 +68,7 @@ function Send() {
   const handleCancel = () => {
     setIsModalOpen1(false);
   };
+
   /**
    * Reset the amount, to and error evm and native address changed
    */
@@ -405,9 +427,33 @@ function Send() {
       setErr((p) => ({ ...p, amount: "" }));
     }
   };
-  // const handleChange1 = (value) => {
-  //   console.log(`selected ${value}`);
-  // };
+
+  const handleChangeSearch = (event) => {
+    const value = event.target.value;
+    setSearchInput(value);
+  };
+
+  const handleSearch = useCallback(
+    debounce((searchQuery) => {
+      const results = tokensToShow.filter((result) =>
+        result?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setTokensList(results);
+    }, 1000),
+    []
+  );
+
+  const handleTokenSelect = (value) => {
+    console.log("event : ", value);
+    setSelectedToken({
+      name: "5ire",
+      balance: "",
+      address: "",
+      decimals: "",
+      symbol: ""
+    });
+  };
+
   const suffix = (
     <button disabled={isMaxDisabled} className="maxBtn" onClick={handleMaxClick}>
       Max
@@ -445,24 +491,7 @@ function Send() {
         <div className={style.sendSec__assetSec}>
           <h2>Asset</h2>
           <div className="assetSelectStyle">
-            <button onClick={showModal}>5ire</button>
-            {/* <Select
-              defaultValue="all"
-              style={{
-                width: 200
-              }}
-              onChange={handleChange1}
-              options={[
-                {
-                  value: "all",
-                  label: "All"
-                },
-                {
-                  value: "lucy",
-                  label: "Lucy"
-                }
-              ]}
-            /> */}
+            <button onClick={showModal}>{selectedToken.name}</button>
             <ModalCustom
               isModalOpen={isModalOpen1}
               handleOk={handleOk}
@@ -473,6 +502,7 @@ function Send() {
                 <div className="innerContct">
                   <p>Select Assets</p>
                   <InputFieldOnly
+                    onChange={handleChangeSearch}
                     coloredBg={true}
                     placeholderBaseColor={true}
                     placeholder={"Search"}
@@ -482,10 +512,17 @@ function Send() {
                   <h3>Name</h3>
                   <h3>Amount</h3>
                 </div>
-                <div className="innerDetail">
-                  <h2>Wrapped Ethereum</h2>
-                  <p>65656565</p>
-                </div>
+                {tokensList.length
+                  ? tokensList.map((e, i) => (
+                      <div
+                        className="innerDetail"
+                        key={i + e?.name}
+                        onClick={() => handleTokenSelect(e)}>
+                        <h2>{e?.name}</h2>
+                        <p>{e?.balance}</p>
+                      </div>
+                    ))
+                  : ""}
               </div>
             </ModalCustom>
           </div>
