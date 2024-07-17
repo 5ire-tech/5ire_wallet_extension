@@ -278,7 +278,6 @@ export class InitBackground {
 
     Browser.runtime.onMessage.addListener(async (message) => {
       const localData = await getDataLocal(LABELS.STATE);
-      // console.log("Here in Browser.runtime.onMessage .. ");
       //checks for event from extension ui
       if (
         isEqual(message?.type, MESSAGE_TYPE_LABELS.INTERNAL_TX) ||
@@ -291,8 +290,9 @@ export class InitBackground {
         await this.keyringHandler.keyringHelper(message, localData);
       } else if (message?.type === MESSAGE_TYPE_LABELS.NETWORK_HANDLER) {
         this.networkHandler.handleNetworkRelatedTasks(message, localData);
-      } else if (message?.type === MESSAGE_TYPE_LABELS.CONTRACT)
+      } else if (message?.type === MESSAGE_TYPE_LABELS.CONTRACT) {
         this.contractHandler.handleContractRelatedTasks(message, localData);
+      }
     });
   };
 
@@ -1771,6 +1771,96 @@ export class TransactionsRPC {
     }
   };
 
+  /**
+   * Transfer token
+   * @param {*} message
+   * @param {*} state
+   */
+  tokenTransfer = async (message, state) => {
+    try {
+      const {
+        data,
+        transactionHistoryTrack
+        //  contractBytecode
+      } = message;
+      let transactionHistory = { ...message?.transactionHistoryTrack };
+
+      const network =
+        transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
+      const {
+        options: { account }
+      } = data;
+
+      const { evmApi } = NetworkHandler.api[network];
+
+      const amt = new BigNumber(data.value)
+        .multipliedBy(10 ** Number(data?.options?.contractDetails?.decimals ?? 0))
+        .toString();
+
+      const to = Web3.utils.toChecksumAddress(data.to);
+
+      const nonce = await evmApi.eth.getTransactionCount(
+        account.evmAddress,
+        STATUS.PENDING.toLowerCase()
+      );
+
+      const contract = new evmApi.eth.Contract(ERC20_ABI, data?.options?.contractDetails?.address);
+
+      const tokenData = contract.methods.transfer(to, Number(amt).noExponents()).encodeABI();
+      const feeRes = await this._getEvmFee(
+        data?.options?.contractDetails?.address,
+        account.evmAddress,
+        0,
+        state,
+        tokenData
+      );
+
+      // Create the transaction object
+      const tx = {
+        to: data?.options?.contractDetails?.address,
+        nonce: nonce,
+        gas: 21000,
+        // gas: +gasEstimate,
+        value: 0,
+        gasLimit: "0x" + Number(feeRes.gasLimit).toString(16),
+        gasPrice: "0x" + Number(feeRes.gasPrice).toString(16),
+        data: contract.methods.transfer(to, Number(amt).noExponents()).encodeABI()
+      };
+
+      // Sign the transaction
+      const signedTx = await this.hybridKeyring.signEthTx(account.evmAddress, tx);
+
+      //Sign And Send Transaction
+      const txInfo = await evmApi.eth.sendSignedTransaction(signedTx);
+      const hash = txInfo.transactionHash;
+
+      if (hash) {
+        transactionHistory.txHash = hash;
+
+        //return the payload
+        const payload = {
+          data: transactionHistory,
+          options: {
+            ...data.options
+          }
+        };
+
+        return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, null, payload);
+      } else {
+        new Error(new ErrorPayload(ERRCODES.NETWORK_REQUEST, ERROR_MESSAGES.TX_FAILED)).throw();
+      }
+      return new EventPayload(STATE_CHANGE_ACTIONS.TX_HISTORY, null, null);
+    } catch (error) {
+      console.log("error while performing token transfer : ", error);
+      return new EventPayload(
+        null,
+        ERROR_EVENTS_LABELS.NETWORK_ERROR,
+        null,
+        new ErrorPayload(ERRCODES.ERROR_WHILE_TRANSACTION, error?.message)
+      );
+    }
+  };
+
   //evm to native swap
   evmToNativeSwap = async (message, state) => {
     //history reference object
@@ -2298,6 +2388,7 @@ export class GeneralWalletRPC {
 
       return new EventPayload(null, message.event, payload);
     } catch (err) {
+      console.log("error while getting fee : ", err )
       return new EventPayload(
         null,
         null,

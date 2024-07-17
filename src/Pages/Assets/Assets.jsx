@@ -162,7 +162,7 @@ function Assets() {
                     <WhiteLogo />
                     <div className="assetSec__leftSec__accountConatct">
                       <h2>{e?.name}</h2>
-                      <p>{e?.balance}</p>
+                      <p>{e?.balance ? Number(e.balance) / 10 ** Number(e.decimals) : 0}</p>
                     </div>
                   </div>
                   <div className="assetSec__rytSec">

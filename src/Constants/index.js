@@ -54,6 +54,7 @@ export const TX_TYPE = {
   SEND: "Transfer",
   NATIVE_APP: "Native App",
   NATIVE_SIGNER: "Native Signer",
+  TOKEN_TRANSFER: "Token Transfer",
   CONTRACT_EXECUTION: "Contract Execution",
   CONTRACT_DEPLOYMENT: "Contract Deployment"
 };
@@ -290,6 +291,7 @@ export const MESSAGE_EVENT_LABELS = {
   NATIVE_TX: "nativeTransfer",
   LOGIN_UPDATE: "loginUpdate",
   NOTIFICATION: "notification",
+  TOKEN_TRANSFER: "tokenTransfer",
   GET_TOKEN_BALANCE: "getTokenBalance",
   BACKGROUND_ERROR: "backgroundError",
   UPDATE_TX_HISTORY: "txupdatehistory",

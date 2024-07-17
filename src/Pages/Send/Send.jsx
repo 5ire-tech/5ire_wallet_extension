@@ -34,10 +34,10 @@ function Send() {
   const [data, setData] = useState({ to: "", amount: "" });
   const [isModalOpen1, setIsModalOpen1] = useState(false);
   const [selectedToken, setSelectedToken] = useState({
-    name: "5ire",
-    balance: "",
     address: "",
+    balance: "",
     decimals: "",
+    name: "5ire",
     symbol: ""
   });
 
@@ -195,7 +195,9 @@ function Send() {
   //   setData((p) => ({ ...p, amount: "" }));
   // };
 
-  //validate amount
+  /**
+   * Validate Amount
+   */
   const validateAmount = useCallback(() => {
     if (!data.amount) setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INPUT_REQUIRED }));
     else if (isNaN(data.amount))
@@ -203,15 +205,29 @@ function Send() {
     else if (Number(data.amount) <= 0)
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.AMOUNT_SHOULD_BE_GREATER_THAN_0 }));
     else {
-      if (balance?.transferableBalance < MINIMUM_BALANCE)
-        setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
-      else if (
-        Number(data.amount) >=
-        Number(balance?.transferableBalance) -
-          pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].evm
-      )
-        setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
-      else setErr((p) => ({ ...p, amount: "" }));
+      if (selectedToken.name !== "5ire") {
+        if (
+          data?.amount > selectedToken.balance ||
+          Number(balance?.transferableBalance) -
+            pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
+              .evm <=
+            0
+        ) {
+          setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
+        } else {
+          setErr((p) => ({ ...p, amount: "" }));
+        }
+      } else {
+        if (balance?.transferableBalance < MINIMUM_BALANCE)
+          setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
+        else if (
+          Number(data.amount) >=
+          Number(balance?.transferableBalance) -
+            pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()].evm
+        )
+          setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
+        else setErr((p) => ({ ...p, amount: "" }));
+      }
     }
     // } else if (activeTab === NATIVE) {
     //   if (balance?.nativeBalance < MINIMUM_BALANCE)
@@ -346,24 +362,45 @@ function Send() {
   const handleApprove = useCallback(async () => {
     try {
       // if (activeTab === EVM) {
-      updateLoading(true);
-      //pass the message request for evm transfer
-      sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TX, {
-        to: data.to,
-        value: data.amount,
-        options: {
-          account: currentAccount,
-          network: currentNetwork,
-          type: TX_TYPE.SEND,
-          isEvm: true,
-          fee: estimatedGas
-        },
-        isEd: false
-      });
-      setTimeout(() => {
-        setIsModalOpen(true);
-        updateLoading(false);
-      }, 3000);
+      if (selectedToken.name !== "5ire") {
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.TOKEN_TRANSFER, {
+          to: data.to,
+          value: data.amount,
+          options: {
+            isEvm: true,
+            fee: estimatedGas,
+            account: currentAccount,
+            network: currentNetwork,
+            type: TX_TYPE.TOKEN_TRANSFER,
+            contractDetails: selectedToken
+          },
+          isEd: false
+        });
+
+        setTimeout(() => {
+          setIsModalOpen(true);
+          updateLoading(false);
+        }, 3000);
+      } else {
+        updateLoading(true);
+        //pass the message request for evm transfer
+        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TX, {
+          to: data.to,
+          value: data.amount,
+          options: {
+            account: currentAccount,
+            network: currentNetwork,
+            type: TX_TYPE.SEND,
+            isEvm: true,
+            fee: estimatedGas
+          },
+          isEd: false
+        });
+        setTimeout(() => {
+          setIsModalOpen(true);
+          updateLoading(false);
+        }, 3000);
+      }
       // } else if (activeTab === NATIVE) {
       //   if (balance?.nativeBalance < MINIMUM_BALANCE) {
       //     setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
@@ -445,13 +482,20 @@ function Send() {
 
   const handleTokenSelect = (value) => {
     console.log("event : ", value);
-    setSelectedToken({
-      name: "5ire",
-      balance: "",
-      address: "",
-      decimals: "",
-      symbol: ""
-    });
+    if (value?.name === selectedToken?.name) {
+      setSelectedToken({
+        address: "",
+        balance: "",
+        decimals: "",
+        name: "5ire",
+        symbol: ""
+      });
+    } else {
+      setSelectedToken({
+        ...value,
+        balance: value?.balance ? Number(value?.balance) / 10 ** Number(value?.decimals ?? 0) : 0
+      });
+    }
   };
 
   const suffix = (
@@ -519,7 +563,9 @@ function Send() {
                         key={i + e?.name}
                         onClick={() => handleTokenSelect(e)}>
                         <h2>{e?.name}</h2>
-                        <p>{e?.balance}</p>
+                        <p>
+                          {e?.balance ? Number(e?.balance) / 10 ** Number(e?.decimals ?? 0) : 0}
+                        </p>
                       </div>
                     ))
                   : ""}

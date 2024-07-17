@@ -1,4 +1,4 @@
-import toast from "react-hot-toast"; 
+import toast from "react-hot-toast";
 import { ROUTES } from "../Routes/index";
 import Browser from "webextension-polyfill";
 import { useNavigate } from "react-router-dom";
