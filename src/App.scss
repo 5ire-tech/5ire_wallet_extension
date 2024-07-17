@@ -467,6 +467,11 @@ body {
 
 .fireCustmModel {
   .innerContct {
+    p {
+      font-size: 20px !important;
+      color: #fff !important;
+      text-align: center;
+    }
     margin-top: 5px;
   }
   input {
@@ -757,4 +762,10 @@ body {
 .detailTsxPage {
   height: 330px;
   overflow: auto;
+}
+
+.maxInput {
+  .ant-input-group-wrapper {
+    padding: 8.3px 16px;
+  }
 }

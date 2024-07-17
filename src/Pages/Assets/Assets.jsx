@@ -1,4 +1,5 @@
 import "./Assets.scss";
+import { notification } from "antd";
 import { AuthContext } from "../../Store";
 import { validateAddress } from "../../Utility/utility";
 import React, { useContext, useEffect, useState } from "react";
@@ -92,8 +93,17 @@ function Assets() {
       symbol: tokenDetails.symbol,
       name: tokenDetails.name
     });
+    openNotification("bottom")
   };
 
+  const openNotification = (placement) => {
+    notification.info({
+      message: `Token Succesfully Imported`,
+      description: "You have successfully imported USDT.",
+      // icon: null,
+      placement
+    });
+  };
   return (
     <div className="assetSec">
       <div className="topDetail">
@@ -173,84 +183,6 @@ function Assets() {
               );
             })
           : ""}
-        {/* <div className="assetSec__accountActive">
-          <div className="assetSec__leftSec">
-            <WhiteLogo />
-            <div className="assetSec__leftSec__accountConatct">
-              <h2>Wrapped Ethereum</h2>
-              <p>$2600</p>
-            </div>
-          </div>
-          <div className="assetSec__rytSec">
-            <h5>$2820.54</h5>
-            <h3>1.13 WETH</h3>
-          </div>
-        </div>
-        <div className="assetSec__accountActive">
-          <div className="assetSec__leftSec">
-            <WhiteLogo />
-            <div className="assetSec__leftSec__accountConatct">
-              <h2>Dogecoin</h2>
-              <p>$2600</p>
-            </div>
-          </div>
-          <div className="assetSec__rytSec">
-            <h5>$2820.54</h5>
-            <h3>1.13 WETH</h3>
-          </div>
-        </div>
-        <div className="assetSec__accountActive">
-          <div className="assetSec__leftSec">
-            <WhiteLogo />
-            <div className="assetSec__leftSec__accountConatct">
-              <h2>Wrapped Ethereum</h2>
-              <p>$2600</p>
-            </div>
-          </div>
-          <div className="assetSec__rytSec">
-            <h5>$2820.54</h5>
-            <h3>1.13 WETH</h3>
-          </div>
-        </div>
-        <div className="assetSec__accountActive">
-          <div className="assetSec__leftSec">
-            <WhiteLogo />
-            <div className="assetSec__leftSec__accountConatct">
-              <h2>Dogecoin</h2>
-              <p>$2600</p>
-            </div>
-          </div>
-          <div className="assetSec__rytSec">
-            <h5>$2820.54</h5>
-            <h3>1.13 WETH</h3>
-          </div>
-        </div>
-        <div className="assetSec__accountActive">
-          <div className="assetSec__leftSec">
-            <WhiteLogo />
-            <div className="assetSec__leftSec__accountConatct">
-              <h2>Wrapped Ethereum</h2>
-              <p>$2600</p>
-            </div>
-          </div>
-          <div className="assetSec__rytSec">
-            <h5>$2820.54</h5>
-            <h3>1.13 WETH</h3>
-          </div>
-        </div>
-        <div className="assetSec__accountActive">
-          <div className="assetSec__leftSec">
-            <WhiteLogo />
-            <div className="assetSec__leftSec__accountConatct">
-              <h2>Dogecoin</h2>
-              <p>$2600</p>
-            </div>
-          </div>
-          <div className="assetSec__rytSec">
-            <h5>$2820.54</h5>
-            <h3>1.13 WETH</h3>
-          </div>
-        </div> */}
       </div>
     </div>
   );

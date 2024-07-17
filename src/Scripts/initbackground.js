@@ -2388,7 +2388,7 @@ export class GeneralWalletRPC {
 
       return new EventPayload(null, message.event, payload);
     } catch (err) {
-      console.log("error while getting fee : ", err )
+      console.log("error while getting fee : ", err);
       return new EventPayload(
         null,
         null,
