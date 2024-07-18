@@ -3,7 +3,7 @@ import { notification } from "antd";
 import { AuthContext } from "../../Store";
 import { validateAddress } from "../../Utility/utility";
 import React, { useContext, useEffect, useState } from "react";
-import { WhiteLogo } from "../../Assets/StoreAsset/StoreAsset";
+// import { WhiteLogo } from "../../Assets/StoreAsset/StoreAsset";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
@@ -93,7 +93,7 @@ function Assets() {
       symbol: tokenDetails.symbol,
       name: tokenDetails.name
     });
-    openNotification("bottom")
+    openNotification("bottom");
   };
 
   const openNotification = (placement) => {
@@ -128,7 +128,7 @@ function Assets() {
                 placeholder={"Address"}
                 onChange={handleInput}
               />
-              <p style={{ color: "red" }}>{error.address}</p>
+              <p style={{ color: "red", textAlign: "left", fontSize: "12px" }}>{error.address}</p>
             </div>
 
             {showRestInputs && (
@@ -169,15 +169,16 @@ function Assets() {
               return (
                 <div className="assetSec__accountActive" key={i + e?.name}>
                   <div className="assetSec__leftSec">
-                    <WhiteLogo />
+                    <h6 className="imgWord">{e?.name ? e?.name[0].toUpperCase() : "T"}</h6>
                     <div className="assetSec__leftSec__accountConatct">
                       <h2>{e?.name}</h2>
-                      <p>{e?.balance ? Number(e.balance) / 10 ** Number(e.decimals) : 0}</p>
+                      <h5>$2820.54</h5>
                     </div>
                   </div>
                   <div className="assetSec__rytSec">
-                    <h5>$2820.54</h5>
-                    <h3>1.13 WETH</h3>
+                    <p>{e?.balance ? Number(e.balance) / 10 ** Number(e.decimals) : 0}</p>
+
+                    {/* <h3>1.13 WETH</h3> */}
                   </div>
                 </div>
               );

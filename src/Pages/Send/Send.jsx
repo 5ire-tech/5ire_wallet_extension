@@ -69,6 +69,8 @@ function Send() {
     setIsModalOpen1(false);
   };
 
+  console.log("selectedToken : ", selectedToken);
+
   /**
    * Reset the amount, to and error evm and native address changed
    */
@@ -495,6 +497,7 @@ function Send() {
         ...value,
         balance: value?.balance ? Number(value?.balance) / 10 ** Number(value?.decimals ?? 0) : 0
       });
+      handleCancel();
     }
   };
 
@@ -559,7 +562,7 @@ function Send() {
                 {tokensList.length
                   ? tokensList.map((e, i) => (
                       <div
-                        className="innerDetail"
+                        className={`innerDetail ${selectedToken?.name === e?.name ? "active" : ""}`}
                         key={i + e?.name}
                         onClick={() => handleTokenSelect(e)}>
                         <h2>{e?.name}</h2>
