@@ -6,7 +6,10 @@ input::placeholder {
 
 .inputPassword {
   border-radius: 15px !important;
-  border: 1px solid var(--UI-Secondary-Blue-Tone, #00A7DC26)!important;
+  border: 1px solid #dddddd82 !important;
+  &:hover {
+    border: 1px solid #00a7dc !important;
+  }
 
   span {
     cursor: pointer !important;
@@ -69,8 +72,8 @@ input::placeholder {
     border: 1px solid #dddddd82;
     color: $white !important;
     font-size: 14px;
-    &:hover{
-    border: 1px solid #00A7DC;
+    &:hover {
+      border: 1px solid #00a7dc;
     }
 
     .ant-input-wrapper {
@@ -108,14 +111,13 @@ input::placeholder {
   margin-bottom: 0;
 }
 
-
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
   margin: 0;

@@ -166,7 +166,9 @@ body {
       color: $gray8D96AA !important;
     }
   }
-
+  .ant-input-disabled {
+    color: #fff;
+  }
   .eyeIcon {
     position: absolute;
     right: 10px;
@@ -488,12 +490,17 @@ body {
       color: $white;
     }
   }
+  .active {
+    border-radius: 8px;
+    background: #e0e0e036;
+  }
   .innerDetail {
     padding: 8px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-top: 5px;
+    cursor: pointer;
     &:hover {
       border-radius: 8px;
       background: #e0e0e036;

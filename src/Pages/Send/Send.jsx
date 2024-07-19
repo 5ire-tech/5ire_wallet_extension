@@ -69,6 +69,8 @@ function Send() {
     setIsModalOpen1(false);
   };
 
+  console.log("selectedToken : ", selectedToken);
+
   /**
    * Reset the amount, to and error evm and native address changed
    */
@@ -541,6 +543,7 @@ function Send() {
         balance: value?.balance ? Number(value?.balance) / 10 ** Number(value?.decimals ?? 0) : 0
       });
     }
+    handleCancel();
   };
 
   const suffix = (
@@ -580,7 +583,7 @@ function Send() {
         <div className={style.sendSec__assetSec}>
           <h2>Asset</h2>
           <div className="assetSelectStyle">
-            <button onClick={showModal}>{selectedToken?.address ? selectedToken.address : "5ire"}</button>
+            <button onClick={showModal}>{selectedToken?.name ? selectedToken.name : "5ire"}</button>
             <ModalCustom
               isModalOpen={isModalOpen1}
               handleOk={handleOk}
@@ -604,7 +607,9 @@ function Send() {
                 {tokensList.length
                   ? tokensList.slice(0, 3).map((e, i) => (
                       <div
-                        className="innerDetail"
+                        className={`innerDetail ${
+                          selectedToken?.address === e?.address ? "active" : ""
+                        }`}
                         key={i + e?.name}
                         onClick={() => handleTokenSelect(e)}>
                         <h2>{e?.name}</h2>
