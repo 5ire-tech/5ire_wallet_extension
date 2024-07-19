@@ -102,6 +102,7 @@ export const ERROR_MESSAGES = {
   INVALID_MNEMONIC: "Invalid mnemonic",
   INCORRECT_PASS: "Incorrect password",
   INCORRECT_ADDRESS: "Invalid address",
+  TOKEN_ALREDY: "Token already exists",
   INCORRECT_KEYRING: "Invalid keyring",
   ACCOUNT_EXISTS: "Account already exist",
   INPUT_REQUIRED: "This field is required",

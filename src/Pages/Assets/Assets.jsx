@@ -1,12 +1,12 @@
 import "./Assets.scss";
 import { notification } from "antd";
 import { AuthContext } from "../../Store";
-import { validateAddress } from "../../Utility/utility";
 import React, { useContext, useEffect, useState } from "react";
 import { WhiteLogo } from "../../Assets/StoreAsset/StoreAsset";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
+import { formatBalance, validateAddress } from "../../Utility/utility";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import { ERROR_MESSAGES, MESSAGE_EVENT_LABELS, MESSAGE_TYPE_LABELS } from "../../Constants";
 
@@ -14,12 +14,8 @@ function Assets() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [contractAddress, setContractAddress] = useState("");
   const [showRestInputs, setShowRestInputs] = useState(false);
-  const [error, setError] = useState({
-    address: ""
-  });
-  const { state, tokenErr, tokenDetails, showSuccessModal } = useContext(AuthContext);
+  const { state, tokenErr, tokenDetails, showSuccessModal, setTokenErr } = useContext(AuthContext);
   const { currentNetwork, currentAccount, tokens } = state;
-
   const tokensByAddress = tokens[currentAccount?.evmAddress];
   const tokensToShow = tokensByAddress[currentNetwork?.toLowerCase()] ?? [];
 
@@ -31,13 +27,11 @@ function Assets() {
 
   useEffect(() => {
     if (tokenErr) {
-      console.log("tokenErr : ", tokenErr);
       setShowRestInputs(false);
-      setError({ ...error, address: tokenErr });
-    } else if (!tokenErr && tokenDetails.symbol) {
+    } else if (!tokenErr && tokenDetails.decimals) {
       setShowRestInputs(true);
     }
-  }, [tokenErr, tokenDetails?.symbol]);
+  }, [tokenErr, tokenDetails?.decimals]);
 
   const handleInput = async (event) => {
     const value = event.target.value;
@@ -45,33 +39,21 @@ function Assets() {
     if (value.length === 42) {
       const res = await validateAddress(value);
       if (res.error) {
-        setError({
-          ...error,
-          address: res.data
-        });
+        setTokenErr(res.data);
         setShowRestInputs(false);
       } else {
         const result = tokensToShow.find((item) => item?.address === value);
         if (result) {
-          setError({
-            ...error,
-            address: "Token already exists"
-          });
+          setTokenErr(ERROR_MESSAGES.TOKEN_ALREDY);
         } else {
           sendRuntimeMessage(MESSAGE_TYPE_LABELS.CONTRACT, MESSAGE_EVENT_LABELS.TOKEN_INFO, {
             address: value ?? ""
           });
-          setError({
-            ...error,
-            address: ""
-          });
+          setTokenErr("");
         }
       }
     } else {
-      setError({
-        ...error,
-        address: ERROR_MESSAGES.INCORRECT_ADDRESS
-      });
+      setTokenErr(ERROR_MESSAGES.INCORRECT_ADDRESS);
       setShowRestInputs(false);
     }
   };
@@ -93,7 +75,8 @@ function Assets() {
       symbol: tokenDetails.symbol,
       name: tokenDetails.name
     });
-    openNotification("bottom")
+    openNotification("bottom");
+    setTokenErr("");
   };
 
   const openNotification = (placement) => {
@@ -128,7 +111,7 @@ function Assets() {
                 placeholder={"Address"}
                 onChange={handleInput}
               />
-              <p style={{ color: "red" }}>{error.address}</p>
+              <p style={{ color: "red" }}>{tokenErr}</p>
             </div>
 
             {showRestInputs && (
@@ -172,7 +155,11 @@ function Assets() {
                     <WhiteLogo />
                     <div className="assetSec__leftSec__accountConatct">
                       <h2>{e?.name}</h2>
-                      <p>{e?.balance ? Number(e.balance) / 10 ** Number(e.decimals) : 0}</p>
+                      <p>
+                        {formatBalance(
+                          e?.balance ? Number(e.balance) / 10 ** Number(e.decimals) : 0
+                        )}
+                      </p>
                     </div>
                   </div>
                   <div className="assetSec__rytSec">

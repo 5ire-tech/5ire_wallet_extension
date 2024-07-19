@@ -361,6 +361,7 @@ export default function Context({ children }) {
     //data setters
     setState,
     setAccName,
+    setTokenErr,
     setUserPass,
     updateState,
     setInputError,

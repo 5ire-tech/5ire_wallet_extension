@@ -5,11 +5,11 @@ import { AuthContext } from "../../Store";
 import FaildSwap from "../../Assets/DarkLogo.svg";
 import SmallLogo from "../../Assets/smallLogo.svg";
 import ComplSwap from "../../Assets/succeslogo.svg";
-import { debounce, validateAddress } from "../../Utility/utility";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import React, { useState, useEffect, useContext, useCallback } from "react";
+import { debounce, formatBalance, validateAddress } from "../../Utility/utility";
 import { InputField, InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import {
   REGEX,
@@ -37,7 +37,7 @@ function Send() {
     address: "",
     balance: "",
     decimals: "",
-    name: "5ire",
+    name: "",
     symbol: ""
   });
 
@@ -111,42 +111,67 @@ function Send() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [err.to, err.amount, data?.to, data?.amount, estimatedGas]);
 
-  //Check for Insufficent balance
+  /**
+   * Check for Insufficent balance after fee getting
+   */
   useEffect(() => {
     if (!estimatedGas) {
       setDisable(true);
     } else {
       // if (activeTab === EVM) {
-      if (estimatedGas && !data.amount && data.to) {
-        const amount =
-          Number(balance?.transferableBalance) -
-          (Number(estimatedGas) +
-            EXTRA_FEE +
-            pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm);
+      if (selectedToken.address === "") {
+        if (estimatedGas && !data.amount && data.to) {
+          const amount =
+            Number(balance?.transferableBalance) -
+            (Number(estimatedGas) +
+              EXTRA_FEE +
+              pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()]
+                .evm);
 
-        // Number(amount) <= 0 && toast.error(ERROR_MESSAGES.INSUFFICENT_BALANCE);
-        Number(amount) <= 0 &&
-          setErr((p) => ({
-            ...p,
-            amount: ERROR_MESSAGES.INSUFFICENT_BALANCE
-          }));
+          Number(amount) <= 0 &&
+            setErr((p) => ({
+              ...p,
+              amount: ERROR_MESSAGES.INSUFFICENT_BALANCE
+            }));
 
-        updateEstimatedGas(amount > 0 ? estimatedGas : null);
-        setData((p) => ({ ...p, amount: amount > 0 ? amount : "" }));
-        return;
-      } else if (data?.amount && estimatedGas && data?.to) {
-        if (
-          Number(data.amount) + Number(estimatedGas) >
-          Number(balance?.transferableBalance) -
-            pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
-        ) {
-          updateEstimatedGas(null);
-          setErr((p) => ({
-            ...p,
-            amount: ERROR_MESSAGES.INSUFFICENT_BALANCE
-          }));
+          updateEstimatedGas(amount > 0 ? estimatedGas : null);
+          setData((p) => ({ ...p, amount: amount > 0 ? amount : "" }));
+          return;
+        } else if (data?.amount && estimatedGas && data?.to) {
+          if (
+            Number(data.amount) + Number(estimatedGas) >
+            Number(balance?.transferableBalance) -
+              pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
+          ) {
+            updateEstimatedGas(null);
+            setErr((p) => ({
+              ...p,
+              amount: ERROR_MESSAGES.INSUFFICENT_BALANCE
+            }));
+          } else {
+            setErr((p) => ({ ...p, amount: "" }));
+          }
         } else {
-          setErr((p) => ({ ...p, amount: "" }));
+          if (estimatedGas && !data.amount && data.to) {
+            const amount = selectedToken.balance;
+            Number(estimatedGas) > balance?.transferableBalance &&
+              setErr((p) => ({
+                ...p,
+                amount: ERROR_MESSAGES.INSUFFICENT_BALANCE
+              }));
+
+            updateEstimatedGas(amount > 0 ? estimatedGas : null);
+            setData((p) => ({ ...p, amount: amount > 0 ? amount : "" }));
+            return;
+          } else if (Number(data.amount) + Number(estimatedGas) > Number(selectedToken?.balance)) {
+            updateEstimatedGas(null);
+            setErr((p) => ({
+              ...p,
+              amount: ERROR_MESSAGES.INSUFFICENT_BALANCE
+            }));
+          } else {
+            setErr((p) => ({ ...p, amount: "" }));
+          }
         }
       }
       // }
@@ -205,7 +230,7 @@ function Send() {
     else if (Number(data.amount) <= 0)
       setErr((p) => ({ ...p, amount: ERROR_MESSAGES.AMOUNT_SHOULD_BE_GREATER_THAN_0 }));
     else {
-      if (selectedToken.name !== "5ire") {
+      if (selectedToken.address !== "") {
         if (
           data?.amount > selectedToken.balance ||
           Number(balance?.transferableBalance) -
@@ -250,7 +275,9 @@ function Send() {
     MINIMUM_BALANCE
   ]);
 
-  //validate to address
+  /**
+   * Validate Address
+   */
   const validateToAddress = useCallback(async () => {
     // if (activeTab === EVM) {
     if (!data.to) setErr((p) => ({ ...p, to: ERROR_MESSAGES.INPUT_REQUIRED }));
@@ -284,7 +311,10 @@ function Send() {
     // }
   }, [currentAccount?.evmAddress, data.to]);
 
-  //for getting the fee details
+  /**
+   * Fetch fee details
+   * @param {*} loader
+   */
   const getFee = async (loader = true) => {
     // if (activeTab === NATIVE && Number(balance?.nativeBalance) > 0) {
     //   loader && updateLoading(true);
@@ -311,6 +341,9 @@ function Send() {
     }
   };
 
+  /**
+   * Handle Amount and Address Input Change
+   */
   const handleChange = useCallback(
     (e) => {
       let val = e.target.value;
@@ -349,7 +382,10 @@ function Send() {
     [data.to, data.amount, updateEstimatedGas]
   );
 
-  //Perform action on click of Enter
+  /**
+   * Perform action on click of Enter
+   * @param {*} e
+   */
   const handleEnter = (e) => {
     if (e.key === LABELS.ENTER) {
       if (!disableBtn) {
@@ -358,11 +394,13 @@ function Send() {
     }
   };
 
-  //Perform Transfer
+  /**
+   * Perform Transfer
+   */
   const handleApprove = useCallback(async () => {
     try {
       // if (activeTab === EVM) {
-      if (selectedToken.name !== "5ire") {
+      if (selectedToken?.address !== "") {
         sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.TOKEN_TRANSFER, {
           to: data.to,
           value: data.amount,
@@ -450,7 +488,9 @@ function Send() {
   //   setData({ to: "", amount: "" });
   // };
 
-  //handle Ok and cancel button of popup
+  /**
+   * handle Ok and cancel button of popup
+   */
   const handle_OK_Cancel = () => {
     setIsFaildOpen(false);
     setIsModalOpen(false);
@@ -470,10 +510,16 @@ function Send() {
     setSearchInput(value);
   };
 
+  /**
+   * Perform Search
+   */
   const handleSearch = useCallback(
     debounce((searchQuery) => {
-      const results = tokensToShow.filter((result) =>
-        result?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+      const results = tokensToShow.filter(
+        (result) =>
+          result?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          result?.symbol?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          result?.address?.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setTokensList(results);
     }, 1000),
@@ -481,13 +527,12 @@ function Send() {
   );
 
   const handleTokenSelect = (value) => {
-    console.log("event : ", value);
-    if (value?.name === selectedToken?.name) {
+    if (value?.address === selectedToken?.address) {
       setSelectedToken({
         address: "",
         balance: "",
         decimals: "",
-        name: "5ire",
+        name: "",
         symbol: ""
       });
     } else {
@@ -535,7 +580,7 @@ function Send() {
         <div className={style.sendSec__assetSec}>
           <h2>Asset</h2>
           <div className="assetSelectStyle">
-            <button onClick={showModal}>{selectedToken.name}</button>
+            <button onClick={showModal}>{selectedToken?.address ? selectedToken.address : "5ire"}</button>
             <ModalCustom
               isModalOpen={isModalOpen1}
               handleOk={handleOk}
@@ -557,14 +602,16 @@ function Send() {
                   <h3>Amount</h3>
                 </div>
                 {tokensList.length
-                  ? tokensList.map((e, i) => (
+                  ? tokensList.slice(0, 3).map((e, i) => (
                       <div
                         className="innerDetail"
                         key={i + e?.name}
                         onClick={() => handleTokenSelect(e)}>
                         <h2>{e?.name}</h2>
                         <p>
-                          {e?.balance ? Number(e?.balance) / 10 ** Number(e?.decimals ?? 0) : 0}
+                          {formatBalance(
+                            e?.balance ? Number(e?.balance) / 10 ** Number(e?.decimals ?? 0) : 0
+                          )}
                         </p>
                       </div>
                     ))

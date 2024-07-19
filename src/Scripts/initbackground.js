@@ -2902,7 +2902,8 @@ export class ContractHandler {
 
       return new EventPayload(null, message.event, payload);
     } catch (error) {
-      new ErrorPayload(ERRCODES.CONTRACT_RELATED, ERROR_MESSAGES.ERC20_ONLY);
+      console.log("Error while hetting token : ", error);
+      new Error(new ErrorPayload(ERRCODES.CONTRACT_RELATED, ERROR_MESSAGES.ERC20_ONLY)).throw();
     }
   };
 
@@ -2925,7 +2926,7 @@ export class ContractHandler {
       return new EventPayload(message.event, message.event, payload);
     } catch (error) {
       console.log("error while importing token : ", error);
-      new ErrorPayload(ERRCODES.CONTRACT_RELATED, ERROR_MESSAGES.IMPORT_ERROR);
+      new Error(new ErrorPayload(ERRCODES.CONTRACT_RELATED, ERROR_MESSAGES.IMPORT_ERROR)).throw();
     }
   };
 
@@ -2963,7 +2964,7 @@ export class ContractHandler {
   _parseResponse = async (response) => {
     if (!response?.error) {
       //change the state in local storage
-      if (response.stateChangeKey)
+      if (response?.stateChangeKey)
         await this.services.updateLocalState(
           response.stateChangeKey,
           response.payload,
