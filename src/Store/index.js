@@ -10,17 +10,17 @@ import { TabMessagePayload } from "../Utility/network_calls";
 import { bindRuntimeMessageListener } from "../Utility/message_helper";
 import {
   LABELS,
+  DECIMALS,
   TABS_EVENT,
   MESSAGE_TYPE_LABELS,
-  MESSAGE_EVENT_LABELS,
-  DECIMALS
+  MESSAGE_EVENT_LABELS
 } from "../Constants";
 import {
   userState,
   externalControls,
+  windowAndTabState,
   newAccountInitialState,
-  initialExternalNativeTransaction,
-  windowAndTabState
+  initialExternalNativeTransaction
 } from "./initialState";
 
 //context created
@@ -29,6 +29,7 @@ export const AuthContext = createContext();
 //main context wraper
 export default function Context({ children }) {
   const navigate = useNavigate();
+  const [edValue, setEDValue] = useState(1);
   const [state, setState] = useState(userState);
   const [userPass, setUserPass] = useState(null);
   const [isLoading, setLoading] = useState(false);
@@ -41,10 +42,9 @@ export default function Context({ children }) {
   const [estimatedGas, setEstimatedGas] = useState(null);
   const [newWalletName, setNewWalletName] = useState("");
   const [passVerified, setPassVerified] = useState(false);
+  const [showCongratLoader, setShowCongratLoader] = useState(false);
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
   const [externalControlsState, setExternalControlState] = useState(externalControls);
-  const [showCongratLoader, setShowCongratLoader] = useState(false);
-  const [edValue, setEDValue] = useState(1);
 
   //for check if localstate is loaded or not
   const [isStateLoaded, setStateLoaded] = useState(false);

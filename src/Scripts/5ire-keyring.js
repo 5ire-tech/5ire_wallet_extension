@@ -602,11 +602,10 @@ export class HybridKeyring extends EventEmitter {
     return HybridKeyring.polkaKeyring.getPair(address);
   }
 
-  async signEthTx(address, tx) {
+  async signEthTx(address, tx, chainId) {
     const acc = HybridKeyring.accounts.find((acc) => acc.evmAddress === address);
 
-    // const common = Common.custom({ chainId: 997, networkId: 1 }, { hardfork: "london" });
-    const common = Common.custom({ chainId: 995, networkId: 1 }, { hardfork: "london" });
+    const common = Common.custom({ chainId, networkId: 1 }, { hardfork: "london" });
     const txn = TransactionFactory.fromTxData(tx, { common });
 
     let signedTx = null;

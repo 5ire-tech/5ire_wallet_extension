@@ -48,7 +48,8 @@ import {
   TRANSACTION_STATUS_CHECK_TIMER,
   LAPSED_TRANSACTION_CHECKER_TIMER,
   RESTRICTED_ETHEREUM_METHODS,
-  WEI_IN_ONE_ETH
+  WEI_IN_ONE_ETH,
+  CHAIN_ID
 } from "../Constants";
 import { log, isEqual, hasLength, isString, hasProperty, isNullorUndef } from "../Utility/utility";
 import {
@@ -1629,6 +1630,9 @@ export class TransactionsRPC {
       } = data;
       const network =
         transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
+
+      const chainId = CHAIN_ID[state.currentNetwork.toUpperCase()];
+      console.log("chainId: ", chainId);
       const { evmApi } = NetworkHandler.api[network];
       const balance = state.allAccountsBalance[account?.evmAddress][network];
 
@@ -1678,7 +1682,11 @@ export class TransactionsRPC {
           gasPrice: "0x" + Number(feeRes.gasPrice).toString(16)
         };
 
-        const signedTx = await this.hybridKeyring.signEthTx(account.evmAddress, transactions);
+        const signedTx = await this.hybridKeyring.signEthTx(
+          account.evmAddress,
+          transactions,
+          chainId
+        );
 
         //Sign And Send Transaction
         const txInfo = await evmApi.eth.sendSignedTransaction(signedTx);

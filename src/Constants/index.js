@@ -232,9 +232,9 @@ export const LABELS = {
 
 export const HTTP_END_POINTS = {
   // QA: "https://qa-http-nodes.5ire.network"
-  MAINNET: "https://rpc.5ire.network"
+  MAINNET: "https://rpc.5ire.network",
   // UAT: "https://uat-http-nodes.5ire.network",
-  //TESTNET: "https://rpc-testnet.5ire.network"
+  TESTNET: "https://rpc.testnet.5ire.network"
   // TESTNET: "https://rpc.ga.5ire.network"
 };
 
@@ -252,23 +252,28 @@ export const API = {
 };
 
 export const EXPLORERS = {
-  //old
   // QA: "https://qa-web-exp.5ire.network"
-  MAINNET: "https://preview.5ire.network"
-  // MAINNET: "https://5irescan.io"
+  // MAINNET: "https://preview.5ire.network"
+  MAINNET: "https://5irescan.io",
   // QA: "https://scan.qa.5ire.network"
   // UAT: "https://uat-web-exp.5ire.network",
-  // TESTNET: "https://explorer.5ire.network",
+  TESTNET: "https://testnet.5irescan.io"
   // TESTNET: "https://explorer.ga.5ire.network"
 };
 
 export const WS_END_POINTS = {
   // QA: "wss://wss-ga-testnet.5ire.network",
-  MAINNET: "wss://rpc.5ire.network"
+  MAINNET: "wss://rpc.5ire.network",
   // QA: "wss://qa-wss-nodes.5ire.network"
   // UAT: "wss://uat-wss-nodes.5ire.network",
-  // TESTNET: "wss://wss-testnet.5ire.network"
+  TESTNET: "wss://wss-testnet.5ire.network"
   // TESTNET: "wss://wss.ga.5ire.network"
+};
+
+export const CHAIN_ID = {
+  MAINNET: 995,
+  TESTNET: 997,
+  QA: 997
 };
 
 export const MESSAGE_EVENT_LABELS = {
@@ -314,8 +319,8 @@ export const MESSAGE_EVENT_LABELS = {
 export const INTERNAL_EVENT_LABELS = {
   ERROR: "error",
   CONNECTION: "connection",
-  CHECK_NETWORK_CONNECTION: "checkNetworkConnection",
   BALANCE_FETCH: "balanceFetch",
+  CHECK_NETWORK_CONNECTION: "checkNetworkConnection",
   NEW_TRANSACTION_INQUEUE: "newTransactionInQueue",
   NEW_NATIVE_SIGNER_TRANSACTION_INQUEUE: "newNativeSignerTransactionInQueue",
   LAPSED_TRANSACTION_CHECK: "lapsedTransactionCheck"
