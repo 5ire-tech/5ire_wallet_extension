@@ -161,6 +161,7 @@ export default function Context({ children }) {
         case MESSAGE_EVENT_LABELS.TOKEN_INFO:
           tokenInfo(message.data);
           break;
+
         case MESSAGE_EVENT_LABELS.IMPORT_TOKEN:
           importToken(message.data);
           break;

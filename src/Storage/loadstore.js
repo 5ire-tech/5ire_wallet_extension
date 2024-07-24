@@ -143,16 +143,19 @@ export class ExtensionStorageHandler {
    */
   updateTokenBalance = async (data, state) => {
     const newState = { ...state };
+    // console.log("Inside  updateTokenBalance  old: ", state);
 
-    if (data?.length) {
-      newState.tokens[state?.currentAccount?.evmAddress][state?.currentNetwork?.toLowerCase()] =
-        data;
+    if (data?.tokensToUpdate?.length) {
+      newState.tokens[data?.account][data?.network] = data.tokensToUpdate;
     }
+    console.log("Inside  updateTokenBalance  updated: ", newState);
+
     return await this._updateStorage(newState);
   };
 
   //update the pending transaction balance
   updatePendingTransactionBalance = async (data, state, options) => {
+    console.log("Inside  updatePendingTransactionBalance  old: ", state);
     const newState = {
       ...state,
       pendingTransactionBalance: {
@@ -163,14 +166,17 @@ export class ExtensionStorageHandler {
         }
       }
     };
+    console.log("Inside  updatePendingTransactionBalance  updated: ", newState);
     const status = await this._updateStorage(newState);
     return status;
   };
 
   //push the transactions
   addNewTxHistory = async (data, state, options) => {
+    console.log("inside addNewTXHistory old : ", state);
     const newState = { ...state };
     newState.txHistory[options?.account?.evmAddress].push(data);
+    console.log("inside addNewTXHistory updated: ", newState);
     const status = await this._updateStorage(newState);
     return status;
   };
@@ -178,6 +184,7 @@ export class ExtensionStorageHandler {
   //update transaction
   updateTxHistory = async (data, state, options) => {
     const newState = { ...state };
+    console.log("inside updateTxHistory old : ", state);
     const txHistory = newState.txHistory[options.account?.evmAddress];
     const txIndex = txHistory.findIndex((item) => {
       return item.id === data.id;
@@ -188,6 +195,7 @@ export class ExtensionStorageHandler {
     txHistory[txIndex] = data;
     newState.txHistory[options.account?.evmAddress] = txHistory;
 
+    console.log("inside updateTxHistory updated: ", newState);
     //update the history
     return await this._updateStorage(newState);
   };

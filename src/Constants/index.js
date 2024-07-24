@@ -258,12 +258,6 @@ export const API = {
 };
 
 export const EXPLORERS = {
-  // QA: "https://qa-web-exp.5ire.network"
-  // TESTNET: "https://explorer.5ire.network",
-  // TESTNET: "https://explorer.ga.5ire.network"
-  // MAINNET: "https://5irescan.io"
-  // UAT: "https://uat-web-exp.5ire.network",
-
   MAINNET: "https://preview.5ire.network",
   TESTNET: "https://testnet.5irescan.io",
   QA: "https://scan.qa.5ire.network"
@@ -379,7 +373,7 @@ export const MESSAGE_TYPE_LABELS = {
   CONTRACT: "contract",
   INTERNAL_TX: "internalTx",
   EXTENSION_UI: "extensionUi",
-  TOKEN_BALANCE: "TokenBalance",
+  TOKEN_BALANCE: "tokenBalance",
   FEE_AND_BALANCE: "feeAndBalance",
   NETWORK_HANDLER: "networkHandler",
   EXTERNAL_TX_APPROVAL: "externalTxApproval",

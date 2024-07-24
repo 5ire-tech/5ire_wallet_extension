@@ -63,9 +63,13 @@ function Assets() {
   };
   const handleOk = () => {
     setIsModalOpen(false);
+    setTokenErr("");
+    setContractAddress("");
   };
   const handle_OK_Cancel = () => {
     setIsModalOpen(false);
+    setTokenErr("");
+    setContractAddress("");
   };
 
   const handleClick = () => {
@@ -107,6 +111,7 @@ function Assets() {
               <p>Enter Token Contract Address</p>
               <InputFieldOnly
                 coloredBg={true}
+                value={contractAddress}
                 placeholderBaseColor={true}
                 placeholder={"Address"}
                 onChange={handleInput}

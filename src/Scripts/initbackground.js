@@ -392,9 +392,13 @@ export class InitBackground {
   };
 
   _tokenBalanceUpdate = () => {
-    return setInterval(() => {
-      ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.TOKEN_BALANCE_FETCH);
-    }, AUTO_BALANCE_UPDATE_TIMER);
+    return setInterval(
+      () => {
+        ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.TOKEN_BALANCE_FETCH);
+      },
+      // 20000
+      AUTO_BALANCE_UPDATE_TIMER
+    );
   };
 
   _checkLapsedPendingTransactions = () => {
@@ -2316,16 +2320,19 @@ export class GeneralWalletRPC {
 
   getTokenBalance = async (message, state) => {
     try {
-      const currentAccount = state.currentAccount?.evmAddress;
-      const currentNetwork = state?.currentNetwork?.toLowerCase();
-      const tokens = state?.tokens[currentAccount][currentNetwork];
+      const account = state.currentAccount?.evmAddress;
+      const network = state?.currentNetwork?.toLowerCase();
+
+      const tokens = state?.tokens[account][network];
+      console.log("tokens : ", tokens);
+
       if (tokens?.length) {
         const tokensToUpdate = [];
         for (let i = 0; i < tokens.length; i++) {
           const token = tokens[i];
           const { evmApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
           const contract = new evmApi.eth.Contract(ERC20_ABI, token?.address);
-          const balance = await contract.methods.balanceOf(currentAccount).call();
+          const balance = await contract.methods.balanceOf(account).call();
           tokensToUpdate.push({
             ...token,
             balance: balance
@@ -2333,7 +2340,11 @@ export class GeneralWalletRPC {
         }
 
         const payload = {
-          data: tokensToUpdate
+          data: {
+            tokensToUpdate,
+            network,
+            account
+          }
         };
 
         return new EventPayload(STATE_CHANGE_ACTIONS.TOKEN_BALANCE, null, payload);

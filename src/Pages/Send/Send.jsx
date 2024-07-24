@@ -69,8 +69,6 @@ function Send() {
     setIsModalOpen1(false);
   };
 
-  console.log("selectedToken : ", selectedToken);
-
   /**
    * Reset the amount, to and error evm and native address changed
    */
