@@ -40,14 +40,14 @@ function SocialAccount() {
           src={github}
           alt="github"
           name="github"
-          // onClick={() => openBrowserTab(SOCIAL_LINKS.INSTAGRAM)}
+          onClick={() => openBrowserTab(SOCIAL_LINKS.GITHUB)}
           draggable={false}
         />
         <img
           src={discord}
           alt="discord"
           name="discord"
-          // onClick={() => openBrowserTab(SOCIAL_LINKS.INSTAGRAM)}
+          onClick={() => openBrowserTab(SOCIAL_LINKS.DISCORD)}
           draggable={false}
         />
       </div>
