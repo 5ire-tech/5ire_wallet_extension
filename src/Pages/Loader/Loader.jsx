@@ -10,7 +10,7 @@ export default function Loader() {
           loop={true}
           controls={true}
           src={JsonData}
-          style={{ height: "190px", width: "190px" }}></Player>
+          style={{ height: "130px", width: "130px" }}></Player>
       </div>
     </div>
   );

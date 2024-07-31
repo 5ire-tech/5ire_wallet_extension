@@ -162,7 +162,7 @@ function Assets() {
                     <h6 className="imgWord">{e?.name ? e?.name[0].toUpperCase() : "T"}</h6>
                     <div className="assetSec__leftSec__accountConatct">
                       <h2>{e?.name}</h2>
-                      <h5>$2820.54</h5>
+                      <h3>{e?.symbol}</h3>
                     </div>
                   </div>
                   <div className="assetSec__rytSec">
@@ -170,7 +170,7 @@ function Assets() {
                       {" "}
                       {formatBalance(e?.balance ? Number(e.balance) / 10 ** Number(e.decimals) : 0)}
                     </p>
-
+                    <h5>$2820.54</h5>
                     {/* <h3>1.13 WETH</h3> */}
                   </div>
                 </div>
