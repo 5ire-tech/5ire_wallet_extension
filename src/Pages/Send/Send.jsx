@@ -25,6 +25,7 @@ function Send() {
   // const [isEd, setEd] = useState(true);
   const [disableBtn, setDisable] = useState(true);
   // const [activeTab, setActiveTab] = useState(NATIVE);
+  const [allTokens, setAllTokens] = useState([]);
   const [tokensList, setTokensList] = useState([]);
   const [searchedInput, setSearchInput] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,16 +49,22 @@ function Send() {
   const balance = allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()];
   const MINIMUM_BALANCE = edValue;
 
-  const tokensByAddress = tokens[currentAccount?.evmAddress];
-  const tokensToShow = tokensByAddress[currentNetwork?.toLowerCase()];
+  // const tokensByAddress = tokens[currentAccount?.evmAddress];
+  // const tokensToShow = tokensByAddress[currentNetwork?.toLowerCase()];
+
+  useEffect(() => {
+    const tokensByAddress = tokens[currentAccount?.evmAddress];
+    const tokensToShow = tokensByAddress[currentNetwork?.toLowerCase()];
+    setAllTokens(tokensToShow);
+  }, [currentNetwork]);
 
   useEffect(() => {
     if (searchedInput) {
-      handleSearch(searchedInput);
+      handleSearch(searchedInput, allTokens);
     } else {
-      setTokensList(tokensToShow);
+      setTokensList(allTokens);
     }
-  }, [searchedInput]);
+  }, [searchedInput, allTokens]);
 
   const showModal = () => {
     setIsModalOpen1(true);
@@ -111,6 +118,8 @@ function Send() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [err.to, err.amount, data?.to, data?.amount, estimatedGas]);
 
+  // console.log("selectedToken.address  : ", selectedToken.address);
+
   /**
    * Check for Insufficent balance after fee getting
    */
@@ -151,19 +160,25 @@ function Send() {
           } else {
             setErr((p) => ({ ...p, amount: "" }));
           }
-        } else {
-          if (estimatedGas && !data.amount && data.to) {
-            const amount = selectedToken.balance;
-            Number(estimatedGas) > balance?.transferableBalance &&
-              setErr((p) => ({
-                ...p,
-                amount: ERROR_MESSAGES.INSUFFICENT_BALANCE
-              }));
+        }
+      } else {
+        if (estimatedGas && !data.amount && data.to) {
+          const amount = selectedToken.balance;
+          Number(estimatedGas) > balance?.transferableBalance &&
+            setErr((p) => ({
+              ...p,
+              amount: ERROR_MESSAGES.INSUFFICENT_BALANCE
+            }));
 
-            updateEstimatedGas(amount > 0 ? estimatedGas : null);
-            setData((p) => ({ ...p, amount: amount > 0 ? amount : "" }));
-            return;
-          } else if (Number(data.amount) + Number(estimatedGas) > Number(selectedToken?.balance)) {
+          updateEstimatedGas(amount > 0 ? estimatedGas : null);
+          setData((p) => ({ ...p, amount: amount > 0 ? amount : "" }));
+          return;
+        } else if (data?.amount && estimatedGas && data?.to) {
+          if (
+            Number(estimatedGas) >
+            Number(balance?.transferableBalance) -
+              pendingTransactionBalance[currentAccount.evmAddress][currentNetwork.toLowerCase()].evm
+          ) {
             updateEstimatedGas(null);
             setErr((p) => ({
               ...p,
@@ -514,8 +529,8 @@ function Send() {
    * Perform Search
    */
   const handleSearch = useCallback(
-    debounce((searchQuery) => {
-      const results = tokensToShow.filter(
+    debounce((searchQuery, tokens_) => {
+      const results = tokens_.filter(
         (result) =>
           result?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           result?.symbol?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -541,6 +556,8 @@ function Send() {
         balance: value?.balance ? Number(value?.balance) / 10 ** Number(value?.decimals ?? 0) : 0
       });
     }
+    setData({ ...data, amount: "" });
+    updateEstimatedGas(null);
     handleCancel();
   };
 

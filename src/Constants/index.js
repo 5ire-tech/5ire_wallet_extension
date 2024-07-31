@@ -248,7 +248,9 @@ export const SOCIAL_LINKS = {
   FACEBOOK: "https://www.facebook.com/5irechain/",
   INSTAGRAM: "https://www.instagram.com/5irechain/",
   LINKDIN: "https://www.linkedin.com/company/5irechain/",
-  POLICY: "https://5ire-wallet-extension.s3.amazonaws.com/5ire-wallet-extension-privacy-policy.pdf"
+  POLICY: "https://5ire-wallet-extension.s3.amazonaws.com/5ire-wallet-extension-privacy-policy.pdf",
+  DISCORD: "https://discord.com/invite/WFMkcu2ByZ",
+  GITHUB: "https://github.com/5ire-tech"
 };
 
 export const API = {

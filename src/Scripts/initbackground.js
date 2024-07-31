@@ -30,8 +30,10 @@ import {
   TX_TYPE,
   NETWORK,
   ERRCODES,
+  CHAIN_ID,
   DECIMALS,
   HTTP_METHODS,
+  WEI_IN_ONE_ETH,
   WALLET_METHODS,
   ERROR_MESSAGES,
   SIGNER_METHODS,
@@ -48,9 +50,7 @@ import {
   VALIDATOR_NOMINATOR_METHOD,
   TRANSACTION_STATUS_CHECK_TIMER,
   LAPSED_TRANSACTION_CHECKER_TIMER,
-  RESTRICTED_ETHEREUM_METHODS,
-  WEI_IN_ONE_ETH,
-  CHAIN_ID
+  RESTRICTED_ETHEREUM_METHODS
 } from "../Constants";
 import { log, isEqual, hasLength, isString, hasProperty, isNullorUndef } from "../Utility/utility";
 import {
@@ -542,12 +542,20 @@ class TransactionQueue {
   addNewTransaction = async (transactionProcessingPayload) => {
     //add the transaction history track
     const { data, options } = transactionProcessingPayload;
+    console.log("transactionProcessingPayload : ", transactionProcessingPayload);
     transactionProcessingPayload.transactionHistoryTrack = new TransactionPayload(
       data?.to || options?.to,
       data?.value ? Number(data?.value).toString() : "0",
       options?.isEvm,
       options?.network,
-      options?.type
+      options?.type,
+      null,
+      null,
+      null,
+      null,
+      transactionProcessingPayload.type === "tokenTransfer"
+        ? transactionProcessingPayload.options.contractDetails
+        : null
     );
 
     //check if there is method inside tx payload (only nominator and validator transactions case)
@@ -587,7 +595,10 @@ class TransactionQueue {
     );
   };
 
-  //process next queued transaction
+  /**
+   * Process next queued transaction
+   * @param {*} network
+   */
   processQueuedTransaction = async (network) => {
     //dequeue next transaction and add it as processing transaction
     await this.services.updateLocalState(
@@ -607,12 +618,14 @@ class TransactionQueue {
       );
   };
 
-  //perform transaction rpc request
+  /**
+   * Perform transaction rpc request
+   */
   processTransaction = async (network) => {
     const state = await getDataLocal(LABELS.STATE);
     const allQueues = await getDataLocal(LABELS.TRANSACTION_QUEUE);
     const { currentTransaction } = allQueues[network];
-    log("current transaction inside the process transaction: ", currentTransaction);
+    console.log("current transaction inside the process transaction: ", currentTransaction);
     try {
       if (hasProperty(this.transactionRpc, currentTransaction?.type)) {
         const rpcResponse = await this.transactionRpc[currentTransaction.type](
@@ -636,7 +649,10 @@ class TransactionQueue {
     }
   };
 
-  //parse the response after processing the transaction
+  /**
+   * Parse the response after processing the transaction
+   * @param {*} network
+   */
   parseTransactionResponse = async (network) => {
     //perform the current active transactions
     tester++;
@@ -708,7 +724,11 @@ class TransactionQueue {
     }
   };
 
-  //set timer for updating the transaction status
+  /**
+   * Set timer for updating the transaction status
+   * @param {*} network
+   * @returns
+   */
   checkTransactionStatus = async (network) => {
     try {
       //check if current transaction is there or not
@@ -898,7 +918,10 @@ class TransactionQueue {
   };
 
   /******************************* Event Callbacks *************************/
-  //callback for new transaction inserted into queue event
+  /**
+   * callback for new transaction inserted into queue event
+   * @param {*} network
+   */
   newTransactionAddedEventCallback = async (network) => {
     // isNullorUndef(TransactionQueue.transactionIntervalId)
     if (!TransactionQueue.networkTransactionHandler.includes(network)) {
@@ -1679,7 +1702,7 @@ export class TransactionsRPC {
         transactionHistoryTrack.chain?.toLowerCase() || state.currentNetwork.toLowerCase();
 
       const chainId = CHAIN_ID[state.currentNetwork.toUpperCase()];
-      console.log("chainId: ", chainId);
+      // console.log("chainId: ", chainId);
       const { evmApi } = NetworkHandler.api[network];
       const balance = state.allAccountsBalance[account?.evmAddress][network];
 
@@ -1805,7 +1828,9 @@ export class TransactionsRPC {
 
       const { evmApi } = NetworkHandler.api[network];
 
-      const amt = new BigNumber(data.value)
+      const chainId = CHAIN_ID[state.currentNetwork.toUpperCase()];
+
+      const amt = new BigNumber(data?.value)
         .multipliedBy(10 ** Number(data?.options?.contractDetails?.decimals ?? 0))
         .toString();
 
@@ -1819,6 +1844,7 @@ export class TransactionsRPC {
       const contract = new evmApi.eth.Contract(ERC20_ABI, data?.options?.contractDetails?.address);
 
       const tokenData = contract.methods.transfer(to, Number(amt).noExponents()).encodeABI();
+
       const feeRes = await this._getEvmFee(
         data?.options?.contractDetails?.address,
         account.evmAddress,
@@ -1836,11 +1862,11 @@ export class TransactionsRPC {
         value: 0,
         gasLimit: "0x" + Number(feeRes.gasLimit).toString(16),
         gasPrice: "0x" + Number(feeRes.gasPrice).toString(16),
-        data: contract.methods.transfer(to, Number(amt).noExponents()).encodeABI()
+        data: tokenData
       };
 
       // Sign the transaction
-      const signedTx = await this.hybridKeyring.signEthTx(account.evmAddress, tx);
+      const signedTx = await this.hybridKeyring.signEthTx(account.evmAddress, tx, chainId);
 
       //Sign And Send Transaction
       const txInfo = await evmApi.eth.sendSignedTransaction(signedTx);
@@ -2324,7 +2350,6 @@ export class GeneralWalletRPC {
       const network = state?.currentNetwork?.toLowerCase();
 
       const tokens = state?.tokens[account][network];
-      console.log("tokens : ", tokens);
 
       if (tokens?.length) {
         const tokensToUpdate = [];
@@ -2351,7 +2376,7 @@ export class GeneralWalletRPC {
       }
       return new EventPayload(null, null, null);
     } catch (error) {
-      console.log("error while getting tokenBalance : ", error);
+      // console.log("error while getting tokenBalance : ", error);
       return new EventPayload(
         null,
         null,
@@ -2370,6 +2395,7 @@ export class GeneralWalletRPC {
       } = data;
 
       const { evmApi } = NetworkHandler.api[state.currentNetwork.toLowerCase()];
+
       if (isNullorUndef(account))
         new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_DATA)).throw();
 
@@ -2396,8 +2422,8 @@ export class GeneralWalletRPC {
         tx.data = data.data;
       }
 
-      const gasAmount = await evmApi.eth.estimateGas(tx);
       const gasPrice = await evmApi.eth.getGasPrice();
+      const gasAmount = await evmApi.eth.estimateGas(tx);
       const fee = new BigNumber(gasPrice * gasAmount).dividedBy(DECIMALS).toString();
 
       // GeneralWalletRPC.feeStore[id] = fee;

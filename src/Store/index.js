@@ -373,6 +373,7 @@ export default function Context({ children }) {
     setTempBalance,
     setStateLoaded,
     setSuccessModal,
+    setTokenDetails,
     setWindowAndTab,
     setNetworkError,
     setPassVerified,

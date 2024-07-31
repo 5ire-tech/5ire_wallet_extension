@@ -64,7 +64,8 @@ function TransectionHistry({ selectedTransaction, account }) {
       ) : (
         <div className={style.transectionHistry__swapCopy}>
           <div className={style.transectionHistry__swapSec}>
-            <h3>{`From ${isEvm ? "EVM" : "Native"}`}</h3>
+            {/* <h3>{`From ${isEvm ? "EVM" : "Native"}`}</h3> */}
+            <h3>From</h3>
             <span>
               {shortner(fromAddress || "")}
               <img src={CopyIcon} alt="copyIcon" onClick={() => handleClick(fromAddress || "")} />
@@ -75,7 +76,8 @@ function TransectionHistry({ selectedTransaction, account }) {
           </div>
           <div
             className={`${style.transectionHistry__swapSec} ${style.transectionHistry__rytContact}`}>
-            <h3>{`To ${isEvm ? "EVM" : "Native"}`}</h3>
+            {/* <h3>{`To ${isEvm ? "EVM" : "Native"}`}</h3> */}
+            <h3>To</h3>
             <span>
               {selectedTransaction?.to
                 ? shortner(selectedTransaction?.to)

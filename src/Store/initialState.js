@@ -10,7 +10,7 @@ export const userState = {
   eth_accounts: "",
 
   // currentNetwork: "QA",
-  currentNetwork: NETWORK.QA_NETWORK,
+  currentNetwork: NETWORK.TEST_NETWORK,
 
   allAccountsBalance: {},
 

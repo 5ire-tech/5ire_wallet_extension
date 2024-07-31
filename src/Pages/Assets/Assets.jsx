@@ -2,7 +2,6 @@ import "./Assets.scss";
 import { notification } from "antd";
 import { AuthContext } from "../../Store";
 import React, { useContext, useEffect, useState } from "react";
-// import { WhiteLogo } from "../../Assets/StoreAsset/StoreAsset";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
@@ -14,7 +13,8 @@ function Assets() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [contractAddress, setContractAddress] = useState("");
   const [showRestInputs, setShowRestInputs] = useState(false);
-  const { state, tokenErr, tokenDetails, showSuccessModal, setTokenErr } = useContext(AuthContext);
+  const { state, tokenErr, tokenDetails, showSuccessModal, setTokenErr, setTokenDetails } =
+    useContext(AuthContext);
   const { currentNetwork, currentAccount, tokens } = state;
   const tokensByAddress = tokens[currentAccount?.evmAddress];
   const tokensToShow = tokensByAddress[currentNetwork?.toLowerCase()] ?? [];
@@ -61,26 +61,28 @@ function Assets() {
   const showModal = () => {
     setIsModalOpen(true);
   };
-  const handleOk = () => {
-    setIsModalOpen(false);
-    setTokenErr("");
-    setContractAddress("");
-  };
+
   const handle_OK_Cancel = () => {
+    setTokenDetails({
+      name: "",
+      symbol: "",
+      decimals: ""
+    });
     setIsModalOpen(false);
     setTokenErr("");
     setContractAddress("");
+    setShowRestInputs(false);
   };
 
   const handleClick = () => {
+    openNotification("bottom");
     sendRuntimeMessage(MESSAGE_TYPE_LABELS.CONTRACT, MESSAGE_EVENT_LABELS.IMPORT_TOKEN, {
       address: contractAddress,
       decimals: tokenDetails.decimals,
       symbol: tokenDetails.symbol,
       name: tokenDetails.name
     });
-    openNotification("bottom");
-    setTokenErr("");
+    handle_OK_Cancel();
   };
 
   const openNotification = (placement) => {
@@ -100,7 +102,7 @@ function Assets() {
 
       <ModalCustom
         isModalOpen={isModalOpen}
-        handleOk={handleOk}
+        handleOk={handle_OK_Cancel}
         handleCancel={handle_OK_Cancel}
         centered
         closeIcon={false}>
