@@ -170,7 +170,7 @@ function Assets() {
                       {" "}
                       {formatBalance(e?.balance ? Number(e.balance) / 10 ** Number(e.decimals) : 0)}
                     </p>
-                    <h5>$2820.54</h5>
+                    {/* <h5>$2820.54</h5> */}
                     {/* <h3>1.13 WETH</h3> */}
                   </div>
                 </div>

@@ -118,8 +118,6 @@ function Send() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [err.to, err.amount, data?.to, data?.amount, estimatedGas]);
 
-  // console.log("selectedToken.address  : ", selectedToken.address);
-
   /**
    * Check for Insufficent balance after fee getting
    */
