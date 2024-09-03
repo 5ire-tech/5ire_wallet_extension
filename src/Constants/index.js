@@ -238,10 +238,8 @@ export const LABELS = {
 
 export const HTTP_END_POINTS = {
   MAINNET: "https://rpc.5ire.network",
-  QA: "https://qa-http-nodes.5ire.network",
-  // UAT: "https://uat-http-nodes.5ire.network",
+  QA: "https://rpc.qa.5ire.network",
   TESTNET: "https://rpc.testnet.5ire.network"
-  // TESTNET: "https://rpc.ga.5ire.network"
 };
 
 export const SOCIAL_LINKS = {
@@ -260,18 +258,15 @@ export const API = {
 };
 
 export const EXPLORERS = {
-  MAINNET: "https://preview.5ire.network",
+  MAINNET: "https://5irescan.io",
   TESTNET: "https://testnet.5irescan.io",
-  QA: "https://scan.qa.5ire.network"
+  QA: "https://qa.5ire.network"
 };
 
 export const WS_END_POINTS = {
-  // QA: "wss://wss-ga-testnet.5ire.network",
   MAINNET: "wss://rpc.5ire.network",
-  QA: "wss://qa-wss-nodes.5ire.network",
-  // UAT: "wss://uat-wss-nodes.5ire.network",
+  QA: "wss://rpc.qa.5ire.network",
   TESTNET: "wss://wss-testnet.5ire.network"
-  // TESTNET: "wss://wss.ga.5ire.network"
 };
 
 export const CHAIN_ID = {

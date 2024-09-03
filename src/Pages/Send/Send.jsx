@@ -52,11 +52,35 @@ function Send() {
   // const tokensByAddress = tokens[currentAccount?.evmAddress];
   // const tokensToShow = tokensByAddress[currentNetwork?.toLowerCase()];
 
+  /**
+   * Perform Search
+   */
+  // eslint-disable-next-line
+  const handleSearch = useCallback(
+    debounce((searchQuery, tokens_) => {
+      const results = tokens_.filter(
+        (result) =>
+          result?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          result?.symbol?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          result?.address?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setTokensList(results);
+    }, 1000),
+    []
+  );
+
   useEffect(() => {
     const tokensByAddress = tokens[currentAccount?.evmAddress];
     const tokensToShow = tokensByAddress[currentNetwork?.toLowerCase()];
     setAllTokens(tokensToShow);
-  }, [currentNetwork]);
+    setSelectedToken({
+      address: "",
+      balance: "",
+      decimals: "",
+      name: "",
+      symbol: ""
+    });
+  }, [currentNetwork, currentAccount?.evmAddress, tokens]);
 
   useEffect(() => {
     if (searchedInput) {
@@ -64,7 +88,7 @@ function Send() {
     } else {
       setTokensList(allTokens);
     }
-  }, [searchedInput, allTokens]);
+  }, [searchedInput, allTokens, handleSearch]);
 
   const showModal = () => {
     setIsModalOpen1(true);
@@ -126,7 +150,7 @@ function Send() {
       setDisable(true);
     } else {
       // if (activeTab === EVM) {
-      if (selectedToken.address === "") {
+      if (selectedToken?.address === "") {
         if (estimatedGas && !data.amount && data.to) {
           const amount =
             Number(balance?.transferableBalance) -
@@ -218,7 +242,7 @@ function Send() {
       // }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.to, data.amount, estimatedGas, balance?.transferableBalance]);
+  }, [data.to, data.amount, estimatedGas, balance?.transferableBalance, selectedToken.address]);
 
   const blockInvalidChar = useCallback(
     (e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault(),
@@ -245,7 +269,7 @@ function Send() {
     else {
       if (selectedToken.address !== "") {
         if (
-          data?.amount > selectedToken.balance ||
+          data?.amount > selectedToken?.balance ||
           Number(balance?.transferableBalance) -
             pendingTransactionBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
               .evm <=
@@ -285,7 +309,9 @@ function Send() {
     currentNetwork,
     data?.amount,
     pendingTransactionBalance,
-    MINIMUM_BALANCE
+    MINIMUM_BALANCE,
+    selectedToken.address,
+    selectedToken.balance
   ]);
 
   /**
@@ -522,22 +548,6 @@ function Send() {
     const value = event.target.value;
     setSearchInput(value);
   };
-
-  /**
-   * Perform Search
-   */
-  const handleSearch = useCallback(
-    debounce((searchQuery, tokens_) => {
-      const results = tokens_.filter(
-        (result) =>
-          result?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          result?.symbol?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          result?.address?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setTokensList(results);
-    }, 1000),
-    []
-  );
 
   const handleTokenSelect = (value) => {
     if (value?.address === selectedToken?.address) {

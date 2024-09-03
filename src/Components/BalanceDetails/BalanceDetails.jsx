@@ -7,7 +7,6 @@ import Info from "../../Assets/infoIcon.svg";
 import ThreeDot from "../../Assets/dot3.svg";
 import WalletQr from "../../Assets/QRicon.svg";
 import { useLocation } from "react-router-dom";
-import { Dropdown, Space, Tooltip } from "antd";
 import CopyIcon from "../../Assets/CopyIcon.svg";
 import DarkLogo from "../../Assets/DarkLogo.svg";
 import SmallLogo from "../../Assets/smallLogo.svg";
@@ -16,6 +15,8 @@ import GrayCircle from "../../Assets/graycircle.svg";
 import ModalCustom from "../ModalCustom/ModalCustom";
 import welcomeLogo from "../../Assets/welcomeLogo.svg";
 import GreenCircle from "../../Assets/greencircle.svg";
+import { Dropdown, Space, Tooltip, Select } from "antd";
+import { DownArrow } from "../../Assets/StoreAsset/StoreAsset";
 import React, { useEffect, useState, useContext } from "react";
 import { WhiteLogo } from "../../Assets/StoreAsset/StoreAsset";
 import { TabMessagePayload } from "../../Utility/network_calls";
@@ -28,12 +29,12 @@ import {
   COPIED,
   LABELS,
   NATIVE,
-  // NETWORK,
+  NETWORK,
   EMTY_STR,
   CURRENCY,
   TABS_EVENT,
   WALLET_TYPES,
-  // HTTP_END_POINTS,
+  HTTP_END_POINTS,
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS,
   STATE_CHANGE_ACTIONS
@@ -47,14 +48,8 @@ function BalanceDetails({ mt0 }) {
   const [isConnected, setIsConnected] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHeaderActive, setHeaderActive] = useState(false);
-  const {
-    state,
-    updateState,
-    externalControlsState,
-    allAccounts,
-    //  updateLoading,
-    windowAndTab
-  } = useContext(AuthContext);
+  const { state, updateState, externalControlsState, allAccounts, updateLoading, windowAndTab } =
+    useContext(AuthContext);
 
   const { connectedApps } = externalControlsState;
   const { pathname } = getLocation;
@@ -78,35 +73,35 @@ function BalanceDetails({ mt0 }) {
   }, [currentNetwork, currentAccount?.evmAddress]);
 
   //network change handler
-  // const handleNetworkChange = async (network) => {
-  //   updateLoading(true);
+  const handleNetworkChange = async (network) => {
+    updateLoading(true);
 
-  //   updateState(LABELS.CURRENT_NETWORK, network);
+    updateState(LABELS.CURRENT_NETWORK, network);
 
-  //   updateState(
-  //     LABELS.BALANCE,
-  //     allAccountsBalance[currentAccount?.evmAddress][network?.toLowerCase()]
-  //   );
+    updateState(
+      LABELS.BALANCE,
+      allAccountsBalance[currentAccount?.evmAddress][network?.toLowerCase()]
+    );
 
-  //   //change the network
-  //   sendRuntimeMessage(
-  //     MESSAGE_TYPE_LABELS.NETWORK_HANDLER,
-  //     MESSAGE_EVENT_LABELS.NETWORK_CHANGE,
-  //     {}
-  //   );
+    //change the network
+    sendRuntimeMessage(
+      MESSAGE_TYPE_LABELS.NETWORK_HANDLER,
+      MESSAGE_EVENT_LABELS.NETWORK_CHANGE,
+      {}
+    );
 
-  //   //send the network change event to current opned tab if its connected
-  //   sendEventToTab(
-  //     windowAndTab,
-  //     new TabMessagePayload(
-  //       TABS_EVENT.NETWORK_CHANGE_EVENT,
-  //       { result: { network, url: HTTP_END_POINTS[network.toUpperCase()] } },
-  //       null,
-  //       TABS_EVENT.NETWORK_CHANGE_EVENT
-  //     ),
-  //     connectedApps
-  //   );
-  // };
+    //send the network change event to current opned tab if its connected
+    sendEventToTab(
+      windowAndTab,
+      new TabMessagePayload(
+        TABS_EVENT.NETWORK_CHANGE_EVENT,
+        { result: { network, url: HTTP_END_POINTS[network.toUpperCase()] } },
+        null,
+        TABS_EVENT.NETWORK_CHANGE_EVENT
+      ),
+      connectedApps
+    );
+  };
 
   //account change handler
   const onSelectAcc = (name) => {
@@ -393,7 +388,7 @@ function BalanceDetails({ mt0 }) {
                 </div>
               </ModalCustom>
               <div className={style.balanceDetails__selectStyle}>
-                {/* <Select
+                <Select
                   disabled={isEqual(pathname, ROUTES.APPROVE_TXN)}
                   onChange={handleNetworkChange}
                   suffixIcon={<DownArrow />}
@@ -411,14 +406,10 @@ function BalanceDetails({ mt0 }) {
                     width: 100
                   }}
                   options={[
-                    // {
-                    //   value: NETWORK.TEST_NETWORK,
-                    //   label: <span className="flexedItemSelect">{NETWORK.TEST_NETWORK}</span>
-                    // }
-                    // {
-                    //   value: NETWORK.UAT,
-                    //   label: <span className="flexedItemSelect">{NETWORK.UAT}</span>
-                    // },
+                    {
+                      value: NETWORK.QA_NETWORK,
+                      label: <span className="flexedItemSelect">{NETWORK.QA_NETWORK}</span>
+                    },
                     {
                       value: NETWORK.TEST_NETWORK,
                       label: <span className="flexedItemSelect">{NETWORK.TEST_NETWORK}</span>
@@ -428,7 +419,7 @@ function BalanceDetails({ mt0 }) {
                       label: <span className="flexedItemSelect">{NETWORK.MAINNET}</span>
                     }
                   ]}
-                /> */}
+                />
               </div>
             </>
           </div>
