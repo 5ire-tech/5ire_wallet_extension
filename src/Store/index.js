@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import { ROUTES } from "../Routes/index";
 import Browser from "webextension-polyfill";
 import { useNavigate } from "react-router-dom";
@@ -10,17 +11,17 @@ import { TabMessagePayload } from "../Utility/network_calls";
 import { bindRuntimeMessageListener } from "../Utility/message_helper";
 import {
   LABELS,
+  DECIMALS,
   TABS_EVENT,
   MESSAGE_TYPE_LABELS,
-  MESSAGE_EVENT_LABELS,
-  DECIMALS
+  MESSAGE_EVENT_LABELS
 } from "../Constants";
 import {
   userState,
   externalControls,
+  windowAndTabState,
   newAccountInitialState,
-  initialExternalNativeTransaction,
-  windowAndTabState
+  initialExternalNativeTransaction
 } from "./initialState";
 
 //context created
@@ -29,7 +30,14 @@ export const AuthContext = createContext();
 //main context wraper
 export default function Context({ children }) {
   const navigate = useNavigate();
+  const [edValue, setEDValue] = useState(1);
   const [state, setState] = useState(userState);
+  const [tokenDetails, setTokenDetails] = useState({
+    name: "",
+    decimals: "",
+    symbol: ""
+  });
+  const [tokenErr, setTokenErr] = useState("");
   const [userPass, setUserPass] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const [inputError, setInputError] = useState("");
@@ -41,10 +49,10 @@ export default function Context({ children }) {
   const [estimatedGas, setEstimatedGas] = useState(null);
   const [newWalletName, setNewWalletName] = useState("");
   const [passVerified, setPassVerified] = useState(false);
+  const [showSuccessModal, setSuccessModal] = useState(false);
+  const [showCongratLoader, setShowCongratLoader] = useState(false);
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
   const [externalControlsState, setExternalControlState] = useState(externalControls);
-  const [showCongratLoader, setShowCongratLoader] = useState(false);
-  const [edValue, setEDValue] = useState(1);
 
   //for check if localstate is loaded or not
   const [isStateLoaded, setStateLoaded] = useState(false);
@@ -148,6 +156,14 @@ export default function Context({ children }) {
                 .toString()
             )
           );
+          break;
+
+        case MESSAGE_EVENT_LABELS.TOKEN_INFO:
+          tokenInfo(message.data);
+          break;
+
+        case MESSAGE_EVENT_LABELS.IMPORT_TOKEN:
+          importToken(message.data);
           break;
 
         default:
@@ -287,8 +303,37 @@ export default function Context({ children }) {
     }
   };
 
+  const tokenInfo = (data) => {
+    if (data?.errMessage) {
+      console.log("inside tokenInfo : ", data?.errMessage);
+      setTokenErr(data?.errMessage);
+      setTokenDetails({
+        name: "",
+        symbol: "",
+        decimals: ""
+      });
+    } else {
+      const { decimals, name, symbol } = data;
+      setTokenDetails({
+        name,
+        symbol,
+        decimals
+      });
+      setTokenErr("");
+    }
+  };
+
+  const importToken = (data) => {
+    if (data?.errCode === 18) {
+      toast.error(data?.errMessage);
+    } else if (!data?.errCode && data?.name) {
+      setSuccessModal(true);
+    }
+  };
+
   const values = {
     state,
+    tokenErr,
     userPass,
     isLoading,
     inputError,
@@ -299,6 +344,7 @@ export default function Context({ children }) {
     tempBalance,
     allAccounts,
     accountName,
+    tokenDetails,
     networkError,
     estimatedGas,
     windowAndTab,
@@ -306,6 +352,7 @@ export default function Context({ children }) {
     isStateLoaded,
     newWalletName,
     backgroundError,
+    showSuccessModal,
     showCongratLoader,
     valdatorNominatorFee,
     externalControlsState,
@@ -315,6 +362,7 @@ export default function Context({ children }) {
     //data setters
     setState,
     setAccName,
+    setTokenErr,
     setUserPass,
     updateState,
     setInputError,
@@ -324,6 +372,8 @@ export default function Context({ children }) {
     setPrivateKey,
     setTempBalance,
     setStateLoaded,
+    setSuccessModal,
+    setTokenDetails,
     setWindowAndTab,
     setNetworkError,
     setPassVerified,

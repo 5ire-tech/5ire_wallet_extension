@@ -54,6 +54,7 @@ export const TX_TYPE = {
   SEND: "Transfer",
   NATIVE_APP: "Native App",
   NATIVE_SIGNER: "Native Signer",
+  TOKEN_TRANSFER: "Token Transfer",
   CONTRACT_EXECUTION: "Contract Execution",
   CONTRACT_DEPLOYMENT: "Contract Deployment"
 };
@@ -101,6 +102,7 @@ export const ERROR_MESSAGES = {
   INVALID_MNEMONIC: "Invalid mnemonic",
   INCORRECT_PASS: "Incorrect password",
   INCORRECT_ADDRESS: "Invalid address",
+  TOKEN_ALREDY: "Token already exists",
   INCORRECT_KEYRING: "Invalid keyring",
   ACCOUNT_EXISTS: "Account already exist",
   INPUT_REQUIRED: "This field is required",
@@ -109,6 +111,8 @@ export const ERROR_MESSAGES = {
   INVALID_TYPE_LABEL: "Invalid type Label",
   INSUFFICENT_BALANCE: "Insufficient Balance",
   UNDEF_PROPERTY: "Object not has given property",
+  IMPORT_ERROR: "Error while importing token",
+  ERC20_ONLY: "Enter ERC-20 token contract address only",
   SINGER_ERROR: "Error while signing the the raw/payload",
   ENTER_AMOUNT_CORRECTLY: "Please enter amount correctly",
   WALLET_NAME_ALREADY_EXISTS: "Wallet name already exists",
@@ -181,10 +185,12 @@ export const ERRCODES = {
   ERROR_WHILE_TRANSACTION: 11,
   ERROR_WHILE_BALANCE_FETCH: 12,
   ERROR_WHILE_GETTING_ESTIMATED_FEE: 13,
-  ERROR_WHILE_GETTING_ED: 17,
   KEYRING_SECTION_ERROR: 14,
   RUNTIME_MESSAGE_SECTION_ERROR: 15,
-  ERROR_WHILE_TRANSACTION_STATUS_CHECK: 16
+  ERROR_WHILE_TRANSACTION_STATUS_CHECK: 16,
+  ERROR_WHILE_GETTING_ED: 17,
+  CONTRACT_RELATED: 18,
+  TOKEN_BALANCE_UPDATE: 19
 };
 
 export const LABELS = {
@@ -231,18 +237,18 @@ export const LABELS = {
 };
 
 export const HTTP_END_POINTS = {
-  // QA: "https://qa-http-nodes.5ire.network"
-  MAINNET: "https://rpc.5ire.network"
-  // UAT: "https://uat-http-nodes.5ire.network",
-  //TESTNET: "https://rpc-testnet.5ire.network"
-  // TESTNET: "https://rpc.ga.5ire.network"
+  MAINNET: "https://rpc.5ire.network",
+  QA: "https://rpc.qa.5ire.network",
+  TESTNET: "https://rpc.testnet.5ire.network"
 };
 
 export const SOCIAL_LINKS = {
   FACEBOOK: "https://www.facebook.com/5irechain/",
   INSTAGRAM: "https://www.instagram.com/5irechain/",
   LINKDIN: "https://www.linkedin.com/company/5irechain/",
-  POLICY: "https://5ire-wallet-extension.s3.amazonaws.com/5ire-wallet-extension-privacy-policy.pdf"
+  POLICY: "https://5ire-wallet-extension.s3.amazonaws.com/5ire-wallet-extension-privacy-policy.pdf",
+  DISCORD: "https://discord.com/invite/WFMkcu2ByZ",
+  GITHUB: "https://github.com/5ire-tech"
 };
 
 export const API = {
@@ -252,23 +258,21 @@ export const API = {
 };
 
 export const EXPLORERS = {
-  //old
-  // QA: "https://qa-web-exp.5ire.network"
-  MAINNET: "https://preview.5ire.network"
-  // MAINNET: "https://5irescan.io"
-  // QA: "https://scan.qa.5ire.network"
-  // UAT: "https://uat-web-exp.5ire.network",
-  // TESTNET: "https://explorer.5ire.network",
-  // TESTNET: "https://explorer.ga.5ire.network"
+  MAINNET: "https://5irescan.io",
+  TESTNET: "https://testnet.5irescan.io",
+  QA: "https://qa.5ire.network"
 };
 
 export const WS_END_POINTS = {
-  // QA: "wss://wss-ga-testnet.5ire.network",
-  MAINNET: "wss://rpc.5ire.network"
-  // QA: "wss://qa-wss-nodes.5ire.network"
-  // UAT: "wss://uat-wss-nodes.5ire.network",
-  // TESTNET: "wss://wss-testnet.5ire.network"
-  // TESTNET: "wss://wss.ga.5ire.network"
+  MAINNET: "wss://rpc.5ire.network",
+  QA: "wss://rpc.qa.5ire.network",
+  TESTNET: "wss://wss-testnet.5ire.network"
+};
+
+export const CHAIN_ID = {
+  MAINNET: 995,
+  TESTNET: 997,
+  QA: 997
 };
 
 export const MESSAGE_EVENT_LABELS = {
@@ -285,6 +289,8 @@ export const MESSAGE_EVENT_LABELS = {
   NATIVE_TX: "nativeTransfer",
   LOGIN_UPDATE: "loginUpdate",
   NOTIFICATION: "notification",
+  TOKEN_TRANSFER: "tokenTransfer",
+  GET_TOKEN_BALANCE: "getTokenBalance",
   BACKGROUND_ERROR: "backgroundError",
   UPDATE_TX_HISTORY: "txupdatehistory",
   EVM_TO_NATIVE_SWAP: "evmToNativeSwap",
@@ -294,14 +300,16 @@ export const MESSAGE_EVENT_LABELS = {
   LOCK: "lock",
   UNLOCK: "unlock",
   ADD_ACCOUNT: "addAccount",
+  TOKEN_INFO: "getTokenInfo",
+  IMPORT_TOKEN: "importToken",
   GET_ACCOUNTS: "getAccounts",
   REMOVE_ACCOUNT: "removeAccount",
   FORGOT_PASS: "forgotPassByMnemonic",
   CREATE_OR_RESTORE: "createOrRestore",
   EXPORT_PRIVATE_KEY: "exportPrivatekey",
   EXPORT_SEED_PHRASE: "exportSeedPhrase",
-  RECOVER_OLD_ACCOUNTS: "recoverOldStateAccounts",
   VERIFY_USER_PASSWORD: "verifyUserPassword",
+  RECOVER_OLD_ACCOUNTS: "recoverOldStateAccounts",
   IMPORT_BY_MNEMONIC: "importAccountByMnemonics",
 
   //network related events
@@ -314,14 +322,16 @@ export const MESSAGE_EVENT_LABELS = {
 export const INTERNAL_EVENT_LABELS = {
   ERROR: "error",
   CONNECTION: "connection",
-  CHECK_NETWORK_CONNECTION: "checkNetworkConnection",
   BALANCE_FETCH: "balanceFetch",
+  TOKEN_BALANCE_FETCH: "tokenBalanceFetch",
+  CHECK_NETWORK_CONNECTION: "checkNetworkConnection",
   NEW_TRANSACTION_INQUEUE: "newTransactionInQueue",
   NEW_NATIVE_SIGNER_TRANSACTION_INQUEUE: "newNativeSignerTransactionInQueue",
   LAPSED_TRANSACTION_CHECK: "lapsedTransactionCheck"
 };
 
 export const STATE_CHANGE_ACTIONS = {
+  TOKEN_BALANCE: "updateTokenBalance",
   BALANCE: "updateBalance",
   UPDATE_PENDING_TRANSACTION_BALANCE: "updatePendingTransactionBalance",
   TX_HISTORY: "addNewTxHistory",
@@ -357,8 +367,10 @@ export const ERROR_EVENTS_LABELS = {
 };
 
 export const MESSAGE_TYPE_LABELS = {
-  EXTENSION_UI: "extensionUi",
+  CONTRACT: "contract",
   INTERNAL_TX: "internalTx",
+  EXTENSION_UI: "extensionUi",
+  TOKEN_BALANCE: "tokenBalance",
   FEE_AND_BALANCE: "feeAndBalance",
   NETWORK_HANDLER: "networkHandler",
   EXTERNAL_TX_APPROVAL: "externalTxApproval",

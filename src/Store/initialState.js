@@ -9,7 +9,6 @@ export const userState = {
 
   eth_accounts: "",
 
-  // currentNetwork: "QA",
   currentNetwork: NETWORK.MAINNET,
 
   allAccountsBalance: {},
@@ -21,7 +20,9 @@ export const userState = {
     nativeAddress: ""
   },
 
-  pendingTransactionBalance: {}
+  pendingTransactionBalance: {},
+
+  tokens: {}
 };
 
 export const externalControls = {

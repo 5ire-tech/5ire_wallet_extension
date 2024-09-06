@@ -1,23 +1,17 @@
 import React from "react";
 import style from "./style.module.scss";
-import yellow_send from "../../Assets/yellow_send.svg";
+import { isEqual } from "../../Utility/utility";
+import red_swap from "../../Assets/red_swap.svg";
 import red_send from "../../Assets/red_send.svg";
 import green_send from "../../Assets/green_send.svg";
-import yellow_swap from "../../Assets/yellow_swap.svg";
-import red_swap from "../../Assets/red_swap.svg";
 import green_swap from "../../Assets/green_swap.svg";
-import yellow_contract from "../../Assets/yellow_contract.svg";
+import yellow_swap from "../../Assets/yellow_swap.svg";
+import yellow_send from "../../Assets/yellow_send.svg";
 import red_contract from "../../Assets/red_contract.svg";
+import { CURRENCY, STATUS, TX_TYPE } from "../../Constants";
 import green_contract from "../../Assets/green_contract.svg";
-
-import { isEqual } from "../../Utility/utility";
+import yellow_contract from "../../Assets/yellow_contract.svg";
 import { formatDate, fixNumber, numFormatter } from "../../Helper/helper";
-import {
-  // EVM,
-  //  NATIVE,
-  STATUS,
-  TX_TYPE
-} from "../../Constants";
 
 function getTxIcon(type, status) {
   switch (type) {
@@ -45,6 +39,20 @@ function getTxIcon(type, status) {
         : yellow_send;
   }
 }
+
+const getCurrency = (tx) => {
+  let currency = "";
+  switch (tx.type) {
+    case TX_TYPE.TOKEN_TRANSFER:
+      currency = tx?.args?.name;
+      break;
+
+    default:
+      currency = CURRENCY;
+      break;
+  }
+  return currency;
+};
 
 export default function HistoryItem({ historyItem, handleHistoryOpen }) {
   return (
@@ -77,7 +85,10 @@ export default function HistoryItem({ historyItem, handleHistoryOpen }) {
         </div>
 
         <div className={style.historySec__historyMarketSwap__rytSide}>
-          <h3>{historyItem?.amount ? numFormatter(fixNumber(historyItem.amount)) : "0"} 5ire</h3>
+          <h3>
+            {historyItem?.amount ? numFormatter(fixNumber(historyItem.amount)) : "0"}{" "}
+            {getCurrency(historyItem)}
+          </h3>
           <p>
             Status :{" "}
             <span

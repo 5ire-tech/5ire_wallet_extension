@@ -20,12 +20,18 @@
     flex-direction: column;
     // gap: 16px;
     padding-top: 15px;
+    input {
+      padding: 13px 16px;
+    }
+    .ant-input-group-wrapper {
+      padding: 8px 16px;
+    }
   }
   &__assetSec {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    display: none;
+    // display: none;
     h2 {
       color: var(--UI-Maintext, #fff);
       font-size: 15px;
@@ -152,12 +158,17 @@
     margin-right: 15px;
 
     // img {
-      // border-left: 1px solid #404058;
-      // padding-left: 10px;
-      // width: 24px;
-      // height: 24px;
+    // border-left: 1px solid #404058;
+    // padding-left: 10px;
+    // width: 24px;
+    // height: 24px;
     // }
   }
+}
+
+.selectedItem {
+  border-radius: 8px;
+  background: #e0e0e036;
 }
 
 .errorText {
@@ -165,5 +176,5 @@
   text-align: left;
   display: block;
   font-size: 12px !important;
-  position: absolute;
+  // position: absolute;
 }
