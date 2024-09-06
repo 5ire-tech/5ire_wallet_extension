@@ -1,7 +1,7 @@
 {
   "name": "5ire Wallet",
   "description": "5ireChain non-custodial wallet in your browser.",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html",
