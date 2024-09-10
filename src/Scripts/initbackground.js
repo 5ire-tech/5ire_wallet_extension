@@ -2975,23 +2975,6 @@ export class ContractHandler {
     }
   };
 
-  // /**
-  //  * Remove the imported token
-  //  * @param {*} message
-  //  * @param {*} state
-  //  */
-  // removeToken = async (message, state) => {
-  //   try {
-  //     console.log("state ", state);
-  //     console.log("remove token ", message);
-
-  //     const newState =
-
-  //   } catch (error) {
-  //     console.log("error while importing token : ", error);
-  //     new Error(new ErrorPayload(ERRCODES.CONTRACT_RELATED, ERROR_MESSAGES.IMPORT_ERROR)).throw();
-  //   }
-  // };
 
   /**
    * *********************** Internal Functions ***********************

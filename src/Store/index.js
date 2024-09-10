@@ -32,7 +32,6 @@ export default function Context({ children }) {
   const navigate = useNavigate();
   const [edValue, setEDValue] = useState(1);
   const [state, setState] = useState(userState);
-
   const [tokenErr, setTokenErr] = useState("");
   const [userPass, setUserPass] = useState(null);
   const [isLoading, setLoading] = useState(false);

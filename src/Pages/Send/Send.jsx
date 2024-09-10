@@ -50,9 +50,6 @@ function Send() {
   const balance = allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()];
   const MINIMUM_BALANCE = edValue;
 
-  // const tokensByAddress = tokens[currentAccount?.evmAddress];
-  // const tokensToShow = tokensByAddress[currentNetwork?.toLowerCase()];
-
   /**
    * Perform Search
    */
@@ -70,19 +67,6 @@ function Send() {
     []
   );
 
-  // useEffect(() => {
-  //   const tokensByAddress = tokens[currentAccount?.evmAddress];
-  //   const tokensToShow = tokensByAddress[currentNetwork?.toLowerCase()];
-  //   setAllTokens(tokensToShow);
-  //   // setSelectedToken({
-  //   //   address: "",
-  //   //   balance: "",
-  //   //   decimals: "",
-  //   //   name: "",
-  //   //   symbol: ""
-  //   // });
-  // }, [currentNetwork, currentAccount?.evmAddress, tokens]);
-
   useEffect(() => {
     const tokensByAddress = tokens[currentAccount?.evmAddress];
     const tokensToShow = tokensByAddress ? tokensByAddress[currentNetwork?.toLowerCase()] : null;
@@ -90,19 +74,6 @@ function Send() {
     setAllTokens(tokensToShow);
   }, [currentNetwork, currentAccount?.evmAddress, tokens]);
 
-  // useEffect(() => {
-  //   if (isFirstRender.current) {
-  //     isFirstRender.current = false;
-  //     return;
-  //   }
-  //   setSelectedToken({
-  //     address: "",
-  //     balance: "",
-  //     decimals: "",
-  //     name: "",
-  //     symbol: ""
-  //   });
-  // }, [currentNetwork, currentAccount?.evmAddress]);
 
   useEffect(() => {
     if (searchedInput) {
