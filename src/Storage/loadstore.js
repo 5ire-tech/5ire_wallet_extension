@@ -509,7 +509,9 @@ export class ExtensionStorageHandler {
       newState.isLogin = false;
       newState.currentAccount = userState.currentAccount;
     }
-
+    if (newState?.tokens.hasOwnProperty(removedAccountAddress)) {
+      delete newState.tokens[removedAccountAddress];
+    }
     newState.currentAccount = accounts[accounts.length - 1];
 
     return await this._updateStorage(newState);
@@ -589,6 +591,37 @@ export class ExtensionStorageHandler {
       ...message
     });
     return await this._updateStorage(newState);
+  };
+
+  /**
+   * Remove specific token
+   * @param {*} message
+   * @param {*} state
+   * @returns
+   */
+  removeToken = async (message, state) => {
+    try {
+      console.log("message : ", message);
+
+      const { address, currentNetwork } = message;
+      const newState = { ...state };
+      const currentAccount = newState.currentAccount?.evmAddress;
+      const currentAccTokens = newState.tokens[currentAccount];
+      console.log("currentAccTokens : ", currentAccTokens);
+
+      const tokens = currentAccTokens[currentNetwork ?? newState.currentNetwork.toLowerCase()];
+      console.log("tokens: ", tokens);
+
+      if (tokens.length) {
+        const newTokens = tokens.filter((tkn) => tkn.address !== address);
+        console.log("newTokens : ", newTokens);
+
+        newState.tokens[currentAccount][currentNetwork] = newTokens;
+      }
+      return await this._updateStorage(newState);
+    } catch (error) {
+      console.log("error : ", error);
+    }
   };
 
   //*********************************** Internal methods **************************/

@@ -453,7 +453,7 @@ body {
   //   background-color: transparent !important;
   // }
   button {
-    border: 1px solid var(--UI-Secondary-Blue-Tone, rgba(0, 167, 220, 0.15));
+    border: 1px solid #00a7dc40;
     background-color: transparent;
     width: 200px;
     border-radius: 15px;
@@ -464,6 +464,9 @@ body {
     text-align: left;
     padding: 14px;
     cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 }
 

@@ -1,18 +1,29 @@
 import "./Assets.scss";
-import { notification } from "antd";
+import toast from "react-hot-toast";
 import { AuthContext } from "../../Store";
-import React, { useContext, useEffect, useState } from "react";
+import ThreeDot from "../../Assets/dot3.svg";
+import style from "../MyAccount/style.module.scss";
+import { notification, Dropdown, Space } from "antd";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
+import { ExtensionStorageHandler } from "../../Storage/loadstore";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import { formatBalance, validateAddress } from "../../Utility/utility";
+import React, { useContext, useEffect, useState, useCallback } from "react";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
-import { ERROR_MESSAGES, MESSAGE_EVENT_LABELS, MESSAGE_TYPE_LABELS } from "../../Constants";
+import {
+  ERROR_MESSAGES,
+  MESSAGE_EVENT_LABELS,
+  MESSAGE_TYPE_LABELS,
+  STATE_CHANGE_ACTIONS
+} from "../../Constants";
 
 function Assets() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isImportModal, setImportModal] = useState(false);
+  const [isRemoveModal, setRemoveModal] = useState(false);
   const [contractAddress, setContractAddress] = useState("");
   const [showRestInputs, setShowRestInputs] = useState(false);
+  const [addressToRemove, setAddressToRemove] = useState(null);
   const { state, tokenErr, tokenDetails, showSuccessModal, setTokenErr, setTokenDetails } =
     useContext(AuthContext);
   const { currentNetwork, currentAccount, tokens } = state;
@@ -21,7 +32,7 @@ function Assets() {
 
   useEffect(() => {
     if (showSuccessModal) {
-      setIsModalOpen(!showSuccessModal);
+      setImportModal(!showSuccessModal);
     }
   }, [showSuccessModal]);
 
@@ -59,16 +70,27 @@ function Assets() {
   };
 
   const showModal = () => {
-    setIsModalOpen(true);
+    setImportModal(true);
   };
 
-  const handle_OK_Cancel = () => {
+  const handleModalOpen = (address) => {
+    if (address) {
+      setAddressToRemove(address);
+      setRemoveModal(true);
+    }
+  };
+
+  const closeRemoveModal = useCallback(() => {
+    setRemoveModal(false);
+  }, []);
+
+  const closeImportModal = () => {
     setTokenDetails({
       name: "",
       symbol: "",
       decimals: ""
     });
-    setIsModalOpen(false);
+    setImportModal(false);
     setTokenErr("");
     setContractAddress("");
     setShowRestInputs(false);
@@ -82,7 +104,7 @@ function Assets() {
       symbol: tokenDetails.symbol,
       name: tokenDetails.name
     });
-    handle_OK_Cancel();
+    closeImportModal();
   };
 
   const openNotification = (placement) => {
@@ -93,6 +115,26 @@ function Assets() {
       placement
     });
   };
+
+  const handleRemoveToken = async () => {
+    console.log("addressToRemove : ", addressToRemove);
+
+    if (!addressToRemove) {
+      toast.error(ERROR_MESSAGES.UNABLE_TO_REMOVE_ACC);
+    } else {
+      // sendRuntimeMessage(MESSAGE_TYPE_LABELS.CONTRACT, MESSAGE_EVENT_LABELS.REMOVE_TOKEN, {
+      //   address: addressToRemove
+      // });
+      await ExtensionStorageHandler.updateStorage(
+        STATE_CHANGE_ACTIONS.REMOVE_TOKEN,
+        { address: addressToRemove, currentNetwork: currentNetwork.toLowerCase() },
+        {}
+      );
+
+      setAddressToRemove(null);
+    }
+    closeRemoveModal();
+  };
   return (
     <div className="assetSec">
       <div className="topDetail">
@@ -101,9 +143,9 @@ function Assets() {
       </div>
 
       <ModalCustom
-        isModalOpen={isModalOpen}
-        handleOk={handle_OK_Cancel}
-        handleCancel={handle_OK_Cancel}
+        isModalOpen={isImportModal}
+        handleOk={closeImportModal}
+        handleCancel={closeImportModal}
         centered
         closeIcon={false}>
         <div className="customModel">
@@ -173,11 +215,50 @@ function Assets() {
                     {/* <h5>$2820.54</h5> */}
                     {/* <h3>1.13 WETH</h3> */}
                   </div>
+                  <Dropdown
+                    placement="bottomRight"
+                    arrow={{ pointAtCenter: true }}
+                    menu={{
+                      items: [
+                        {
+                          key: i,
+                          label: <span onClick={() => handleModalOpen(e.address)}>Remove</span>
+                        }
+                      ]
+                    }}
+                    trigger={["hover"]}>
+                    <div style={{ cursor: "pointer" }} onClick={(e) => e.preventDefault()}>
+                      <Space>
+                        <img src={ThreeDot} alt="3dots" />
+                      </Space>
+                    </div>
+                  </Dropdown>
                 </div>
               );
             })
           : ""}
       </div>
+      <ModalCustom
+        isModalOpen={isRemoveModal}
+        handleOk={closeRemoveModal}
+        handleCancel={closeRemoveModal}
+        centered
+        closeIcon={false}>
+        <div className={`${style.activeDis_Modal} yesnoPopup`}>
+          <center>
+            <h3 style={{ color: "white" }}>Are you sure, you want to remove this token ?</h3>
+            <div className="innerContct">
+              <button onClick={handleRemoveToken} className="btnYesNo">
+                Yes
+              </button>
+
+              <button onClick={closeRemoveModal} className="btnYesNo">
+                No
+              </button>
+            </div>
+          </center>
+        </div>
+      </ModalCustom>
     </div>
   );
 }

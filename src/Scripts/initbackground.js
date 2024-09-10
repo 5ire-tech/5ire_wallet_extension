@@ -2953,7 +2953,7 @@ export class ContractHandler {
   };
 
   /**
-   * Import token to the wallet  f
+   * Import token to the wallet
    * @param {*} message
    * @param {*} state
    */
@@ -2974,6 +2974,24 @@ export class ContractHandler {
       new Error(new ErrorPayload(ERRCODES.CONTRACT_RELATED, ERROR_MESSAGES.IMPORT_ERROR)).throw();
     }
   };
+
+  // /**
+  //  * Remove the imported token
+  //  * @param {*} message
+  //  * @param {*} state
+  //  */
+  // removeToken = async (message, state) => {
+  //   try {
+  //     console.log("state ", state);
+  //     console.log("remove token ", message);
+
+  //     const newState =
+
+  //   } catch (error) {
+  //     console.log("error while importing token : ", error);
+  //     new Error(new ErrorPayload(ERRCODES.CONTRACT_RELATED, ERROR_MESSAGES.IMPORT_ERROR)).throw();
+  //   }
+  // };
 
   /**
    * *********************** Internal Functions ***********************

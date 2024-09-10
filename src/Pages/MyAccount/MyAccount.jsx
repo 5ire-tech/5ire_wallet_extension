@@ -29,8 +29,15 @@ function MyAccount() {
   const navigate = useNavigate();
   const [isModalOpen, setModalOpen] = useState(false);
   const [addressToRemove, setAddressToRemove] = useState(null);
-  const { allAccounts, state, updateState, externalControlsState, setNewWalletName, windowAndTab } =
-    useContext(AuthContext);
+  const {
+    allAccounts,
+    state,
+    updateState,
+    externalControlsState,
+    setNewWalletName,
+    windowAndTab,
+    setSelectedToken
+  } = useContext(AuthContext);
   const { connectedApps } = externalControlsState;
   const { currentAccount, allAccountsBalance, currentNetwork } = state;
 
@@ -117,6 +124,14 @@ function MyAccount() {
       ),
       connectedApps
     );
+
+    setSelectedToken({
+      address: "",
+      balance: "",
+      decimals: "",
+      name: "",
+      symbol: ""
+    });
   };
 
   return (

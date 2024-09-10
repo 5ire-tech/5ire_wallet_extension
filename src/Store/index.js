@@ -32,11 +32,7 @@ export default function Context({ children }) {
   const navigate = useNavigate();
   const [edValue, setEDValue] = useState(1);
   const [state, setState] = useState(userState);
-  const [tokenDetails, setTokenDetails] = useState({
-    name: "",
-    decimals: "",
-    symbol: ""
-  });
+
   const [tokenErr, setTokenErr] = useState("");
   const [userPass, setUserPass] = useState(null);
   const [isLoading, setLoading] = useState(false);
@@ -53,6 +49,18 @@ export default function Context({ children }) {
   const [showCongratLoader, setShowCongratLoader] = useState(false);
   const [newAccount, setNewAccount] = useState(newAccountInitialState);
   const [externalControlsState, setExternalControlState] = useState(externalControls);
+  const [selectedToken, setSelectedToken] = useState({
+    address: "",
+    balance: "",
+    decimals: "",
+    name: "",
+    symbol: ""
+  });
+  const [tokenDetails, setTokenDetails] = useState({
+    name: "",
+    decimals: "",
+    symbol: ""
+  });
 
   //for check if localstate is loaded or not
   const [isStateLoaded, setStateLoaded] = useState(false);
@@ -349,6 +357,7 @@ export default function Context({ children }) {
     estimatedGas,
     windowAndTab,
     passVerified,
+    selectedToken,
     isStateLoaded,
     newWalletName,
     backgroundError,
@@ -377,6 +386,7 @@ export default function Context({ children }) {
     setWindowAndTab,
     setNetworkError,
     setPassVerified,
+    setSelectedToken,
     setNewWalletName,
     setBackgroundError,
     updateEstimatedGas,

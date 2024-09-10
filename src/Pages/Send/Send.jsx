@@ -20,6 +20,7 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
+import { DownArrow } from "../../Assets/StoreAsset/StoreAsset";
 
 function Send() {
   // const [isEd, setEd] = useState(true);
@@ -34,16 +35,16 @@ function Send() {
   const [isMaxDisabled, setMaxDisabled] = useState(true);
   const [data, setData] = useState({ to: "", amount: "" });
   const [isModalOpen1, setIsModalOpen1] = useState(false);
-  const [selectedToken, setSelectedToken] = useState({
-    address: "",
-    balance: "",
-    decimals: "",
-    name: "",
-    symbol: ""
-  });
 
-  const { state, estimatedGas, updateEstimatedGas, updateLoading, edValue } =
-    useContext(AuthContext);
+  const {
+    state,
+    edValue,
+    estimatedGas,
+    updateLoading,
+    selectedToken,
+    setSelectedToken,
+    updateEstimatedGas
+  } = useContext(AuthContext);
   const { currentAccount, pendingTransactionBalance, currentNetwork, allAccountsBalance, tokens } =
     state;
   const balance = allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()];
@@ -69,18 +70,39 @@ function Send() {
     []
   );
 
+  // useEffect(() => {
+  //   const tokensByAddress = tokens[currentAccount?.evmAddress];
+  //   const tokensToShow = tokensByAddress[currentNetwork?.toLowerCase()];
+  //   setAllTokens(tokensToShow);
+  //   // setSelectedToken({
+  //   //   address: "",
+  //   //   balance: "",
+  //   //   decimals: "",
+  //   //   name: "",
+  //   //   symbol: ""
+  //   // });
+  // }, [currentNetwork, currentAccount?.evmAddress, tokens]);
+
   useEffect(() => {
     const tokensByAddress = tokens[currentAccount?.evmAddress];
-    const tokensToShow = tokensByAddress[currentNetwork?.toLowerCase()];
+    const tokensToShow = tokensByAddress ? tokensByAddress[currentNetwork?.toLowerCase()] : null;
+
     setAllTokens(tokensToShow);
-    setSelectedToken({
-      address: "",
-      balance: "",
-      decimals: "",
-      name: "",
-      symbol: ""
-    });
   }, [currentNetwork, currentAccount?.evmAddress, tokens]);
+
+  // useEffect(() => {
+  //   if (isFirstRender.current) {
+  //     isFirstRender.current = false;
+  //     return;
+  //   }
+  //   setSelectedToken({
+  //     address: "",
+  //     balance: "",
+  //     decimals: "",
+  //     name: "",
+  //     symbol: ""
+  //   });
+  // }, [currentNetwork, currentAccount?.evmAddress]);
 
   useEffect(() => {
     if (searchedInput) {
@@ -440,6 +462,7 @@ function Send() {
     try {
       // if (activeTab === EVM) {
       if (selectedToken?.address !== "") {
+        updateLoading(true);
         sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.TOKEN_TRANSFER, {
           to: data.to,
           value: data.amount,
@@ -606,7 +629,9 @@ function Send() {
         <div className={style.sendSec__assetSec}>
           <h2>Asset</h2>
           <div className="assetSelectStyle">
-            <button onClick={showModal}>{selectedToken?.name ? selectedToken.name : "5ire"}</button>
+            <button onClick={showModal}>
+              {selectedToken?.name ? selectedToken.name : "5ire"} <DownArrow />
+            </button>
             <ModalCustom
               isModalOpen={isModalOpen1}
               handleOk={handleOk}
