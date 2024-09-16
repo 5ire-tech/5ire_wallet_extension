@@ -356,7 +356,10 @@ export const STATE_CHANGE_ACTIONS = {
   CLEAR_TRANSACTION_QUEUE: "clearTransactionQueue",
 
   //window and tabs state
-  SAVE_TAB_AND_WINDOW_STATE: "saveTabAndWindowState"
+  SAVE_TAB_AND_WINDOW_STATE: "saveTabAndWindowState",
+
+  //token
+  REMOVE_TOKEN: "removeToken"
 };
 
 export const ERROR_EVENTS_LABELS = {

@@ -2953,7 +2953,7 @@ export class ContractHandler {
   };
 
   /**
-   * Import token to the wallet  f
+   * Import token to the wallet
    * @param {*} message
    * @param {*} state
    */
@@ -2974,6 +2974,7 @@ export class ContractHandler {
       new Error(new ErrorPayload(ERRCODES.CONTRACT_RELATED, ERROR_MESSAGES.IMPORT_ERROR)).throw();
     }
   };
+
 
   /**
    * *********************** Internal Functions ***********************

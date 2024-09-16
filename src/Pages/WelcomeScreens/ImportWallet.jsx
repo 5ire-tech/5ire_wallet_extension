@@ -27,7 +27,8 @@ function ImportWallet() {
   const [isDisable, setDisable] = useState(true);
   const [data, setData] = useState({ accName: "", key: "" });
   const [warrning, setWarrning] = useState({ acc: "", key: "" });
-  const { state, userPass, allAccounts, inputError, setInputError } = useContext(AuthContext);
+  const { state, userPass, allAccounts, inputError, setInputError, setSelectedToken } =
+    useContext(AuthContext);
   const { isLogin } = state;
   const [show, setShow] = useState(false);
   const [isOpenEye, setEye] = useState(false);
@@ -132,6 +133,13 @@ function ImportWallet() {
               MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC,
               { mnemonic: data?.key?.trim(), name: data.accName.trim() }
             );
+            setSelectedToken({
+              address: "",
+              balance: "",
+              decimals: "",
+              name: "",
+              symbol: ""
+            });
           }
         }
       }

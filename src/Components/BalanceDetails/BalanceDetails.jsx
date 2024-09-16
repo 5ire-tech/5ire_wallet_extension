@@ -48,8 +48,15 @@ function BalanceDetails({ mt0 }) {
   const [isConnected, setIsConnected] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHeaderActive, setHeaderActive] = useState(false);
-  const { state, updateState, externalControlsState, allAccounts, updateLoading, windowAndTab } =
-    useContext(AuthContext);
+  const {
+    setSelectedToken,
+    state,
+    updateState,
+    externalControlsState,
+    allAccounts,
+    updateLoading,
+    windowAndTab
+  } = useContext(AuthContext);
 
   const { connectedApps } = externalControlsState;
   const { pathname } = getLocation;
@@ -75,14 +82,11 @@ function BalanceDetails({ mt0 }) {
   //network change handler
   const handleNetworkChange = async (network) => {
     updateLoading(true);
-
     updateState(LABELS.CURRENT_NETWORK, network);
-
     updateState(
       LABELS.BALANCE,
       allAccountsBalance[currentAccount?.evmAddress][network?.toLowerCase()]
     );
-
     //change the network
     sendRuntimeMessage(
       MESSAGE_TYPE_LABELS.NETWORK_HANDLER,
@@ -101,6 +105,14 @@ function BalanceDetails({ mt0 }) {
       ),
       connectedApps
     );
+
+    setSelectedToken({
+      address: "",
+      balance: "",
+      decimals: "",
+      name: "",
+      symbol: ""
+    });
   };
 
   //account change handler
@@ -135,6 +147,14 @@ function BalanceDetails({ mt0 }) {
       ),
       connectedApps
     );
+
+    setSelectedToken({
+      address: "",
+      balance: "",
+      decimals: "",
+      name: "",
+      symbol: ""
+    });
   };
 
   const handleCopy = (e) => {

@@ -27,6 +27,7 @@ function CreateNewWallet() {
     updateState,
     newWalletName,
     setDetailsPage,
+    setSelectedToken,
     setNewWalletName
   } = useContext(AuthContext);
 
@@ -79,6 +80,13 @@ function CreateNewWallet() {
               { name: newWalletName.trim() }
             );
             setDetailsPage(true);
+            setSelectedToken({
+              address: "",
+              balance: "",
+              decimals: "",
+              name: "",
+              symbol: ""
+            });
           }
         } else {
           setAccName(newWalletName.trim());

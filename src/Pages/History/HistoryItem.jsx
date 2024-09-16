@@ -60,15 +60,15 @@ export default function HistoryItem({ historyItem, handleHistoryOpen }) {
       <div className={style.historySec__historyTimeDate}>
         <p>{formatDate(historyItem.timeStamp)}</p>
       </div>
-      <div className={style.historySec__historyMarketSwap}>
+      <div
+        className={style.historySec__historyMarketSwap}
+        onClick={() => {
+          handleHistoryOpen(historyItem);
+        }}>
         <div className={style.historySec__historyMarketSwap__leftSide}>
           <img alt="hash" src={getTxIcon(historyItem.type, historyItem.status.toLowerCase())} />
 
-          <div
-            className={style.historySec__historyMarketSwap__leftContact}
-            onClick={() => {
-              handleHistoryOpen(historyItem);
-            }}>
+          <div className={style.historySec__historyMarketSwap__leftContact}>
             <h3>
               {isEqual(historyItem?.type, TX_TYPE.NATIVE_APP)
                 ? historyItem?.method

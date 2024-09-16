@@ -152,8 +152,13 @@ export const getTabDetailsUsingTabId = async (tabId) => {
 //fix number upto certain decimals
 export const fixNumber = (num, decimalPlaces = 6, roundingMode = 8) => {
   try {
-    const number = new BigNumber(Number(num)).toFixed(decimalPlaces, roundingMode).toString();
-    return number;
+    const str = num.toString().split(".");
+    if (str.length > 1 && str[1].length > decimalPlaces) {
+      const number = new BigNumber(Number(num)).toFixed(decimalPlaces, roundingMode).toString();
+      return number;
+    } else {
+      return num;
+    }
   } catch (error) {
     return "";
   }
