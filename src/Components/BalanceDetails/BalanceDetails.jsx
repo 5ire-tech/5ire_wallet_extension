@@ -40,6 +40,27 @@ import {
   STATE_CHANGE_ACTIONS
 } from "../../Constants/index";
 
+const environment = process.env.REACT_APP_ENVIRONMENT;
+
+const optionsOfProd = [
+  {
+    value: NETWORK.TEST_NETWORK,
+    label: <span className="flexedItemSelect">{NETWORK.TEST_NETWORK}</span>
+  },
+  {
+    value: NETWORK.MAINNET,
+    label: <span className="flexedItemSelect">{NETWORK.MAINNET}</span>
+  }
+];
+
+const optionsOfQA = [
+  {
+    value: NETWORK.QA_NETWORK,
+    label: <span className="flexedItemSelect">{NETWORK.QA_NETWORK}</span>
+  }
+].concat(optionsOfProd);
+
+
 function BalanceDetails({ mt0 }) {
   const getLocation = useLocation();
   const [url, setUrl] = useState("");
@@ -425,20 +446,7 @@ function BalanceDetails({ mt0 }) {
                   style={{
                     width: 100
                   }}
-                  options={[
-                    {
-                      value: NETWORK.QA_NETWORK,
-                      label: <span className="flexedItemSelect">{NETWORK.QA_NETWORK}</span>
-                    },
-                    {
-                      value: NETWORK.TEST_NETWORK,
-                      label: <span className="flexedItemSelect">{NETWORK.TEST_NETWORK}</span>
-                    },
-                    {
-                      value: NETWORK.MAINNET,
-                      label: <span className="flexedItemSelect">{NETWORK.MAINNET}</span>
-                    }
-                  ]}
+                  options={environment === "prod" ? optionsOfProd : optionsOfQA}
                 />
               </div>
             </>
