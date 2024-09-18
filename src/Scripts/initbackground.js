@@ -2975,7 +2975,6 @@ export class ContractHandler {
     }
   };
 
-
   /**
    * *********************** Internal Functions ***********************
    */

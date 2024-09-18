@@ -74,7 +74,6 @@ function Send() {
     setAllTokens(tokensToShow);
   }, [currentNetwork, currentAccount?.evmAddress, tokens]);
 
-
   useEffect(() => {
     if (searchedInput) {
       handleSearch(searchedInput, allTokens);
