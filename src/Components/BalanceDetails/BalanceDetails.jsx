@@ -60,7 +60,6 @@ const optionsOfQA = [
   }
 ].concat(optionsOfProd);
 
-
 function BalanceDetails({ mt0 }) {
   const getLocation = useLocation();
   const [url, setUrl] = useState("");
