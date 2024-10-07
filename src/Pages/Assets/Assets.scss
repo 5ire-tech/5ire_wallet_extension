@@ -47,6 +47,13 @@
     border: 2px solid #00a9dc;
     justify-content: center;
   }
+  &_inner{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1;
+    margin-right: 20px;
+  }
   &__leftSec {
     display: flex;
     gap: 12px;

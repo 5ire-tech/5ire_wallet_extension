@@ -24,8 +24,16 @@ function Assets() {
   const [contractAddress, setContractAddress] = useState("");
   const [showRestInputs, setShowRestInputs] = useState(false);
   const [addressToRemove, setAddressToRemove] = useState(null);
-  const { state, tokenErr, tokenDetails, showSuccessModal, setTokenErr, setTokenDetails } =
-    useContext(AuthContext);
+  const {
+    state,
+    tokenErr,
+    tokenDetails,
+    showSuccessModal,
+    setTokenErr,
+    selectedToken,
+    setTokenDetails,
+    setSelectedToken
+  } = useContext(AuthContext);
   const { currentNetwork, currentAccount, tokens } = state;
   const tokensByAddress = tokens[currentAccount?.evmAddress];
   const tokensToShow = tokensByAddress[currentNetwork?.toLowerCase()] ?? [];
@@ -117,20 +125,22 @@ function Assets() {
   };
 
   const handleRemoveToken = async () => {
-    console.log("addressToRemove : ", addressToRemove);
-
     if (!addressToRemove) {
       toast.error(ERROR_MESSAGES.UNABLE_TO_REMOVE_ACC);
     } else {
-      // sendRuntimeMessage(MESSAGE_TYPE_LABELS.CONTRACT, MESSAGE_EVENT_LABELS.REMOVE_TOKEN, {
-      //   address: addressToRemove
-      // });
       await ExtensionStorageHandler.updateStorage(
         STATE_CHANGE_ACTIONS.REMOVE_TOKEN,
         { address: addressToRemove, currentNetwork: currentNetwork.toLowerCase() },
         {}
       );
-
+      if (selectedToken.address === addressToRemove) {
+        setSelectedToken({
+          address: "",
+          symbol: "",
+          decimals: 0,
+          name: ""
+        });
+      }
       setAddressToRemove(null);
     }
     closeRemoveModal();
@@ -200,20 +210,24 @@ function Assets() {
           ? tokensToShow?.map((e, i) => {
               return (
                 <div className="assetSec__accountActive" key={i + e?.name}>
-                  <div className="assetSec__leftSec">
-                    <h6 className="imgWord">{e?.name ? e?.name[0].toUpperCase() : "T"}</h6>
-                    <div className="assetSec__leftSec__accountConatct">
-                      <h2>{e?.name}</h2>
-                      <h3>{e?.symbol}</h3>
+                  <div className="assetSec_inner">
+                    <div className="assetSec__leftSec">
+                      <h6 className="imgWord">{e?.name ? e?.name[0].toUpperCase() : "T"}</h6>
+                      <div className="assetSec__leftSec__accountConatct">
+                        <h2>{e?.name}</h2>
+                        <h3>{e?.symbol}</h3>
+                      </div>
                     </div>
-                  </div>
-                  <div className="assetSec__rytSec">
-                    <p>
-                      {" "}
-                      {formatBalance(e?.balance ? Number(e.balance) / 10 ** Number(e.decimals) : 0)}
-                    </p>
-                    {/* <h5>$2820.54</h5> */}
-                    {/* <h3>1.13 WETH</h3> */}
+                    <div className="assetSec__rytSec">
+                      <p>
+                        {" "}
+                        {formatBalance(
+                          e?.balance ? Number(e.balance) / 10 ** Number(e.decimals) : 0
+                        )}
+                      </p>
+                      {/* <h5>$2820.54</h5> */}
+                      {/* <h3>1.13 WETH</h3> */}
+                    </div>
                   </div>
                   <Dropdown
                     placement="bottomRight"

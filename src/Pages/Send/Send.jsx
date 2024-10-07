@@ -74,12 +74,44 @@ function Send() {
     setAllTokens(tokensToShow);
   }, [currentNetwork, currentAccount?.evmAddress, tokens]);
 
-
   useEffect(() => {
     if (searchedInput) {
       handleSearch(searchedInput, allTokens);
     } else {
-      setTokensList(allTokens);
+      if (allTokens.length >= 2) {
+        setTokensList([
+          {
+            address: "",
+            balance: "",
+            decimals: "",
+            name: "5ire",
+            symbol: "5ire"
+          },
+          allTokens[0],
+          allTokens[1]
+        ]);
+      } else if (allTokens.length >= 1) {
+        setTokensList([
+          {
+            address: "",
+            balance: "",
+            decimals: "",
+            name: "5ire",
+            symbol: "5ire"
+          },
+          allTokens[0]
+        ]);
+      } else {
+        setTokensList([
+          {
+            address: "",
+            balance: "",
+            decimals: "",
+            name: "5ire",
+            symbol: "5ire"
+          }
+        ]);
+      }
     }
   }, [searchedInput, allTokens, handleSearch]);
 
@@ -601,7 +633,10 @@ function Send() {
           <h2>Asset</h2>
           <div className="assetSelectStyle">
             <button onClick={showModal}>
-              {selectedToken?.name ? selectedToken.name : "5ire"} <DownArrow />
+              {selectedToken?.address
+                ? `${selectedToken.name} (${formatBalance(selectedToken?.balance)})`
+                : "5ire"}{" "}
+              <DownArrow />
             </button>
             <ModalCustom
               isModalOpen={isModalOpen1}
@@ -678,10 +713,14 @@ function Send() {
               placeholder={"Enter Amount"}
               addonAfter={suffix}
               suffix={
-                <span className={style.sendSec__pasteText}>
-                  <img src={SmallLogo} alt="logo" draggable={false} />
-                  5ire
-                </span>
+                selectedToken?.address ? (
+                  ""
+                ) : (
+                  <span className={style.sendSec__pasteText}>
+                    <img src={SmallLogo} alt="logo" draggable={false} />
+                    5ire
+                  </span>
+                )
               }
             />
             <span className={style.errorText}>{err.amount}</span>
