@@ -22,7 +22,6 @@
       cursor: pointer;
       font-size: 15px;
       font-weight: 600;
-
     }
   }
   &__accountActive {
@@ -47,7 +46,7 @@
     border: 2px solid #00a9dc;
     justify-content: center;
   }
-  &_inner{
+  &_inner {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -95,7 +94,6 @@
       font-size: 14px;
       font-weight: 500;
     }
- 
   }
 }
 
@@ -144,7 +142,7 @@
     color: #57cc55 !important;
   }
   .ant-notification-notice-description {
-    font-size: 14px !important;
+    font-size: 13px !important;
     font-weight: 500;
     line-height: normal;
     color: #8d96aa !important;

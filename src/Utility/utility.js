@@ -173,3 +173,6 @@ export const debounce = (func, wait) => {
     timeout = setTimeout(() => func.apply(this, args), wait ?? 1000);
   };
 };
+
+export const nameWithEllipsis = (name, nameLimit = 8) =>
+  name.length > nameLimit ? `${name.slice(0, nameLimit)}...` : name;
