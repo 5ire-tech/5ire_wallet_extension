@@ -118,7 +118,7 @@ function Assets() {
   const openNotification = (placement) => {
     notification.info({
       message: `Token Succesfully Imported`,
-      description: "You have successfully imported USDT.",
+      description: `You have successfully imported ${tokenDetails?.name || "asset"}.`,
       // icon: null,
       placement
     });
@@ -145,6 +145,7 @@ function Assets() {
     }
     closeRemoveModal();
   };
+
   return (
     <div className="assetSec">
       <div className="topDetail">
