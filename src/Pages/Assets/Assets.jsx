@@ -120,7 +120,7 @@ function Assets() {
       message: `Token Succesfully Imported`,
       description: `You have successfully imported ${
         nameWithEllipsis(tokenDetails?.name) || "asset"
-      }.`,
+      }`,
       // icon: null,
       placement
     });

@@ -175,4 +175,4 @@ export const debounce = (func, wait) => {
 };
 
 export const nameWithEllipsis = (name, nameLimit = 8) =>
-  name.length > nameLimit ? `${name.slice(0, nameLimit)}...` : name;
+  name.length > nameLimit ? `${name.slice(0, nameLimit)}...` : `${name}.`;
