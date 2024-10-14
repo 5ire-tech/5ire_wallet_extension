@@ -25,7 +25,6 @@ import Info from "../../Assets/infoIcon.svg";
 import { Tooltip } from "antd";
 
 function Send() {
-  // const [isEd, setEd] = useState(true);
   const [disableBtn, setDisable] = useState(true);
   // const [activeTab, setActiveTab] = useState(NATIVE);
   const [allTokens, setAllTokens] = useState([]);
