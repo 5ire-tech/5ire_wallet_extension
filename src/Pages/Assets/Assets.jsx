@@ -8,7 +8,7 @@ import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
-import { formatBalance, validateAddress } from "../../Utility/utility";
+import { formatBalance, nameWithEllipsis, validateAddress } from "../../Utility/utility";
 import React, { useContext, useEffect, useState, useCallback } from "react";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import {
@@ -118,10 +118,11 @@ function Assets() {
   const openNotification = (placement) => {
     notification.info({
       message: `Token Succesfully Imported`,
-      description: `You have successfully imported ${tokenDetails?.name || "asset"}`,
+      description: `You have successfully imported ${
+        nameWithEllipsis(tokenDetails?.name) || "asset"
+      }`,
       // icon: null,
-      placement,
-      duration: 9999
+      placement
     });
   };
 
