@@ -21,6 +21,8 @@ import {
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
 import { DownArrow } from "../../Assets/StoreAsset/StoreAsset";
+import Info from "../../Assets/infoIcon.svg";
+import { Tooltip } from "antd";
 
 function Send() {
   // const [isEd, setEd] = useState(true);
@@ -646,12 +648,30 @@ function Send() {
               closeIcon={false}>
               <div className="fireCustmModel customModel">
                 <div className="innerContct">
-                  <p>Select Assets</p>
+                  {/* <Tooltip
+                    placement="top"
+                    title="Only the top 3 tokens are shown here, you can view all tokens by searching.">
+                    <img src={Info} alt="infoIcon" width={20} height={20} />
+                  </Tooltip> */}
+                  <p>
+                    <Tooltip
+                      placement="top"
+                      title="Only the top 3 tokens are shown here, you can view all tokens by searching.">
+                      <img
+                        src={Info}
+                        alt="infoIcon"
+                        width={15}
+                        height={15}
+                        style={{ marginRight: 5 }}
+                      />
+                    </Tooltip>
+                    <span>Select Assets</span>
+                  </p>
                   <InputFieldOnly
                     onChange={handleChangeSearch}
                     coloredBg={true}
                     placeholderBaseColor={true}
-                    placeholder={"Search"}
+                    placeholder="Search by token name or address"
                   />
                 </div>
                 <div className="topDetail">
