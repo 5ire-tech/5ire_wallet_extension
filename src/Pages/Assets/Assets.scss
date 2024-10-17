@@ -22,7 +22,6 @@
       cursor: pointer;
       font-size: 15px;
       font-weight: 600;
-
     }
   }
   &__accountActive {
@@ -46,6 +45,13 @@
     align-items: center;
     border: 2px solid #00a9dc;
     justify-content: center;
+  }
+  &_inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1;
+    margin-right: 20px;
   }
   &__leftSec {
     display: flex;
@@ -88,7 +94,6 @@
       font-size: 14px;
       font-weight: 500;
     }
- 
   }
 }
 
@@ -141,5 +146,6 @@
     font-weight: 500;
     line-height: normal;
     color: #8d96aa !important;
+    margin-inline-start: 0 !important;
   }
 }

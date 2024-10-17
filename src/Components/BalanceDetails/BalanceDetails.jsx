@@ -501,12 +501,13 @@ function BalanceDetails({ mt0 }) {
                 <div className={style.balanceDetails__innerBalance__balanceCard}>
                   <div className={style.balanceDetails__innerBalance__balanceName}>
                     <p>Transferable</p>
-                    <Tooltip
-                      title={
-                        allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
-                          ?.transferableBalance || 0
-                      }>
-                      <div style={{ display: "flex", alignItems: "center" }}>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <Tooltip
+                        title={
+                          allAccountsBalance[currentAccount?.evmAddress][
+                            currentNetwork.toLowerCase()
+                          ]?.transferableBalance || 0
+                        }>
                         <h3>
                           {/* <img src={WalletCardLogo} draggable={false} alt="walletLogo" /> */}
                           {formatBalance(
@@ -518,11 +519,11 @@ function BalanceDetails({ mt0 }) {
                             currentNetwork.toLowerCase()
                           ]?.transferableBalance || 0} */}
                         </h3>
-                        <span>
-                          <img src={SmallLogo} />
-                        </span>
-                      </div>
-                    </Tooltip>
+                      </Tooltip>
+                      <span>
+                        <img src={SmallLogo} />
+                      </span>
+                    </div>
                   </div>
                   {/* <div className={style.balanceDetails__innerBalance__walletQa}> */}
                   {/* <img
@@ -538,12 +539,13 @@ function BalanceDetails({ mt0 }) {
                 <div className={style.balanceDetails__innerBalance__balanceCard}>
                   <div className={style.balanceDetails__innerBalance__balanceName}>
                     <p>Staked</p>
-                    <Tooltip
-                      title={
-                        allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
-                          ?.stakedBalance || 0
-                      }>
-                      <div style={{ display: "flex", alignItems: "center" }}>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <Tooltip
+                        title={
+                          allAccountsBalance[currentAccount?.evmAddress][
+                            currentNetwork.toLowerCase()
+                          ]?.stakedBalance || 0
+                        }>
                         <h3>
                           {formatBalance(
                             allAccountsBalance[currentAccount?.evmAddress][
@@ -554,11 +556,11 @@ function BalanceDetails({ mt0 }) {
                             currentNetwork.toLowerCase()
                           ]?.stakedBalance || 0} */}
                         </h3>
-                        <span>
-                          <img src={SmallLogo} />
-                        </span>
-                      </div>
-                    </Tooltip>
+                      </Tooltip>
+                      <span>
+                        <img src={SmallLogo} />
+                      </span>
+                    </div>
                   </div>
                   {/* <div className={style.balanceDetails__innerBalance__walletQa}> */}
                   {/* <img
