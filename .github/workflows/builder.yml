@@ -27,7 +27,7 @@ jobs:
     - run: yarn install
 
     - name: Build ${{ matrix.browser }} extension
-      run: yarn run build:${{ matrix.browser }}
+      run: yarn run build:${{ matrix.browser }}-prod
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
