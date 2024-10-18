@@ -34,7 +34,7 @@ jobs:
 
     - name: Build ${{ matrix.browser }} extension for Production
       if: github.event_name == 'release'  # Run this if it's a release
-      run: yarn run build:${{ matrix.browser }}-production
+      run: yarn run build:${{ matrix.browser }}-prod
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
