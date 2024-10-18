@@ -3,8 +3,6 @@ name: Docker Image Builder and Deployer
 on:
   # Trigger at every push. Action will also be visible from Pull Requests to main
   push: # Comment this line to trigger action only on pull-requests (not recommended if you don't pay for GH Actions)
-  release:
-    types: [created]  # Trigger on release creation
   workflow_dispatch:
 
 concurrency:
@@ -28,12 +26,7 @@ jobs:
 
     - run: yarn install
 
-    - name: Build ${{ matrix.browser }} extension for QA
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'  # Run this if it's a push to master
-      run: yarn run build:${{ matrix.browser }}-qa
-
-    - name: Build ${{ matrix.browser }} extension for Production
-      if: github.event_name == 'release'  # Run this if it's a release
+    - name: Build ${{ matrix.browser }} extension
       run: yarn run build:${{ matrix.browser }}-prod
 
     - name: Upload artifact
