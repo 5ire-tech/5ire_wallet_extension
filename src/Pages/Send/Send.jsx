@@ -399,7 +399,7 @@ function Send() {
 
       //calculate the evm fee
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {
-        value: data?.amount ? data.amount : balance?.transferableBalance,
+        value: data?.amount || balance?.transferableBalance,
         toAddress: data.to,
         options: { account: currentAccount },
         isEd: false
@@ -564,11 +564,11 @@ function Send() {
   };
 
   //performs action when user click on max button
-  const handleMaxClick = () => {
+  const handleMaxClick = async () => {
     if (!err.to && data?.to) {
-      getFee();
       setData((p) => ({ ...p, amount: "" }));
       setErr((p) => ({ ...p, amount: "" }));
+      await getFee();
     }
   };
 
