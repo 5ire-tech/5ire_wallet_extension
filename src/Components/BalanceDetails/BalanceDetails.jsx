@@ -144,7 +144,7 @@ function BalanceDetails({ mt0 }) {
     if (allAccountsBalance.hasOwnProperty(acc?.evmAddress)) {
       updateState(
         LABELS.BALANCE,
-        allAccountsBalance[acc?.evmAddress][currentNetwork.toLowerCase()]
+        allAccountsBalance[acc?.evmAddress][currentNetwork?.toLowerCase()]
       );
     } else {
       //fetch balance of changed account
@@ -455,7 +455,7 @@ function BalanceDetails({ mt0 }) {
             <div className={style.balanceDetails__innerBalance}>
               <div className={style.balanceDetails__innerBalance__totalBalnce}>
                 <p>
-                  {allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
+                  {allAccountsBalance[currentAccount?.evmAddress][currentNetwork?.toLowerCase()]
                     .totalBalance ? (
                     <>
                       {" "}
@@ -464,13 +464,13 @@ function BalanceDetails({ mt0 }) {
                           placement="bottom"
                           title={
                             allAccountsBalance[currentAccount?.evmAddress][
-                              currentNetwork.toLowerCase()
+                              currentNetwork?.toLowerCase()
                             ].totalBalance
                           }>
                           <span className="totalBal">
                             {formatBalance(
                               allAccountsBalance[currentAccount?.evmAddress][
-                                currentNetwork.toLowerCase()
+                                currentNetwork?.toLowerCase()
                               ].totalBalance || 0
                             )}
                           </span>
@@ -505,14 +505,14 @@ function BalanceDetails({ mt0 }) {
                       <Tooltip
                         title={
                           allAccountsBalance[currentAccount?.evmAddress][
-                            currentNetwork.toLowerCase()
+                            currentNetwork?.toLowerCase()
                           ]?.transferableBalance || 0
                         }>
                         <h3>
                           {/* <img src={WalletCardLogo} draggable={false} alt="walletLogo" /> */}
                           {formatBalance(
                             allAccountsBalance[currentAccount?.evmAddress][
-                              currentNetwork.toLowerCase()
+                              currentNetwork?.toLowerCase()
                             ]?.transferableBalance ?? 0
                           )}
                           {/* {allAccountsBalance[currentAccount?.evmAddress][
@@ -543,13 +543,13 @@ function BalanceDetails({ mt0 }) {
                       <Tooltip
                         title={
                           allAccountsBalance[currentAccount?.evmAddress][
-                            currentNetwork.toLowerCase()
+                            currentNetwork?.toLowerCase()
                           ]?.stakedBalance || 0
                         }>
                         <h3>
                           {formatBalance(
                             allAccountsBalance[currentAccount?.evmAddress][
-                              currentNetwork.toLowerCase()
+                              currentNetwork?.toLowerCase()
                             ]?.stakedBalance ?? 0
                           )}
                           {/* {allAccountsBalance[currentAccount?.evmAddress][

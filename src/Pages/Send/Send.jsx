@@ -50,6 +50,9 @@ function Send() {
   const { currentAccount, pendingTransactionBalance, currentNetwork, allAccountsBalance, tokens } =
     state;
   const balance = allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()];
+  const fireBalance =
+    allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
+      ?.transferableBalance;
   const MINIMUM_BALANCE = edValue;
 
   /**
@@ -84,7 +87,7 @@ function Send() {
         setTokensList([
           {
             address: "",
-            balance: "",
+            balance: fireBalance,
             decimals: "",
             name: "5ire",
             symbol: "5ire"
@@ -96,7 +99,7 @@ function Send() {
         setTokensList([
           {
             address: "",
-            balance: "",
+            balance: fireBalance,
             decimals: "",
             name: "5ire",
             symbol: "5ire"
@@ -107,7 +110,7 @@ function Send() {
         setTokensList([
           {
             address: "",
-            balance: "",
+            balance: fireBalance,
             decimals: "",
             name: "5ire",
             symbol: "5ire"
@@ -115,7 +118,7 @@ function Send() {
         ]);
       }
     }
-  }, [searchedInput, allTokens, handleSearch]);
+  }, [searchedInput, allTokens, handleSearch, fireBalance]);
 
   const showModal = () => {
     setIsModalOpen1(true);
@@ -466,46 +469,46 @@ function Send() {
   const handleApprove = useCallback(async () => {
     try {
       // if (activeTab === EVM) {
-      if (selectedToken?.address !== "") {
-        updateLoading(true);
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.TOKEN_TRANSFER, {
-          to: data.to,
-          value: data.amount,
-          options: {
-            isEvm: true,
-            fee: estimatedGas,
-            account: currentAccount,
-            network: currentNetwork,
-            type: TX_TYPE.TOKEN_TRANSFER,
-            contractDetails: selectedToken
-          },
-          isEd: false
-        });
+      updateLoading(true);
+      selectedToken?.address !== ""
+        ? sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.TOKEN_TRANSFER, {
+            to: data.to,
+            value: data.amount,
+            options: {
+              isEvm: true,
+              fee: estimatedGas,
+              account: currentAccount,
+              network: currentNetwork,
+              type: TX_TYPE.TOKEN_TRANSFER,
+              contractDetails: selectedToken
+            },
+            isEd: false
+          })
+        : //pass the message request for evm transfer
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TX, {
+            to: data.to,
+            value: data.amount,
+            options: {
+              account: currentAccount,
+              network: currentNetwork,
+              type: TX_TYPE.SEND,
+              isEvm: true,
+              fee: estimatedGas
+            },
+            isEd: false
+          });
+      setTimeout(() => {
+        setIsModalOpen(true);
+        updateLoading(false);
+        setSelectedToken((p) => ({ ...p, balance: p.balance - data.amount }));
+        const token_list = tokensList.map((token) =>
+          token?.address === selectedToken?.address
+            ? { ...token, balance: token.balance - data.amount }
+            : token
+        );
+        setTokensList(token_list);
+      }, 3000);
 
-        setTimeout(() => {
-          setIsModalOpen(true);
-          updateLoading(false);
-        }, 3000);
-      } else {
-        updateLoading(true);
-        //pass the message request for evm transfer
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TX, {
-          to: data.to,
-          value: data.amount,
-          options: {
-            account: currentAccount,
-            network: currentNetwork,
-            type: TX_TYPE.SEND,
-            isEvm: true,
-            fee: estimatedGas
-          },
-          isEd: false
-        });
-        setTimeout(() => {
-          setIsModalOpen(true);
-          updateLoading(false);
-        }, 3000);
-      }
       // } else if (activeTab === NATIVE) {
       //   if (balance?.nativeBalance < MINIMUM_BALANCE) {
       //     setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
@@ -596,6 +599,8 @@ function Send() {
     updateEstimatedGas(null);
     handleCancel();
   };
+
+  console.log("iusahdsaiuds", tokensList, selectedToken);
 
   const suffix = (
     <button disabled={isMaxDisabled} className="maxBtn" onClick={handleMaxClick}>
