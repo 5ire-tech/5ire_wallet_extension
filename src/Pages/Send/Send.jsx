@@ -9,7 +9,12 @@ import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import React, { useState, useEffect, useContext, useCallback } from "react";
-import { debounce, formatBalance, validateAddress } from "../../Utility/utility";
+import {
+  debounce,
+  formatBalance,
+  limitDecimalsOnlyWhenRequired,
+  validateAddress
+} from "../../Utility/utility";
 import { InputField, InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import {
   REGEX,
@@ -50,6 +55,9 @@ function Send() {
   const { currentAccount, pendingTransactionBalance, currentNetwork, allAccountsBalance, tokens } =
     state;
   const balance = allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()];
+  const fireBalance =
+    allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
+      ?.transferableBalance;
   const MINIMUM_BALANCE = edValue;
 
   /**
@@ -84,7 +92,7 @@ function Send() {
         setTokensList([
           {
             address: "",
-            balance: "",
+            balance: fireBalance,
             decimals: "",
             name: "5ire",
             symbol: "5ire"
@@ -96,7 +104,7 @@ function Send() {
         setTokensList([
           {
             address: "",
-            balance: "",
+            balance: fireBalance,
             decimals: "",
             name: "5ire",
             symbol: "5ire"
@@ -107,7 +115,7 @@ function Send() {
         setTokensList([
           {
             address: "",
-            balance: "",
+            balance: fireBalance,
             decimals: "",
             name: "5ire",
             symbol: "5ire"
@@ -115,7 +123,7 @@ function Send() {
         ]);
       }
     }
-  }, [searchedInput, allTokens, handleSearch]);
+  }, [searchedInput, allTokens, handleSearch, fireBalance]);
 
   const showModal = () => {
     setIsModalOpen1(true);
@@ -399,7 +407,7 @@ function Send() {
 
       //calculate the evm fee
       sendRuntimeMessage(MESSAGE_TYPE_LABELS.FEE_AND_BALANCE, MESSAGE_EVENT_LABELS.EVM_FEE, {
-        value: data?.amount ? data.amount : balance?.transferableBalance,
+        value: data?.amount || balance?.transferableBalance,
         toAddress: data.to,
         options: { account: currentAccount },
         isEd: false
@@ -466,46 +474,46 @@ function Send() {
   const handleApprove = useCallback(async () => {
     try {
       // if (activeTab === EVM) {
-      if (selectedToken?.address !== "") {
-        updateLoading(true);
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.TOKEN_TRANSFER, {
-          to: data.to,
-          value: data.amount,
-          options: {
-            isEvm: true,
-            fee: estimatedGas,
-            account: currentAccount,
-            network: currentNetwork,
-            type: TX_TYPE.TOKEN_TRANSFER,
-            contractDetails: selectedToken
-          },
-          isEd: false
-        });
+      updateLoading(true);
+      selectedToken?.address !== ""
+        ? sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.TOKEN_TRANSFER, {
+            to: data.to,
+            value: data.amount,
+            options: {
+              isEvm: true,
+              fee: estimatedGas,
+              account: currentAccount,
+              network: currentNetwork,
+              type: TX_TYPE.TOKEN_TRANSFER,
+              contractDetails: selectedToken
+            },
+            isEd: false
+          })
+        : //pass the message request for evm transfer
+          sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TX, {
+            to: data.to,
+            value: data.amount,
+            options: {
+              account: currentAccount,
+              network: currentNetwork,
+              type: TX_TYPE.SEND,
+              isEvm: true,
+              fee: estimatedGas
+            },
+            isEd: false
+          });
+      setTimeout(() => {
+        setIsModalOpen(true);
+        updateLoading(false);
+        setSelectedToken((p) => ({ ...p, balance: p.balance - data.amount }));
+        const token_list = tokensList.map((token) =>
+          token?.address === selectedToken?.address
+            ? { ...token, balance: token.balance - data.amount }
+            : token
+        );
+        setTokensList(token_list);
+      }, 3000);
 
-        setTimeout(() => {
-          setIsModalOpen(true);
-          updateLoading(false);
-        }, 3000);
-      } else {
-        updateLoading(true);
-        //pass the message request for evm transfer
-        sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TX, {
-          to: data.to,
-          value: data.amount,
-          options: {
-            account: currentAccount,
-            network: currentNetwork,
-            type: TX_TYPE.SEND,
-            isEvm: true,
-            fee: estimatedGas
-          },
-          isEd: false
-        });
-        setTimeout(() => {
-          setIsModalOpen(true);
-          updateLoading(false);
-        }, 3000);
-      }
       // } else if (activeTab === NATIVE) {
       //   if (balance?.nativeBalance < MINIMUM_BALANCE) {
       //     setErr((p) => ({ ...p, amount: ERROR_MESSAGES.INSUFFICENT_BALANCE }));
@@ -564,11 +572,11 @@ function Send() {
   };
 
   //performs action when user click on max button
-  const handleMaxClick = () => {
+  const handleMaxClick = async () => {
     if (!err.to && data?.to) {
-      getFee();
       setData((p) => ({ ...p, amount: "" }));
       setErr((p) => ({ ...p, amount: "" }));
+      await getFee();
     }
   };
 
@@ -596,6 +604,8 @@ function Send() {
     updateEstimatedGas(null);
     handleCancel();
   };
+
+  console.log("iusahdsaiuds", tokensList, selectedToken);
 
   const suffix = (
     <button disabled={isMaxDisabled} className="maxBtn" onClick={handleMaxClick}>
@@ -687,11 +697,17 @@ function Send() {
                         key={i + e?.name}
                         onClick={() => handleTokenSelect(e)}>
                         <h2>{e?.name}</h2>
-                        <p>
-                          {formatBalance(
+                        <Tooltip
+                          placement="top"
+                          title={limitDecimalsOnlyWhenRequired(
                             e?.balance ? Number(e?.balance) / 10 ** Number(e?.decimals ?? 0) : 0
-                          )}
-                        </p>
+                          )}>
+                          <p>
+                            {formatBalance(
+                              e?.balance ? Number(e?.balance) / 10 ** Number(e?.decimals ?? 0) : 0
+                            )}
+                          </p>
+                        </Tooltip>
                       </div>
                     ))
                   : ""}

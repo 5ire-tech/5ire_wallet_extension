@@ -102,10 +102,10 @@ function TransectionHistry({ selectedTransaction, account }) {
 
           <span
             className={
-              selectedTransaction?.status.toLowerCase() === STATUS.PENDING.toLowerCase() ||
-              selectedTransaction?.status.toLowerCase() === STATUS.QUEUED.toLowerCase()
+              selectedTransaction?.status?.toLowerCase() === STATUS.PENDING.toLowerCase() ||
+              selectedTransaction?.status?.toLowerCase() === STATUS.QUEUED.toLowerCase()
                 ? style.transectionHistry__pending
-                : selectedTransaction?.status.toLowerCase() === STATUS.SUCCESS.toLowerCase()
+                : selectedTransaction?.status?.toLowerCase() === STATUS.SUCCESS.toLowerCase()
                 ? style.transectionHistry__success
                 : style.transectionHistry__failed
             }>

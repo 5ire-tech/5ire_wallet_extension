@@ -40,6 +40,26 @@ import {
   STATE_CHANGE_ACTIONS
 } from "../../Constants/index";
 
+const environment = process.env.REACT_APP_ENVIRONMENT;
+
+const optionsOfProd = [
+  {
+    value: NETWORK.TEST_NETWORK,
+    label: <span className="flexedItemSelect">{NETWORK.TEST_NETWORK}</span>
+  },
+  {
+    value: NETWORK.MAINNET,
+    label: <span className="flexedItemSelect">{NETWORK.MAINNET}</span>
+  }
+];
+
+const optionsOfQA = [
+  {
+    value: NETWORK.QA_NETWORK,
+    label: <span className="flexedItemSelect">{NETWORK.QA_NETWORK}</span>
+  }
+].concat(optionsOfProd);
+
 function BalanceDetails({ mt0 }) {
   const getLocation = useLocation();
   const [url, setUrl] = useState("");
@@ -124,7 +144,7 @@ function BalanceDetails({ mt0 }) {
     if (allAccountsBalance.hasOwnProperty(acc?.evmAddress)) {
       updateState(
         LABELS.BALANCE,
-        allAccountsBalance[acc?.evmAddress][currentNetwork.toLowerCase()]
+        allAccountsBalance[acc?.evmAddress][currentNetwork?.toLowerCase()]
       );
     } else {
       //fetch balance of changed account
@@ -395,7 +415,7 @@ function BalanceDetails({ mt0 }) {
                                     }
                                   ]
                                 }}
-                                trigger="hover">
+                                trigger={["click"]}>
                                 <Space style={{ cursor: "pointer" }}>
                                   <img src={ThreeDot} alt="3dots" />
                                 </Space>
@@ -425,20 +445,7 @@ function BalanceDetails({ mt0 }) {
                   style={{
                     width: 100
                   }}
-                  options={[
-                    {
-                      value: NETWORK.QA_NETWORK,
-                      label: <span className="flexedItemSelect">{NETWORK.QA_NETWORK}</span>
-                    },
-                    {
-                      value: NETWORK.TEST_NETWORK,
-                      label: <span className="flexedItemSelect">{NETWORK.TEST_NETWORK}</span>
-                    },
-                    {
-                      value: NETWORK.MAINNET,
-                      label: <span className="flexedItemSelect">{NETWORK.MAINNET}</span>
-                    }
-                  ]}
+                  options={environment === "prod" ? optionsOfProd : optionsOfQA}
                 />
               </div>
             </>
@@ -448,7 +455,7 @@ function BalanceDetails({ mt0 }) {
             <div className={style.balanceDetails__innerBalance}>
               <div className={style.balanceDetails__innerBalance__totalBalnce}>
                 <p>
-                  {allAccountsBalance[currentAccount?.evmAddress][currentNetwork.toLowerCase()]
+                  {allAccountsBalance[currentAccount?.evmAddress][currentNetwork?.toLowerCase()]
                     .totalBalance ? (
                     <>
                       {" "}
@@ -457,13 +464,13 @@ function BalanceDetails({ mt0 }) {
                           placement="bottom"
                           title={
                             allAccountsBalance[currentAccount?.evmAddress][
-                              currentNetwork.toLowerCase()
+                              currentNetwork?.toLowerCase()
                             ].totalBalance
                           }>
                           <span className="totalBal">
                             {formatBalance(
                               allAccountsBalance[currentAccount?.evmAddress][
-                                currentNetwork.toLowerCase()
+                                currentNetwork?.toLowerCase()
                               ].totalBalance || 0
                             )}
                           </span>
@@ -498,14 +505,14 @@ function BalanceDetails({ mt0 }) {
                       <Tooltip
                         title={
                           allAccountsBalance[currentAccount?.evmAddress][
-                            currentNetwork.toLowerCase()
+                            currentNetwork?.toLowerCase()
                           ]?.transferableBalance || 0
                         }>
                         <h3>
                           {/* <img src={WalletCardLogo} draggable={false} alt="walletLogo" /> */}
                           {formatBalance(
                             allAccountsBalance[currentAccount?.evmAddress][
-                              currentNetwork.toLowerCase()
+                              currentNetwork?.toLowerCase()
                             ]?.transferableBalance ?? 0
                           )}
                           {/* {allAccountsBalance[currentAccount?.evmAddress][
@@ -536,13 +543,13 @@ function BalanceDetails({ mt0 }) {
                       <Tooltip
                         title={
                           allAccountsBalance[currentAccount?.evmAddress][
-                            currentNetwork.toLowerCase()
+                            currentNetwork?.toLowerCase()
                           ]?.stakedBalance || 0
                         }>
                         <h3>
                           {formatBalance(
                             allAccountsBalance[currentAccount?.evmAddress][
-                              currentNetwork.toLowerCase()
+                              currentNetwork?.toLowerCase()
                             ]?.stakedBalance ?? 0
                           )}
                           {/* {allAccountsBalance[currentAccount?.evmAddress][

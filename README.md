@@ -58,15 +58,27 @@ yarn install
 
   * chrome
 
-   ```bash
-   yarn run build:chrome
-   ```
+    * QA
+      ```bash
+      yarn run build:chrome-qa
+      ```
+
+    * Production
+      ```bash
+      yarn run build:chrome-prod
+      ```
 
   * firefox
 
-   ```bash
-   yarn run build:firefox
-   ```
+    * QA
+      ```bash
+      yarn run build:firefox-qa
+      ```
+
+    * Production
+      ```bash
+      yarn run build:firefox-prod
+      ```
 
 ### Using the build
 
