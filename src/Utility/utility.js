@@ -176,3 +176,6 @@ export const debounce = (func, wait) => {
 
 export const nameWithEllipsis = (name, nameLimit = 10) =>
   name.length > nameLimit ? `${name.slice(0, nameLimit)}...` : `${name}.`;
+
+export const limitDecimalsOnlyWhenRequired = (number, limit = 6) =>
+  number?.toString().split(".")?.[1]?.length > limit ? number.toFixed(limit) : number;

@@ -9,7 +9,12 @@ import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import React, { useState, useEffect, useContext, useCallback } from "react";
-import { debounce, formatBalance, validateAddress } from "../../Utility/utility";
+import {
+  debounce,
+  formatBalance,
+  limitDecimalsOnlyWhenRequired,
+  validateAddress
+} from "../../Utility/utility";
 import { InputField, InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import {
   REGEX,
@@ -692,11 +697,17 @@ function Send() {
                         key={i + e?.name}
                         onClick={() => handleTokenSelect(e)}>
                         <h2>{e?.name}</h2>
-                        <p>
-                          {formatBalance(
+                        <Tooltip
+                          placement="top"
+                          title={limitDecimalsOnlyWhenRequired(
                             e?.balance ? Number(e?.balance) / 10 ** Number(e?.decimals ?? 0) : 0
-                          )}
-                        </p>
+                          )}>
+                          <p>
+                            {formatBalance(
+                              e?.balance ? Number(e?.balance) / 10 ** Number(e?.decimals ?? 0) : 0
+                            )}
+                          </p>
+                        </Tooltip>
                       </div>
                     ))
                   : ""}

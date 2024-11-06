@@ -243,7 +243,7 @@ function Assets() {
                         }
                       ]
                     }}
-                    trigger={["hover"]}>
+                    trigger={["click"]}>
                     <div style={{ cursor: "pointer" }} onClick={(e) => e.preventDefault()}>
                       <Space>
                         <img src={ThreeDot} alt="3dots" />
