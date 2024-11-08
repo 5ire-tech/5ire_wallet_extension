@@ -230,6 +230,18 @@ body {
   }
 }
 
+.balanceDetails {
+  .ant-modal-close {
+    top: 4px !important;
+  }
+}
+
+.send {
+  .innerContct {
+    margin-top: 5px !important;
+  }
+}
+
 .modalCustom.ant-modal .ant-modal-content {
   .ant-modal-header {
     padding-bottom: 20px;

@@ -651,6 +651,7 @@ function Send() {
               <DownArrow />
             </button>
             <ModalCustom
+              customClass="send"
               isModalOpen={isModalOpen1}
               handleOk={handleOk}
               handleCancel={handleCancel}

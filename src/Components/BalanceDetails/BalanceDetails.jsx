@@ -320,6 +320,7 @@ function BalanceDetails({ mt0 }) {
                 </div>
               )}
               <ModalCustom
+                customClass="balanceDetails"
                 isModalOpen={isHeaderActive}
                 handleOk={handle_OK_Cancel}
                 handleCancel={handle_OK_Cancel}>
@@ -343,7 +344,7 @@ function BalanceDetails({ mt0 }) {
                             <img src={DarkLogo} alt="logo" />
                             <div className={style.activeDis_Modal__leftSec__accountConatct}>
                               <h2>
-                                {e.accountName === currentAccount?.accountName && isConnected ? (
+                                {/* {e.accountName === currentAccount?.accountName && isConnected ? (
                                   <Tooltip placement="bottom" title="Connected">
                                     <img
                                       src={GreenCircle}
@@ -362,7 +363,7 @@ function BalanceDetails({ mt0 }) {
                                       style={{ cursor: "pointer" }}
                                     />
                                   </Tooltip>
-                                )}
+                                )} */}
                                 {e.accountName}
                               </h2>
 
