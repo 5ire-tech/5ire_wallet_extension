@@ -53,7 +53,7 @@
           color: $blue-0c98fc;
           gap: 6px;
           align-items: center;
-          img{
+          img {
             width: 30px;
             height: 30px;
             margin-left: 5px;
@@ -414,6 +414,10 @@
     h3 {
       font-size: 15px;
       color: $white;
+      img {
+        margin-bottom: -2px;
+        margin-right: 5px;
+      }
     }
 
     p {
@@ -516,12 +520,12 @@
   background: var(--UI-Module, rgba(20, 55, 139, 0.15));
 }
 
-.topBalance{
+.topBalance {
   display: flex;
   justify-content: center;
   width: 100%;
 }
-.qaImgSec{
+.qaImgSec {
   display: flex;
   width: 15px;
   justify-content: flex-end;
