@@ -8,6 +8,7 @@ import ThreeDot from "../../Assets/dot3.svg";
 import WalletQr from "../../Assets/QRicon.svg";
 import { useLocation } from "react-router-dom";
 import CopyIcon from "../../Assets/CopyIcon.svg";
+import AccountIcon from "../../Assets/AccountIcon.png";
 import DarkLogo from "../../Assets/DarkLogo.svg";
 import SmallLogo from "../../Assets/smallLogo.svg";
 import { sendEventToTab } from "../../Helper/helper";
@@ -320,12 +321,22 @@ function BalanceDetails({ mt0 }) {
                 </div>
               )}
               <ModalCustom
+                customClass="balanceDetails"
                 isModalOpen={isHeaderActive}
                 handleOk={handle_OK_Cancel}
                 handleCancel={handle_OK_Cancel}>
                 <div className={style.activeDis_Modal}>
                   <div className={style.activeDis_Modal__modalHeading}>
-                    <h3>{url.replace(/[a-z]+:\/\//, "")}</h3>
+                    <h3>
+                      <img
+                        draggable={false}
+                        src={AccountIcon}
+                        alt="accountIcon"
+                        height={15}
+                        width={15}
+                      />
+                      {url.replace(/[a-z]+:\/\//, "")}
+                    </h3>
                     {(!url.startsWith("http") || isNewSite) && (
                       <p>
                         5ire Extension is not connected to this site. To connect to a web3 site,
@@ -343,7 +354,7 @@ function BalanceDetails({ mt0 }) {
                             <img src={DarkLogo} alt="logo" />
                             <div className={style.activeDis_Modal__leftSec__accountConatct}>
                               <h2>
-                                {e.accountName === currentAccount?.accountName && isConnected ? (
+                                {/* {e.accountName === currentAccount?.accountName && isConnected ? (
                                   <Tooltip placement="bottom" title="Connected">
                                     <img
                                       src={GreenCircle}
@@ -362,7 +373,7 @@ function BalanceDetails({ mt0 }) {
                                       style={{ cursor: "pointer" }}
                                     />
                                   </Tooltip>
-                                )}
+                                )} */}
                                 {e.accountName}
                               </h2>
 
@@ -415,7 +426,7 @@ function BalanceDetails({ mt0 }) {
                                     }
                                   ]
                                 }}
-                                trigger="hover">
+                                trigger={["click"]}>
                                 <Space style={{ cursor: "pointer" }}>
                                   <img src={ThreeDot} alt="3dots" />
                                 </Space>

@@ -3,12 +3,17 @@ import toast from "react-hot-toast";
 import { AuthContext } from "../../Store";
 import ThreeDot from "../../Assets/dot3.svg";
 import style from "../MyAccount/style.module.scss";
-import { notification, Dropdown, Space } from "antd";
+import { notification, Dropdown, Space, Tooltip } from "antd";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
-import { formatBalance, nameWithEllipsis, validateAddress } from "../../Utility/utility";
+import {
+  formatBalance,
+  limitDecimalsOnlyWhenRequired,
+  nameWithEllipsis,
+  validateAddress
+} from "../../Utility/utility";
 import React, { useContext, useEffect, useState, useCallback } from "react";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 import {
@@ -222,12 +227,18 @@ function Assets() {
                       </div>
                     </div>
                     <div className="assetSec__rytSec">
-                      <p>
-                        {" "}
-                        {formatBalance(
+                      <Tooltip
+                        placement="top"
+                        title={limitDecimalsOnlyWhenRequired(
                           e?.balance ? Number(e.balance) / 10 ** Number(e.decimals) : 0
-                        )}
-                      </p>
+                        )}>
+                        <p style={{ cursor: "pointer" }}>
+                          {" "}
+                          {formatBalance(
+                            e?.balance ? Number(e.balance) / 10 ** Number(e.decimals) : 0
+                          )}
+                        </p>
+                      </Tooltip>
                       {/* <h5>$2820.54</h5> */}
                       {/* <h3>1.13 WETH</h3> */}
                     </div>
@@ -243,7 +254,7 @@ function Assets() {
                         }
                       ]
                     }}
-                    trigger={["hover"]}>
+                    trigger={["click"]}>
                     <div style={{ cursor: "pointer" }} onClick={(e) => e.preventDefault()}>
                       <Space>
                         <img src={ThreeDot} alt="3dots" />
