@@ -251,11 +251,6 @@ export const SOCIAL_LINKS = {
   GITHUB: "https://github.com/5ire-tech"
 };
 
-export const API = {
-  QA: "https://qa-api-exp.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
-  UAT: "https://uat-api-exp.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
-  TESTNET: "https://explorer-api.5ire.network/api/firechain/explorer/get-transaction-by-hash/"
-};
 
 export const EXPLORERS = {
   MAINNET: "https://5irescan.io",
@@ -263,16 +258,11 @@ export const EXPLORERS = {
   QA: "https://qa.5ire.network"
 };
 
-export const WS_END_POINTS = {
-  MAINNET: "wss://rpc.5ire.network",
-  QA: "wss://rpc.qa.5ire.network",
-  TESTNET: "wss://wss-testnet.5ire.network"
-};
 
 export const CHAIN_ID = {
   MAINNET: 995,
   TESTNET: 997,
-  QA: 997
+  QA: 997995
 };
 
 export const MESSAGE_EVENT_LABELS = {
