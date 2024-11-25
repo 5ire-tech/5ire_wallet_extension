@@ -251,13 +251,11 @@ export const SOCIAL_LINKS = {
   GITHUB: "https://github.com/5ire-tech"
 };
 
-
 export const EXPLORERS = {
   MAINNET: "https://5irescan.io",
   TESTNET: "https://testnet.5irescan.io",
   QA: "https://qa.5ire.network"
 };
-
 
 export const CHAIN_ID = {
   MAINNET: 995,
