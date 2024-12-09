@@ -251,6 +251,12 @@ export const SOCIAL_LINKS = {
   GITHUB: "https://github.com/5ire-tech"
 };
 
+export const API = {
+  QA: "https://qa-api-exp.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
+  UAT: "https://uat-api-exp.5ire.network/api/firechain/explorer/get-transaction-by-hash/",
+  TESTNET: "https://explorer-api.5ire.network/api/firechain/explorer/get-transaction-by-hash/"
+};
+
 export const EXPLORERS = {
   MAINNET: "https://5irescan.io",
   TESTNET: "https://testnet.5irescan.io",
