@@ -25,8 +25,8 @@ import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
 import { isEqual, isNullorUndef, formatBalance } from "../../Utility/utility";
 import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
-import EyeCloseIcon from "../../Assets/EyeCloseIconBalance.svg";
-// import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
+// import EyeCloseIcon from "../../Assets/EyeCloseIconBalance.svg";
+import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
 
 import {
   EVM,
@@ -482,7 +482,23 @@ function BalanceDetails({ mt0 }) {
                           onClick={() => {
                             setShowBalance((prev) => !prev);
                           }}>
-                          <img src={showBalance ? EyeOpenIcon : EyeCloseIcon} />
+                          {showBalance ? (
+                            <img
+                              src={EyeOpenIcon}
+                              width={19}
+                              height={12}
+                              draggable={false}
+                              alt="eyeOpen"
+                            />
+                          ) : (
+                            <img
+                              src={EyeCloseIcon}
+                              width={19}
+                              height={16}
+                              draggable={false}
+                              alt="eyeClose"
+                            />
+                          )}
                         </span>
                         <Tooltip
                           placement="bottom"
