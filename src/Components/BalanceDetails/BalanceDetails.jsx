@@ -25,7 +25,6 @@ import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
 import { isEqual, isNullorUndef, formatBalance } from "../../Utility/utility";
 import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
-// import EyeCloseIcon from "../../Assets/EyeCloseIconBalance.svg";
 import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
 
 import {
