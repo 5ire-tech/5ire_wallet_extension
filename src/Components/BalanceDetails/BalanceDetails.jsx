@@ -24,6 +24,8 @@ import { TabMessagePayload } from "../../Utility/network_calls";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { ExtensionStorageHandler } from "../../Storage/loadstore";
 import { isEqual, isNullorUndef, formatBalance } from "../../Utility/utility";
+import EyeOpenIcon from "../../Assets/EyeOpenIcon.svg";
+import EyeCloseIcon from "../../Assets/EyeCloseIcon.svg";
 
 import {
   EVM,
@@ -69,6 +71,7 @@ function BalanceDetails({ mt0 }) {
   const [isConnected, setIsConnected] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHeaderActive, setHeaderActive] = useState(false);
+  const [showBalance, setShowBalance] = useState(true);
   const {
     setSelectedToken,
     state,
@@ -267,6 +270,8 @@ function BalanceDetails({ mt0 }) {
         true
       );
   };
+
+  const hiddenBalance = "********";
 
   return (
     <>
@@ -471,6 +476,29 @@ function BalanceDetails({ mt0 }) {
                     <>
                       {" "}
                       <div className={style.topBalance}>
+                        <span
+                          style={{ marginRight: 10 }}
+                          onClick={() => {
+                            setShowBalance((prev) => !prev);
+                          }}>
+                          {showBalance ? (
+                            <img
+                              src={EyeOpenIcon}
+                              width={19}
+                              height={12}
+                              draggable={false}
+                              alt="eyeOpen"
+                            />
+                          ) : (
+                            <img
+                              src={EyeCloseIcon}
+                              width={19}
+                              height={16}
+                              draggable={false}
+                              alt="eyeClose"
+                            />
+                          )}
+                        </span>
                         <Tooltip
                           placement="bottom"
                           title={
@@ -478,13 +506,17 @@ function BalanceDetails({ mt0 }) {
                               currentNetwork?.toLowerCase()
                             ].totalBalance
                           }>
-                          <span className="totalBal">
-                            {formatBalance(
-                              allAccountsBalance[currentAccount?.evmAddress][
-                                currentNetwork?.toLowerCase()
-                              ].totalBalance || 0
-                            )}
-                          </span>
+                          {showBalance ? (
+                            <span className="totalBal">
+                              {formatBalance(
+                                allAccountsBalance[currentAccount?.evmAddress][
+                                  currentNetwork?.toLowerCase()
+                                ].totalBalance || 0
+                              )}
+                            </span>
+                          ) : (
+                            <span className="totalBal">{hiddenBalance}</span>
+                          )}
                         </Tooltip>
                         <span>
                           <img src={SmallLogo} />
@@ -513,24 +545,28 @@ function BalanceDetails({ mt0 }) {
                   <div className={style.balanceDetails__innerBalance__balanceName}>
                     <p>Transferable</p>
                     <div style={{ display: "flex", alignItems: "center" }}>
-                      <Tooltip
-                        title={
-                          allAccountsBalance[currentAccount?.evmAddress][
-                            currentNetwork?.toLowerCase()
-                          ]?.transferableBalance || 0
-                        }>
-                        <h3>
-                          {/* <img src={WalletCardLogo} draggable={false} alt="walletLogo" /> */}
-                          {formatBalance(
+                      {showBalance ? (
+                        <Tooltip
+                          title={
                             allAccountsBalance[currentAccount?.evmAddress][
                               currentNetwork?.toLowerCase()
-                            ]?.transferableBalance ?? 0
-                          )}
-                          {/* {allAccountsBalance[currentAccount?.evmAddress][
+                            ]?.transferableBalance || 0
+                          }>
+                          <h3>
+                            {/* <img src={WalletCardLogo} draggable={false} alt="walletLogo" /> */}
+                            {formatBalance(
+                              allAccountsBalance[currentAccount?.evmAddress][
+                                currentNetwork?.toLowerCase()
+                              ]?.transferableBalance ?? 0
+                            )}
+                            {/* {allAccountsBalance[currentAccount?.evmAddress][
                             currentNetwork.toLowerCase()
                           ]?.transferableBalance || 0} */}
-                        </h3>
-                      </Tooltip>
+                          </h3>
+                        </Tooltip>
+                      ) : (
+                        <h3>{hiddenBalance}</h3>
+                      )}
                       <span>
                         <img src={SmallLogo} />
                       </span>
@@ -551,23 +587,27 @@ function BalanceDetails({ mt0 }) {
                   <div className={style.balanceDetails__innerBalance__balanceName}>
                     <p>Staked</p>
                     <div style={{ display: "flex", alignItems: "center" }}>
-                      <Tooltip
-                        title={
-                          allAccountsBalance[currentAccount?.evmAddress][
-                            currentNetwork?.toLowerCase()
-                          ]?.stakedBalance || 0
-                        }>
-                        <h3>
-                          {formatBalance(
+                      {showBalance ? (
+                        <Tooltip
+                          title={
                             allAccountsBalance[currentAccount?.evmAddress][
                               currentNetwork?.toLowerCase()
-                            ]?.stakedBalance ?? 0
-                          )}
-                          {/* {allAccountsBalance[currentAccount?.evmAddress][
+                            ]?.stakedBalance || 0
+                          }>
+                          <h3>
+                            {formatBalance(
+                              allAccountsBalance[currentAccount?.evmAddress][
+                                currentNetwork?.toLowerCase()
+                              ]?.stakedBalance ?? 0
+                            )}
+                            {/* {allAccountsBalance[currentAccount?.evmAddress][
                             currentNetwork.toLowerCase()
                           ]?.stakedBalance || 0} */}
-                        </h3>
-                      </Tooltip>
+                          </h3>
+                        </Tooltip>
+                      ) : (
+                        <h3>{hiddenBalance}</h3>
+                      )}
                       <span>
                         <img src={SmallLogo} />
                       </span>

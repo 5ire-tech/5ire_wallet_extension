@@ -92,6 +92,7 @@ function MyAccount() {
     const acc = allAccounts.find((acc) => acc.accountName === name);
 
     updateCurrentAccount(acc);
+    navigate(ROUTES.WALLET);
   };
 
   //update the current account
