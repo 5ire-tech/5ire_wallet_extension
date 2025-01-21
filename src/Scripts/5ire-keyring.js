@@ -321,6 +321,19 @@ export class HybridKeyring extends EventEmitter {
     return new EventPayload(message.event, message.event, payload);
   }
 
+  async renameAccountName(message) {
+    const { oldName, newName } = message.data;
+    if (HybridKeyring.accounts.length <= 0) {
+      throw new Error(ERROR_MESSAGES.NO_ROOT_ACC);
+    }
+    await HybridKeyring.ethKeyring.renameAccountName(oldName, newName);
+    const payload = {
+      oldName,
+      newName
+    };
+    return new EventPayload(message.event, message.event, payload);
+  }
+
   /**
    * Import other wallet keys like metamask, trustwallet etc and generate EVM and native accounts.
    * @param {string} pvtKey

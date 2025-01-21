@@ -33,6 +33,7 @@ function MyAccount() {
   const [addressToRemove, setAddressToRemove] = useState(null);
   const [renameInput, setRenameInput] = useState("");
   const [renameId, setRenameId] = useState("");
+  const [oldName, setOldName] = useState("");
   const {
     allAccounts,
     state,
@@ -150,6 +151,16 @@ function MyAccount() {
 
   const handleOutsideClick = () => {
     setRenameId("");
+    oldName !== renameInput &&
+      sendRuntimeMessage(
+        MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+        MESSAGE_EVENT_LABELS.RENAME_ACCOUNT_NAME,
+        { oldName, newName: renameInput }
+      );
+  };
+
+  const handleEnter = (e) => {
+    e.key === "Enter" && handleOutsideClick();
   };
 
   return (
@@ -193,11 +204,13 @@ function MyAccount() {
                       }}
                       onBlur={handleOutsideClick}
                       placeholder={"Rename wallet"}
+                      keyUp={handleEnter}
                     />
                   ) : (
                     <h2
                       onClick={() => {
                         handleRenameWallet(e?.accountName, i);
+                        setOldName(e?.accountName);
                       }}>
                       {e?.accountName}
                     </h2>

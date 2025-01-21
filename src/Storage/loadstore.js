@@ -475,6 +475,23 @@ export class ExtensionStorageHandler {
     return await this._updateStorage(newState);
   };
 
+  renameAccountName = async (message, state) => {
+    const { oldName, newName } = message;
+    const currentState = { ...state };
+    const updatedAccounts = currentState.allAccounts.map((account) =>
+      account.accountName === oldName ? { ...account, accountName: newName } : account
+    );
+    const updatedState = {
+      ...currentState,
+      currentAccount:
+        currentState.currentAccount.accountName === oldName
+          ? { ...currentState.currentAccount, accountName: newName }
+          : currentState.currentAccount,
+      allAccounts: updatedAccounts
+    };
+    return await this._updateStorage(updatedState);
+  };
+
   /**
    * Lock the wallet
    * @param {*} message

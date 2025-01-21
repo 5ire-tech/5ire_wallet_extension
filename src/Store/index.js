@@ -113,6 +113,10 @@ export default function Context({ children }) {
           addAccount(message.data);
           break;
 
+        case MESSAGE_EVENT_LABELS.RENAME_ACCOUNT_NAME:
+          renameAccountName(message.data);
+          break;
+
         case MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC:
           importAccountByMnemonics(message.data);
           break;
@@ -273,6 +277,25 @@ export default function Context({ children }) {
           result: {
             evmAddress: data?.newAccount?.evmAddress,
             nativeAddress: data?.newAccount?.nativeAddress
+          }
+        },
+        null,
+        TABS_EVENT.ACCOUNT_CHANGE_EVENT
+      ),
+      externalControlsState.connectedApps
+    );
+  };
+
+  const renameAccountName = (data) => {
+    //send account details whenever account is changed
+    sendEventToTab(
+      windowAndTab,
+      new TabMessagePayload(
+        TABS_EVENT.ACCOUNT_CHANGE_EVENT,
+        {
+          result: {
+            oldName: data?.oldName,
+            newName: data?.newName
           }
         },
         null,

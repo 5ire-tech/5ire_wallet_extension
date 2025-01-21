@@ -294,6 +294,7 @@ export const MESSAGE_EVENT_LABELS = {
   LOCK: "lock",
   UNLOCK: "unlock",
   ADD_ACCOUNT: "addAccount",
+  RENAME_ACCOUNT_NAME: "renameAccountName",
   TOKEN_INFO: "getTokenInfo",
   IMPORT_TOKEN: "importToken",
   GET_ACCOUNTS: "getAccounts",
