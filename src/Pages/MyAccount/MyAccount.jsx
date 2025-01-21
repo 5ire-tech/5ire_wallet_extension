@@ -9,7 +9,7 @@ import { sendEventToTab } from "../../Helper/helper";
 import { formatBalance } from "../../Utility/utility";
 import GreenCircle from "../../Assets/greencircle.svg";
 import { TabMessagePayload } from "../../Utility/network_calls";
-import React, { useContext, useState, useCallback } from "react";
+import React, { useContext, useState, useCallback, useRef, useEffect } from "react";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import AccountSetting from "../../Components/AccountSetting/AccountSetting";
@@ -24,11 +24,15 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
+import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 
 function MyAccount() {
+  const inputRef = useRef(null);
   const navigate = useNavigate();
   const [isModalOpen, setModalOpen] = useState(false);
   const [addressToRemove, setAddressToRemove] = useState(null);
+  const [renameInput, setRenameInput] = useState("");
+  const [renameId, setRenameId] = useState("");
   const {
     allAccounts,
     state,
@@ -135,6 +139,19 @@ function MyAccount() {
     });
   };
 
+  const handleRenameWallet = (updatedName, id) => {
+    setRenameInput(updatedName);
+    setRenameId(id);
+  };
+
+  useEffect(() => {
+    if (inputRef.current) inputRef.current?.focus();
+  }, [renameId]);
+
+  const handleOutsideClick = () => {
+    setRenameId("");
+  };
+
   return (
     <div className={style.myAccountSec}>
       <div className={style.myAccountSec__tabAccount}>
@@ -164,7 +181,27 @@ function MyAccount() {
                       </h2>
                     </>
                   )}
-                  <h2>{e?.accountName}</h2>
+                  {renameId === i ? (
+                    <InputFieldOnly
+                      inputRef={inputRef}
+                      coloredBg={true}
+                      value={renameInput}
+                      name={LABELS.ACCOUNT_NAME}
+                      placeholderBaseColor={true}
+                      onChange={(e) => {
+                        handleRenameWallet(e.target.value, i);
+                      }}
+                      onBlur={handleOutsideClick}
+                      placeholder={"Rename wallet"}
+                    />
+                  ) : (
+                    <h2
+                      onClick={() => {
+                        handleRenameWallet(e?.accountName, i);
+                      }}>
+                      {e?.accountName}
+                    </h2>
+                  )}
                 </div>
                 <p>
                   {/*(

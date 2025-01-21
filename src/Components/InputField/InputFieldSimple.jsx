@@ -102,14 +102,17 @@ export const InputFieldOnly = ({
   onChange,
   minHeight,
   onDrop,
+  onBlur,
   coloredBg,
   placeholder,
-  placeholderBaseColor
+  placeholderBaseColor,
+  inputRef
 }) => {
   return (
     <div className={`${style.boxStyle} inputFieldOnly `}>
       <label className={style.boxStyle__label}>{label}</label>
       <Input
+        ref={inputRef}
         disabled={disabled}
         onDrop={onDrop}
         autoComplete="off"
@@ -123,6 +126,7 @@ export const InputFieldOnly = ({
         onChange={onChange}
         name={name}
         onKeyUp={keyUp}
+        onBlur={onBlur}
       />
     </div>
   );
