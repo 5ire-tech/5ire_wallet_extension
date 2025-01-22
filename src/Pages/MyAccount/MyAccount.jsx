@@ -161,7 +161,7 @@ function MyAccount() {
   };
 
   const handleEnter = (e) => {
-    e.key === "Enter" && handleOutsideClick();
+    e.key === LABELS.ENTER && handleOutsideClick();
   };
 
   return (
