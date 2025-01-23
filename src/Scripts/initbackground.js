@@ -471,8 +471,9 @@ class RpcRequestProcessor {
           rpcResponse.payload?.options
         );
       //send the response message to extension ui
-      if (rpcResponse?.eventEmit)
+      if (rpcResponse?.eventEmit) {
         this.services.messageToUI(rpcResponse.eventEmit, rpcResponse.payload.data);
+      }
     } else {
       ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, rpcResponse.error);
     }

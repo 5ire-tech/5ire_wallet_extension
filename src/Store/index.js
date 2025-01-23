@@ -287,22 +287,27 @@ export default function Context({ children }) {
   };
 
   const renameAccountName = (data) => {
+    const { oldName, newName } = data;
     //send account details whenever account is changed
-    sendEventToTab(
-      windowAndTab,
-      new TabMessagePayload(
-        TABS_EVENT.ACCOUNT_CHANGE_EVENT,
-        {
-          result: {
-            oldName: data?.oldName,
-            newName: data?.newName
-          }
-        },
-        null,
-        TABS_EVENT.ACCOUNT_CHANGE_EVENT
-      ),
-      externalControlsState.connectedApps
+    // sendEventToTab(
+    //   windowAndTab,
+    //   new TabMessagePayload(
+    //     TABS_EVENT.ACCOUNT_CHANGE_EVENT,
+    //     {
+    //       result: {
+    //         oldName: data?.oldName,
+    //         newName: data?.newName
+    //       }
+    //     },
+    //     null,
+    //     TABS_EVENT.ACCOUNT_CHANGE_EVENT
+    //   ),
+    //   externalControlsState.connectedApps
+    // );
+    const updatedAccounts = allAccounts.map((account) =>
+      account.accountName === oldName ? { ...account, accountName: newName } : account
     );
+    setAllAccounts(updatedAccounts);
   };
 
   const getAccounts = (data) => {

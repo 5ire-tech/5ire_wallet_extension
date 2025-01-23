@@ -151,13 +151,12 @@ function MyAccount() {
 
   const handleOutsideClick = () => {
     setRenameId("");
-    if (oldName !== renameInput) {
+    oldName !== renameInput.trim() &&
       sendRuntimeMessage(
         MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
         MESSAGE_EVENT_LABELS.RENAME_ACCOUNT_NAME,
         { oldName: oldName.trim(), newName: renameInput.trim() }
       );
-    }
   };
 
   const handleEnter = (e) => {

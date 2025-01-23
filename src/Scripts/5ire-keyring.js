@@ -331,6 +331,9 @@ export class HybridKeyring extends EventEmitter {
       oldName,
       newName
     };
+    HybridKeyring.accounts = HybridKeyring.accounts.map((account) =>
+      account.accountName === oldName ? { ...account, accountName: newName } : account
+    );
     return new EventPayload(message.event, message.event, payload);
   }
 

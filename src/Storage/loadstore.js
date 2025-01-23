@@ -90,7 +90,6 @@ export class ExtensionStorageHandler {
         ExtensionStorageHandler.instance = new ExtensionStorageHandler();
         delete ExtensionStorageHandler.constructor;
       }
-
       if (!hasProperty(ExtensionStorageHandler.instance, key))
         new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_PROPERTY)).throw();
 
@@ -478,16 +477,12 @@ export class ExtensionStorageHandler {
   renameAccountName = async (message, state) => {
     const { oldName, newName } = message;
     const currentState = { ...state };
-    const updatedAccounts = currentState.allAccounts.map((account) =>
-      account.accountName === oldName ? { ...account, accountName: newName } : account
-    );
     const updatedState = {
       ...currentState,
       currentAccount:
         currentState.currentAccount.accountName === oldName
           ? { ...currentState.currentAccount, accountName: newName }
-          : currentState.currentAccount,
-      allAccounts: updatedAccounts
+          : currentState.currentAccount
     };
     return await this._updateStorage(updatedState);
   };
