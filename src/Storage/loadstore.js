@@ -1,6 +1,7 @@
 import { localStorage, sessionStorage } from ".";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import { ERRCODES, ERROR_MESSAGES, LABELS, STATUS, NETWORK } from "../Constants";
+import * as protector from "../Scripts/protector";
 import {
   userState,
   externalControls,
@@ -15,6 +16,7 @@ import {
   hasProperty,
   isNullorUndef
 } from "../Utility/utility";
+import { HybridKeyring } from "../Scripts/5ire-keyring";
 
 /**
  * local storage data null safety check
@@ -477,13 +479,35 @@ export class ExtensionStorageHandler {
   renameAccountName = async (message, state) => {
     const { oldName, newName } = message;
     const currentState = { ...state };
+    const res = await protector.decryptWithDetail(HybridKeyring.password, state.vault);
+    const [hdAccountInfo, importedAccountInfo] = [res?.vault?.[0], res?.vault?.[1]];
+    const [hdAccounts, importedAccounts] = [res?.vault?.[0]?.accounts, res?.vault?.[1]?.accounts];
+    const updatedHdAccounts = (hdAccounts || []).map((acc) =>
+      acc.accountName === oldName ? { ...acc, accountName: newName } : acc
+    );
+    const updatedImportedAccounts = (importedAccounts || []).map((acc) =>
+      acc.accountName === oldName ? { ...acc, accountName: newName } : acc
+    );
+    let updatedVault = [];
+    const updatedHdAccountsWithInfo = { ...hdAccountInfo, accounts: updatedHdAccounts };
+    const updatedImportedAccountsWithInfo = {
+      ...importedAccountInfo,
+      accounts: updatedImportedAccounts
+    };
+    updatedHdAccounts?.length && updatedVault.push(updatedHdAccountsWithInfo);
+    updatedImportedAccounts?.length && updatedVault.push(updatedImportedAccountsWithInfo);
+    const hybridKeyring = HybridKeyring.getInstance();
+    HybridKeyring.keyrings = updatedVault;
+    const encryptedRes = await hybridKeyring._persistData(HybridKeyring.password);
     const updatedState = {
       ...currentState,
       currentAccount:
         currentState.currentAccount.accountName === oldName
           ? { ...currentState.currentAccount, accountName: newName }
-          : currentState.currentAccount
+          : currentState.currentAccount,
+      vault: encryptedRes.vault
     };
+
     return await this._updateStorage(updatedState);
   };
 
