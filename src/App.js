@@ -47,7 +47,8 @@ function App(props) {
     showCongratLoader,
     externalControlsState,
     setExternalControlState,
-    setWindowAndTab
+    setWindowAndTab,
+    dontRedirect
   } = useContext(AuthContext);
 
   const navigate = useNavigate();
@@ -66,20 +67,22 @@ function App(props) {
   }, []);
 
   useEffect(() => {
-    //sync the current action route with main popup
-    if (activeSession && isLogin) {
-      navigate(`/${activeSession.route}`);
-      return;
-    }
+    if (!dontRedirect) {
+      //sync the current action route with main popup
+      if (activeSession && isLogin) {
+        navigate(`/${activeSession.route}`);
+        return;
+      }
 
-    if ((!isLogin && vault) || (state?.pass && !isLogin && !vault)) {
-      navigate(ROUTES.UNLOACK_WALLET);
-    } else if (detailsPage) {
-      navigate(ROUTES.NEW_WALLET_DETAILS);
-    } else if (isLogin && vault && !detailsPage) {
-      navigate(ROUTES.WALLET);
-    } else if (!isLogin && !vault) {
-      navigate(ROUTES.DEFAULT);
+      if ((!isLogin && vault) || (state?.pass && !isLogin && !vault)) {
+        navigate(ROUTES.UNLOACK_WALLET);
+      } else if (detailsPage) {
+        navigate(ROUTES.NEW_WALLET_DETAILS);
+      } else if (isLogin && vault && !detailsPage) {
+        navigate(ROUTES.WALLET);
+      } else if (!isLogin && !vault) {
+        navigate(ROUTES.DEFAULT);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [

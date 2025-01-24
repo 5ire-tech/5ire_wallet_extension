@@ -41,6 +41,7 @@ export default function Context({ children }) {
   const [accountName, setAccName] = useState(null);
   const [allAccounts, setAllAccounts] = useState([]);
   const [detailsPage, setDetailsPage] = useState(false);
+  const [dontRedirect, setDontRedirect] = useState(false);
   const [estimatedGas, setEstimatedGas] = useState(null);
   const [newWalletName, setNewWalletName] = useState("");
   const [passVerified, setPassVerified] = useState(false);
@@ -292,6 +293,7 @@ export default function Context({ children }) {
       account.accountName === oldName ? { ...account, accountName: newName } : account
     );
     setAllAccounts(updatedAccounts);
+    setDontRedirect(false);
   };
 
   const getAccounts = (data) => {
@@ -378,6 +380,7 @@ export default function Context({ children }) {
     externalControlsState,
     externalNativeTxDetails,
     edValue,
+    dontRedirect,
 
     //data setters
     setState,
@@ -406,7 +409,8 @@ export default function Context({ children }) {
     setExternalControlState,
     importAccountByMnemonics,
     setExternalNativeTxDetails,
-    setEDValue
+    setEDValue,
+    setDontRedirect
   };
 
   return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>;

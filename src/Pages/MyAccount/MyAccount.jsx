@@ -41,7 +41,8 @@ function MyAccount() {
     externalControlsState,
     setNewWalletName,
     windowAndTab,
-    setSelectedToken
+    setSelectedToken,
+    setDontRedirect
   } = useContext(AuthContext);
   const { connectedApps } = externalControlsState;
   const { currentAccount, allAccountsBalance, currentNetwork } = state;
@@ -151,12 +152,14 @@ function MyAccount() {
 
   const handleOutsideClick = () => {
     setRenameId("");
-    oldName !== renameInput.trim() &&
+    if (oldName !== renameInput.trim()) {
+      setDontRedirect(true); // restrict redirection to Wallet Screen
       sendRuntimeMessage(
         MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
         MESSAGE_EVENT_LABELS.RENAME_ACCOUNT_NAME,
         { oldName: oldName.trim(), newName: renameInput.trim() }
       );
+    }
   };
 
   const handleEnter = (e) => {
