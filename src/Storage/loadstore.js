@@ -507,7 +507,6 @@ export class ExtensionStorageHandler {
           : currentState.currentAccount,
       vault: encryptedRes.vault
     };
-
     return await this._updateStorage(updatedState);
   };
 

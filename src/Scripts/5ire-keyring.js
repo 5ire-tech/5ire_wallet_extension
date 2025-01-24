@@ -326,7 +326,6 @@ export class HybridKeyring extends EventEmitter {
     if (HybridKeyring.accounts.length <= 0) {
       throw new Error(ERROR_MESSAGES.NO_ROOT_ACC);
     }
-    await HybridKeyring.ethKeyring.renameAccountName(oldName, newName);
     const payload = {
       oldName,
       newName
