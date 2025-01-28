@@ -170,8 +170,9 @@ export class ExtensionStorageHandler {
 
   //push the transactions
   addNewTxHistory = async (data, state, options) => {
-    const newState = { ...state };
+    const newState = !state?.txCounts ? { ...state, txCounts: {} } : { ...state };
     newState.txHistory[options?.account?.evmAddress].push(data);
+    newState.txCounts[data?.to] = (newState?.txCounts?.[data?.to] || 0) + 1;
     const status = await this._updateStorage(newState);
     return status;
   };
