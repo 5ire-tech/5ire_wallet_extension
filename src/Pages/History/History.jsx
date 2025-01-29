@@ -6,12 +6,13 @@ import { CURRENCY } from "../../Constants/index";
 import { arrayReverser } from "../../Utility/utility";
 import noTransaction from "../../Assets/NoTransaction.svg";
 import ModalCloseIcon from "../../Assets/ModalCloseIcon.svg";
-import React, { useContext, useState, useCallback } from "react";
+import React, { useContext, useState, useCallback, useEffect, useMemo } from "react";
 import TransectionHistry from "../../Components/TransectionHistry/TransectionHistry";
 
 function History() {
   const [open1, setOpen1] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [recentlyUsedAddresses, setRecentlyUsedAddresses] = useState([]);
   const { state } = useContext(AuthContext);
   const { currentNetwork, txHistory, currentAccount } = state;
 
@@ -29,6 +30,32 @@ function History() {
     [currentAccount.evmAddress, txHistory]
   );
 
+  const filteredTxHistory = useMemo(
+    () =>
+      arrayReverser(
+        txHistory[currentAccount?.evmAddress].filter(
+          (tx) => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()
+        )
+      ),
+    [txHistory, currentAccount?.evmAddress, currentNetwork]
+  );
+
+  useEffect(() => {
+    const uniqueAddressesObj = {};
+    const uniqueRecentlyUsedAdresses = [];
+
+    filteredTxHistory.forEach((tx) => {
+      if (!uniqueAddressesObj[tx?.to]) {
+        uniqueAddressesObj[tx?.to] = true;
+        uniqueRecentlyUsedAdresses.push(tx?.to);
+      }
+    });
+
+    setRecentlyUsedAddresses(uniqueRecentlyUsedAdresses.slice(0, 10));
+  }, [txHistory, currentAccount?.evmAddress, filteredTxHistory]);
+
+  console.log("state", recentlyUsedAddresses);
+
   return (
     <div className={style.historySec}>
       <div className={style.historySec__historyHead}>
@@ -37,11 +64,7 @@ function History() {
       <div className={style.histryDataScrol}>
         {txHistory[currentAccount?.evmAddress] &&
         txHistory[currentAccount?.evmAddress].length > 0 ? (
-          arrayReverser(
-            txHistory[currentAccount?.evmAddress].filter(
-              (tx) => tx?.chain.toLowerCase() === currentNetwork.toLowerCase()
-            )
-          ).map((data, index) => (
+          filteredTxHistory.map((data, index) => (
             <HistoryItem
               historyItem={data}
               handleHistoryOpen={handleHistoryOpen}
