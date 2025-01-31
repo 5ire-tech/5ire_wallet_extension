@@ -118,6 +118,10 @@ export default function Context({ children }) {
           renameAccountName(message.data);
           break;
 
+        case MESSAGE_EVENT_LABELS.IMPORT_BY_PRIVATE_KEY:
+          importAccountByPrivateKey(message.data);
+          break;
+
         case MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC:
           importAccountByMnemonics(message.data);
           break;
@@ -226,6 +230,35 @@ export default function Context({ children }) {
     if (data?.type === "create") {
       setNewAccount(data.newAccount);
       navigate(ROUTES.NEW_WALLET_DETAILS);
+    }
+  };
+
+  // set the new Account
+  const importAccountByPrivateKey = (data) => {
+    if (data?.vault && data?.newAccount) {
+      setShowCongratLoader(true);
+      setTimeout(() => {
+        navigate(ROUTES.WALLET);
+        setShowCongratLoader(false);
+      }, 2000);
+      sendEventToTab(
+        windowAndTab,
+        new TabMessagePayload(
+          TABS_EVENT.ACCOUNT_CHANGE_EVENT,
+          {
+            result: {
+              evmAddress: data?.newAccount?.evmAddress,
+              nativeAddress: data?.newAccount?.nativeAddress
+            }
+          },
+          null,
+          TABS_EVENT.ACCOUNT_CHANGE_EVENT
+        ),
+        externalControlsState.connectedApps
+      );
+    } else if (data?.errCode === 3) {
+      setInputError(data?.errMessage ? data.errMessage : "");
+      setShowCongratLoader(false);
     }
   };
 
@@ -407,6 +440,7 @@ export default function Context({ children }) {
     setShowCongratLoader,
     setValdatorNominatorFee,
     setExternalControlState,
+    importAccountByPrivateKey,
     importAccountByMnemonics,
     setExternalNativeTxDetails,
     setEDValue,

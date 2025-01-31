@@ -248,9 +248,11 @@ function MyAccount() {
               </div>
             </div>
             <div className={style.myAccountSec__rytSec}>
-              {e?.type === WALLET_TYPES.IMPORTED_NATIVE && <h5>IMPORTED</h5>}
+              {[WALLET_TYPES.IMPORTED_NATIVE, WALLET_TYPES.ETH_SIMPLE].includes(e?.type) && (
+                <h5>IMPORTED</h5>
+              )}
 
-              {e.type === "hd_wallet" ? (
+              {e.type === WALLET_TYPES.HD ? (
                 ""
               ) : (
                 <Dropdown

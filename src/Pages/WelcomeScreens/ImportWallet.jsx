@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import CongratulationsScreen from "./CongratulationsScreen";
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import { isEmpty, validateMnemonic } from "../../Utility/utility";
+import { isEmpty, validateMnemonic, validatePrivateKey } from "../../Utility/utility";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
@@ -33,6 +33,8 @@ function ImportWallet() {
   const [show, setShow] = useState(false);
   const [isOpenEye, setEye] = useState(false);
   const [isMannual, setMannual] = useState(false);
+
+  const isMnemonic = userPass && !isLogin;
 
   useEffect(() => {
     if (isLogin) {
@@ -93,8 +95,13 @@ function ImportWallet() {
     if (isEmpty(data.key)) {
       setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
       setDisable(true);
-    } else if (!validateMnemonic(data?.key?.trim())) {
-      setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INVALID_MNEMONIC }));
+    } else if (
+      isMnemonic ? !validateMnemonic(data?.key?.trim()) : !validatePrivateKey(data?.key?.trim())
+    ) {
+      setWarrning((p) => ({
+        ...p,
+        key: isMnemonic ? ERROR_MESSAGES.INVALID_MNEMONIC : ERROR_MESSAGES.INVALID_PRIVATE_KEY
+      }));
       setDisable(true);
     } else setWarrning((p) => ({ ...p, key: EMTY_STR }));
   };
@@ -102,7 +109,7 @@ function ImportWallet() {
   const handleClick = async (e) => {
     if (e.key === LABELS.ENTER || e.key === undefined) {
       if (!warrning.key && !warrning.acc && data?.accName && data?.key) {
-        if (userPass && !isLogin) {
+        if (isMnemonic) {
           setShow(true);
           setTimeout(() => {
             setShow(false);
@@ -130,8 +137,10 @@ function ImportWallet() {
           } else {
             sendRuntimeMessage(
               MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
-              MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC,
-              { mnemonic: data?.key?.trim(), name: data.accName.trim() }
+              // MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC,
+              MESSAGE_EVENT_LABELS.IMPORT_BY_PRIVATE_KEY,
+              // { mnemonic: data?.key?.trim(), name: data.accName.trim() }
+              { pvtKey: data?.key?.trim(), name: data.accName.trim() }
             );
             setSelectedToken({
               address: "",
@@ -187,7 +196,7 @@ function ImportWallet() {
               onDrop={(e) => {
                 e.preventDefault();
               }}
-              placeholder={"Enter mnemonic here"}
+              placeholder={`Enter ${isMnemonic ? "mnemonic" : "private key"} here`}
               className={isOpenEye && "blurContact"}
             />
 

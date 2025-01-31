@@ -12,6 +12,11 @@ export const validateMnemonic = (data) => {
   return isValidMnemonic;
 };
 
+export const validatePrivateKey = (privateKey) => {
+  const isValidMnemonic = isHex(privateKey) && privateKey.length === 66; // 64 chars + '0x'
+  return isValidMnemonic;
+};
+
 // validate Evm and Native Address
 export const validateAddress = async (address) => {
   if (address?.startsWith("0x")) {

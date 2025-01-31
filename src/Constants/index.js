@@ -100,6 +100,7 @@ export const ERROR_MESSAGES = {
   INVALID_QUERY: "Query key is invalid",
   LOGOUT_ERR: "Error while logging out",
   INVALID_MNEMONIC: "Invalid mnemonic",
+  INVALID_PRIVATE_KEY: "Invalid private key",
   INCORRECT_PASS: "Incorrect password",
   INCORRECT_ADDRESS: "Invalid address",
   TOKEN_ALREDY: "Token already exists",
@@ -306,6 +307,7 @@ export const MESSAGE_EVENT_LABELS = {
   VERIFY_USER_PASSWORD: "verifyUserPassword",
   RECOVER_OLD_ACCOUNTS: "recoverOldStateAccounts",
   IMPORT_BY_MNEMONIC: "importAccountByMnemonics",
+  IMPORT_BY_PRIVATE_KEY: "importAccountByPrivateKey",
 
   //network related events
   NETWORK_CONNECTION_ERROR: "networkConnectionError",

@@ -423,6 +423,30 @@ export class ExtensionStorageHandler {
   };
 
   /**
+   * import account by private_key
+   * @param {*} message
+   * @param {*} state
+   * @returns
+   */
+  importAccountByPrivateKey = async (message, state) => {
+    const { newAccount, vault } = message;
+    const txHistory = this._txProperty(state, newAccount.evmAddress);
+    const tokens = this._setTokens(state, newAccount);
+    const allAccountsBalance = this._setAccountBalance(state, newAccount);
+    const pendingTransactionBalance = this._setAllAccountPendingBalance(state, newAccount);
+    const newState = {
+      ...state,
+      vault,
+      tokens,
+      txHistory,
+      currentAccount: newAccount,
+      allAccountsBalance,
+      pendingTransactionBalance
+    };
+    return await this._updateStorage(newState);
+  };
+
+  /**
    * import account by mnemonic
    * @param {*} message
    * @param {*} state
