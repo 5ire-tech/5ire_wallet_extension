@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import CongratulationsScreen from "./CongratulationsScreen";
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import { isEmpty, validateMnemonic, validatePrivateKey } from "../../Utility/utility";
+import { isEmpty, isEqual, validateMnemonic, validatePrivateKey } from "../../Utility/utility";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
@@ -27,14 +27,26 @@ function ImportWallet() {
   const [isDisable, setDisable] = useState(true);
   const [data, setData] = useState({ accName: "", key: "" });
   const [warrning, setWarrning] = useState({ acc: "", key: "" });
-  const { state, userPass, allAccounts, inputError, setInputError, setSelectedToken } =
-    useContext(AuthContext);
+  const {
+    state,
+    userPass,
+    allAccounts,
+    inputError,
+    setInputError,
+    setSelectedToken,
+    invalidInput
+  } = useContext(AuthContext);
   const { isLogin } = state;
   const [show, setShow] = useState(false);
   const [isOpenEye, setEye] = useState(false);
   const [isMannual, setMannual] = useState(false);
 
   const isMnemonic = userPass && !isLogin;
+
+  useEffect(() => {
+    isEqual(invalidInput?.real, ERROR_MESSAGES.ACCOUNT_EXISTS) &&
+      setWarrning((p) => ({ ...p, key: invalidInput?.real }));
+  }, [invalidInput]);
 
   useEffect(() => {
     if (isLogin) {
@@ -135,11 +147,10 @@ function ImportWallet() {
           } else {
             sendRuntimeMessage(
               MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
-              // MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC,
               MESSAGE_EVENT_LABELS.IMPORT_BY_PRIVATE_KEY,
-              // { mnemonic: data?.key?.trim(), name: data.accName.trim() }
               { pvtKey: data?.key?.trim(), name: data.accName.trim() }
             );
+
             setSelectedToken({
               address: "",
               balance: "",

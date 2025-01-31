@@ -10,7 +10,14 @@ import { TransactionFactory } from "@ethereumjs/tx";
 import { EventPayload } from "../Utility/network_calls";
 import SimpleKeyring from "@metamask/eth-simple-keyring";
 import { ErrorPayload, Error } from "../Utility/error_helper";
-import { WALLET_TYPES, KEYRING_EVENTS, ERROR_MESSAGES, ERRCODES } from "../Constants";
+import {
+  WALLET_TYPES,
+  KEYRING_EVENTS,
+  ERROR_MESSAGES,
+  ERRCODES,
+  INTERNAL_EVENT_LABELS
+} from "../Constants";
+import { ExtensionEventHandle } from "./initbackground";
 
 export class HybridKeyring extends EventEmitter {
   static ethKeyring;
@@ -349,9 +356,10 @@ export class HybridKeyring extends EventEmitter {
       const isExist = HybridKeyring.accounts.find((acc) => acc.evmAddress === keyWallet.address);
 
       if (isExist) {
-        return new Error(
+        return ExtensionEventHandle.eventEmitter.emit(
+          INTERNAL_EVENT_LABELS.ERROR,
           new ErrorPayload(ERRCODES.INVALID_INPUT, ERROR_MESSAGES.ACCOUNT_EXISTS)
-        ).throw();
+        );
       }
       //Handle Keyring
       let keyring = this._getKeyringData(WALLET_TYPES.ETH_SIMPLE);

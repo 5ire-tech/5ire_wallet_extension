@@ -67,6 +67,7 @@ export default function Context({ children }) {
 
   //background error's
   const [backgroundError, setBackgroundError] = useState(null);
+  const [invalidInput, setInvalidInput] = useState(null);
   const [networkError, setNetworkError] = useState(null);
   const [valdatorNominatorFee, setValdatorNominatorFee] = useState(null);
   const [tempBalance, setTempBalance] = useState({
@@ -122,10 +123,6 @@ export default function Context({ children }) {
           importAccountByPrivateKey(message.data);
           break;
 
-        case MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC:
-          importAccountByMnemonics(message.data);
-          break;
-
         case MESSAGE_EVENT_LABELS.GET_ACCOUNTS:
           getAccounts(message.data);
           break;
@@ -154,6 +151,10 @@ export default function Context({ children }) {
         case MESSAGE_EVENT_LABELS.BACKGROUND_ERROR:
           setBackgroundError(message.data);
           setTimer(updateLoading.bind(null, false));
+          break;
+
+        case MESSAGE_EVENT_LABELS.INVALID_INPUT:
+          setInvalidInput(message.data);
           break;
 
         case MESSAGE_EVENT_LABELS.NETWORK_CONNECTION_ERROR:
@@ -414,6 +415,7 @@ export default function Context({ children }) {
     externalNativeTxDetails,
     edValue,
     dontRedirect,
+    invalidInput,
 
     //data setters
     setState,

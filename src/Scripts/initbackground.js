@@ -1109,6 +1109,15 @@ export class ExtensionEventHandle {
             message: customMessage || ERROR_MESSAGES.INTERNAL_ERROR,
             real: err?.errMessage
           });
+
+        if (isEqual(err?.errCode, ERRCODES.INVALID_INPUT)) {
+          console.log("invalidInput-ERR_MSG", err);
+
+          this.services.messageToUI(MESSAGE_EVENT_LABELS.INVALID_INPUT, {
+            message: "",
+            real: err?.errMessage
+          });
+        }
       } catch (err) {
         log("Error in error event handler: ", err);
       }

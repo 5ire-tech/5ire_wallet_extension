@@ -287,6 +287,7 @@ export const MESSAGE_EVENT_LABELS = {
   TOKEN_TRANSFER: "tokenTransfer",
   GET_TOKEN_BALANCE: "getTokenBalance",
   BACKGROUND_ERROR: "backgroundError",
+  INVALID_INPUT: "invalidInput",
   UPDATE_TX_HISTORY: "txupdatehistory",
   EVM_TO_NATIVE_SWAP: "evmToNativeSwap",
   NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
