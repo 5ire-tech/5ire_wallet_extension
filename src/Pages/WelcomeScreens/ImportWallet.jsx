@@ -95,9 +95,7 @@ function ImportWallet() {
     if (isEmpty(data.key)) {
       setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
       setDisable(true);
-    } else if (
-      isMnemonic ? !validateMnemonic(data?.key?.trim()) : !validatePrivateKey(data?.key?.trim())
-    ) {
+    } else if (!(isMnemonic ? validateMnemonic : validatePrivateKey)(data?.key?.trim())) {
       setWarrning((p) => ({
         ...p,
         key: isMnemonic ? ERROR_MESSAGES.INVALID_MNEMONIC : ERROR_MESSAGES.INVALID_PRIVATE_KEY
