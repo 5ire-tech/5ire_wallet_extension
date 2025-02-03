@@ -76,12 +76,20 @@ function ImportWallet() {
 
   const handleChange = useCallback(
     (e) => {
-      setData((p) => ({ ...p, [e.target.name]: e.target.value }));
       if (e.target.name === LABELS.KEY) {
+        const value = e.target.value;
+        setData((p) => ({
+          ...p,
+          [e.target.name]: value.length >= 2 && value.slice(0, 2) !== "0x" ? `0x${value}` : value
+        }));
         if (e.target.value?.trim() && !isMannual) setEye(true);
-
         setInputError("");
+        return;
       }
+      setData((p) => ({
+        ...p,
+        [e.target.name]: e.target.value
+      }));
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [isMannual]
