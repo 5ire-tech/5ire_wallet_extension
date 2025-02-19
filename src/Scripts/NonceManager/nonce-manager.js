@@ -1,5 +1,5 @@
 import { log } from "../../Utility/utility";
-import { NetworkHandler } from "../initbackground";
+import { NetworkHandler } from "../NetworkHandler";
 
 export class NonceManager {
   //previous transaction nonce

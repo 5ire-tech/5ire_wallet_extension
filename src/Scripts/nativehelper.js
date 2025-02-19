@@ -1,12 +1,12 @@
 import { BigNumber } from "bignumber.js";
 import { DECIMALS, ERRCODES, ERROR_MESSAGES, LABELS, STATUS } from "../Constants";
 import { HybridKeyring } from "./5ire-keyring";
-import { NetworkHandler } from "./initbackground";
 import { hasProperty, log } from "../Utility/utility";
 import { EventPayload } from "../Utility/network_calls";
 import { ErrorPayload, Error } from "../Utility/error_helper";
 import { getDataLocal } from "../Storage/loadstore";
 import { getFormattedMethod } from "./utils";
+import { NetworkHandler } from "./NetworkHandler";
 
 export default class ValidatorNominatorHandler {
   static instance = null;

@@ -17,7 +17,7 @@ import {
   ERRCODES,
   INTERNAL_EVENT_LABELS
 } from "../Constants";
-import { ExtensionEventHandle } from "./initbackground";
+import { ExtensionEventHandle } from "./ExtensionEventHandle";
 
 export class HybridKeyring extends EventEmitter {
   static ethKeyring;
