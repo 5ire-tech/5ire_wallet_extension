@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "allowJs": true, // Allow JavaScript files
+    "checkJs": false, // Do not report type errors in JS files
+    "noEmit": true, // Prevent TypeScript from outputting JS files (optional)
+    "strict": true, // Enforce strict type checking
+    "jsx": "react-jsx", // Enable JSX support
+    "moduleResolution": "node"
+  },
+  "include": ["src"], // Include all files in the `src` directory
+  "exclude": ["node_modules"]
+}
