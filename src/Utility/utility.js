@@ -13,8 +13,8 @@ export const validateMnemonic = (data) => {
 };
 
 export const validatePrivateKey = (privateKey) => {
-  const isValidMnemonic = isHex(privateKey) && privateKey.length === 66; // 64 chars + '0x'
-  return isValidMnemonic;
+  const isValidPrivateKey = isHex(privateKey) && privateKey.length === 66; // 64 chars + '0x'
+  return isValidPrivateKey;
 };
 
 // validate Evm and Native Address

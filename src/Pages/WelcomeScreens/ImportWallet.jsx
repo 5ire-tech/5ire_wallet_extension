@@ -80,7 +80,8 @@ function ImportWallet() {
         const value = e.target.value;
         setData((p) => ({
           ...p,
-          [e.target.name]: value.length >= 2 && value.slice(0, 2) !== "0x" ? `0x${value}` : value
+          [e.target.name]:
+            value.length >= 2 && value.slice(0, 2) !== "0x" && !isMnemonic ? `0x${value}` : value
         }));
         if (e.target.value?.trim() && !isMannual) setEye(true);
         setInputError("");
