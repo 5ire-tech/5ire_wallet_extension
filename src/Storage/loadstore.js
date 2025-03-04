@@ -1,6 +1,7 @@
 import { localStorage, sessionStorage } from ".";
 import { Error, ErrorPayload } from "../Utility/error_helper";
 import { ERRCODES, ERROR_MESSAGES, LABELS, STATUS, NETWORK } from "../Constants";
+import * as protector from "../Scripts/protector";
 import {
   userState,
   externalControls,
@@ -15,6 +16,7 @@ import {
   hasProperty,
   isNullorUndef
 } from "../Utility/utility";
+import { HybridKeyring } from "../Scripts/5ire-keyring";
 
 /**
  * local storage data null safety check
@@ -90,7 +92,6 @@ export class ExtensionStorageHandler {
         ExtensionStorageHandler.instance = new ExtensionStorageHandler();
         delete ExtensionStorageHandler.constructor;
       }
-
       if (!hasProperty(ExtensionStorageHandler.instance, key))
         new Error(new ErrorPayload(ERRCODES.NULL_UNDEF, ERROR_MESSAGES.UNDEF_PROPERTY)).throw();
 
@@ -169,8 +170,9 @@ export class ExtensionStorageHandler {
 
   //push the transactions
   addNewTxHistory = async (data, state, options) => {
-    const newState = { ...state };
+    const newState = !state?.txCounts ? { ...state, txCounts: {} } : { ...state };
     newState.txHistory[options?.account?.evmAddress].push(data);
+    newState.txCounts[data?.to] = (newState?.txCounts?.[data?.to] || 0) + 1;
     const status = await this._updateStorage(newState);
     return status;
   };
@@ -421,6 +423,30 @@ export class ExtensionStorageHandler {
   };
 
   /**
+   * import account by private_key
+   * @param {*} message
+   * @param {*} state
+   * @returns
+   */
+  importAccountByPrivateKey = async (message, state) => {
+    const { newAccount, vault } = message;
+    const txHistory = this._txProperty(state, newAccount.evmAddress);
+    const tokens = this._setTokens(state, newAccount);
+    const allAccountsBalance = this._setAccountBalance(state, newAccount);
+    const pendingTransactionBalance = this._setAllAccountPendingBalance(state, newAccount);
+    const newState = {
+      ...state,
+      vault,
+      tokens,
+      txHistory,
+      currentAccount: newAccount,
+      allAccountsBalance,
+      pendingTransactionBalance
+    };
+    return await this._updateStorage(newState);
+  };
+
+  /**
    * import account by mnemonic
    * @param {*} message
    * @param {*} state
@@ -473,6 +499,40 @@ export class ExtensionStorageHandler {
       pendingTransactionBalance
     };
     return await this._updateStorage(newState);
+  };
+
+  renameAccountName = async (message, state) => {
+    const { oldName, newName } = message;
+    const currentState = { ...state };
+    const res = await protector.decryptWithDetail(HybridKeyring.password, state.vault);
+    const [hdAccountInfo, importedAccountInfo] = [res?.vault?.[0], res?.vault?.[1]];
+    const [hdAccounts, importedAccounts] = [res?.vault?.[0]?.accounts, res?.vault?.[1]?.accounts];
+    const updatedHdAccounts = (hdAccounts || []).map((acc) =>
+      acc.accountName === oldName ? { ...acc, accountName: newName } : acc
+    );
+    const updatedImportedAccounts = (importedAccounts || []).map((acc) =>
+      acc.accountName === oldName ? { ...acc, accountName: newName } : acc
+    );
+    let updatedVault = [];
+    const updatedHdAccountsWithInfo = { ...hdAccountInfo, accounts: updatedHdAccounts };
+    const updatedImportedAccountsWithInfo = {
+      ...importedAccountInfo,
+      accounts: updatedImportedAccounts
+    };
+    updatedHdAccounts?.length && updatedVault.push(updatedHdAccountsWithInfo);
+    updatedImportedAccounts?.length && updatedVault.push(updatedImportedAccountsWithInfo);
+    const hybridKeyring = HybridKeyring.getInstance();
+    HybridKeyring.keyrings = updatedVault;
+    const encryptedRes = await hybridKeyring._persistData(HybridKeyring.password);
+    const updatedState = {
+      ...currentState,
+      currentAccount:
+        currentState.currentAccount.accountName === oldName
+          ? { ...currentState.currentAccount, accountName: newName }
+          : currentState.currentAccount,
+      vault: encryptedRes.vault
+    };
+    return await this._updateStorage(updatedState);
   };
 
   /**

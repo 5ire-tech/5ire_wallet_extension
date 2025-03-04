@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import CongratulationsScreen from "./CongratulationsScreen";
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import ButtonComp from "../../Components/ButtonComp/ButtonComp";
-import { isEmpty, validateMnemonic } from "../../Utility/utility";
+import { isEmpty, isEqual, validateMnemonic, validatePrivateKey } from "../../Utility/utility";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import { StepHeaders } from "../../Components/BalanceDetails/Steps/steps";
 import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
@@ -27,12 +27,26 @@ function ImportWallet() {
   const [isDisable, setDisable] = useState(true);
   const [data, setData] = useState({ accName: "", key: "" });
   const [warrning, setWarrning] = useState({ acc: "", key: "" });
-  const { state, userPass, allAccounts, inputError, setInputError, setSelectedToken } =
-    useContext(AuthContext);
+  const {
+    state,
+    userPass,
+    allAccounts,
+    inputError,
+    setInputError,
+    setSelectedToken,
+    invalidInput
+  } = useContext(AuthContext);
   const { isLogin } = state;
   const [show, setShow] = useState(false);
   const [isOpenEye, setEye] = useState(false);
   const [isMannual, setMannual] = useState(false);
+
+  const isMnemonic = userPass && !isLogin;
+
+  useEffect(() => {
+    isEqual(invalidInput?.real, ERROR_MESSAGES.ACCOUNT_EXISTS) &&
+      setWarrning((p) => ({ ...p, key: invalidInput?.real }));
+  }, [invalidInput]);
 
   useEffect(() => {
     if (isLogin) {
@@ -62,12 +76,21 @@ function ImportWallet() {
 
   const handleChange = useCallback(
     (e) => {
-      setData((p) => ({ ...p, [e.target.name]: e.target.value }));
       if (e.target.name === LABELS.KEY) {
+        const value = e.target.value;
+        setData((p) => ({
+          ...p,
+          [e.target.name]:
+            value.length >= 2 && value.slice(0, 2) !== "0x" && !isMnemonic ? `0x${value}` : value
+        }));
         if (e.target.value?.trim() && !isMannual) setEye(true);
-
         setInputError("");
+        return;
       }
+      setData((p) => ({
+        ...p,
+        [e.target.name]: e.target.value
+      }));
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [isMannual]
@@ -93,8 +116,11 @@ function ImportWallet() {
     if (isEmpty(data.key)) {
       setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INPUT_REQUIRED }));
       setDisable(true);
-    } else if (!validateMnemonic(data?.key?.trim())) {
-      setWarrning((p) => ({ ...p, key: ERROR_MESSAGES.INVALID_MNEMONIC }));
+    } else if (!(isMnemonic ? validateMnemonic : validatePrivateKey)(data?.key?.trim())) {
+      setWarrning((p) => ({
+        ...p,
+        key: isMnemonic ? ERROR_MESSAGES.INVALID_MNEMONIC : ERROR_MESSAGES.INVALID_PRIVATE_KEY
+      }));
       setDisable(true);
     } else setWarrning((p) => ({ ...p, key: EMTY_STR }));
   };
@@ -102,7 +128,7 @@ function ImportWallet() {
   const handleClick = async (e) => {
     if (e.key === LABELS.ENTER || e.key === undefined) {
       if (!warrning.key && !warrning.acc && data?.accName && data?.key) {
-        if (userPass && !isLogin) {
+        if (isMnemonic) {
           setShow(true);
           setTimeout(() => {
             setShow(false);
@@ -130,9 +156,10 @@ function ImportWallet() {
           } else {
             sendRuntimeMessage(
               MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
-              MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC,
-              { mnemonic: data?.key?.trim(), name: data.accName.trim() }
+              MESSAGE_EVENT_LABELS.IMPORT_BY_PRIVATE_KEY,
+              { pvtKey: data?.key?.trim(), name: data.accName.trim() }
             );
+
             setSelectedToken({
               address: "",
               balance: "",
@@ -187,7 +214,7 @@ function ImportWallet() {
               onDrop={(e) => {
                 e.preventDefault();
               }}
-              placeholder={"Enter mnemonic here"}
+              placeholder={`Enter ${isMnemonic ? "mnemonic" : "private key"} here`}
               className={isOpenEye && "blurContact"}
             />
 

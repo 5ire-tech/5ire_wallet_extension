@@ -471,8 +471,9 @@ class RpcRequestProcessor {
           rpcResponse.payload?.options
         );
       //send the response message to extension ui
-      if (rpcResponse?.eventEmit)
+      if (rpcResponse?.eventEmit) {
         this.services.messageToUI(rpcResponse.eventEmit, rpcResponse.payload.data);
+      }
     } else {
       ExtensionEventHandle.eventEmitter.emit(INTERNAL_EVENT_LABELS.ERROR, rpcResponse.error);
     }
@@ -1108,6 +1109,15 @@ export class ExtensionEventHandle {
             message: customMessage || ERROR_MESSAGES.INTERNAL_ERROR,
             real: err?.errMessage
           });
+
+        if (isEqual(err?.errCode, ERRCODES.INVALID_INPUT)) {
+          console.log("invalidInput-ERR_MSG", err);
+
+          this.services.messageToUI(MESSAGE_EVENT_LABELS.INVALID_INPUT, {
+            message: "",
+            real: err?.errMessage
+          });
+        }
       } catch (err) {
         log("Error in error event handler: ", err);
       }

@@ -9,7 +9,7 @@ import { sendEventToTab } from "../../Helper/helper";
 import { formatBalance } from "../../Utility/utility";
 import GreenCircle from "../../Assets/greencircle.svg";
 import { TabMessagePayload } from "../../Utility/network_calls";
-import React, { useContext, useState, useCallback } from "react";
+import React, { useContext, useState, useCallback, useRef, useEffect } from "react";
 import { sendRuntimeMessage } from "../../Utility/message_helper";
 import ModalCustom from "../../Components/ModalCustom/ModalCustom";
 import AccountSetting from "../../Components/AccountSetting/AccountSetting";
@@ -24,11 +24,16 @@ import {
   MESSAGE_TYPE_LABELS,
   MESSAGE_EVENT_LABELS
 } from "../../Constants/index";
+import { InputFieldOnly } from "../../Components/InputField/InputFieldSimple";
 
 function MyAccount() {
+  const inputRef = useRef(null);
   const navigate = useNavigate();
   const [isModalOpen, setModalOpen] = useState(false);
   const [addressToRemove, setAddressToRemove] = useState(null);
+  const [renameInput, setRenameInput] = useState("");
+  const [renameId, setRenameId] = useState("");
+  const [oldName, setOldName] = useState("");
   const {
     allAccounts,
     state,
@@ -36,7 +41,8 @@ function MyAccount() {
     externalControlsState,
     setNewWalletName,
     windowAndTab,
-    setSelectedToken
+    setSelectedToken,
+    setDontRedirect
   } = useContext(AuthContext);
   const { connectedApps } = externalControlsState;
   const { currentAccount, allAccountsBalance, currentNetwork } = state;
@@ -135,6 +141,31 @@ function MyAccount() {
     });
   };
 
+  const handleRenameWallet = (updatedName, id) => {
+    setRenameInput(updatedName);
+    setRenameId(id);
+  };
+
+  useEffect(() => {
+    if (inputRef.current) inputRef.current?.focus();
+  }, [renameId]);
+
+  const handleOutsideClick = () => {
+    setRenameId("");
+    if (oldName !== renameInput.trim()) {
+      setDontRedirect(true); // restrict redirection to Wallet Screen
+      sendRuntimeMessage(
+        MESSAGE_TYPE_LABELS.EXTENSION_UI_KEYRING,
+        MESSAGE_EVENT_LABELS.RENAME_ACCOUNT_NAME,
+        { oldName: oldName.trim(), newName: renameInput.trim() }
+      );
+    }
+  };
+
+  const handleEnter = (e) => {
+    e.key === LABELS.ENTER && handleOutsideClick();
+  };
+
   return (
     <div className={style.myAccountSec}>
       <div className={style.myAccountSec__tabAccount}>
@@ -164,7 +195,29 @@ function MyAccount() {
                       </h2>
                     </>
                   )}
-                  <h2>{e?.accountName}</h2>
+                  {renameId === i ? (
+                    <InputFieldOnly
+                      inputRef={inputRef}
+                      coloredBg={true}
+                      value={renameInput}
+                      name={LABELS.ACCOUNT_NAME}
+                      placeholderBaseColor={true}
+                      onChange={(e) => {
+                        handleRenameWallet(e.target.value, i);
+                      }}
+                      onBlur={handleOutsideClick}
+                      placeholder={"Rename wallet"}
+                      keyUp={handleEnter}
+                    />
+                  ) : (
+                    <h2
+                      onClick={() => {
+                        handleRenameWallet(e?.accountName, i);
+                        setOldName(e?.accountName);
+                      }}>
+                      {e?.accountName}
+                    </h2>
+                  )}
                 </div>
                 <p>
                   {/*(
@@ -195,9 +248,11 @@ function MyAccount() {
               </div>
             </div>
             <div className={style.myAccountSec__rytSec}>
-              {e?.type === WALLET_TYPES.IMPORTED_NATIVE && <h5>IMPORTED</h5>}
+              {[WALLET_TYPES.IMPORTED_NATIVE, WALLET_TYPES.ETH_SIMPLE].includes(e?.type) && (
+                <h5>IMPORTED</h5>
+              )}
 
-              {e.type === "hd_wallet" ? (
+              {e.type === WALLET_TYPES.HD ? (
                 ""
               ) : (
                 <Dropdown

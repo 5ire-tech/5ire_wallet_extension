@@ -41,6 +41,7 @@ export default function Context({ children }) {
   const [accountName, setAccName] = useState(null);
   const [allAccounts, setAllAccounts] = useState([]);
   const [detailsPage, setDetailsPage] = useState(false);
+  const [dontRedirect, setDontRedirect] = useState(false);
   const [estimatedGas, setEstimatedGas] = useState(null);
   const [newWalletName, setNewWalletName] = useState("");
   const [passVerified, setPassVerified] = useState(false);
@@ -66,6 +67,7 @@ export default function Context({ children }) {
 
   //background error's
   const [backgroundError, setBackgroundError] = useState(null);
+  const [invalidInput, setInvalidInput] = useState(null);
   const [networkError, setNetworkError] = useState(null);
   const [valdatorNominatorFee, setValdatorNominatorFee] = useState(null);
   const [tempBalance, setTempBalance] = useState({
@@ -113,8 +115,12 @@ export default function Context({ children }) {
           addAccount(message.data);
           break;
 
-        case MESSAGE_EVENT_LABELS.IMPORT_BY_MNEMONIC:
-          importAccountByMnemonics(message.data);
+        case MESSAGE_EVENT_LABELS.RENAME_ACCOUNT_NAME:
+          renameAccountName(message.data);
+          break;
+
+        case MESSAGE_EVENT_LABELS.IMPORT_BY_PRIVATE_KEY:
+          importAccountByPrivateKey(message.data);
           break;
 
         case MESSAGE_EVENT_LABELS.GET_ACCOUNTS:
@@ -145,6 +151,10 @@ export default function Context({ children }) {
         case MESSAGE_EVENT_LABELS.BACKGROUND_ERROR:
           setBackgroundError(message.data);
           setTimer(updateLoading.bind(null, false));
+          break;
+
+        case MESSAGE_EVENT_LABELS.INVALID_INPUT:
+          setInvalidInput(message.data);
           break;
 
         case MESSAGE_EVENT_LABELS.NETWORK_CONNECTION_ERROR:
@@ -225,6 +235,35 @@ export default function Context({ children }) {
   };
 
   // set the new Account
+  const importAccountByPrivateKey = (data) => {
+    if (data?.vault && data?.newAccount) {
+      setShowCongratLoader(true);
+      setTimeout(() => {
+        navigate(ROUTES.WALLET);
+        setShowCongratLoader(false);
+      }, 2000);
+      sendEventToTab(
+        windowAndTab,
+        new TabMessagePayload(
+          TABS_EVENT.ACCOUNT_CHANGE_EVENT,
+          {
+            result: {
+              evmAddress: data?.newAccount?.evmAddress,
+              nativeAddress: data?.newAccount?.nativeAddress
+            }
+          },
+          null,
+          TABS_EVENT.ACCOUNT_CHANGE_EVENT
+        ),
+        externalControlsState.connectedApps
+      );
+    } else if (data?.errCode === 3) {
+      setInputError(data?.errMessage ? data.errMessage : "");
+      setShowCongratLoader(false);
+    }
+  };
+
+  // set the new Account
   const importAccountByMnemonics = (data) => {
     if (data?.vault && data?.newAccount) {
       setShowCongratLoader(true);
@@ -280,6 +319,15 @@ export default function Context({ children }) {
       ),
       externalControlsState.connectedApps
     );
+  };
+
+  const renameAccountName = (data) => {
+    const { oldName, newName } = data;
+    const updatedAccounts = allAccounts.map((account) =>
+      account.accountName === oldName ? { ...account, accountName: newName } : account
+    );
+    setAllAccounts(updatedAccounts);
+    setDontRedirect(false);
   };
 
   const getAccounts = (data) => {
@@ -366,6 +414,8 @@ export default function Context({ children }) {
     externalControlsState,
     externalNativeTxDetails,
     edValue,
+    dontRedirect,
+    invalidInput,
 
     //data setters
     setState,
@@ -392,9 +442,11 @@ export default function Context({ children }) {
     setShowCongratLoader,
     setValdatorNominatorFee,
     setExternalControlState,
+    importAccountByPrivateKey,
     importAccountByMnemonics,
     setExternalNativeTxDetails,
-    setEDValue
+    setEDValue,
+    setDontRedirect
   };
 
   return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>;

@@ -499,14 +499,14 @@ function BalanceDetails({ mt0 }) {
                             />
                           )}
                         </span>
-                        <Tooltip
-                          placement="bottom"
-                          title={
-                            allAccountsBalance[currentAccount?.evmAddress][
-                              currentNetwork?.toLowerCase()
-                            ].totalBalance
-                          }>
-                          {showBalance ? (
+                        {showBalance ? (
+                          <Tooltip
+                            placement="bottom"
+                            title={
+                              allAccountsBalance[currentAccount?.evmAddress][
+                                currentNetwork?.toLowerCase()
+                              ].totalBalance
+                            }>
                             <span className="totalBal">
                               {formatBalance(
                                 allAccountsBalance[currentAccount?.evmAddress][
@@ -514,10 +514,10 @@ function BalanceDetails({ mt0 }) {
                                 ].totalBalance || 0
                               )}
                             </span>
-                          ) : (
-                            <span className="totalBal">{hiddenBalance}</span>
-                          )}
-                        </Tooltip>
+                          </Tooltip>
+                        ) : (
+                          <span className="totalBal">{hiddenBalance}</span>
+                        )}
                         <span>
                           <img src={SmallLogo} />
                           {/* {CURRENCY} */}

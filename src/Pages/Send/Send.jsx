@@ -475,15 +475,18 @@ function Send() {
     try {
       // if (activeTab === EVM) {
       updateLoading(true);
+      const commonOptions = {
+        account: currentAccount,
+        network: currentNetwork,
+        isEvm: true,
+        fee: estimatedGas
+      };
       selectedToken?.address !== ""
         ? sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.TOKEN_TRANSFER, {
             to: data.to,
             value: data.amount,
             options: {
-              isEvm: true,
-              fee: estimatedGas,
-              account: currentAccount,
-              network: currentNetwork,
+              ...commonOptions,
               type: TX_TYPE.TOKEN_TRANSFER,
               contractDetails: selectedToken
             },
@@ -493,13 +496,7 @@ function Send() {
           sendRuntimeMessage(MESSAGE_TYPE_LABELS.INTERNAL_TX, MESSAGE_EVENT_LABELS.EVM_TX, {
             to: data.to,
             value: data.amount,
-            options: {
-              account: currentAccount,
-              network: currentNetwork,
-              type: TX_TYPE.SEND,
-              isEvm: true,
-              fee: estimatedGas
-            },
+            options: { ...commonOptions, type: TX_TYPE.SEND },
             isEd: false
           });
       setTimeout(() => {

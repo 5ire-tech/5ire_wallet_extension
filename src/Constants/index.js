@@ -100,6 +100,7 @@ export const ERROR_MESSAGES = {
   INVALID_QUERY: "Query key is invalid",
   LOGOUT_ERR: "Error while logging out",
   INVALID_MNEMONIC: "Invalid mnemonic",
+  INVALID_PRIVATE_KEY: "Invalid private key",
   INCORRECT_PASS: "Incorrect password",
   INCORRECT_ADDRESS: "Invalid address",
   TOKEN_ALREDY: "Token already exists",
@@ -286,6 +287,7 @@ export const MESSAGE_EVENT_LABELS = {
   TOKEN_TRANSFER: "tokenTransfer",
   GET_TOKEN_BALANCE: "getTokenBalance",
   BACKGROUND_ERROR: "backgroundError",
+  INVALID_INPUT: "invalidInput",
   UPDATE_TX_HISTORY: "txupdatehistory",
   EVM_TO_NATIVE_SWAP: "evmToNativeSwap",
   NATIVE_TO_EVM_SWAP: "nativeToEvmSwap",
@@ -294,6 +296,7 @@ export const MESSAGE_EVENT_LABELS = {
   LOCK: "lock",
   UNLOCK: "unlock",
   ADD_ACCOUNT: "addAccount",
+  RENAME_ACCOUNT_NAME: "renameAccountName",
   TOKEN_INFO: "getTokenInfo",
   IMPORT_TOKEN: "importToken",
   GET_ACCOUNTS: "getAccounts",
@@ -305,6 +308,7 @@ export const MESSAGE_EVENT_LABELS = {
   VERIFY_USER_PASSWORD: "verifyUserPassword",
   RECOVER_OLD_ACCOUNTS: "recoverOldStateAccounts",
   IMPORT_BY_MNEMONIC: "importAccountByMnemonics",
+  IMPORT_BY_PRIVATE_KEY: "importAccountByPrivateKey",
 
   //network related events
   NETWORK_CONNECTION_ERROR: "networkConnectionError",

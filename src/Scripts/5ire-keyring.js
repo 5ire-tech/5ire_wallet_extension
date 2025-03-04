@@ -10,7 +10,14 @@ import { TransactionFactory } from "@ethereumjs/tx";
 import { EventPayload } from "../Utility/network_calls";
 import SimpleKeyring from "@metamask/eth-simple-keyring";
 import { ErrorPayload, Error } from "../Utility/error_helper";
-import { WALLET_TYPES, KEYRING_EVENTS, ERROR_MESSAGES, ERRCODES } from "../Constants";
+import {
+  WALLET_TYPES,
+  KEYRING_EVENTS,
+  ERROR_MESSAGES,
+  ERRCODES,
+  INTERNAL_EVENT_LABELS
+} from "../Constants";
+import { ExtensionEventHandle } from "./initbackground";
 
 export class HybridKeyring extends EventEmitter {
   static ethKeyring;
@@ -321,61 +328,91 @@ export class HybridKeyring extends EventEmitter {
     return new EventPayload(message.event, message.event, payload);
   }
 
+  async renameAccountName(message) {
+    const { oldName, newName } = message.data;
+    if (HybridKeyring.accounts.length <= 0) {
+      throw new Error(ERROR_MESSAGES.NO_ROOT_ACC);
+    }
+    const payload = {
+      oldName,
+      newName
+    };
+    HybridKeyring.accounts = HybridKeyring.accounts.map((account) =>
+      account.accountName === oldName ? { ...account, accountName: newName } : account
+    );
+    return new EventPayload(message.event, message.event, payload);
+  }
+
   /**
    * Import other wallet keys like metamask, trustwallet etc and generate EVM and native accounts.
    * @param {string} pvtKey
    * @param {string} name
    * @returns
    */
-  async importAccountByPrivateKey(pvtKey, name = "") {
-    const keyWallet = new ethers.Wallet(pvtKey);
-    const isExist = HybridKeyring.accounts.find((acc) => acc.evmAddress === keyWallet.address);
+  async importAccountByPrivateKey(message) {
+    try {
+      const { pvtKey, name } = message.data;
+      const keyWallet = new ethers.Wallet(pvtKey);
+      const isExist = HybridKeyring.accounts.find((acc) => acc.evmAddress === keyWallet.address);
 
-    if (isExist) throw new Error(ERROR_MESSAGES.ACCOUNT_EXISTS);
+      if (isExist) {
+        return ExtensionEventHandle.eventEmitter.emit(
+          INTERNAL_EVENT_LABELS.ERROR,
+          new ErrorPayload(ERRCODES.INVALID_INPUT, ERROR_MESSAGES.ACCOUNT_EXISTS)
+        );
+      }
+      //Handle Keyring
+      let keyring = this._getKeyringData(WALLET_TYPES.ETH_SIMPLE);
 
-    //Handle Keyring
-    let keyring = this._getKeyringData(WALLET_TYPES.ETH_SIMPLE);
+      if (keyring) {
+        keyring.private_keys.push(pvtKey);
+        keyring.numberOfAccounts++;
+      } else {
+        //Check if simple eth keyring not exists in array
+        const newKeyring = {
+          numberOfAccounts: 1,
+          private_keys: [pvtKey],
+          type: WALLET_TYPES.ETH_SIMPLE,
+          accounts: []
+        };
+        HybridKeyring.keyrings.push(newKeyring);
+        keyring = newKeyring;
+      }
 
-    if (keyring) {
-      keyring.private_keys.push(pvtKey);
-      keyring.numberOfAccounts++;
-    } else {
-      //Check if simple eth keyring not exists in array
-      const newKeyring = {
-        numberOfAccounts: 1,
-        private_keys: [pvtKey],
+      //Eth flow
+      const oldKeys = await HybridKeyring.simpleEthKeyring.serialize();
+      oldKeys.push(pvtKey);
+      await HybridKeyring.simpleEthKeyring.deserialize(oldKeys);
+      const newAccountIndex = oldKeys.length - 1;
+      const accounts = await HybridKeyring.simpleEthKeyring.getAccounts();
+      const ethAddress = Web3.utils.toChecksumAddress(accounts[newAccountIndex]);
+
+      //Generate native account from private key
+      const newKr = HybridKeyring.polkaKeyring.addFromUri(pvtKey);
+
+      const newAcc = {
+        nativeAddress: newKr.address,
+        evmAddress: ethAddress,
         type: WALLET_TYPES.ETH_SIMPLE,
-        accounts: []
+        accountName: name || WALLET_TYPES.ETH_SIMPLE + "_" + keyring.numberOfAccounts,
+        accountIndex: keyring.accounts.length
       };
-      HybridKeyring.keyrings.push(newKeyring);
-      keyring = newKeyring;
+      console.log("state-cssdvdv", newKr, name);
+      HybridKeyring.accounts.push(newAcc);
+      //Push data for backup purpose
+      keyring.accounts.push(newAcc);
+      this.emit(KEYRING_EVENTS.ACCOUNT_ADDED, newAcc);
+      const response = await this._persistData(HybridKeyring.password);
+
+      const payload = {
+        newAccount: newAcc,
+        vault: response.vault
+      };
+
+      return new EventPayload(message.event, message.event, payload);
+    } catch (er) {
+      console.log("state-cssdvdv-ER", er);
     }
-
-    //Eth flow
-    const oldKeys = await HybridKeyring.simpleEthKeyring.serialize();
-    oldKeys.push(pvtKey);
-    await HybridKeyring.simpleEthKeyring.deserialize(oldKeys);
-    const newAccountIndex = oldKeys.length - 1;
-    const accounts = await HybridKeyring.simpleEthKeyring.getAccounts();
-    const ethAddress = Web3.utils.toChecksumAddress(accounts[newAccountIndex]);
-
-    //Generate native account from private key
-    const newKr = HybridKeyring.polkaKeyring.addFromUri(pvtKey);
-
-    const newAcc = {
-      nativeAddress: newKr.address,
-      evmAddress: ethAddress,
-      type: WALLET_TYPES.ETH_SIMPLE,
-      accountname: name || WALLET_TYPES.ETH_SIMPLE + "_" + keyring.numberOfAccounts,
-      accountIndex: keyring.accounts.length
-    };
-    HybridKeyring.accounts.push(newAcc);
-    //Push data for backup purpose
-    keyring.accounts.push(newAcc);
-    this.emit(KEYRING_EVENTS.ACCOUNT_ADDED, newAcc);
-    await this._persistData(HybridKeyring.password);
-
-    return newAcc;
   }
 
   /**
